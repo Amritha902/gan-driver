@@ -1,7 +1,7 @@
 # Proposal — GaN-Based Power Converter
 
 **Title**
-> Online Deadband-Aware ZVS-Constrained Modulation Scheduling for a GaN Dual-Active-Bridge Converter on FPGA
+> Online Deadband-Aware ZVS-Constrained Modulation Scheduling for a GaN Dual-Active-Bridge Converter in Battery Energy Storage Systems
 
 Shorter, if the guide wants it tighter:
 > *FPGA-Scheduled Joint Modulation and Dead-Time Control for a GaN Dual-Active-Bridge Converter*
@@ -140,20 +140,25 @@ the crosstalk objective.
 
 | Purpose | Tool |
 |---|---|
-| Plant simulation and sweep | MATLAB/Simulink + Simscape Electrical, **or** PLECS, **or** LTspice |
+| GaN device model, transient DAB simulation, characterisation sweep | **Keysight ADS + PEPro** (Power Electronics Professional) |
+| Leakage and loop inductance extracted from the planar magnetics layout | **ADS Momentum / FEM**, EM-circuit co-simulation |
 | Control policy | **Xilinx Vivado** — Zynq-7000 |
 | Analysis and Pareto extraction | Python (NumPy, pandas, matplotlib) |
-| GaN device model | vendor SPICE (GaN Systems GS66508B / EPC) for C_oss(v) extraction |
 
-Cadence is no longer required — this is a converter-level project. Confirm that is
-acceptable, since the earlier topic assumed it.
+**Why ADS earns its place rather than being a tool requirement to satisfy.** Reference [34]
+shows the ZVS range of a DAB is set by its series inductance — a value normally assumed as a
+lumped constant. ADS extracts L_k and the loop inductance from the actual planar transformer
+and PCB layout by EM simulation, so the deadband-corrected ZVS boundary is evaluated against
+the inductance the hardware will really have. PEPro additionally supplies GaN model
+extraction, transient and thermal analysis, and prebuilt EMI/EMC benches.
+
+Cadence is not used. The two tools are ADS (plant and magnetics) and Vivado (control).
 
 ---
 
 ## 7. Confirm before building
 
-1. Dr. Bindu approves DAB specifically, rather than another GaN converter (totem-pole PFC,
-   LLC and flying-capacitor multilevel are the alternatives; DAB is chosen because it has
-   the most control degrees of freedom, which is what the method needs).
+1. DAB confirmed as the converter — it has the most control degrees of freedom, which is what
+   the method needs, and it is the standard isolated stage in a battery energy storage system.
 2. Vivado is still mandatory.
 3. Simulation-only is acceptable, or hardware is expected.

@@ -1,4 +1,4 @@
-# Milestones — GaN DAB Converter
+# Milestones — GaN DAB Converter for Battery Energy Storage
 
 Two tracks run in parallel after M0. The plant simulation produces a characterisation
 table; Vivado consumes it. They never co-simulate.
@@ -11,7 +11,7 @@ table; Vivado consumes it. They never co-simulate.
 
 | # | Task | Output |
 |---|---|---|
-| 0.1 | Build a DAB model: two full bridges, transformer + leakage L, GaN switches with nonlinear C_oss | `sim/dab.slx` or `.plecs` |
+| 0.1 | Build the DAB in **Keysight ADS**: two full bridges, transformer + leakage L, GaN switches with nonlinear C_oss | `sim/dab_ads/` |
 | 0.2 | Run single-phase-shift at nominal, confirm power transfer matches the analytical `P = nVV'φ(π-|φ|)/(2π²fL)` | waveform + number |
 | 0.3 | Reproduce **one figure from the base paper** — a ZVS boundary with deadband | overlay plot |
 
@@ -26,10 +26,12 @@ Reproducing it also tells the review you actually read it.
 
 | # | Task | Output |
 |---|---|---|
-| 1.1 | Extract C_oss(v) from the vendor GaN model; fit a charge-equivalent curve | `data/coss.csv` |
+| 1.1 | Extract C_oss(v) from the GaN model in ADS; fit a charge-equivalent curve | `data/coss.csv` |
+| 1.1b | **EM-extract L_k and loop inductance** from the planar transformer layout (Momentum / FEM) | `data/magnetics.s2p` |
 | 1.2 | Implement the deadband-corrected ZVS criterion from the base paper | `scripts/zvs.py` |
 | 1.3 | Loss model: conduction, switching, reverse-conduction during dead-time, transformer copper | `scripts/loss.py` |
 | 1.4 | Validate 1.3 against simulated efficiency at 5 operating points | table |
+| 1.5 | Compare EM-extracted L_k against the lumped assumption — how far does the ZVS boundary move? | plot |
 
 **Exit criterion:** model efficiency within ~2 % of simulation across those 5 points.
 
@@ -41,7 +43,7 @@ The output of this milestone is the only interface to the Vivado track.
 
 | # | Task | Output |
 |---|---|---|
-| 2.1 | Grid: V_in × V_out × P_load × T_j × D₁ × D₂ × φ × t_dead | `scripts/grid.py` |
+| 2.1 | Grid over the **CCCV charge cycle**: V_batt (SoC) × V_bus × P × T_j × D₁ × D₂ × φ × t_dead | `scripts/grid.py` |
 | 2.2 | Batch-run the plant model over the grid | raw logs |
 | 2.3 | Extract per point: I_rms, I_peak, ZVS flag per bridge leg, P_loss, efficiency, reactive power | `data/characterisation.csv` |
 | 2.4 | **Does optimal t_dead shift with (D₁, D₂, φ) and with load?** | plot |
@@ -130,6 +132,6 @@ the honest comparison is against an online TPS controller using the classical ZV
 ## This week
 
 1. Get the base paper (Shi 2020, TPEL 35(9), 9888–9905) and read it properly.
-2. Build the DAB model; reproduce one ZVS-boundary figure from it. — M0
-3. Confirm with Dr. Bindu: DAB specifically, Vivado still required, simulation-only acceptable.
+2. Build the DAB in ADS; reproduce one ZVS-boundary figure from the base paper. — M0
+3. Confirm ADS + PEPro licence access at VIT, and whether hardware is expected or simulation-only.
 4. In parallel: `rtl/quantiser.v` needs no changes; start `rtl/pareto_table.v`.
