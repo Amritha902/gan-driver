@@ -47,7 +47,23 @@ module quantiser #(
     wire [1:0] bt = bin3(t_j,    bnd_t[0], bnd_t[1]);
 
     // flat index = ((bv * N_I) + bi) * N_T + bt
-    wire [REGION_W-1:0] flat = ((bv * N_I) + bi) * N_T + bt;
+    // Widened explicitly: the products need more than REGION_W bits before the final
+    // value fits, and letting Verilog infer 32-bit intermediates then truncating is
+    // what Verilator flags (and Vivado warns about) even though the result is correct.
+    localparam integer ACC_W = REGION_W + 3;
+
+    wire [ACC_W-1:0] bv_x = {{(ACC_W-2){1'b0}}, bv};
+    wire [ACC_W-1:0] bi_x = {{(ACC_W-2){1'b0}}, bi};
+    wire [ACC_W-1:0] bt_x = {{(ACC_W-2){1'b0}}, bt};
+    wire [ACC_W-1:0] n_i  = N_I[ACC_W-1:0];
+    wire [ACC_W-1:0] n_t  = N_T[ACC_W-1:0];
+
+    // acc carries headroom so the intermediate product cannot wrap; the top bits are
+    // provably zero for any legal bin combination, so discarding them is intended.
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [ACC_W-1:0] acc  = ((bv_x * n_i) + bi_x) * n_t + bt_x;
+    /* verilator lint_on UNUSEDSIGNAL */
+    wire [REGION_W-1:0] flat = acc[REGION_W-1:0];
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

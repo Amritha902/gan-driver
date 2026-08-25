@@ -1,6 +1,5 @@
 #!/bin/sh
 # Run every RTL testbench. Exits non-zero if any fails.
-set -e
 cd "$(dirname "$0")"
 python3 scripts/gen_synthetic_table.py >/dev/null
 rc=0
@@ -10,7 +9,7 @@ for tb in quantiser pareto_table; do
   echo "$out"
   echo "$out" | grep -q "ALL PASS" || rc=1
 done
-verilator --lint-only -Wall --top-module pareto_table rtl/pareto_table.v
-verilator --lint-only -Wall --top-module quantiser    rtl/quantiser.v
+verilator --lint-only -Wall --top-module pareto_table rtl/pareto_table.v || rc=1
+verilator --lint-only -Wall --top-module quantiser    rtl/quantiser.v    || rc=1
 [ $rc -eq 0 ] && echo "== ALL TESTBENCHES PASS ==" || echo "== FAILURES =="
 exit $rc
