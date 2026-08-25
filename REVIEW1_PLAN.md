@@ -121,8 +121,7 @@ plus Verilator are enough for the RTL in deliverable 4.
 
 | Tool | Notes |
 |---|---|
-| **Keysight ADS + PEPro** | Licensed. Check the VIT lab first — PEPro is a separate add-on to ADS and the EM extraction depends on it. Confirm access **this week**; if it is not available, deliverable 1 stalls. |
-| **Xilinx Vivado ML Edition** | Free, no licence needed for Zynq-7000. Large download (~100 GB installed) — start it overnight. Choose the Zynq-7000 device family during install to cut the size. |
+| **Keysight ADS + PEPro** | Lab PC only. PEPro is a separate add-on — confirm it is installed, not just ADS. |
 | **GaN device model** | Vendor SPICE model — GaN Systems GS66508B or EPC. Free from the manufacturer. Needed before anything in deliverable 2 works. |
 
 ### Free fallback if ADS access is delayed
@@ -133,15 +132,46 @@ note it as a limitation. Better than losing three weeks waiting for a licence.
 
 ---
 
+## Lab PC — what you actually need it for
+
+**Why not this Mac:** Apple M5, arm64. Vivado and ADS are Windows / Linux **x86-64 only**.
+No macOS build of either exists. Not a settings problem — no installer to run.
+
+| # | Task on the lab PC | Time |
+|---|---|---|
+| 1 | Vivado: open project, add `rtl/*.v`, run synthesis, save utilisation + timing report | 1 h |
+| 2 | ADS: build the DAB, reproduce one ZVS-boundary figure from Shi 2020 | 4 h |
+| 3 | ADS Momentum: EM-extract L_k from the transformer layout | 2 h |
+| 4 | ADS: run the characterisation sweep, export CSV | 3 h |
+
+**Book one full day.** Tasks 2–4 are one sitting; task 1 is 1 hour and can be any time.
+
+Bring: this repo on a USB stick, and the GaN vendor model already downloaded.
+
+---
+
+## Everything else runs on the Mac — start now, no waiting
+
+| Task | Tool | Status |
+|---|---|---|
+| RTL for `quantiser`, `pareto_table`, arbiter, interpolator | Icarus + Verilator | **working** |
+| Loss model, ZVS criterion, Pareto extraction | Python | ready |
+| GaN device physics, double-pulse test | ngspice + placeholder model | **verified** |
+| Every plot in deliverables 2 and 3 | Matplotlib | ready |
+
+```
+cd ~/gan-dab-project && ./run_tests.sh
+```
+
+---
+
 ## Order of work this week
 
-1. **Confirm ADS + PEPro access at VIT.** Everything in deliverable 1 waits on this. Do it first,
-   today, and have the LTspice fallback ready if the answer is no.
-2. Start the Vivado download in the background — it takes hours.
-3. Download the GaN vendor model.
-4. Read Shi 2020 properly, together. All three of you. You cannot reproduce a figure you have not
-   read.
-5. Build the DAB and reproduce the figure.
+1. **Book lab PC time.** One day. Everything x86 happens in that day.
+2. Confirm ADS + PEPro is actually on the lab machines — PEPro is a separate add-on.
+3. Download the GaN vendor model (needs a browser and a free account).
+4. Read Shi 2020. All three of you.
+5. Keep writing RTL and the loss model on the Mac meanwhile — none of it waits.
 
 ---
 
