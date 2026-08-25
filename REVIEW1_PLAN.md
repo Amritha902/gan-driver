@@ -72,10 +72,50 @@ the easiest possible criticism.
 
 ## Tools
 
-### Already installed on this machine
+### ⚠ Platform reality — check this before planning anything
 
-Python 3.14 with NumPy, pandas, Matplotlib, SciPy. That covers the sweep scripts, the loss model
-and every plot in deliverables 2 and 3.
+This Mac is **Apple Silicon (arm64), macOS 26.6**.
+
+**Neither Vivado nor ADS runs on macOS.** Both are Windows / Linux **x86-64** only — there is no
+macOS build of either, and no ARM Linux build of Vivado, so a VM on this machine does not solve
+it either.
+
+So those two must run on:
+- the **VIT lab machines** (most likely route — confirm this week), or
+- a Windows or Linux **x86 PC** belonging to one of you.
+
+Plan the split accordingly: whoever has access to a Windows/Linux box should own deliverables 1
+and 4.
+
+### Already installed on this machine — and it unblocks most of the work
+
+| Tool | What it does for you |
+|---|---|
+| Python 3.14 + NumPy, pandas, Matplotlib, SciPy | Sweep scripts, loss model, every plot in deliverables 2 and 3 |
+| **Icarus Verilog 13.0** | Simulate all the RTL natively. Write and test `quantiser.v`, `pareto_table.v`, the testbenches — no Vivado needed until synthesis |
+| **Verilator 5.050** | Fast simulation and linting; catches RTL mistakes early |
+| **ngspice 47** | Free SPICE. Can simulate the DAB and produce the sweep data |
+| **GTKWave** | Waveform viewer (see the Gatekeeper note below) |
+| **LTspice** | Available via `brew install --cask ltspice` if you want the Analog Devices GUI |
+
+**What this means:** deliverables 2 and 3 can be done entirely on this Mac, and deliverable 4's
+RTL can be *written and simulated* here. You only need Vivado at the very end, to synthesise and
+produce the utilisation report — which is one afternoon on a lab machine.
+
+### GTKWave and the "harmful software" warning
+
+macOS blocks GTKWave because it is **not notarised by Apple**, not because it is malware. It is
+standard open-source software from Homebrew.
+
+To allow it: **System Settings → Privacy & Security**, scroll to the Security section, and click
+**Open Anyway** next to the gtkwave message. You may need to try opening the app once first for
+the button to appear.
+
+**One honest caveat.** GTKWave had a batch of real security bugs disclosed in 2023 — all in its
+parsing of waveform files. They matter only if you open a VCD or FST file from an untrusted
+source. You will only ever open your own simulation output, so the practical risk is low. If you
+would rather not bypass Gatekeeper at all, skip GTKWave — `$display` statements in the testbench
+plus Verilator are enough for the RTL in deliverable 4.
 
 ### You must install these yourselves
 
