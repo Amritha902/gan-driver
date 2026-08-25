@@ -151,3 +151,21 @@ Not how much you built. Whether the claim from the zeroth review is still standi
 you can show evidence either way. A Review 1 that says *"we tested RQ2 and the coupling is weaker
 than expected, here is the data, here is how the scope changes"* is a **stronger** review than one
 that shows four half-finished modules and no result.
+
+---
+
+## Toolchain verified on this Mac (not just installed)
+
+- **Icarus Verilog** — `rtl/quantiser.v` compiles and its testbench passes all six
+  region-mapping cases. Run it with:
+  ```
+  iverilog -g2012 -o /tmp/tbq rtl/quantiser.v rtl/tb/tb_quantiser.v && vvp /tmp/tbq
+  ```
+- **ngspice** — runs a transient and returns measurements correctly.
+- **Verilator, Python stack** — versions confirmed.
+
+**LTspice still needs installing by you** — it is a `.pkg` that installs to `/Applications` and
+asks for your password:
+```
+brew install --cask ltspice
+```
