@@ -1,0 +1,50 @@
+* ===================================================================
+* egan.lib -- Behavioural enhancement-mode GaN HEMT model
+* Target: EPC2010C-class device (200 V, ~25 mOhm, Vth ~1.4 V)
+*
+* WHY BEHAVIOURAL: vendor SPICE subcircuits are LTspice-dialect and
+* not portable to Spectre.  This model is written from datasheet
+* quantities only, and is deliberately SYMMETRIC in the channel so
+* that third-quadrant (reverse) conduction falls out of the physics
+* instead of being bolted on.  GaN has no body diode: reverse
+* conduction is channel conduction, and its drop is
+*        V_SD = Vth + |V_GS,off| + I*Rds(on)
+* which is exactly what the symmetric square law below produces.
+* That coupling -- negative off-bias buys crosstalk margin and pays
+* for it in dead-time conduction loss -- is the physical core of the
+* whole project, so it must not be an approximation.
+* ===================================================================
+
+* smooth max(x,0) -- keeps the Newton solver happy at the kink
+.func smax(x) {0.5*(x+sqrt(x*x+1e-4))}
+
+* --- junction capacitances, realised as non-conducting diodes -------
+* IS=1e-30 AND N=40 => no current at any bias we see.  N is large on
+* purpose: with N=1 the gate-drain "capacitor" forward-conducts once
+* V_G > V_D (i.e. whenever the device is ON) and clamps the gate.
+* We want ONLY the C(V) law here.
+* to ngspice, LTspice and Spectre, unlike behavioural C= expressions.
+.model DGD D(IS=1e-30 N=40 CJO=150p VJ=1.0 M=0.65 FC=0.5)  $ Crss (Miller)
+.model DDS D(IS=1e-30 N=40 CJO=800p VJ=1.0 M=0.5  FC=0.5)  $ Coss-Crss
+
+.subckt EGAN d g s params: vth=1.4 bh=5.55 rg=0.4 cgs=350p lg=0.3n ls=0.15n
+
+* package / bond inductance
+Lgint  g   gi  {lg}
+Lsint  s   si  {ls}
+
+* internal gate resistance
+Rgint  gi  g2  {rg}
+
+* --- symmetric square-law channel ----------------------------------
+* I = bh * [ smax(Vgs-Vth)^2 - smax(Vgd-Vth)^2 ]
+*   Vgd > Vth with Vds < 0  =>  reverse conduction, automatically.
+Bch d si I = {bh} * ( smax(v(g2,si)-{vth})*smax(v(g2,si)-{vth})
++                   - smax(v(g2,d) -{vth})*smax(v(g2,d) -{vth}) )
+
+* --- capacitances ---------------------------------------------------
+Cgs   g2  si  {cgs}
+Dgd   g2  d   DGD
+Dds   si  d   DDS
+
+.ends EGAN

@@ -1,0 +1,65 @@
+* ===================================================================
+* segdrv.lib -- Segmented gate driver output stage
+*
+* N=8 thermometer-coded pull-up slices, N=8 pull-down slices, plus a
+* separately-timed active Miller clamp.  Slice count is set by the
+* params npu / npd (1..8), which is the 4+4 bits the FPGA emits.
+*
+* Electrically N parallel slices of runit == runit/N, but the stage is
+* built out of real discrete slices so that each slice maps 1:1 onto a
+* sized transistor when this is redrawn in Cadence.  Do not "optimise"
+* this into a single variable resistor -- the discretisation, and its
+* monotonicity, is a result to report.
+*
+* Pins:  pu  pd  clk  out  vp  vn  ref
+*   pu   : logic high => pull up   (referenced to ref)
+*   pd   : logic high => pull down (referenced to ref)
+*   clk  : logic high => Miller clamp engaged
+*   ref  : local logic/driver ground (0 for low side, SW for high side)
+* ===================================================================
+
+.model SWP SW(Ron=0.01 Roff=1e9 Vt=0.5 Vh=0.05)
+
+.subckt SEGDRV pu pd clk out vp vn ref params: npu=8 npd=8 runit=8 rclamp=0.5
+
+* ---- pull-up bank : slice enabled if npu >= i --------------------
+Spu1 vp nu1 pu ref SWP
+Rpu1 nu1 out {runit + (npu>=1 ? 0 : 1e9)}
+Spu2 vp nu2 pu ref SWP
+Rpu2 nu2 out {runit + (npu>=2 ? 0 : 1e9)}
+Spu3 vp nu3 pu ref SWP
+Rpu3 nu3 out {runit + (npu>=3 ? 0 : 1e9)}
+Spu4 vp nu4 pu ref SWP
+Rpu4 nu4 out {runit + (npu>=4 ? 0 : 1e9)}
+Spu5 vp nu5 pu ref SWP
+Rpu5 nu5 out {runit + (npu>=5 ? 0 : 1e9)}
+Spu6 vp nu6 pu ref SWP
+Rpu6 nu6 out {runit + (npu>=6 ? 0 : 1e9)}
+Spu7 vp nu7 pu ref SWP
+Rpu7 nu7 out {runit + (npu>=7 ? 0 : 1e9)}
+Spu8 vp nu8 pu ref SWP
+Rpu8 nu8 out {runit + (npu>=8 ? 0 : 1e9)}
+
+* ---- pull-down bank : slice enabled if npd >= i ------------------
+Spd1 nd1 vn pd ref SWP
+Rpd1 out nd1 {runit + (npd>=1 ? 0 : 1e9)}
+Spd2 nd2 vn pd ref SWP
+Rpd2 out nd2 {runit + (npd>=2 ? 0 : 1e9)}
+Spd3 nd3 vn pd ref SWP
+Rpd3 out nd3 {runit + (npd>=3 ? 0 : 1e9)}
+Spd4 nd4 vn pd ref SWP
+Rpd4 out nd4 {runit + (npd>=4 ? 0 : 1e9)}
+Spd5 nd5 vn pd ref SWP
+Rpd5 out nd5 {runit + (npd>=5 ? 0 : 1e9)}
+Spd6 nd6 vn pd ref SWP
+Rpd6 out nd6 {runit + (npd>=6 ? 0 : 1e9)}
+Spd7 nd7 vn pd ref SWP
+Rpd7 out nd7 {runit + (npd>=7 ? 0 : 1e9)}
+Spd8 nd8 vn pd ref SWP
+Rpd8 out nd8 {runit + (npd>=8 ? 0 : 1e9)}
+
+* ---- active Miller clamp : strong, separately timed --------------
+Sclk out nclk clk ref SWP
+Rclk nclk vn {rclamp}
+
+.ends SEGDRV

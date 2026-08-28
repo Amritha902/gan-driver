@@ -1,0 +1,237 @@
+# Findings — nominal corner, 100 V / 10 A / 25 °C
+
+720 control words, 0 convergence failures, 341 s on 4 cores.
+
+All numbers below come from `results/sweep_nominal.csv`. Every claim that
+required an interpretation was tested with a separate control run rather
+than asserted from the trend.
+
+## 1. The problem is real
+
+| Configuration | Peak V_GS on the off device | Margin to V_th |
+|---|---|---|
+| Fastest driver, no clamp, 0 V off-bias | 1.65 V | **−0.25 V — false turn-on** |
+| Miller clamp on, −2 V off-bias | −1.18 V | +2.58 V |
+
+504 of 720 words (70%) are feasible, i.e. do not false-turn-on.
+
+## 2. Pull-up and pull-down are not one knob
+
+Drain overshoot moves by 0.0004 percentage points across the entire
+pull-up range and by 8.6 points across the pull-down range. Overshoot
+happens at turn-off; crosstalk on the opposite device is driven by this
+device's turn-on dV/dt. They answer to different codes, which is why the
+driver has separate pull-up and pull-down fields rather than one
+"drive strength" number.
+
+The pull-up code crosses into false turn-on between N_PU = 5 and 6.
+
+## 3. Dead time and pull-down strength are coupled
+
+This is the finding that justifies joint control.
+
+At 5 ns dead time:
+
+- `N_PD = 2`: overshoot 46.4%, E_off 1.78 µJ
+- `N_PD = 8`: overshoot 22.5%, E_off 0.62 µJ
+
+Same dead time, 2.9x the turn-off energy. Verified by a control run: at
+`N_PD = 1` the overshoot is 25.8 % with 15 ns dead time but 17.6 % with
+60 ns, while `N_PD` = 2..8 are identical at both. The apparent overshoot
+minimum at `N_PD` = 3-4 is therefore a dead-time artefact at weak
+pull-down, not an intrinsic property of the pull-down code.
+
+**The minimum usable dead time is set by the pull-down code.** Choosing
+the two independently — as a four-preset lookup table would — is wrong.
+
+## 4. The GaN-specific trade, quantified
+
+| Off-bias | Dead time | Crosstalk margin | E_dt |
+|---|---|---|---|
+| 0 V | 5 ns | -2.32 V | 0.33 µJ |
+| 0 V | 35 ns | -0.80 V | 1.10 µJ |
+| -2 V | 5 ns | -0.21 V | 0.40 µJ |
+| -2 V | 35 ns | +1.08 V | 2.38 µJ |
+
+At 35 ns, going from 0 V to −2 V off-bias buys **1.88 V of crosstalk
+margin** and costs **1.28 µJ of third-quadrant conduction** — 0.68 µJ per
+volt of margin. This coupling is specific to GaN: the reverse-conduction
+drop is V_th + |V_GS,off| + I·R because there is no body diode. The SiC
+literature this project builds on does not pay this cost.
+
+Dead time buys crosstalk margin, but **the relationship saturates hard** and
+a single slope is a misleading summary of it:
+
+| Dead time | Mean margin | Marginal gain |
+|---|---|---|
+| 5 ns | −2.320 V | — |
+| 10 ns | −0.974 V | **+269 mV/ns** |
+| 15 ns | −0.816 V | +32 mV/ns |
+| 25 ns | −0.798 V | +1.8 mV/ns |
+| 35 ns | −0.797 V | +0.1 mV/ns |
+
+**Essentially all the benefit arrives between 5 and 10 ns. Past about 15 ns,
+dead time buys no margin at all and costs pure conduction loss.** That is the
+actionable statement, and it also explains why total loss is minimised at
+10-15 ns (Section 6).
+
+(An earlier version of this document quoted "51 mV per ns", an endpoint slope
+across 5-35 ns. An independent re-analysis in MATLAB produced 37 mV/ns from a
+least-squares fit to the same data. Both are artefacts of forcing a straight
+line through a saturating curve; the table above replaces them.)
+
+## 5. Exchange rate along the Pareto front
+
+Within the feasible region, the front trades **0.039 µJ of total loss per
+percentage point of drain overshoot removed** — at a 100 V bus, 0.039 µJ
+per volt. Seven words sit on the front.
+
+## 6. Total loss has an optimum dead time
+
+| Dead time | Mean total loss |
+|---|---|
+| 5 ns | 6.78 µJ |
+| 10 ns | 5.89 µJ |
+| 15 ns | 5.79 µJ |
+| 25 ns | 6.18 µJ |
+| 35 ns | 6.91 µJ |
+
+Minimum at 10-15 ns. Shorter costs incomplete turn-off; longer costs
+third-quadrant conduction.
+
+## What this does not show
+
+- Open loop. Nothing measures the ringing; this is scheduling, not adaptation.
+- One corner only. The 36-point operating grid is not yet swept.
+- Behavioural device and ideal driver switches. See README limitations.
+
+
+---
+
+# Part 2 — Real silicon: SKY130 transistor-level output stage
+
+The ideal-switch slices were replaced with **real SKY130 5 V devices**
+(`nfet_g5v0d10v5` / `pfet_g5v0d10v5`) from the open SkyWater PDK, simulated in
+ngspice. No Cadence, no lab, no licence.
+
+## 7. Why a 5 V-only driver — decided from data, not preference
+
+| Configuration | Feasible words | Median margin |
+|---|---|---|
+| No clamp, 0 V off-bias | 36 / 180 | −0.44 V |
+| **Clamp on, 0 V off-bias** | **180 / 180** | **+0.73 V** |
+| Clamp on, −2 V off-bias | 180 / 180 | +2.73 V |
+
+With the active Miller clamp, **every** control word is safe at 0 V off-bias.
+So the negative supply can be dropped entirely, the rail is 0–5 V, and the
+design fits a 5 V device. Cost of dropping it: median margin falls from
++2.73 V to +0.73 V. That is the trade, stated explicitly, and it removes a
+whole power supply plus the dead-time conduction penalty of Finding 4.
+
+## 8. Slice sizing, measured
+
+| Device | W=100 µm, L=0.5 µm | For 8 Ω/slice |
+|---|---|---|
+| `nfet_g5v0d10v5` | 16.89 Ω | m=2 → 8.45 Ω |
+| `pfet_g5v0d10v5` | 46.88 Ω | m=6 → 7.81 Ω |
+
+PMOS is 2.78× weaker for equal width, so the pull-up bank is 3× the area of
+the pull-down bank for equal strength. Total gate width ≈ 7.6 mm
+(pull-up 4800 µm, pull-down 1600 µm, clamp 1200 µm).
+
+## 9. The actuator is monotonic in real silicon
+
+| Code | Pull-up | Pull-down | Ideal 8/N |
+|---|---|---|---|
+| 1 | 7.81 Ω | 8.45 Ω | 8.00 |
+| 2 | 3.91 Ω | 4.22 Ω | 4.00 |
+| 4 | 1.95 Ω | 2.11 Ω | 2.00 |
+| 8 | 0.98 Ω | 1.06 Ω | 1.00 |
+
+Monotonic in both banks, exactly 8:1 range, tracking the ideal target within
+6 %. The behavioural model was a fair stand-in for DC drive strength.
+
+## 10. RETRACTED — the transistor-level TRANSIENT is not converged
+
+**An earlier version of this document claimed that with real devices the
+dominant drain stress moves from the low-side turn-off to the high-side
+turn-on, based on a 47 % whole-cycle overshoot. That claim is withdrawn. It
+was numerical noise, not physics.**
+
+What gave it away: at the reported peak, consecutive samples alternate
+143.9, 66.5, 149.0, 66.2, 148.9, 65.4, 148.3, 64.7 and then return to 106.4,
+with the timestep collapsed to ~4 ps. That is an oscillation about the true
+value, not a transient.
+
+## 11. Timestep convergence study — the decisive test
+
+A real transient converges as the timestep shrinks. An artefact does not.
+Simulated to 1.1 µs (covering turn-off at 1.00 µs and high-side turn-on at
+1.03 µs), 30 ns dead time, all codes at 8:
+
+| maxstep | ideal switches | SKY130 |
+|---|---|---|
+| 0.05 ns | 122.4 V | 149.0 V |
+| 0.02 ns | 122.5 V | 147.5 V |
+| 0.01 ns | 122.5 V | **452.1 V** |
+| 0.005 ns | 122.5 V | did not complete |
+| 0.002 ns | 122.5 V | did not complete |
+
+The ideal-switch netlist is converged across a 25x timestep range — 122.5 V,
+flat. **Every Part 1 result is therefore trustworthy.**
+
+The SKY130 netlist does not converge at all. 452 V on a 200 V device is
+physically impossible. No transient number from that netlist is reportable,
+including the 17.3 % turn-off figure previously quoted in its favour.
+
+Two attempted fixes failed: softening the logic edges from 0.1 ns to 2 ns
+(realistic — no FPGA emits a 100 ps edge) and switching to Gear integration.
+Both still diverge.
+
+## 12. Where the instability actually is
+
+Isolation test — the same SKY130 driver into a plain 360 pF load, no GaN
+model, no half-bridge, no loop inductance:
+
+| maxstep | peak v(out) | min v(out) |
+|---|---|---|
+| 0.05 ns | 5.010 V | −0.013 V |
+| 0.02 ns | 5.011 V | −0.013 V |
+| 0.01 ns | 5.016 V | −0.021 V |
+| 0.005 ns | 5.019 V | −0.022 V |
+
+**The driver is fine.** Converged across 10x in timestep, rails cleanly.
+
+So the instability is in the **interaction between the BSIM4 devices and the
+behavioural GaN model**, and the prime suspect is the diode-based C(V) trick:
+`IS=1e-30, N=40` gives essentially zero conductance with a strongly nonlinear
+capacitance. That was numerically harmless against ideal switches and is not
+harmless against BSIM4.
+
+Fix path, in order: replace the diode-based capacitances with an explicit
+charge-based behavioural capacitor; failing that, add a small parallel
+conductance across each; failing that, move to a proper Verilog-A GaN model.
+
+**Status: the transistor-level output stage is built, sized and characterised
+(Findings 8 and 9 stand — they are DC, and the isolation test above confirms
+the driver transient is sound). Co-simulating it against the GaN half-bridge
+does not yet produce numbers worth reporting.**
+
+## Getting the tools
+
+```bash
+apt-get install ngspice
+pip install numpy matplotlib
+git clone --depth 1 --filter=blob:none --no-checkout \
+    https://github.com/google/skywater-pdk-libs-sky130_fd_pr.git
+cd skywater-pdk-libs-sky130_fd_pr
+git sparse-checkout init --cone
+git sparse-checkout set models cells/nfet_g5v0d10v5 cells/pfet_g5v0d10v5
+git checkout          # 19 MB, not the ~1 GB full PDK
+```
+
+Three things had to be fixed before the transistor-level netlist converged,
+all recorded in `sim/dpt_sky130.cir`: `rshunt=1e9` for the near-zero-conduction
+GaN capacitance diodes, a real DC load operating point in place of `UIC`, and
+a 20 Ω predriver output impedance so the slice gates are not driven from zero
+ohms while the whole high-side driver slews 100 V.

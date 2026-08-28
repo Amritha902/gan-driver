@@ -1,0 +1,26 @@
+* ===================================================================
+* sky130_5v.lib -- minimal SKY130 library, 5 V I/O devices only.
+*
+* Source: github.com/google/skywater-pdk-libs-sky130_fd_pr (Apache-2.0),
+* typical-typical corner, sparse-checked-out to just the two devices
+* this project needs.  The full PDK is ~1 GB; this is 19 MB.
+*
+* The *_slope_spectre parameters are the device-mismatch multipliers.
+* They are set to 0 here, which is what a nominal (non-Monte-Carlo) run
+* means and what open_pdks does for a plain tt simulation.  Set them
+* non-zero only if you are deliberately running mismatch analysis.
+* ===================================================================
+.lib tt
+.param sky130_fd_pr__nfet_g5v0d10v5__nfactor_slope_spectre=0
+.param sky130_fd_pr__nfet_g5v0d10v5__toxe_slope_spectre=0
+.param sky130_fd_pr__nfet_g5v0d10v5__voff_slope_spectre=0
+.param sky130_fd_pr__nfet_g5v0d10v5__vth0_slope_spectre=0
+.param sky130_fd_pr__pfet_g5v0d10v5__nfactor_slope_spectre=0
+.param sky130_fd_pr__pfet_g5v0d10v5__toxe_slope_spectre=0
+.param sky130_fd_pr__pfet_g5v0d10v5__voff_slope_spectre=0
+.param sky130_fd_pr__pfet_g5v0d10v5__vth0_slope_spectre=0
+.include "models/parameters/invariant.spice"
+.include "models/parameters/lod.spice"
+.include "cells/nfet_g5v0d10v5/sky130_fd_pr__nfet_g5v0d10v5__tt.corner.spice"
+.include "cells/pfet_g5v0d10v5/sky130_fd_pr__pfet_g5v0d10v5__tt.corner.spice"
+.endl tt
