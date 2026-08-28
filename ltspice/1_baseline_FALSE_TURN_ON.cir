@@ -1,0 +1,248 @@
+* ==================================================================
+* BASELINE - this one FAILS on purpose.
+*
+* Peak V(hsg)-V(sw) reaches 1.65 V against a 1.4 V threshold.
+* That is false turn-on: the off device is switched on by its own
+* Miller capacitance. This is the problem the project exists to fix.
+*
+* GaN half-bridge double-pulse test with a segmented gate driver.
+* SELF-CONTAINED - device model, driver and testbench are all inlined.
+* Nothing else needs to be in this folder.
+*
+* HOW TO RUN
+*   LTspice -> File -> Open -> set file type to "All Files" -> this file
+*   Press Run (the running man).
+*   Right-click the plot pane -> Add Trace, and add:
+*        V(sw)              the switch node
+*        V(lsg)             low-side gate
+*        V(hsg)-V(sw)       HIGH-SIDE GATE  <- the one that matters
+*
+* WHAT TO LOOK FOR  (verified against ngspice 42)
+*   gate on-state at t=0.9us .............  5.00 V
+*   peak V(lsd) after t=1us ..............  122.4 V   (bus is 100 V)
+*   peak V(hsg)-V(sw) over 2.015-2.10us ..  1.65 V  <-- ABOVE Vth, FAILS
+*   threshold Vth ........................  1.40 V
+*
+* Edit the PARAM BLOCK below to change the experiment.
+* ==================================================================
+* Double-pulse test: GaN half-bridge with segmented gate drivers
+* ===================================================================
+* dpt.cir -- half-bridge double-pulse testbench
+*
+* Sequence (all timing is what the FPGA would emit):
+*   0    .. T1   LS on, HS off        -- settle, inductor at ILOAD
+*   T1        LS turns OFF            -- E_off, V_DS overshoot, ringing
+*   T1..T2    DEAD TIME               -- HS conducts in 3rd quadrant, E_dt
+*   T2        HS turns ON
+*   T3        HS turns OFF
+*   T3..T4    DEAD TIME
+*   T4        LS turns ON  (hard)     -- E_on, and CROSSTALK on the HS gate
+*
+* The crosstalk event of interest is at T4: SW slews up... no, DOWN to 0,
+* so the HS device sees dV_DS/dt > 0 across its Miller capacitance and
+* its gate is pushed toward Vth.  Margin = Vth - max(V_GS,HS).
+* ===================================================================
+
+* ---- begin egan.lib ----
+* ===================================================================
+* egan.lib -- Behavioural enhancement-mode GaN HEMT model
+* Target: EPC2010C-class device (200 V, ~25 mOhm, Vth ~1.4 V)
+*
+* WHY BEHAVIOURAL: vendor SPICE subcircuits are LTspice-dialect and
+* not portable to Spectre.  This model is written from datasheet
+* quantities only, and is deliberately SYMMETRIC in the channel so
+* that third-quadrant (reverse) conduction falls out of the physics
+* instead of being bolted on.  GaN has no body diode: reverse
+* conduction is channel conduction, and its drop is
+*        V_SD = Vth + |V_GS,off| + I*Rds(on)
+* which is exactly what the symmetric square law below produces.
+* That coupling -- negative off-bias buys crosstalk margin and pays
+* for it in dead-time conduction loss -- is the physical core of the
+* whole project, so it must not be an approximation.
+* ===================================================================
+
+* smooth max(x,0) -- keeps the Newton solver happy at the kink
+.func smax(x) {0.5*(x+sqrt(x*x+1e-4))}
+
+* --- junction capacitances, realised as non-conducting diodes -------
+* IS=1e-30 AND N=40 => no current at any bias we see.  N is large on
+* purpose: with N=1 the gate-drain "capacitor" forward-conducts once
+* V_G > V_D (i.e. whenever the device is ON) and clamps the gate.
+* We want ONLY the C(V) law here.
+* to ngspice, LTspice and Spectre, unlike behavioural C= expressions.
+.model DGD D(IS=1e-30 N=40 CJO=150p VJ=1.0 M=0.65 FC=0.5)  ; Crss (Miller)
+.model DDS D(IS=1e-30 N=40 CJO=800p VJ=1.0 M=0.5  FC=0.5)  ; Coss-Crss
+
+.subckt EGAN d g s params: vth=1.4 bh=5.55 rg=0.4 cgs=350p lg=0.3n ls=0.15n
+
+* package / bond inductance
+Lgint  g   gi  {lg}
+Lsint  s   si  {ls}
+
+* internal gate resistance
+Rgint  gi  g2  {rg}
+
+* --- symmetric square-law channel ----------------------------------
+* I = bh * [ smax(Vgs-Vth)^2 - smax(Vgd-Vth)^2 ]
+*   Vgd > Vth with Vds < 0  =>  reverse conduction, automatically.
+Bch d si I = {bh} * ( smax(v(g2,si)-{vth})*smax(v(g2,si)-{vth})
++                   - smax(v(g2,d) -{vth})*smax(v(g2,d) -{vth}) )
+
+* --- capacitances ---------------------------------------------------
+Cgs   g2  si  {cgs}
+Dgd   g2  d   DGD
+Dds   si  d   DDS
+
+.save V(sw) V(lsg) V(hsg) V(lsd) V(hsd)
+.ends EGAN
+* ---- end egan.lib ----
+* ---- begin segdrv.lib ----
+* ===================================================================
+* segdrv.lib -- Segmented gate driver output stage
+*
+* N=8 thermometer-coded pull-up slices, N=8 pull-down slices, plus a
+* separately-timed active Miller clamp.  Slice count is set by the
+* params npu / npd (1..8), which is the 4+4 bits the FPGA emits.
+*
+* Electrically N parallel slices of runit == runit/N, but the stage is
+* built out of real discrete slices so that each slice maps 1:1 onto a
+* sized transistor when this is redrawn in Cadence.  Do not "optimise"
+* this into a single variable resistor -- the discretisation, and its
+* monotonicity, is a result to report.
+*
+* Pins:  pu  pd  clk  out  vp  vn  ref
+*   pu   : logic high => pull up   (referenced to ref)
+*   pd   : logic high => pull down (referenced to ref)
+*   clk  : logic high => Miller clamp engaged
+*   ref  : local logic/driver ground (0 for low side, SW for high side)
+* ===================================================================
+
+.model SWP SW(Ron=0.01 Roff=1e9 Vt=0.5 Vh=0.05)
+
+.subckt SEGDRV pu pd clk out vp vn ref params: npu=8 npd=8 runit=8 rclamp=0.5
+
+* ---- pull-up bank : slice enabled if npu >= i --------------------
+Spu1 vp nu1 pu ref SWP
+Rpu1 nu1 out {runit}
+Spu2 vp nu2 pu ref SWP
+Rpu2 nu2 out {runit}
+Spu3 vp nu3 pu ref SWP
+Rpu3 nu3 out {runit}
+Spu4 vp nu4 pu ref SWP
+Rpu4 nu4 out {runit}
+Spu5 vp nu5 pu ref SWP
+Rpu5 nu5 out {runit}
+Spu6 vp nu6 pu ref SWP
+Rpu6 nu6 out {runit}
+Spu7 vp nu7 pu ref SWP
+Rpu7 nu7 out {runit}
+Spu8 vp nu8 pu ref SWP
+Rpu8 nu8 out {runit}
+
+* ---- pull-down bank : slice enabled if npd >= i ------------------
+Spd1 nd1 vn pd ref SWP
+Rpd1 out nd1 {runit}
+Spd2 nd2 vn pd ref SWP
+Rpd2 out nd2 {runit}
+Spd3 nd3 vn pd ref SWP
+Rpd3 out nd3 {runit}
+Spd4 nd4 vn pd ref SWP
+Rpd4 out nd4 {runit}
+Spd5 nd5 vn pd ref SWP
+Rpd5 out nd5 {runit}
+Spd6 nd6 vn pd ref SWP
+Rpd6 out nd6 {runit}
+Spd7 nd7 vn pd ref SWP
+Rpd7 out nd7 {runit}
+Spd8 nd8 vn pd ref SWP
+Rpd8 out nd8 {runit}
+
+* ---- active Miller clamp : strong, separately timed --------------
+Sclk out nclk clk ref SWP
+Rclk nclk vn {rclamp}
+
+.save V(sw) V(lsg) V(hsg) V(lsd) V(hsd)
+.ends SEGDRV
+* ---- end segdrv.lib ----
+
+* ==================== PARAM BLOCK (swept by run_sweep.py) ==========
+.param VBUS=100
+.param ILOAD=10
+.param VDRV=5
+.param VNEG=0
+.param NPU_LS=8
+.param NPD_LS=8
+.param NPU_HS=8
+.param NPD_HS=8
+.param DT=15n
+.param CLKEN=0
+.param CLKDEL=4n
+.param RUNIT=8
+.param TJ=25
+* ==================== END PARAM BLOCK ==============================
+
+* temperature scaling of the GaN device (datasheet trend:
+*   Rds(on) roughly doubles 25->125 C, Vth falls slightly)
+.param KT   = {1 + 0.009*(TJ-25)}
+.param BH_T = {5.55/KT}
+.param VTH_T= {1.4 - 0.0015*(TJ-25)}
+
+.param VOUT  = {VBUS/2}
+.param LLOOP = 3n
+.param LLOAD = 100u
+.param TR    = 0.1n
+.param T1 = 1u
+.param T2 = {T1+DT}
+.param T3 = 2u
+.param T4 = {T3+DT}
+.param TSTOP = 3u
+
+* ---------------- power stage --------------------------------------
+Vbus   bus 0 DC {VBUS}
+Rloop  bus n1  0.3                    ; loop R including skin effect at ~300 MHz.
+*                                      10m would give Q~600, which is unphysical:
+*                                      real GaN half-bridges ring ~6 cycles, not 30.
+Lloop  n1  hstop {LLOOP}
+Vshs   hstop hsd DC 0                 ; HS drain current sense
+Xhs    hsd hsg sw EGAN params: vth={VTH_T} bh={BH_T}
+Vsls   sw  lsd DC 0                   ; LS drain current sense
+Xls    lsd lsg 0  EGAN params: vth={VTH_T} bh={BH_T}
+
+Lload  out sw {LLOAD} IC={ILOAD}
+Vout   out 0 DC {VOUT}
+
+* ---------------- FPGA timing (gnd-referenced logic) ---------------
+Vpwmls pwmls 0 PWL(0 1 {T1} 1 {T1+TR} 0 {T4} 0 {T4+TR} 1)
+Vpwmhs pwmhs 0 PWL(0 0 {T2} 0 {T2+TR} 1 {T3} 1 {T3+TR} 0)
+Vclkls lsclk 0 PWL(0 0 {T1+CLKDEL} 0 {T1+CLKDEL+TR} {CLKEN} {T4} {CLKEN} {T4+TR} 0)
+Vclkhs clkhs 0 PWL(0 {CLKEN} {T2} {CLKEN} {T2+TR} 0 {T3+CLKDEL} 0 {T3+CLKDEL+TR} {CLKEN})
+
+* ---------------- low-side driver (gnd referenced) -----------------
+Vlsvp  lsvp 0 DC {VDRV}
+Vlsvn  lsvn 0 DC {VNEG}
+Blspu  lspu 0 V = {v(pwmls)}
+Blspd  lspd 0 V = {1-v(pwmls)}
+Xdrvls lspu lspd lsclk lsg lsvp lsvn 0 SEGDRV
++      params: npu={NPU_LS} npd={NPD_LS} runit={RUNIT} rclamp=0.5
+
+* ---------------- high-side driver (floating on SW) ----------------
+* ideal level shifters -- a real design needs a proper HV shifter,
+* which is listed as future work, not simulated here.
+Vhsvp  hsvp sw DC {VDRV}
+Vhsvn  hsvn sw DC {VNEG}
+Bhspu  hspu sw V = {v(pwmhs)}
+Bhspd  hspd sw V = {1-v(pwmhs)}
+Bhsclk hsclkl sw V = {v(clkhs)}
+Xdrvhs hspu hspd hsclkl hsg hsvp hsvn sw SEGDRV
++      params: npu={NPU_HS} npd={NPD_HS} runit={RUNIT} rclamp=0.5
+
+* ---------------- analysis -----------------------------------------
+* NOTE: trapezoidal on purpose.  Gear damps numerically and would
+* quietly flatter the ringing metric, which is one of the objectives.
+.options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
+.ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)={VOUT}
+
+.tran 0.02n {TSTOP} 0 0.05n uic
+
+.save V(sw) V(lsg) V(hsg) V(lsd) V(hsd)
+.end
