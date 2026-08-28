@@ -235,3 +235,93 @@ all recorded in `sim/dpt_sky130.cir`: `rshunt=1e9` for the near-zero-conduction
 GaN capacitance diodes, a real DC load operating point in place of `UIC`, and
 a 20 Ω predriver output impedance so the slice gates are not driven from zero
 ohms while the whole high-side driver slews 100 V.
+
+
+---
+
+# Part 3 — The 36-corner sweep, and a negative result on the core thesis
+
+1,512 transients (42 candidate control words x 36 operating corners:
+V_bus 50/100/150/200 V, I 2/5/10 A, T_j 25/75/125 C). One convergence
+failure. Ideal-switch netlist, the one verified converged.
+
+## 13. The schedule LUT exists, but it barely moves
+
+Across 36 corners the cost-optimal control word takes only **4 distinct
+values**, and one of them covers 19 corners:
+
+| Word (PU/PD/PDHS/DT/CLK/VNEG) | Corners |
+|---|---|
+| `8/8/1/15n/1/+0` | 19 |
+| `8/8/8/5n/1/+0` | 12 |
+| `8/2/8/5n/1/+0` | 4 |
+| `4/2/8/10n/0/+0` | 1 |
+
+## 14. Operating-point scheduling is NOT worth the FPGA
+
+This is the finding that matters, and it contradicts the project's own
+framing.
+
+| | Mean cost |
+|---|---|
+| Best single fixed word, applied at every corner | 5.551 |
+| Per-corner scheduling (the LUT) | 5.443 |
+| **Scheduling buys** | **2.0 %** |
+
+It is robust to the cost function. Sweeping the overshoot weight from 0 to
+1.0 uJ per point gives a scheduling gain of 0.9 %, 3.1 %, 2.0 %, 1.5 %,
+2.0 %, 4.9 %, 8.4 % — only an extreme overshoot weighting gets past 5 %.
+
+It is not rescued by feasibility: **34 of 42 candidate words are feasible at
+all 36 corners**, so no word is forced by the operating grid.
+
+It is not rescued by margin either. The best fixed word for worst-case
+crosstalk margin reaches **+2.60 V**, which is *exactly* what per-corner
+scheduling achieves. Scheduling buys zero margin.
+
+**A single fixed control word is as good as the schedule.** The
+"operating-point-adaptive" premise is not supported by our own data.
+
+## 15. What does pay: the active Miller clamp
+
+| | Result |
+|---|---|
+| Mean cost advantage of clamping over not clamping | **14.7 %** |
+| Scheduling advantage over a fixed word | 2.0 % |
+
+The clamp is worth roughly **seven times** what scheduling is worth, and it
+is a static architecture choice requiring no FPGA at all. It appears in the
+optimal word at 35 of 36 corners.
+
+The corner data also exposes two distinct viable design points, which is a
+better contribution than the schedule was going to be:
+
+| Design point | Worst-case margin | Character |
+|---|---|---|
+| Clamp on, 0 V off-bias | +0.29 V | cheap, adequate, fast words |
+| Clamp off, −2 V off-bias | +2.60 V | expensive, very safe, slow words |
+
+## 16. What this means for the project
+
+Say this plainly rather than letting a reviewer find it:
+
+- The **actuator** is real, built, and characterised. That stands.
+- The **trade-offs are quantified**. That stands.
+- The **scheduling thesis does not survive contact with the data.** A fixed
+  word is within 2 %.
+- The **Miller clamp is where the benefit lives**, at 14.7 %.
+
+The honest reframing is to drop "operating-point-adaptive" from the title
+and report the scheduling result as a negative finding: *we tested whether
+per-corner scheduling pays, and it does not, because the active Miller clamp
+captures nearly all the available benefit statically.* That is a real result
+and more useful than a marginal positive one.
+
+### Caveat on the method
+
+The 42 candidate words were selected at the nominal corner. A full per-corner
+sweep might find corner-specific words that widen the gap. The comparison is
+apples-to-apples (fixed and scheduled both drawn from the same candidate set),
+but the ceiling on scheduling has not been established — only that it is low
+for a candidate set chosen this way. Establishing it properly means a full
+720-word sweep at several corners, which is roughly 6 more hours of compute.
