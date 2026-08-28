@@ -324,4 +324,63 @@ sweep might find corner-specific words that widen the gap. The comparison is
 apples-to-apples (fixed and scheduled both drawn from the same candidate set),
 but the ceiling on scheduling has not been established — only that it is low
 for a candidate set chosen this way. Establishing it properly means a full
-720-word sweep at several corners, which is roughly 6 more hours of compute.
+720-word sweep at several corners. (An earlier version of this note estimated
+that at ~6 hours of compute. That was wrong by an order of magnitude: the
+720-word sweep takes 341 s, so three extra corners is about 17 minutes. The
+sweep was run -- see section 17.)
+
+
+## 17. The ceiling on scheduling, established
+
+2,160 transients, zero failures, 1,044 s. The **full 720-word sweep** was run
+at three extreme corners; combined with the nominal corner's existing full
+sweep that gives four corners where the per-corner optimum is the TRUE
+optimum, not the best of a pre-selected candidate list.
+
+| Corner | True optimum (PU/PD/PDHS/DT/CLK/VNEG) | Cost | Margin |
+|---|---|---|---|
+| 100 V / 10 A / 25 °C | `8/8/8/5n/1/+0` | 5.047 | +0.50 V |
+| 200 V / 10 A / 125 °C | `8/8/8/5n/1/+0` | 12.699 | +0.24 V |
+| 200 V / 2 A / 125 °C | `8/2/1/5n/1/−2` | 6.858 | +1.58 V |
+| 50 V / 2 A / 25 °C | `8/2/8/15n/1/+0` | 0.858 | +0.85 V |
+
+474 of 720 words are feasible at all four corners. Best fixed word:
+`8/8/1/25n/1/+0`, mean cost 6.712 against 6.365 for per-corner optimisation.
+
+**Ceiling on scheduling: 5.2 %** at the stated cost weight; 2.1 – 8.5 % across
+weights from 0 to 1.0.
+
+This is 2.6x the 2.0 % measured with the restricted candidate set, so the
+caveat in section 16 was justified — the restricted set did understate it.
+The conclusion is unchanged in kind: scheduling buys single-digit percent.
+
+### But the gain is NOT uniform, and that is the useful part
+
+| Corner | Penalty for using the fixed word |
+|---|---|
+| 100 V / 10 A / 25 °C | 1.1 % |
+| 200 V / 10 A / 125 °C | 2.3 % |
+| 50 V / 2 A / 25 °C | 3.8 % |
+| **200 V / 2 A / 125 °C** | **12.7 %** |
+
+Three corners barely care. One cares a lot — and the reason is specific:
+**at high voltage, light load and hot, the optimum switches to negative
+off-bias** (`VNEG = −2`), which no other corner's optimum uses. At that
+corner the best word with −2 V costs 6.86 against 7.51 for the best word at
+0 V, a 9 % difference.
+
+### The design conclusion
+
+The thing worth scheduling is **not** drive strength and **not** dead time.
+It is the **off-bias rail** — a one-bit decision.
+
+That is a much simpler machine than this project proposed. It does not need a
+16-bit control word, a 36-entry LUT, or an FPGA. It needs a comparator on bus
+voltage and load current selecting between two gate-drive rails. The
+segmented driver still earns its place as the actuator that made the
+trade-offs measurable, but the *scheduling* contribution collapses to one bit.
+
+Report it that way. "We built the full 16-bit scheduled actuator, measured
+what scheduling can possibly buy, and found it collapses to a single off-bias
+bit at extreme corners" is a stronger and more honest result than a 5 %
+average dressed up as adaptation.
