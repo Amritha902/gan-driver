@@ -1,0 +1,59 @@
+[
+ {
+  "cmd": "ngspice --version",
+  "note": "The simulator. ngspice 42.",
+  "secs": 0.01,
+  "lines": [
+   "******",
+   "** ngspice-42 : Circuit level simulation program"
+  ]
+ },
+ {
+  "cmd": "python3 scripts/gansim.py CLKEN=0 VNEG=0",
+  "note": "Fastest driver, no clamp. Watch the margin.",
+  "secs": 2.97,
+  "lines": [
+   "ov_pct_off     22.39",
+   "E_tot          4.02e-06",
+   "ov_pct         22.39",
+   "Vgs_spur       1.649",
+   "Vgs_spur_hs    1.649",
+   "Vgs_spur_ls    0.1523",
+   "margin         -0.2488",
+   "false_on       1"
+  ]
+ },
+ {
+  "cmd": "python3 scripts/gansim.py CLKEN=1 VNEG=0",
+  "note": "Same driver, Miller clamp enabled.",
+  "secs": 2.22,
+  "lines": [
+   "ov_pct_off     22.11",
+   "E_tot          4.055e-06",
+   "ov_pct         22.11",
+   "Vgs_spur       0.8304",
+   "Vgs_spur_hs    0.8304",
+   "Vgs_spur_ls    0.07061",
+   "margin         0.5696",
+   "false_on       0"
+  ]
+ },
+ {
+  "cmd": "python3 scripts/ceiling.py 0.05",
+  "note": "The headline result: what scheduling can possibly buy.",
+  "secs": 0.23,
+  "lines": [
+   "  200V_2A_125C     8/2/1/5n/1/-2              cost   6.858  margin +1.58",
+   "  50V_2A_25C       8/2/8/15n/1/+0             cost   0.858  margin +0.85",
+   "Words feasible at ALL 4 corners: 474 of 720",
+   "Best fixed word  : 8/8/1/25n/1/+0             mean cost   6.712",
+   "Per-corner optimum:                            mean cost   6.365",
+   "CEILING on scheduling at w_ov=0.05 : 5.2%",
+   "Per-corner breakdown (how much the fixed word loses at each):",
+   "  100V_10A_25C     fixed   5.102   optimum   5.047   penalty   1.1%",
+   "  200V_10A_125C    fixed  12.996   optimum  12.699   penalty   2.3%",
+   "  200V_2A_125C     fixed   7.860   optimum   6.858   penalty  12.7%",
+   "  50V_2A_25C       fixed   0.892   optimum   0.858   penalty   3.8%"
+  ]
+ }
+]
