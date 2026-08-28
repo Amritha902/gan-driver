@@ -9,7 +9,7 @@ import numpy as np
 
 ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CIR    = os.path.join(ROOT, "sim", "dpt.cir")
-CIRS   = {"ideal": "dpt.cir", "dcload": "dpt_dcload.cir", "sky130": "dpt_sky130.cir"}
+CIRS   = {"ideal": "dpt.cir", "dcload": "dpt_dcload.cir", "sky130": "dpt_sky130.cir", "hybrid": "dpt_hyb_ls_sky130.cir"}
 MODELS = os.path.join(ROOT, "models")
 
 DEFAULTS = dict(VBUS=100, ILOAD=10, VDRV=5, VNEG=0,

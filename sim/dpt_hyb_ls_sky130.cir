@@ -1,0 +1,120 @@
+Double-pulse test: GaN half-bridge, SKY130 transistor-level segmented driver
+* ===================================================================
+* dpt.cir -- half-bridge double-pulse testbench
+*
+* Sequence (all timing is what the FPGA would emit):
+*   0    .. T1   LS on, HS off        -- settle, inductor at ILOAD
+*   T1        LS turns OFF            -- E_off, V_DS overshoot, ringing
+*   T1..T2    DEAD TIME               -- HS conducts in 3rd quadrant, E_dt
+*   T2        HS turns ON
+*   T3        HS turns OFF
+*   T3..T4    DEAD TIME
+*   T4        LS turns ON  (hard)     -- E_on, and CROSSTALK on the HS gate
+*
+* The crosstalk event of interest is at T4: SW slews up... no, DOWN to 0,
+* so the HS device sees dV_DS/dt > 0 across its Miller capacitance and
+* its gate is pushed toward Vth.  Margin = Vth - max(V_GS,HS).
+* ===================================================================
+
+.include ../models/egan.lib
+.lib "/home/user/gan-driver/pdk/sky130_5v.lib" tt
+.include ../models/segdrv_sky130.lib
+.include ../models/segdrv.lib
+
+* ==================== PARAM BLOCK (swept by run_sweep.py) ==========
+.param VBUS=100
+.param ILOAD=10
+.param VDRV=5
+.param VNEG=0
+.param NPU_LS=8
+.param NPD_LS=8
+.param NPU_HS=8
+.param NPD_HS=8
+.param DT=15n
+.param CLKEN=0
+.param CLKDEL=4n
+.param RUNIT=8
+.param TJ=25
+* ==================== END PARAM BLOCK ==============================
+
+* temperature scaling of the GaN device (datasheet trend:
+*   Rds(on) roughly doubles 25->125 C, Vth falls slightly)
+.param KT   = {1 + 0.009*(TJ-25)}
+.param BH_T = {5.55/KT}
+.param VTH_T= {1.4 - 0.0015*(TJ-25)}
+
+.param RLOAD = 5
+.param VOUT  = {ILOAD*RLOAD}
+.param LLOOP = 3n
+.param LLOAD = 100u
+.param TR    = 0.1n
+.param T1 = 1u
+.param T2 = {T1+DT}
+.param T3 = 2u
+.param T4 = {T3+DT}
+.param TSTOP = 3u
+
+* ---------------- power stage --------------------------------------
+Vbus   bus 0 DC {VBUS}
+Rloop  bus n1  0.3                    $ loop R including skin effect at ~300 MHz.
+*                                     $ 10m would give Q~600, which is unphysical:
+*                                     $ real GaN half-bridges ring ~6 cycles, not 30.
+Lloop  n1  hstop {LLOOP}
+Vshs   hstop hsd DC 0                 $ HS drain current sense
+Xhs    hsd hsg sw EGAN params: vth={VTH_T} bh={BH_T}
+Vsls   sw  lsd DC 0                   $ LS drain current sense
+Xls    lsd lsg 0  EGAN params: vth={VTH_T} bh={BH_T}
+
+* Load as a real DC operating point rather than an initial condition.
+* RLOAD sets the current exactly (I = VOUT/RLOAD) and L/R = 20 us, so the
+* current is flat over the 3 us test.  This removes the need for UIC,
+* which is what was collapsing the first timestep once BSIM4 devices
+* were in the loop.
+Lload  outx sw {LLOAD}
+RL     out outx {RLOAD}
+Vout   out 0 DC {VOUT}
+
+* ---------------- FPGA timing (gnd-referenced logic) ---------------
+Vpwmls pwmls 0 PWL(0 1 {T1} 1 {T1+TR} 0 {T4} 0 {T4+TR} 1)
+Vpwmhs pwmhs 0 PWL(0 0 {T2} 0 {T2+TR} 1 {T3} 1 {T3+TR} 0)
+Vclkls lsclk 0 PWL(0 0 {T1+CLKDEL} 0 {T1+CLKDEL+TR} {CLKEN} {T4} {CLKEN} {T4+TR} 0)
+Vclkhs clkhs 0 PWL(0 {CLKEN} {T2} {CLKEN} {T2+TR} 0 {T3+CLKDEL} 0 {T3+CLKDEL+TR} {CLKEN})
+
+* ---------------- low-side driver (gnd referenced) -----------------
+Vlsvp  lsvp 0 DC {VDRV}
+Vlsvn  lsvn 0 DC {VNEG}
+Blspu  lspu 0 V = {v(pwmls)}
+Blspd  lspd 0 V = {1-v(pwmls)}
+Xdrvls lspu lspd lsclk lsg lsvp lsvn 0 SEGDRV_SKY130
++      params: npu={NPU_LS} npd={NPD_LS}
+
+* ---------------- high-side driver (floating on SW) ----------------
+* ideal level shifters -- a real design needs a proper HV shifter,
+* which is listed as future work, not simulated here.
+Vhsvp  hsvp sw DC {VDRV}
+Vhsvn  hsvn sw DC {VNEG}
+Bhspu  hspu sw V = {v(pwmhs)}
+Bhspd  hspd sw V = {1-v(pwmhs)}
+Bhsclk hsclkl sw V = {v(clkhs)}
+Xdrvhs hspu hspd hsclkl hsg hsvp hsvn sw SEGDRV
++      params: npu={NPU_HS} npd={NPD_HS} runit={RUNIT} rclamp=0.5
+
+* ---------------- analysis -----------------------------------------
+* NOTE: trapezoidal on purpose.  Gear damps numerically and would
+* quietly flatter the ringing metric, which is one of the objectives.
+.options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
+* rshunt puts a large resistor from every node to ground.  The GaN
+* capacitance diodes carry essentially no conduction (IS=1e-30, N=40),
+* so with BSIM4 devices in the loop the matrix is near-singular at the
+* UIC start point and the first timestep collapses.  This is the
+* standard remedy and 1 Gohm is electrically irrelevant here.
+.options rshunt=1e9 itl1=500 itl4=200
+
+.tran 0.02n {TSTOP} 0 0.05n
+
+.control
+run
+wrdata out.dat v(sw) v(lsd) v(lsg) v(hsg) v(hsd) i(vsls) i(vshs)
+quit
+.endc
+.end
