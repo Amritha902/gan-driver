@@ -69,8 +69,20 @@ def main(w_ov=0.05):
         print("  cheaper driver. Percentage gains against it are meaningless")
         print("  and are deliberately not reported here.")
         print("\n  The two comparisons that ARE valid:")
-        print("    price of crosstalk safety ...... 0% (energy-optimal word")
-        print("                                     is already feasible)")
+        # Do NOT hardcode this. It was "0%" as a literal for a while, which is
+        # right on the blended cost and wrong on switching energy, where the
+        # energy-optimal word IS infeasible at one corner. Compute both.
+        esw = lambda r: (r["E_on"] + r["E_off"]) * 1e6
+        for lab, f in (("switching energy", esw), ("blended cost", cost)):
+            worst = 0.0
+            for c in corners:
+                g = [r for r in rows if r["corner"] == c]
+                ch = min(g, key=f)
+                fe = [r for r in g if r["margin"] > 0]
+                if not fe: continue
+                worst = max(worst, 100 * (f(min(fe, key=f)) - f(ch)) / f(ch))
+            print("    price of crosstalk safety ...... %.2f%% (on %s)"
+                  % (worst, lab))
         print("    ceiling on scheduling .......... %.1f%%" % (100*(c_fix-c_sch)/c_fix))
     else:
         tot = 100 * (c_conv - c_sch) / c_conv

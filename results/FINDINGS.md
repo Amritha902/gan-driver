@@ -642,3 +642,88 @@ the CSV only at the end, so a crash at row 15 000 loses the whole run.
 run was already an hour in when this was noticed and killing it to add a
 checkpoint would have cost more than the risk; the fix went into the new
 script instead.
+
+## 25. Audit: every number in the paper traced to the script that makes it
+
+After §24 caught a bad metric, the obvious next question was whether anything
+else in the manuscript was quoted rather than produced. Every numeric claim
+was re-derived from the scripts. Most held exactly. Three did not.
+
+### What held
+
+| Claim | Script | Verdict |
+|---|---|---|
+| Ceiling 5.2 %; per-corner 1.1 / 2.3 / 3.8 / 12.7 % | `ceiling.py` | exact |
+| Cost-weight range 2.1 – 8.5 % | `ceiling.py` swept | exact |
+| Freeze test, all six fields, both guard bands | `whichbit.py` | exact |
+| Guard-band table, all six rows and their fixed words | `guardband.py` | exact |
+| Grid-density 0.00 / 3.99 / 4.65 / 5.17 %, hardest pair 11.49 % | `scaling.py` | exact |
+
+### Finding 1 — the price of crosstalk safety was 8× too high
+
+The paper said **0.30 %** in three places. No script produced it. It is
+**0.04 %**.
+
+The mechanism is worth recording because it is not a typo. At 100 V / 10 A /
+25 °C the energy-optimal word costs 3.3338 µJ and the cheapest feasible word
+3.3350 µJ. Printed to two decimal places those are 3.34 and 3.33 — which reads
+as a gap of about 0.3 %. The rounded display, not the data, produced the
+number, and it then propagated into the abstract and the figure caption.
+
+Two further points, both uncomfortable:
+
+- The correction makes the paper's claim **stronger** (safety is 8× cheaper
+  than stated). A number that flatters your argument is the one you are least
+  likely to check. This one survived several passes for exactly that reason.
+- On the **blended cost** the price is **0.00 %**, because the infeasible
+  word's switching-energy advantage is spent again in dead-time loss. Both
+  numbers are true; the paper now quotes the larger one and says why.
+
+`scripts/safety_price.py` computes both metrics at all four corners.
+
+### Finding 2 — the clamp's value was one pick from a 2.5-point spread
+
+The paper said the Miller clamp is worth **10.3 %**. Also unsourced. It is
+reproducible, but only under one of four defensible definitions:
+
+| baseline | averaging | value |
+|---|---|---|
+| best fixed word | % of the means | 9.74 % |
+| best fixed word | mean of the %s | 12.22 % |
+| per-corner optimum | % of the means | 11.92 % |
+| **per-corner optimum** | **mean of the %s** | **10.26 %** |
+
+Neither choice is obviously right, and the answer moves 2.5 points between
+them. The paper now reports **9.7 – 12.2 %**, the way it already reports the
+cost-weight sensitivity as a range. The claim that survives all four — the
+clamp is worth roughly a tenth of the cost, about twice what scheduling is
+worth, from a static choice needing no controller — is the one worth making.
+`scripts/clampvalue.py` prints all four.
+
+### Finding 3 — a script that hardcoded its own result
+
+`decompose.py` printed `price of crosstalk safety ...... 0%` as a **string
+literal**, not a computation. It happened to be right on the blended cost and
+wrong on switching energy. It now computes both. A script that prints a
+constant is worse than no script: it looks like corroboration.
+
+### Two figures existed and were in no draft
+
+`paper_fig2_ceiling.png` and `paper_fig3_offbias.png` were generated, shipped
+in the handover folder, and referenced by nothing. Figure 3's title still read
+*"Where the one bit that matters shows up"* — the off-bias claim that §17's
+freeze test corrected to dead time. It was retitled, and its caption now says
+the effect it shows is real but the inference drawn from it was wrong. A hash
+check now confirms figure N in the paper is `paper_figN` on disk; before this
+audit, the paper's "Figure 2" was `paper_fig4` and nobody would have noticed.
+
+### The generalisation
+
+Of the three bad numbers, none came from a wrong simulation. One came from
+rounding, one from an undeclared choice among four averaging conventions, and
+one from a `print` statement. The simulations were never the weak link. **The
+weak link was every number that reached the manuscript without a script behind
+it** — so every number in the paper now has one, and `ceiling.py`,
+`scaling.py`, `robust_analyse.py` and `emi_analyse.py` were checked to be
+using the same denominator (`/fixed`) so their percentages mean the same thing.
+`emi_analyse.py` was not, and was fixed.
