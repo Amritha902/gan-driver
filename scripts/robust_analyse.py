@@ -56,13 +56,47 @@ def main(w_ov=W_OV):
         nfeas = sum(1 for r in rs if r["margin"] > 0)
         print("  %-12s %7d %8d %9.1f%%   %s"
               % (case, len(corners), nfeas, ceil, "%d/%d/%d/%s/%d/%+g" % fixed))
-    if ceilings:
-        v = list(ceilings.values())
-        print("\n  ceiling across %d model perturbations: %.1f%% .. %.1f%%  (median %.1f%%)"
-              % (len(v), min(v), max(v), sorted(v)[len(v)//2]))
-        print("  -> %s" % ("ROBUST: single-digit under every perturbation tested"
-                           if max(v) < 10 else
-                           "NOT robust: some perturbation pushes it into double digits"))
+    if not ceilings:
+        return
+    v = list(ceilings.values())
+    nom = ceilings.get("nominal")
+    print("\n  ceiling across %d model perturbations: %.1f%% .. %.1f%%  (median %.1f%%)"
+          % (len(v), min(v), max(v), sorted(v)[len(v) // 2]))
+
+    # The 5.2 % headline is a FOUR-corner result. This study runs two corners,
+    # so its own nominal case is the baseline -- comparing a perturbed
+    # two-corner ceiling against the four-corner 5.2 % would be meaningless.
+    if nom is None:
+        print("  (no nominal case in the data -- shifts below cannot be computed)")
+        return
+    print("\n  Baseline: this study's own NOMINAL case is %.1f%% on these two corners." % nom)
+    print("  It is not the 5.2% headline, which is a four-corner result. Each")
+    print("  perturbation is judged against %.1f%%, not against 5.2%%.\n" % nom)
+    print("  %-12s %9s %11s   %s" % ("case", "ceiling", "vs nominal", "direction"))
+    for case in sorted(ceilings, key=lambda c: -abs(ceilings[c] - nom)):
+        d = ceilings[case] - nom
+        arrow = "--" if case == "nominal" else ("higher" if d > 0 else "lower")
+        print("  %-12s %8.2f%% %+10.2f pp   %s" % (case, ceilings[case], d, arrow))
+
+    worst = max(v)
+    spread = max(v) - min(v)
+    print("\n  Largest excursion from nominal: %+.2f pp. Full spread: %.2f pp."
+          % (max((ceilings[c] - nom for c in ceilings), key=abs), spread))
+    # "nominal" is the baseline, not a perturbation: if IT is already double
+    # digits that is a statement about the corner pair, not about robustness.
+    hi = sorted(c for c in ceilings if c != "nominal" and ceilings[c] >= 10)
+    if nom >= 10:
+        print("  -> NOTE: the nominal case is itself %.1f%% on this corner pair." % nom)
+        print("     That is a property of the two corners chosen, not of the model.")
+    if worst < 10:
+        print("  -> ROBUST: single digits under every perturbation tested. The")
+        print("     ceiling is a property of the circuit, not of the model parameters.")
+    elif not hi:
+        print("  -> ROBUST: no perturbation reaches double digits.")
+    else:
+        print("  -> NOT robust: %s push the ceiling into double digits." % ", ".join(hi))
+        print("     The central claim must be restated as conditional on the device")
+        print("     parameters, naming these perturbations.")
 
 
 if __name__ == "__main__":
