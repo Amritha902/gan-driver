@@ -887,3 +887,71 @@ overshoot by twelve — followed by partitioning the data by every control field
 until one of them explained the whole population. Neither step needed a new
 simulation. Both should be standard before any surprising sensitivity is
 written up as a result.
+
+## 28. Robustness, settled: robust to the device, conditional on the layout
+
+The corrected study (§27 for why one was needed) is complete: 15,840 transients
+in the first run plus 5,760 in the re-run of the four cases that were
+perturbing nothing, at 720 words × 2 corners × 11 cases. One failure in
+21,600 simulations.
+
+| Perturbation | Ceiling | vs nominal | Feasible |
+|---|---|---|---|
+| **Loop inductance −50 % (1.5 nH)** | **13.54 %** | **+7.59 pp** | 653 |
+| Input capacitance +30 % | 7.71 % | +1.76 pp | 989 |
+| Miller capacitance −50 % | 6.93 % | +0.99 pp | 774 |
+| **nominal** | **5.95 %** | — | 978 |
+| Threshold −20 % | 5.64 % | −0.31 pp | 917 |
+| Transconductance +30 % | 5.08 % | −0.87 pp | 974 |
+| Threshold +20 % | 4.90 % | −1.05 pp | 1033 |
+| Input capacitance −30 % | 4.76 % | −1.19 pp | 993 |
+| Transconductance −30 % | 4.45 % | −1.49 pp | 1007 |
+| Miller capacitance +50 % | 4.32 % | −1.63 pp | 920 |
+| **Loop inductance +50 % (4.5 nH)** | **0.55 %** | **−5.39 pp** | 1017 |
+
+Dropping the 952 clamp-chatter points changes **none** of these eleven numbers.
+
+### The answer to the question actually asked
+
+The study existed to answer one objection: *is the ceiling a property of the
+circuit, or of a hand-built behavioural model?* **Every device parameter tested
+leaves it between 4.3 % and 7.7 %** — at most 1.76 points from nominal in
+either direction, across ±50 % on Miller capacitance, ±30 % on input
+capacitance, ±20 % on threshold and ±30 % on transconductance. The objection is
+not supported.
+
+### The answer to a question that was not asked
+
+Loop inductance moves it by 13 points, and **loop inductance is not a device
+parameter** — it is set by board layout. The mechanism is direct and checks
+out: a tighter loop commutates faster, more charge couples through C_GD into
+the off-gate, median spurious gate voltage at the hot light-load corner goes
+from 0.640 V at 3 nH to **3.522 V** at 1.5 nH against a 1.4 V threshold, and
+the feasible set collapses 474 → 158. With that few words feasible, one word
+can no longer serve both corners and scheduling starts to pay.
+
+Two checks stand behind the outlier, because it is the one number that
+survives to change the paper's claim:
+
+1. **The feasible set is real.** `verdict_stability.py` re-ran the 40 words
+   nearest the feasibility boundary at that corner at a 4× finer timestep.
+   **Zero changed verdict**, median |ΔVgs_spur| 0.005 V, worst 0.014 V. The
+   collapse to 158 is not a numerical accident.
+2. **The overshoot at that corner is not real**, and does not matter. It is
+   §27's clamp chatter. Excluding it leaves 13.54 % exactly as it was.
+
+### The claim to carry forward
+
+Not "the ceiling is robust", which would be a weaker statement than the data
+supports, and not "the ceiling is fragile", which would be wrong. It is:
+
+> On a power loop of about 3 nH or looser, per-corner scheduling is worth a few
+> per cent and a single fixed word is nearly as good, for any device parameters
+> in these ranges. On a substantially tighter loop the conclusion does not hold
+> and the question has to be re-asked.
+
+That is more useful than robustness, because it names the condition. And it has
+an edge worth stating plainly: **a team that has engineered its layout down to
+1.5 nH — which is the right thing to do — is exactly the team whose design
+might need the scheduling this paper argues against.** The negative result and
+its exception point at the same physics.

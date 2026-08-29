@@ -1,0 +1,14 @@
+testing 80 words (40 per case) at 200V/2A/125C, 0.05n vs 0.0125n
+  20/80  128s
+  40/80  254s
+  60/80  383s
+  80/80  506s
+
+  case        tested  flipped  flip rate   verdict
+  LLOOP_lo        40        0       0.0%   STABLE
+             median |dVgs_spur| 0.0047 V, worst 0.0136 V
+  nominal         40        0       0.0%   STABLE
+             median |dVgs_spur| 0.0013 V, worst 0.0041 V
+
+  These are the words NEAREST the boundary, so this is the worst case,
+  not the average. A low flip rate here bounds the whole feasible set.

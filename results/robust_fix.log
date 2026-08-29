@@ -1,0 +1,25 @@
+cases: 4   corners: 2   words: 720   -> 5760 transients
+    250/5760  151s  eta 3333s  failed=0
+    500/5760  300s  eta 3156s  failed=0
+    750/5760  461s  eta 3078s  failed=0
+   1000/5760  690s  eta 3284s  failed=0
+   1250/5760  977s  eta 3523s  failed=0
+   1500/5760  1138s  eta 3232s  failed=0
+   1750/5760  1289s  eta 2953s  failed=0
+   2000/5760  1440s  eta 2708s  failed=0
+   2250/5760  1589s  eta 2479s  failed=0
+   2500/5760  1735s  eta 2263s  failed=0
+   2750/5760  1872s  eta 2049s  failed=0
+   3000/5760  2023s  eta 1861s  failed=0
+   3250/5760  2175s  eta 1680s  failed=0
+   3500/5760  2325s  eta 1501s  failed=0
+   3750/5760  2474s  eta 1326s  failed=0
+   4000/5760  2610s  eta 1148s  failed=0
+   4250/5760  2759s  eta 980s  failed=0
+   4500/5760  2906s  eta 814s  failed=0
+   4750/5760  3057s  eta 650s  failed=0
+   5000/5760  3204s  eta 487s  failed=0
+   5250/5760  3358s  eta 326s  failed=0
+   5500/5760  3507s  eta 166s  failed=0
+   5750/5760  3656s  eta 6s  failed=0
+wrote /home/user/gan-driver/results/robust_fix.csv : 5760 rows, 0 failed, 3657s
