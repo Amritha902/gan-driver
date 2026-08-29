@@ -465,3 +465,42 @@ What is unaffected: the clamp still takes it to 0.71 V, an unambiguous
 margin, and that is the result the project rests on. But the baseline should
 be described as "at or below the threshold depending on driver model" rather
 than "false turn-on", and the driver-model sensitivity should be stated.
+
+
+## 22. Bootstrap rails: attempted, failed, and a process error worth recording
+
+Five high-side rail variants were tested against the timestep-convergence
+criterion (window 1.05 us, covering the turn-off):
+
+| Rail model | 0.05 ns | 0.02 ns | 0.01 ns |
+|---|---|---|---|
+| Ideal sources (reference) | 149.0 | 147.5 | 452.1 |
+| Series R 0.5 Ω | 150.9 | 149.0 | did not complete |
+| Series R 5 Ω | 153.1 | 149.1 | did not complete |
+| R 0.5 Ω + C 1 nF | 149.2 | 153.0 | 401.6 |
+| R 0.5 Ω + L 1 nH | 148.8 | 150.5 | 189.4 |
+
+**None converge.** Giving the floating rails finite impedance does not fix
+it, so the mechanism is not simply that they are ideal voltage sources. The
+last untested element in the floating path is the ideal level-shifter
+B-sources feeding the high-side logic; that is where to look next.
+
+Six fix attempts are now on record for this one failure: rshunt, DC-load
+operating point, predriver output impedance, softened logic edges, Gear
+integration, behavioural capacitors, parallel conductance, and five rail
+variants. The honest summary is that the floating transistor-level driver is
+**unresolved**, and the low-side hybrid (section 20) is the usable result.
+
+### A process error, recorded because it nearly produced a false claim
+
+Midway through this work a direct run of the bootstrap netlist appeared to
+complete 3 us successfully with sane numbers. It had not. The `out.dat` being
+read was **stale** — written at 03:41 by an earlier run of a different
+netlist, while the bootstrap netlist was created at 14:04. The mismatch was
+only caught by checking file modification times against the netlist.
+
+The sweep harness writes each run into its own temporary directory precisely
+to avoid this, and the harness result (failure at 1.000 us) was correct all
+along. The lesson is specific: **when running a simulator by hand in a shared
+directory, verify the output file is newer than the input**, or the previous
+run's results will be read as the current run's.
