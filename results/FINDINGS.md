@@ -555,3 +555,90 @@ statistic. The solver was doing its job the whole time.
 
 **Choose a convergence metric that is robust before concluding a simulation
 has failed.** Integrals converge; peaks of a noisy signal do not.
+
+## 24. The convergence criterion earns its keep a second time
+
+Section 23 established the rule the hard way: on a ringing node, **integrals
+converge with timestep refinement and peaks do not**. That rule was derived
+while chasing a high-side result and it cost six wasted fixes to find. This
+section is the first time it was applied *before* a number went into the paper
+rather than after, and it caught one.
+
+**The setting.** The freeze test (§17) says pull-up drive strength is worth
+0.00 % to schedule. That contradicts the active-gate-driver literature, which
+schedules drive strength precisely for EMI — a quantity our cost function
+never prices. So the claim needed a bound: does pull-up move the EMI measures,
+even though it does not move the cost?
+
+`scripts/emi_check.py` measured it. First attempt windowed the **turn-off**
+event, which pull-up does not govern — invalid, thrown away. Re-measured at
+turn-on, `T4 = T3 + DT`, the window tracking DT rather than pinned to a fixed
+time. Two measures came out:
+
+| N_PU | turn-on ringing energy (30–500 MHz) | peak dV/dt |
+|---|---|---|
+| 1 | 46.0 | 89.6 V/ns |
+| 8 | 20.2 | 126.9 V/ns |
+| **span** | **128 %** | **42 %** |
+
+Both went into the paper. Then the rule from §23 was applied: *peak dV/dt is a
+peak of a ringing node.*
+
+**The check.** `scripts/emi_converge.py` refines the print step and the maximum
+internal step together over a 25× span. Both matter — the print step sets the
+sample spacing the gradient and the FFT actually see, the max step sets solver
+accuracy — and refining only one would not have settled anything.
+
+| tstep / tmax | E_osc_on | dvdt_pk | dvdt_1090 |
+|---|---|---|---|
+| 0.05n / 0.125n | 20.69 | 118.17 | 27.89 |
+| 0.02n / 0.05n (nominal) | 20.20 | 126.92 | 27.99 |
+| 0.01n / 0.025n | 20.08 | 128.69 | 28.02 |
+| 0.005n / 0.0125n | 20.13 | 129.10 | 28.03 |
+| 0.002n / 0.005n | 20.21 | **159.89** | 28.03 |
+| **spread vs finest** | **3.0 %** | **26.1 %** | **0.5 %** |
+
+Peak dV/dt drifts 26 % and is *still climbing* at the finest step — it is
+chasing an ever-sharper numerical edge, exactly as §23 predicts. The band
+energy (an integral) holds to 3.0 %. The 10–90 % slew (an interval measure)
+holds to **0.5 %**.
+
+**The correction, and why it matters more than a tidier number.** Re-measured
+on the convergent metric:
+
+| N_PU | turn-on ringing energy | 10–90 % slew |
+|---|---|---|
+| 1 | 46.0 | 12.5 V/ns |
+| 2 | 35.4 | 19.1 V/ns |
+| 3 | 29.4 | 21.9 V/ns |
+| 4 | 26.0 | 23.8 V/ns |
+| 6 | 22.2 | 26.3 V/ns |
+| 8 | 20.2 | 28.0 V/ns |
+| **span** | **128 %** | **123 %** |
+
+The non-convergent measure reported 42 % where the convergent one reports
+**123 %** — it understated the effect **three-fold**. So the correction makes
+the finding *stronger*, not weaker. That is worth stating plainly, because the
+temptation with a convergence check is to run it only when a result looks too
+good; here it was run on a result that looked fine and the unconverged number
+was the conservative one. A metric that does not converge is not merely noisy
+in a direction that flatters you.
+
+**What it establishes.** Both convergent EMI measures span >120 % across the
+pull-up range, and they move in **opposite directions**: the fastest pull-up
+gives the highest slew rate but the *lowest* ringing energy — faster
+commutation spends less time in the resonant region. "EMI" is not one
+quantity. The 0.00 % scheduling value of pull-up is therefore scoped to a
+loss-and-overshoot objective, and a design bound by conducted emissions could
+land elsewhere. `scripts/emi_sweep.py` and `scripts/emi_analyse.py` are
+written to settle that by re-running the full 720-word search with the EMI
+measures recorded and recomputing the ceiling under
+`cost = (1−α)·loss + α·EMI`; they are queued behind the robustness study,
+which is holding all four cores.
+
+**Process note.** `robust.py` accumulates all 15 840 rows in memory and writes
+the CSV only at the end, so a crash at row 15 000 loses the whole run.
+`emi_sweep.py` checkpoints to a `.part` file every 500 points. The robustness
+run was already an hour in when this was noticed and killing it to add a
+checkpoint would have cost more than the risk; the fix went into the new
+script instead.

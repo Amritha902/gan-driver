@@ -14,6 +14,8 @@ freeze test under a family of objectives that DOES price it:
     cost(r; a) = (1-a) * [E_tot*1e6 + w_ov*ov_pct] / L0  +  a * EMI(r) / D0
 
 a = 0 recovers the paper's objective exactly; a = 1 optimises for EMI alone.
+At a = 0 the ceiling printed here must equal ceiling.py's 5.2 % on the same
+corners; that is the check that this script is measuring the same thing.
 L0 and D0 are medians over the feasible set, computed once so that costs stay
 comparable across corners.
 
@@ -101,7 +103,12 @@ def analyse(rows, emi_key, sign):
             print("  %5.1f   no universal word" % a); continue
         bw = min(univ, key=lambda k: sum(cost(per[k][c]) for c in corners))
         c_fix = sum(cost(per[bw][c]) for c in corners) / len(corners)
-        ceiling = 100 * (c_fix - c_sched) / abs(c_sched) if c_sched else float("nan")
+        # denominator is the FIXED cost, matching ceiling.py, scaling.py and
+        # robust_analyse.py -- "scheduling would save this fraction of what a
+        # fixed word costs you". Dividing by c_sched instead inflates every
+        # number (5.2 % becomes 5.5 %) and would not be comparable to the
+        # paper's headline.
+        ceiling = 100 * (c_fix - c_sched) / abs(c_fix) if c_fix else float("nan")
 
         # ---- freeze test under the same objective -------------------------
         pens = []

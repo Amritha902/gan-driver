@@ -114,7 +114,14 @@ def fig2():
 
 
 def fig3():
-    """At the divergent corner the optimum switches off-bias rail."""
+    """At the divergent corner the optimum switches off-bias rail.
+
+    NOTE: an earlier title read "where the one bit that matters shows up".
+    Section III.D's freeze test corrected that - DEAD TIME carries the
+    benefit (5.45 %), not off-bias (2.55 %, and 0.00 % at a 1 V guard band).
+    This figure still shows something true and worth showing, that the rail
+    choice separates the two corners, but it is not the one bit.
+    """
     fig, axes = plt.subplots(1, 2, figsize=(6.6, 2.9), sharey=True)
     for ax, c, t in zip(axes, ["100V_10A_25C", "200V_2A_125C"],
                         ["100 V / 10 A / 25 °C\n(fixed word is fine)",
@@ -130,7 +137,8 @@ def fig3():
         ax.set_title(t, fontsize=8.5); ax.set_xlabel("feasible words, sorted (%)")
     axes[0].set_ylabel("Blended cost (lower is better)")
     axes[1].legend(loc="upper left", fontsize=7.5)
-    fig.suptitle("Where the one bit that matters shows up", fontsize=9.5, y=1.02)
+    fig.suptitle("The off-bias rail changes the answer at one corner, not both",
+             fontsize=9.5, y=1.02)
     fig.tight_layout(); fig.savefig(os.path.join(RES, "paper_fig3_offbias.png"))
     plt.close(fig); print("paper_fig3_offbias.png")
 

@@ -1,0 +1,85 @@
+GaN SEGMENTED GATE DRIVER - PROJECT I
+=====================================
+Keep this whole folder together. Suggested location:
+
+      C:\Users\<you>\Documents\GaN-Project\
+
+WHAT IS IN HERE
+
+  1-LTSPICE/   Open these first. Three self-contained simulations that tell
+               the whole story in order. Start with README.txt in there.
+
+  2-FIGURES/   Report figures at 200 dpi. Drop straight into the document.
+                 fig1_crosstalk        the failure and the fix
+                 fig2_actuator         which control code moves which objective
+                 fig3_pareto           the Pareto surface
+                 fig4_gan_trade        the GaN-specific off-bias trade
+                 pareto_matlab         same analysis, done in MATLAB
+                 crosstalk_model_matlab  theory vs simulation
+
+  3-MATLAB/    Drag gan_analysis.m and sweep_matlab.csv into MATLAB Online,
+               type: gan_analysis
+               crosstalk_standalone.m needs no data files at all.
+
+  4-RESULTS/   FINDINGS.md is the full written record - read this before the
+               review. Plus the raw sweep data as CSV and the run logs.
+
+  5-SOURCE/    The ngspice project. Only needed if you want to re-run or
+               extend the simulations.
+
+  6-VIDEO/     pipeline_demo.mp4  real ngspice output, 24 s
+               scope_demo.mp4     interactive waveform viewer, 33 s
+               research_demo.mp4  the research result, start to finish
+
+  7-CADENCE/   Spectre netlist, an OCEAN sweep script, and the PDK template
+               for the transistor-level output stage. Read README-CADENCE.txt
+               before touching these - they need a licence server and a PDK.
+
+  8-PAPER/     paper.html is the manuscript draft, with its own four figures.
+               Open it in any browser.
+
+THE THREE THINGS TO KNOW BEFORE THE REVIEW
+
+  1. The problem is real and reproduced. Fastest driver, no clamp: the
+     off-side gate hits 1.65 V against a 1.4 V threshold. False turn-on.
+
+  2. The active Miller clamp fixes it, and is worth 10.3% on the cost
+     function - about twice what operating-point scheduling is worth.
+
+  3. Operating-point scheduling does NOT pay. The ceiling is 5.2%, measured
+     with a full 720-word search at four corners. A single fixed control word
+     is nearly as good. This contradicts the original project framing and
+     should be reported as a negative result, not hidden.
+     See FINDINGS.md sections 13-17.
+
+  And one more that is worth the trouble to explain, because it is the part
+  a reviewer will push on:
+
+  4. The benefit is carried by the DEAD TIME (5.45%), not by drive-strength
+     modulation, which is worth 0.00% - and drive strength is the thing most
+     published active gate drivers actually schedule. But that 0.00% is
+     scoped to a loss-and-overshoot objective. Pull-up strength does swing
+     turn-on slew rate by 123% and turn-on ringing energy by 128%, in
+     opposite directions, and our cost prices neither. FINDINGS.md 24.
+
+WHAT IS AND IS NOT TRUSTWORTHY
+
+     Corrected in FINDINGS.md section 23. An earlier version of this file
+     said the SKY130 transistor-level transient "does not converge". That
+     was too strong: the convergence test had been run on peak V_DS, which
+     one bad sample moves by hundreds of volts.
+
+       Transistor-level E_on / E_off / E_dt   reportable, 1.8% spread
+       Transistor-level peak V_DS             NOT reportable
+       Low-side hybrid peak V_DS              reportable, 0.04%
+       Everything from the ideal-switch deck  reportable, 0.1%
+
+     The rule that came out of it, and which has since caught a second bad
+     number: on a ringing node, integrals converge with timestep refinement
+     and peaks do not. Do not quote a peak without refining the step first.
+
+KEEPING THIS FOLDER UP TO DATE
+     The canonical copy lives in the git repo under gan-driver/, currently
+     on branch gan-convergence-fix. This folder is a snapshot, rebuilt by
+     scripts/package_project.sh. To refresh it, run that script and replace
+     the folder wholesale rather than merging by hand.
