@@ -781,3 +781,109 @@ reads **1.6486 V**. The project's very first result — the one that motivated
 the whole thing — was **1.65 V** against a 1.4 V threshold. It reproduces at a
 25× finer timestep than it was originally measured. The false-turn-on finding
 was never in doubt; it is good to have that on the record rather than assumed.
+
+## 27. The robustness study found a bug in the driver model, not a device sensitivity
+
+The corrected robustness study is still running (§28). This section records what
+the *first* study turned up, which was not what it was looking for.
+
+### The signal
+
+The largest excursion by far was `LLOOP_lo` — halving the power-loop
+inductance from 3 nH to 1.5 nH took the ceiling from 5.95 % to **13.54 %**.
+Nothing else moved it by more than 1.8 points. The obvious reading was that
+the ceiling is conditional on layout parasitics, which would be a real and
+publishable result.
+
+Before writing it up, one number was checked against first principles and
+failed. Under `LLOOP_lo` at 200 V / 2 A / 125 °C, drain overshoot reached
+**166 %** — 532 V on a 200 V bus — against 13.9 % for the same control word at
+3 nH. **Halving an inductance cannot multiply the L·di/dt overshoot by twelve.**
+
+### Three hypotheses, two killed by the data already on disk
+
+| Hypothesis | Test | Result |
+|---|---|---|
+| Shoot-through at short dead time | rate of >50 % overshoot by DT | 64/144 at **every** dead time — flat. Killed. |
+| Weak high-side pull-down | rate by NPD_HS | *rises* with stronger pull-down. Killed. |
+| Miller clamp | rate by CLKEN | **0/360 clamp off, 320/360 clamp on.** |
+
+Every single blown-up point had the clamp engaged. None without.
+
+### The mechanism
+
+```spice
+Sclk out nclk clk ref SWP
+.model SWP SW(Ron=0.01 Roff=1e9 Vt=0.5 Vh=0.05)
+```
+
+The clamp is a voltage-controlled switch gated on V(clk) − V(ref). For the
+high-side driver **`ref` is the switching node**. When the loop rings hard
+enough, that control voltage sweeps back and forth across the ±0.05 V
+hysteresis band and the switch chatters — a 10 mΩ switch slamming on and off
+across the gate, inside a 1.5 nH loop.
+
+Confirmed by two probes on the same word:
+
+| Configuration | Overshoot | V_DS peak |
+|---|---|---|
+| LLOOP_lo, as shipped (Vh = 0.05) | 166.3 % | 532.6 V |
+| **LLOOP_lo, hysteresis ×10 (Vh = 0.5)** | **−51.5 %** | **97.1 V** |
+| LLOOP_lo, R_on 0.01 → 0.2 Ω (×20) | 161.7 % | 523.3 V |
+| nominal 3 nH, as shipped | 13.9 % | 227.8 V |
+
+Ten times the hysteresis removes it; twenty times the on-resistance does
+nothing. It is **threshold crossing, not conduction**. A converged solve of a
+badly-posed model — which is why §26's timestep check could not have caught
+it: the overshoot converges to 1.8 %. It is a *modelling* error, not a
+*numerical* one, and those need a different detector.
+
+### How far it spreads, and why almost nothing moves
+
+916 of 15,839 robustness points and 180 of 2,880 main-sweep points carry the
+signature. Every headline was recomputed with them dropped:
+
+| Result | As published | Chatter dropped |
+|---|---|---|
+| Ceiling, w_ov = 0.05 | 5.17 % | **5.17 %** |
+| All four per-corner penalties | 1.1/2.3/3.8/12.7 % | **identical** |
+| Guard-band table, all 6 rows | 5.17…7.84 % | **identical, same words** |
+| Freeze test, 5 of 6 fields | — | **identical** |
+| Freeze test, dead time @ 1 V | 8.92 % | 9.11 % |
+| Robustness ceilings, all 11 cases | — | **identical** |
+| **Ceiling at w_ov = 0** | **3.68 %** | **9.38 %** |
+
+The near-total immunity has a cause worth stating: **the cost function
+penalises overshoot, so a 532 V word can never win.** The artefact is
+self-quarantining at every overshoot weight except zero — and at exactly
+w_ov = 0, where that protection vanishes, the ceiling nearly triples. The one
+place the objective stops defending the result is the one place the result
+moves.
+
+Two corrections follow. Table II's 50 V row read 0.36–4.45 µJ (1135 %) on a
+chatter maximum; clean it is 0.36–1.47 µJ (307 %), and the caption's "order of
+magnitude" becomes "roughly fivefold". Table III's cost-weight range becomes
+2.1–9.4 %, quoted with chatter dropped.
+
+### What survives about loop inductance
+
+The `LLOOP_lo` ceiling of 13.54 % is *unchanged* by dropping chatter points,
+because the optima were always in clean regions. And the underlying physics is
+sound in the direction that matters: a smaller loop commutates faster, so
+dV/dt rises, so C_GD couples more charge into the off-gate — median spurious
+gate voltage goes from 0.640 V at 3 nH to 3.522 V at 1.5 nH. Worse crosstalk
+from a tighter loop is real. It was only the *overshoot* that was fictitious.
+
+`scripts/verdict_stability.py` is testing the remaining question — whether the
+feasibility verdicts near the boundary survive timestep refinement, since the
+feasible set is what the 13.54 % actually rests on.
+
+### The lesson
+
+§24 and §26 established a detector for one failure mode: refine the timestep
+and watch what drifts. This failure mode is invisible to it. What caught this
+was a **sanity check against first principles** — halving L cannot multiply
+overshoot by twelve — followed by partitioning the data by every control field
+until one of them explained the whole population. Neither step needed a new
+simulation. Both should be standard before any surprising sensitivity is
+written up as a result.

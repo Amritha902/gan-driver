@@ -9,12 +9,22 @@ a property of the circuit rather than of our parameter choices.
 import csv, os, sys
 from collections import defaultdict
 
+# A drain overshoot above this is the signature of the Miller-clamp switch
+# chattering: the switch is controlled by V(clk) - V(ref), and for the high
+# side ref is the switching node, so a hard ring drives the control voltage
+# back and forth across the model's +-0.05 V hysteresis band. Raising the
+# hysteresis 10x collapses a 532 V excursion to 97 V while a 20x change in
+# on-resistance does nothing, which is what identifies it as threshold
+# crossing rather than conduction. Such a point is not evaluable, so it is
+# dropped rather than counted infeasible -- we do not know its true cost.
+CHATTER_OV = 50.0
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 F = ["NPU_LS", "NPD_LS", "NPD_HS", "DT", "CLKEN", "VNEG"]
 W_OV = 0.05
 
 
-def main(w_ov=W_OV):
+def main(w_ov=W_OV, drop_chatter=False):
     rows = []
     for r in csv.DictReader(open(os.path.join(ROOT, "results", "robust.csv"))):
         for k, v in list(r.items()):
@@ -22,6 +32,11 @@ def main(w_ov=W_OV):
             try: r[k] = float(v)
             except (ValueError, TypeError): pass
         rows.append(r)
+    if drop_chatter:
+        n0 = len(rows)
+        rows = [r for r in rows if r["ov_pct"] <= CHATTER_OV]
+        print("Dropped %d of %d points as clamp-switch chatter (overshoot > %.0f %%).\n"
+              % (n0 - len(rows), n0, CHATTER_OV))
     word = lambda r: tuple(r[f] if f == "DT" else int(float(r[f])) for f in F)
     cost = lambda r: r["E_tot"] * 1e6 + w_ov * r["ov_pct"]
 
@@ -100,4 +115,5 @@ def main(w_ov=W_OV):
 
 
 if __name__ == "__main__":
-    main(float(sys.argv[1]) if len(sys.argv) > 1 else W_OV)
+    a = [x for x in sys.argv[1:] if x != "--drop-chatter"]
+    main(float(a[0]) if a else W_OV, "--drop-chatter" in sys.argv)
