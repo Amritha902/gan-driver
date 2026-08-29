@@ -727,3 +727,57 @@ it** — so every number in the paper now has one, and `ceiling.py`,
 `scaling.py`, `robust_analyse.py` and `emi_analyse.py` were checked to be
 using the same denominator (`/fixed`) so their percentages mean the same thing.
 `emi_analyse.py` was not, and was fixed.
+
+## 26. The rule, tested against the paper's own headline metrics
+
+Section 24's rule — on a ringing node, integrals converge and peaks do not —
+has an uncomfortable consequence that had to be faced rather than assumed
+away. The cost function is
+
+    cost = E_tot + w_ov · ov_pct        ov_pct is a PEAK of V_DS
+    feasible ⟺ margin > 0               margin = V_th − Vgs_spur, also a PEAK
+
+Both quantities every headline rests on are peaks. If they drift the way peak
+dV/dt does, the 5.2 % ceiling, the freeze test and the guard-band table all
+inherit that drift. `scripts/metric_converge.py` refines the timestep 25× on
+the ideal-switch deck, at two words: the one the ceiling result selects, and
+the marginal word (no clamp, fastest drive) where a false-turn-on verdict is
+decided by tenths of a volt.
+
+| Quantity | Selected word | Marginal word | Absolute drift |
+|---|---|---|---|
+| E_tot | 0.70 % | 0.74 % | — |
+| E_off | 0.31 % | 0.49 % | — |
+| Drain overshoot `ov_pct` | 1.14 % | 1.06 % | 0.24 V |
+| Spurious gate peak `Vgs_spur` | 0.04 % | 0.32 % | **0.005 V** |
+| Crosstalk margin | 0.14 % | 2.11 % | **0.005 V** |
+
+**They converge.** The margin's 2.11 % is an artefact of expressing a small
+difference of two larger numbers as a percentage — in volts it drifts by
+0.005 V, against the 0.36 V and 1 V scales this project works at. Reporting
+only the percentage there would have manufactured a problem that does not
+exist, which is the mirror image of the §24 error.
+
+### What the rule actually says
+
+Not *peak versus integral*. **Whether the peak is of a ringing signal.**
+
+| Measure | What it is a peak of | Converges? |
+|---|---|---|
+| `ov_pct` | first and largest excursion after turn-off | yes, 1.1 % |
+| `Vgs_spur` | a single capacitively-coupled hump | yes, 0.04 % |
+| `dvdt_pk` | a slew rate on the ringing edge | **no, 26 %** |
+| SKY130 peak V_DS (§23) | a resonant tail | **no** |
+
+The two that fail are measured *on* the resonance; the two that pass are
+measured on a single, physically-located excursion. That is the distinction,
+and it is now stated in the paper as Table I rather than left as a rule of
+thumb derived from one bad experience.
+
+### One more thing worth recording
+
+At the finest step (0.002 ns print / 0.005 ns max) the spurious gate peak
+reads **1.6486 V**. The project's very first result — the one that motivated
+the whole thing — was **1.65 V** against a 1.4 V threshold. It reproduces at a
+25× finer timestep than it was originally measured. The false-turn-on finding
+was never in doubt; it is good to have that on the record rather than assumed.
