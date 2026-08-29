@@ -1,0 +1,92 @@
+* ===================================================================
+* segdrv_sky130.lib -- segmented gate-driver output stage in REAL
+* SKY130 5 V devices.  Drop-in replacement for the ideal-switch
+* version in segdrv.lib: same pins, same params, same behaviour.
+*
+* Sizing, measured not guessed (see pdk/ and scripts/size_slices.py):
+*   nfet_g5v0d10v5  W=100u L=0.5u  ->  16.89 ohm   -> m=2 gives  8.45 ohm
+*   pfet_g5v0d10v5  W=100u L=0.5u  ->  46.88 ohm   -> m=6 gives  7.81 ohm
+* PMOS is 2.78x weaker for the same width, so the pull-up bank is 3x
+* the area of the pull-down bank for equal strength.  That asymmetry is
+* a real cost and belongs in the report.
+*
+* Total device width: pull-up 8x6x100u = 4800u, pull-down 8x2x100u =
+* 1600u, clamp 12x100u = 1200u.  ~7.6 mm of gate width in all.
+*
+* PREDRIVERS ARE BEHAVIOURAL (B-sources mapping logic to the rails).
+* The output stage is the contribution; a real predriver chain adds
+* delay and its own shoot-through window and is the next step.
+* ===================================================================
+
+* Predriver comparisons are SMOOTHED: v(x,ref)>0.5 is a hard threshold on
+* the difference of two nodes that both swing ~100 V on the high side.
+* Numerical jitter in that difference makes the gates chatter.  A tanh of
+* width 50 mV keeps the same logic levels without the discontinuity.
+.subckt SEGDRV_SKY130 pu pd clk out vp vn ref
++ params: npu=8 npd=8 wn=100u wp=100u lch=0.5u mn=2 mp=6 mclk=12 rpre=20
+
+* ---- pull-up bank: PMOS, gate to vn = ON, gate to vp = OFF -------
+* gate_i = vp + enable_i * (pu high) * (vn - vp)
+Bpg1 pg1_d 0 V={v(vp)+({npu>=1 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg2 pg2_d 0 V={v(vp)+({npu>=2 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg3 pg3_d 0 V={v(vp)+({npu>=3 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg4 pg4_d 0 V={v(vp)+({npu>=4 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg5 pg5_d 0 V={v(vp)+({npu>=5 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg6 pg6_d 0 V={v(vp)+({npu>=6 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg7 pg7_d 0 V={v(vp)+({npu>=7 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+Bpg8 pg8_d 0 V={v(vp)+({npu>=8 ? 1:0})*(0.5*(1+tanh((v(pu,ref)-0.5)/0.05)))*(v(vn)-v(vp))}
+XP1 out pg1 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP2 out pg2 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP3 out pg3 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP4 out pg4 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP5 out pg5 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP6 out pg6 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP7 out pg7 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+XP8 out pg8 vp vp sky130_fd_pr__pfet_g5v0d10v5 W={wp} L={lch} nf=1 m={mp}
+
+* ---- pull-down bank: NMOS, gate to vp = ON, gate to vn = OFF ----
+Bng1 ng1_d 0 V={v(vn)+({npd>=1 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng2 ng2_d 0 V={v(vn)+({npd>=2 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng3 ng3_d 0 V={v(vn)+({npd>=3 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng4 ng4_d 0 V={v(vn)+({npd>=4 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng5 ng5_d 0 V={v(vn)+({npd>=5 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng6 ng6_d 0 V={v(vn)+({npd>=6 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng7 ng7_d 0 V={v(vn)+({npd>=7 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+Bng8 ng8_d 0 V={v(vn)+({npd>=8 ? 1:0})*(0.5*(1+tanh((v(pd,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+XN1 out ng1 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN2 out ng2 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN3 out ng3 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN4 out ng4 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN5 out ng5 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN6 out ng6 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN7 out ng7 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+XN8 out ng8 vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mn}
+
+* ---- predriver output impedance -------------------------------
+* The predrivers are behavioural sources; without a real output
+* impedance they drive the slice gate capacitance from zero ohms,
+* which is both unphysical and numerically stiff when the whole
+* high-side driver slews 100 V with the switch node.
+Rpg1 pg1_d pg1 {rpre}
+Rpg2 pg2_d pg2 {rpre}
+Rpg3 pg3_d pg3 {rpre}
+Rpg4 pg4_d pg4 {rpre}
+Rpg5 pg5_d pg5 {rpre}
+Rpg6 pg6_d pg6 {rpre}
+Rpg7 pg7_d pg7 {rpre}
+Rpg8 pg8_d pg8 {rpre}
+Rng1 ng1_d ng1 {rpre}
+Rng2 ng2_d ng2 {rpre}
+Rng3 ng3_d ng3 {rpre}
+Rng4 ng4_d ng4 {rpre}
+Rng5 ng5_d ng5 {rpre}
+Rng6 ng6_d ng6 {rpre}
+Rng7 ng7_d ng7 {rpre}
+Rng8 ng8_d ng8 {rpre}
+Rcg cg_d cg {rpre}
+
+* ---- active Miller clamp: one strong NMOS, separately timed -----
+Bcg cg_d 0 V={v(vn)+(0.5*(1+tanh((v(clk,ref)-0.5)/0.05)))*(v(vp)-v(vn))}
+XNC out cg vn vn sky130_fd_pr__nfet_g5v0d10v5 W={wn} L={lch} nf=1 m={mclk}
+
+.ends SEGDRV_SKY130

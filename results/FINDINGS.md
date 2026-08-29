@@ -504,3 +504,54 @@ to avoid this, and the harness result (failure at 1.000 us) was correct all
 along. The lesson is specific: **when running a simulator by hand in a shared
 directory, verify the output file is newer than the input**, or the previous
 run's results will be read as the current run's.
+
+
+## 23. CORRECTION — the transient converges; the metric did not
+
+Sections 10-12 and 18-22 state that the SKY130 transistor-level transient
+"does not converge". **That is too strong and is corrected here.** The
+convergence test was run on peak V_DS, which is the least robust statistic
+available: one bad sample moves it by hundreds of volts.
+
+Re-run on an integral instead:
+
+| Netlist | E_off @ 0.05 ns | @ 0.02 ns | @ 0.01 ns | spread |
+|---|---|---|---|---|
+| Ideal switches | 0.661 µJ | 0.660 | 0.660 | 0.1 % |
+| **SKY130, both drivers** | **0.737 µJ** | **0.737** | **0.750** | **1.8 %** |
+
+**The energy metrics are converged.** E_on, E_off and E_dt from the full
+transistor-level netlist are reportable, and they show real silicon costing
+about 12 % more turn-off energy than ideal resistors (0.74 vs 0.66 µJ).
+
+### What is still not reportable, and why
+
+The voltage waveform is a different matter. At maxstep = 0.01 ns a ~450 V
+excursion appears that is absent at coarser steps. It is **not** an isolated
+spike: it survives a 5-sample median filter (452.0 V) and even the 99.5th
+percentile (450.9 V), so more than 0.5 % of samples are up there.
+
+That it appears only at one step size means it is numerical, not physical.
+And it explains how energy can converge while voltage does not: the excursion
+occurs when the current is near zero, so it contributes almost nothing to
+∫v·i even though it dominates max(v).
+
+### Revised standing
+
+| Quantity | Source | Status |
+|---|---|---|
+| Transistor-level E_on / E_off / E_dt | full SKY130 netlist | **reportable**, 1.8 % |
+| Transistor-level peak V_DS | full SKY130 netlist | not reportable |
+| Transistor-level peak V_DS | low-side hybrid (§20) | **reportable**, 0.04 % |
+| All Part 1 results | ideal-switch netlist | reportable, 0.1 % |
+
+### The lesson, which is worth more than the fix
+
+Six fix attempts — rshunt, DC-load operating point, predriver impedance,
+softened edges, Gear, behavioural capacitors, parallel conductance, five rail
+variants, level-shifter RC, smoothed comparisons — were spent trying to make
+a **statistic** converge that was never going to, because it was the wrong
+statistic. The solver was doing its job the whole time.
+
+**Choose a convergence metric that is robust before concluding a simulation
+has failed.** Integrals converge; peaks of a noisy signal do not.
