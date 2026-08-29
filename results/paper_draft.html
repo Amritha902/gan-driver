@@ -48,6 +48,8 @@ th{text-align:left;font-weight:600;font-size:10.5px;letter-spacing:.1em;text-tra
  color:var(--muted);padding:10px 15px;border-bottom:1px solid var(--rule-s);background:var(--surface-2);white-space:nowrap}
 td{padding:11px 15px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2)}
 th .sub{display:block;font-weight:400;font-size:9.5px;letter-spacing:.06em;text-transform:none;opacity:.72;margin-top:2px}
+ol.refs{margin:0 0 18px;padding-left:22px}
+ol.refs li{margin:0 0 9px;line-height:1.55;color:var(--ink-2)}
 tr:last-child td{border-bottom:none} td b{color:var(--ink);font-weight:600}
 td.num,th.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .cap{font-family:Archivo,sans-serif;font-size:13px;color:var(--muted);margin:0 0 24px;line-height:1.5}
@@ -84,7 +86,7 @@ footer ol{padding-left:20px}footer li{margin-bottom:7px}
 <section>
   <h2>I. Introduction</h2>
   <p class="h2sub">The comparison the field makes, and the one it does not</p>
-  <p>Crosstalk-induced false turn-on is the characteristic failure of GaN half-bridges. The device threshold is low, the gate-drain capacitance couples the complementary device's dV/dt directly into the gate, and the standard mitigations &mdash; slower gate drive, negative off-bias, an active Miller clamp, longer dead time &mdash; each cost something in switching or conduction loss. A large literature proposes active gate drivers that manage these trade-offs, and recent work computes Pareto fronts over gate-current profiles and reports switching-loss reductions of up to 60&nbsp;% relative to a classical driver, proposing that the resulting parameter sets be deployed as lookup-table-based adaptive control.</p>
+  <p>Crosstalk-induced false turn-on is the characteristic failure of GaN half-bridges. The device threshold is low, the gate-drain capacitance couples the complementary device's dV/dt directly into the gate, and the standard mitigations &mdash; slower gate drive, negative off-bias, an active Miller clamp, longer dead time &mdash; each cost something in switching or conduction loss. A large literature proposes active gate drivers that manage these trade-offs&nbsp;[<a href="#r1">1</a>], the crosstalk mechanism itself has a published analytical model for enhancement-mode GaN in exactly this bridge-leg configuration&nbsp;[<a href="#r2">2</a>], and recent work computes Pareto fronts over gate-current profiles and reports switching-loss reductions of up to 60&nbsp;% relative to a classical driver, proposing that the resulting parameter sets be deployed as lookup-table-based adaptive control.</p>
   <p>The benchmark in that comparison is a <em>conventional</em> driver. That leaves an obvious question unanswered. An optimised adaptive driver differs from a conventional one in two independent ways: its settings are better, and its settings <em>change with operating point</em>. Only the second requires an FPGA, a sensing path, or a stored schedule. If most of the reported gain comes from the first, the adaptive machinery is largely unearned.</p>
   <div class="key">
     <span class="lab">Contribution</span>
@@ -96,7 +98,7 @@ footer ol{padding-left:20px}footer li{margin-bottom:7px}
   <h2>II. Method</h2>
   <p class="h2sub">Exhaustive search over a real control word</p>
   <p>The actuator is a segmented gate driver: eight thermometer-coded pull-up slices, eight pull-down slices, a programmable dead time, an active Miller clamp with programmable engagement, and a selectable gate off-bias rail. The swept control word has 720 distinct settings.</p>
-  <p>The test circuit is a double-pulse test on a GaN half-bridge, the standard benchmark in this literature, with a behavioural enhancement-mode GaN model written from datasheet quantities. The model's channel is deliberately symmetric so that third-quadrant conduction &mdash; and therefore the conduction penalty of negative off-bias, which has no body-diode path in GaN &mdash; emerges from the device physics rather than being added as a separate term.</p>
+  <p>The test circuit is a double-pulse test on a GaN half-bridge, the standard benchmark in this literature, with a behavioural enhancement-mode GaN model written from datasheet quantities. The power loop carries 3&nbsp;nH of inductance and 0.3&nbsp;&Omega; of damping, the latter representing skin effect at the ~300&nbsp;MHz ring frequency and chosen so the ringing decays in about six cycles rather than thirty; loop inductance in a GaN half-bridge is set by board layout rather than by the devices&nbsp;[<a href="#r3">3</a>], which is why Section&nbsp;IV perturbs it by &plusmn;50&nbsp;% rather than treating it as a fixed property of the design. The model's channel is deliberately symmetric so that third-quadrant conduction &mdash; and therefore the conduction penalty of negative off-bias, which has no body-diode path in GaN &mdash; emerges from the device physics rather than being added as a separate term.</p>
   <p>Eight metrics are extracted per run: turn-on, turn-off and dead-time energies; drain overshoot; settling time; oscillation energy; spurious gate voltage on the off device; and crosstalk margin defined as V<sub>th</sub>&nbsp;&minus;&nbsp;V<sub>GS,spur</sub>. A control word is <em>feasible</em> when that margin is positive.</p>
   <p>The full 720-word sweep is run at four corners: 100&nbsp;V/10&nbsp;A/25&nbsp;&deg;C, 200&nbsp;V/10&nbsp;A/125&nbsp;&deg;C, 200&nbsp;V/2&nbsp;A/125&nbsp;&deg;C and 50&nbsp;V/2&nbsp;A/25&nbsp;&deg;C, giving 2,880 transients in which every per-corner optimum is a true optimum. A further 1,511 transients cover a 36-point operating grid with a reduced candidate set, and 15,840 more perturb the device model (Section&nbsp;V).</p>
   <h3>Convergence criterion</h3>
@@ -271,10 +273,24 @@ footer ol{padding-left:20px}footer li{margin-bottom:7px}
   <p>This does not show that active gate driving is not worth doing. Table&nbsp;II shows the opposite &mdash; the control word spans an order of magnitude in switching energy, and choosing it well matters a great deal. What the data does not support is the further step, common in the literature, from <em>optimised settings help</em> to <em>settings must adapt to the operating point</em>. Those are separate claims, and only the first is well supported here.</p>
 </section>
 
+<section>
+  <h2>References</h2>
+  <p class="h2sub">Three entries, each verified against the publisher record</p>
+  <ol class="refs">
+    <li id="r1">Z. Zhang, F. Wang, L. M. Tolbert and B. J. Blalock, &ldquo;Active Gate Driver for Crosstalk Suppression of SiC Devices in a Phase-Leg Configuration,&rdquo; <em>IEEE Transactions on Power Electronics</em>, vol.&nbsp;29, no.&nbsp;4, pp.&nbsp;1986&ndash;1997, 2014.</li>
+    <li id="r2">R. Xie, H. Wang, G. Tang, X. Yang and K. J. Chen, &ldquo;An Analytical Model for False Turn-On Evaluation of High-Voltage Enhancement-Mode GaN Transistor in Bridge-Leg Configuration,&rdquo; <em>IEEE Transactions on Power Electronics</em>, vol.&nbsp;32, no.&nbsp;8, pp.&nbsp;6416&ndash;6433, 2017.</li>
+    <li id="r3">D. Reusch and J. Strydom, &ldquo;Understanding the Effect of PCB Layout on Circuit Performance in a High-Frequency Gallium-Nitride-Based Point of Load Converter,&rdquo; <em>IEEE Transactions on Power Electronics</em>, vol.&nbsp;29, no.&nbsp;4, pp.&nbsp;2008&ndash;2015, 2014.</li>
+  </ol>
+  <div class="key">
+    <span class="lab">What is deliberately not cited</span>
+    <p>The Introduction refers to recent work computing Pareto fronts over gate-current profiles and reporting switching-loss reductions of up to 60&nbsp;% relative to a classical driver. That is the closest prior work and the paper is positioned against it, but it <strong>could not be retrieved from the build environment</strong>, so no reference is given rather than one assembled from secondary description. Both journal papers above also have earlier conference versions with different pagination (APEC&nbsp;2017 for [2], APEC&nbsp;2013 pp.&nbsp;649&ndash;655 for [3]); the journal versions are the ones cited.</p>
+  </div>
+</section>
+
 <footer>
   <p><strong>Before this could be submitted</strong></p>
   <ol>
-    <li>Read the closest prior work directly and verify the positioning in Section&nbsp;I. The novelty claim depends on it and it was not accessible from the build environment.</li>
+    <li>Read the closest prior work directly and verify the positioning in Section&nbsp;I &mdash; the Pareto-front paper named in the References note. The novelty claim depends on it and it was not accessible from the build environment.</li>
     <li>Complete Section&nbsp;IV and report it whichever way it falls.</li>
     <li>Verify the LTspice port independently &mdash; the netlists reproduce the ngspice results, but an independent simulator run by a human is worth more than a self-check.</li>
     <li>Build the half-bridge and measure at least one corner. Without that this is a simulation study and must be titled as one.</li>
