@@ -1,0 +1,13 @@
+Timestep convergence of the turn-on EMI measures (N_PU=8).
+
+  tstep / tmax           E_osc_on      dvdt_pk    dvdt_1090
+  0.05n / 0.125n            20.69       118.17        27.89
+  0.02n / 0.05n             20.20       126.92        27.99
+  0.01n / 0.025n            20.08       128.69        28.02
+  0.005n / 0.0125n          20.13       129.10        28.03
+  0.002n / 0.005n           20.21       159.89        28.03
+
+  spread relative to the finest step:
+    E_osc_on         3.0%   converged
+    dvdt_pk         26.1%   NOT converged
+    dvdt_1090        0.5%   converged
