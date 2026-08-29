@@ -56,22 +56,29 @@ def main(w_ov=0.05):
     c_sch = sum(cost(sched[c]) for c in corners) / len(corners)
 
     print("Decomposition over %d corners, full 720-word search at each.\n" % len(corners))
-    print("  %-34s %9s" % ("configuration", "mean cost"))
-    print("  %-34s %9.3f   %s" % ("conventional (fastest, no clamp)", c_conv,
-          "FALSE TURN-ON" if any(per[conv][c]["margin"] <= 0 for c in corners) else ""))
-    print("  %-34s %9.3f" % ("optimised FIXED word", c_fix))
-    print("  %-34s %9.3f" % ("per-corner optimum (scheduling)", c_sch))
+    conv_feasible = all(per[conv][c]["margin"] > 0 for c in corners)
+    print("  %-34s %9s  %s" % ("configuration", "mean cost", "feasible?"))
+    print("  %-34s %9.3f  %s" % ("conventional (fastest, no clamp)", c_conv,
+          "NO - false turn-on" if not conv_feasible else "yes"))
+    print("  %-34s %9.3f  yes" % ("optimised FIXED word", c_fix))
+    print("  %-34s %9.3f  yes" % ("per-corner optimum (scheduling)", c_sch))
 
-    tot = 100 * (c_conv - c_sch) / c_conv
-    from_fixed = 100 * (c_conv - c_fix) / c_conv
-    from_sched = 100 * (c_fix - c_sch) / c_fix
-    print("\n  total improvement over conventional ......... %5.1f %%" % tot)
-    print("  of which, from better FIXED settings ........ %5.1f %% of conventional" % from_fixed)
-    print("  of which, from ADAPTATION ................... %5.1f %% of the optimised fixed" % from_sched)
-    if tot > 0:
-        share = 100 * (c_conv - c_fix) / (c_conv - c_sch)
-        print("\n  -> %.0f%% of the achievable gain needs NO adaptation at all." % share)
-        print("     %.0f%% requires operating-point scheduling." % (100 - share))
+    if not conv_feasible:
+        print("\n  The conventional word FALSE-TURNS-ON, so its cost is not")
+        print("  comparable -- a driver that destroys the device is not a")
+        print("  cheaper driver. Percentage gains against it are meaningless")
+        print("  and are deliberately not reported here.")
+        print("\n  The two comparisons that ARE valid:")
+        print("    price of crosstalk safety ...... 0% (energy-optimal word")
+        print("                                     is already feasible)")
+        print("    ceiling on scheduling .......... %.1f%%" % (100*(c_fix-c_sch)/c_fix))
+    else:
+        tot = 100 * (c_conv - c_sch) / c_conv
+        print("\n  total improvement over conventional ......... %5.1f %%" % tot)
+        print("  from better FIXED settings .................. %5.1f %%"
+              % (100*(c_conv-c_fix)/c_conv))
+        print("  from ADAPTATION ............................. %5.1f %%"
+              % (100*(c_fix-c_sch)/c_fix))
     print("\n  conventional word : %s" % ("%d/%d/%d/%s/%d/%+g" % conv))
     print("  optimised fixed   : %s" % ("%d/%d/%d/%s/%d/%+g" % fixed))
 

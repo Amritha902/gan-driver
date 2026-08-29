@@ -1,0 +1,37 @@
+[
+ {
+  "cmd": "python3 scripts/ceiling.py 0.05",
+  "note": "Full 720-word search at four corners. What can scheduling buy?",
+  "secs": 0.07,
+  "lines": [
+   "  50V_2A_25C       8/2/8/15n/1/+0             cost   0.858  margin +0.85",
+   "Words feasible at ALL 4 corners: 474 of 720",
+   "Best fixed word  : 8/8/1/25n/1/+0             mean cost   6.712",
+   "Per-corner optimum:                            mean cost   6.365",
+   "CEILING on scheduling at w_ov=0.05 : 5.2%",
+   "Per-corner breakdown (how much the fixed word loses at each):",
+   "  100V_10A_25C     fixed   5.102   optimum   5.047   penalty   1.1%",
+   "  200V_10A_125C    fixed  12.996   optimum  12.699   penalty   2.3%",
+   "  200V_2A_125C     fixed   7.860   optimum   6.858   penalty  12.7%",
+   "  50V_2A_25C       fixed   0.892   optimum   0.858   penalty   3.8%"
+  ]
+ },
+ {
+  "cmd": "python3 scripts/decompose.py",
+  "note": "Is the conventional baseline even a valid comparison?",
+  "secs": 0.07,
+  "lines": [
+   "  per-corner optimum (scheduling)        6.365  yes",
+   "  The conventional word FALSE-TURNS-ON, so its cost is not",
+   "  comparable -- a driver that destroys the device is not a",
+   "  cheaper driver. Percentage gains against it are meaningless",
+   "  and are deliberately not reported here.",
+   "  The two comparisons that ARE valid:",
+   "    price of crosstalk safety ...... 0% (energy-optimal word",
+   "                                     is already feasible)",
+   "    ceiling on scheduling .......... 5.2%",
+   "  conventional word : 8/8/8/15n/0/+0",
+   "  optimised fixed   : 8/8/1/25n/1/+0"
+  ]
+ }
+]

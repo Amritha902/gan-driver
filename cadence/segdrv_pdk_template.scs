@@ -1,0 +1,117 @@
+* ===================================================================
+* segdrv_pdk_template.scs -- segmented driver output stage, PDK template
+*
+* This is the SKY130 version with the device names replaced by
+* placeholders. To use it with your lab's PDK:
+*
+*   1. Replace NMOS_5V and PMOS_5V with your PDK's 5 V device names.
+*   2. Re-measure R_on for YOUR devices and re-pick mn/mp. Do not reuse
+*      the SKY130 numbers -- they will be wrong for another process.
+*      Method: force the drain 0.1 V off the rail, measure current,
+*      R = 0.1/I. See scripts/char_sky130.py.
+*   3. Check the W/L units your PDK expects. SKY130 wants metres
+*      (W=100u); some PDKs want microns (W=100). Getting this wrong
+*      silently selects no model bin and the run fails with
+*      "could not find a valid modelname".
+*
+* SKY130 reference values, for calibration:
+*     nfet_g5v0d10v5  W=100u L=0.5u -> 16.89 ohm, m=2 gives 8.45 ohm
+*     pfet_g5v0d10v5  W=100u L=0.5u -> 46.88 ohm, m=6 gives 7.81 ohm
+*   PMOS is 2.78x weaker for equal width, so the pull-up bank costs
+*   about 3x the area of the pull-down bank for equal strength.
+*
+* CAVEAT CARRIED FORWARD: the FLOATING (high-side) instance of this
+* driver did not converge in ngspice when the rails ride a node slewing
+* 100 V in ~2 ns. The ground-referenced instance converged to 0.04%
+* across a 20x timestep range. Expect to fight the same fight in Spectre
+* and see results/FINDINGS.md sections 18-23 for what was already tried.
+* ===================================================================
+
+* ===================================================================
+* segdrv_sky130.lib -- segmented gate-driver output stage in REAL
+* SKY130 5 V devices.  Drop-in replacement for the ideal-switch
+* version in segdrv.lib: same pins, same params, same behaviour.
+*
+* Sizing, measured not guessed (see pdk/ and scripts/size_slices.py):
+*   nfet_g5v0d10v5  W=100u L=0.5u  ->  16.89 ohm   -> m=2 gives  8.45 ohm
+*   pfet_g5v0d10v5  W=100u L=0.5u  ->  46.88 ohm   -> m=6 gives  7.81 ohm
+* PMOS is 2.78x weaker for the same width, so the pull-up bank is 3x
+* the area of the pull-down bank for equal strength.  That asymmetry is
+* a real cost and belongs in the report.
+*
+* Total device width: pull-up 8x6x100u = 4800u, pull-down 8x2x100u =
+* 1600u, clamp 12x100u = 1200u.  ~7.6 mm of gate width in all.
+*
+* PREDRIVERS ARE BEHAVIOURAL (B-sources mapping logic to the rails).
+* The output stage is the contribution; a real predriver chain adds
+* delay and its own shoot-through window and is the next step.
+* ===================================================================
+
+.subckt SEGDRV_PDK pu pd clk out vp vn ref
++ params: npu=8 npd=8 wn=100u wp=100u lch=0.5u mn=2 mp=6 mclk=12 rpre=20
+
+* ---- pull-up bank: PMOS, gate to vn = ON, gate to vp = OFF -------
+* gate_i = vp + enable_i * (pu high) * (vn - vp)
+Bpg1 pg1_d 0 V={v(vp)+({npu>=1 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg2 pg2_d 0 V={v(vp)+({npu>=2 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg3 pg3_d 0 V={v(vp)+({npu>=3 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg4 pg4_d 0 V={v(vp)+({npu>=4 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg5 pg5_d 0 V={v(vp)+({npu>=5 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg6 pg6_d 0 V={v(vp)+({npu>=6 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg7 pg7_d 0 V={v(vp)+({npu>=7 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+Bpg8 pg8_d 0 V={v(vp)+({npu>=8 ? 1:0})*(v(pu,ref)>0.5)*(v(vn)-v(vp))}
+XP1 out pg1 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP2 out pg2 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP3 out pg3 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP4 out pg4 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP5 out pg5 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP6 out pg6 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP7 out pg7 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+XP8 out pg8 vp vp PMOS_5V W={wp} L={lch} nf=1 m={mp}
+
+* ---- pull-down bank: NMOS, gate to vp = ON, gate to vn = OFF ----
+Bng1 ng1_d 0 V={v(vn)+({npd>=1 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng2 ng2_d 0 V={v(vn)+({npd>=2 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng3 ng3_d 0 V={v(vn)+({npd>=3 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng4 ng4_d 0 V={v(vn)+({npd>=4 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng5 ng5_d 0 V={v(vn)+({npd>=5 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng6 ng6_d 0 V={v(vn)+({npd>=6 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng7 ng7_d 0 V={v(vn)+({npd>=7 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+Bng8 ng8_d 0 V={v(vn)+({npd>=8 ? 1:0})*(v(pd,ref)>0.5)*(v(vp)-v(vn))}
+XN1 out ng1 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN2 out ng2 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN3 out ng3 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN4 out ng4 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN5 out ng5 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN6 out ng6 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN7 out ng7 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+XN8 out ng8 vn vn NMOS_5V W={wn} L={lch} nf=1 m={mn}
+
+* ---- predriver output impedance -------------------------------
+* The predrivers are behavioural sources; without a real output
+* impedance they drive the slice gate capacitance from zero ohms,
+* which is both unphysical and numerically stiff when the whole
+* high-side driver slews 100 V with the switch node.
+Rpg1 pg1_d pg1 {rpre}
+Rpg2 pg2_d pg2 {rpre}
+Rpg3 pg3_d pg3 {rpre}
+Rpg4 pg4_d pg4 {rpre}
+Rpg5 pg5_d pg5 {rpre}
+Rpg6 pg6_d pg6 {rpre}
+Rpg7 pg7_d pg7 {rpre}
+Rpg8 pg8_d pg8 {rpre}
+Rng1 ng1_d ng1 {rpre}
+Rng2 ng2_d ng2 {rpre}
+Rng3 ng3_d ng3 {rpre}
+Rng4 ng4_d ng4 {rpre}
+Rng5 ng5_d ng5 {rpre}
+Rng6 ng6_d ng6 {rpre}
+Rng7 ng7_d ng7 {rpre}
+Rng8 ng8_d ng8 {rpre}
+Rcg cg_d cg {rpre}
+
+* ---- active Miller clamp: one strong NMOS, separately timed -----
+Bcg cg_d 0 V={v(vn)+(v(clk,ref)>0.5)*(v(vp)-v(vn))}
+XNC out cg vn vn NMOS_5V W={wn} L={lch} nf=1 m={mclk}
+
+.ends SEGDRV_PDK

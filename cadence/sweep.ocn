@@ -1,0 +1,65 @@
+; ===================================================================
+; sweep.ocn -- parametric sweep of the gate-driver control word in ADE
+;
+; Reproduces the 720-point sweep that produced the published results, but
+; driven from OCEAN instead of the Python harness. Run with:
+;     ocean -nograph -restore sweep.ocn
+;
+; NOT TESTED. No Cadence installation was available. Check the first few
+; points against the ngspice CSV in results/sweep_nominal.csv before
+; trusting a full run.
+; ===================================================================
+
+simulator( 'spectre )
+design( "./dpt_spectre.scs" )
+resultsDir( "./psf" )
+
+analysis( 'tran ?stop "3u" ?maxstep "0.05n" ?method "trap" )
+
+; --- the control word ------------------------------------------------
+; 6 fields, 720 combinations. Matches scripts/sweep.py GRID exactly.
+npuList   = list( 1 2 3 4 6 8 )
+npdList   = list( 2 8 )
+npdhsList = list( 1 4 8 )
+dtList    = list( "5n" "10n" "15n" "25n" "35n" )
+clkList   = list( 0 1 )
+vnegList  = list( 0 -2 )
+
+outFile = outfile( "./sweep_ocean.csv" "w" )
+fprintf( outFile "NPU_LS,NPD_LS,NPD_HS,DT,CLKEN,VNEG,E_on,E_off,Vds_pk,Vgs_spur\n" )
+
+foreach( npu npuList
+ foreach( npd npdList
+  foreach( npdhs npdhsList
+   foreach( dt dtList
+    foreach( clk clkList
+     foreach( vneg vnegList
+
+      desVar( "NPU_LS" npu )
+      desVar( "NPD_LS" npd )
+      desVar( "NPD_HS" npdhs )
+      desVar( "DT"     dt )
+      desVar( "CLKEN"  clk )
+      desVar( "VNEG"   vneg )
+      run()
+
+      vds  = VT("/lsd")
+      ils  = IT("/Vsls")
+      vhsg = VT("/hsg")
+      vsw  = VT("/sw")
+
+      ; turn-off energy: integrate v*i over the turn-off window
+      eOff = integ( vds * ils 0.998u 1.06u )
+      ; turn-on energy at the second edge
+      eOn  = integ( vds * ils (2.0u+atof(dt)) (2.0u+atof(dt)+60n) )
+      ; peak drain voltage during turn-off
+      vpk  = ymax( clip( vds 1u 1.2u ) )
+      ; spurious gate voltage on the OFF (high-side) device at LS turn-on
+      spur = ymax( clip( (vhsg - vsw) (2.0151u+atof(dt)-15n) 2.10u ) )
+
+      fprintf( outFile "%d,%d,%d,%s,%d,%g,%g,%g,%g,%g\n"
+               npu npd npdhs dt clk vneg eOn eOff vpk spur )
+     )))))) 
+
+close( outFile )
+printf( "done -- compare against results/sweep_nominal.csv\n" )
