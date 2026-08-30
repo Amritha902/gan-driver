@@ -62,9 +62,10 @@ SLIDE7 = [
        "= 2,880 transients, plus 1,511 over a 36-point operating grid.", False)], 1),
     ([("Robustness study. ", B),
       ("21,600 further transients perturbing five device-model parameters, one failure.", False)], 1),
-    ([("Ports verified. ", B),
-      ("LTspice, browser-WASM and Cadence Spectre decks all reproduce the reference result "
-       "(122.4 V / 5.00 ns / 1.65 V). SKY130 output stage characterised at transistor level.", False)], 1),
+    ([("Ports generated and re-simulated. ", B),
+      ("LTspice-dialect, Spectre and browser-WASM decks each reproduce 122.4 V / 5.00 V / 1.65 V "
+       "on re-simulation. LTspice and Spectre themselves are not yet run — no installation "
+       "available — so those two are faithful ports, not cross-simulator agreement.", False)], 1),
     ([("Nearly 26,000 transient simulations in total; a 28-section written record; a full manuscript draft.",
        False)], 1),
     ([("Timeline & milestones to Review-III:", B)], 0),

@@ -8,7 +8,7 @@ from fill import para, set_body, find_shape, q, A, esc, RUN_TPL, PARA_TPL
 import content
 
 RES = "/home/user/gan-driver/results"
-SRC = "template.pptx"
+SRC = "template_ext.pptx"
 OUT = "Review1_GaN_Segmented_Gate_Driver.pptx"
 
 # ---- text-fit estimate (no renderer available in this environment) ---------
@@ -207,7 +207,7 @@ p.save(OUT)
 print("slides 8 and 9 built")
 
 # ---------------- slide 10 : references -----------------------------------
-ref_shape = find_shape(S[9], "A. Author")
+ref_shape = find_shape(S[11], "A. Author")
 set_body(ref_shape, [
  para([("[1]  Z. Zhang, F. Wang, L. M. Tolbert and B. J. Blalock, “Active Gate Driver for "
         "Crosstalk Suppression of SiC Devices in a Phase-Leg Configuration,” ", False),
@@ -231,7 +231,7 @@ set_body(ref_shape, [
 
 # the template's trailing note under the reference list
 try:
-    n2 = find_shape(S[9], "Use IEEE format")
+    n2 = find_shape(S[11], "Use IEEE format")
     set_body(n2, [para([("Use IEEE format. Every reference listed must be cited in the slides / "
                          "report.", False)], level=0, sz=1200, spc=0, bullet=False)])
 except KeyError:
@@ -268,9 +268,103 @@ for sh in S[1].shapes:
 
 # The reference list inherited the template's full-height content box (5.40 in)
 # but holds about 2 in of text, so the empty box ran under the footnote.
-for sh in S[9].shapes:
+for sh in S[11].shapes:
     if sh.has_text_frame and sh.text_frame.text.startswith("[1]"):
         sh.height = Inches(4.60)
 
 p.save(OUT)
 print("geometry fixes applied")
+
+# ================= new slides 10 (demo) and 11 (evidence) ==================
+# Both were cloned from the empty "Results (contd.)" slide, so each already
+# carries the title box, the VIT logo and a page-number box — all of which
+# still hold slide 9's values and must be corrected.
+
+def retitle(slide, text):
+    for sh in slide.shapes:
+        if sh.has_text_frame and sh.text_frame.text.strip() == "Results (contd.)":
+            for pa in sh.text_frame.paragraphs:
+                for r in pa.runs:
+                    r.text = text; return
+
+def renumber(slide, n):
+    for sh in slide.shapes:
+        if sh.has_text_frame and sh.left and sh.left > Inches(12.0) \
+           and sh.top and sh.top > Inches(6.8):
+            for pa in sh.text_frame.paragraphs:
+                for r in pa.runs:
+                    r.text = str(n); return
+
+# ---- slide 10 : the demo video ------------------------------------------
+s10 = S[9]
+retitle(s10, "Demo")
+# pipeline_demo.mp4 trimmed to 17.5 s. The original's closing caption read
+# "the Miller clamp buys 14.7 %", the superseded 36-corner shortlist figure;
+# the audit puts it at 9.7-12.2 %. The terminal body is untouched and every
+# number in it still reproduces. research_demo.mp4 is not used at all: its
+# closing caption says the benefit "collapses to one bit - the off-bias rail",
+# which the freeze test corrected to dead time.
+VID = "pipeline_demo_review1.mp4"
+# 1200x700 source -> 1.714 aspect. 7.60 in wide gives 4.43 in tall.
+s10.shapes.add_movie(VID, Inches(0.70), Inches(1.55), Inches(7.60), Inches(4.43),
+                     poster_frame_image="poster_pipeline.png", mime_type="video/mp4")
+add_text(s10, 0.70, 6.15, 7.60, 0.40, [
+    para([("Click to play (17 s). Real captured output — only the pacing is "
+           "presentational.", False)], level=0, sz=1100, spc=0, bullet=False)])
+
+add_text(s10, 8.65, 1.55, 3.95, 4.60, [
+    para([("What it shows", True)], level=0, sz=1500, spc=240, bullet=False),
+    para([("ngspice 42 running the real double-pulse test.", False)],
+         level=0, sz=1300, spc=180, bullet=True),
+    para([("Fastest drive, no clamp: spurious gate 1.649 V, margin ", False),
+          ("−0.249 V", True), (" — false turn-on.", False)],
+         level=0, sz=1300, spc=180, bullet=True),
+    para([("Miller clamp on: 0.830 V, margin ", False), ("+0.570 V", True),
+          (" — safe.", False)], level=0, sz=1300, spc=180, bullet=True),
+    para([("The full 720-word search at four corners: 474 feasible, ceiling ", False),
+          ("5.2 %", True), (".", False)], level=0, sz=1300, spc=240, bullet=True),
+    para([("Two more videos ship in the project folder: a 33 s waveform viewer and "
+           "the research walk-through.", False)], level=0, sz=1150, spc=0, bullet=False),
+])
+
+# ---- slide 11 : the evidence behind the numbers --------------------------
+s11 = S[10]
+retitle(s11, "Why the numbers hold")
+
+TILES = [
+    ("25,990", "transient simulations",
+     "Every sweep, corner study and robustness run, start to finish."),
+    ("720", "control words, searched in full",
+     "At every corner — so each per-corner optimum is a true optimum, not the best of a shortlist."),
+    ("25×", "timestep refinement survived",
+     "Every reported quantity must be flat across it. Enforced, not assumed."),
+    ("7", "wrong numbers caught, and corrected",
+     "By that discipline, before any of them reached the report."),
+]
+X0, Y0, W, DX, DY = 0.70, 1.70, 5.75, 6.15, 2.35
+for i, (big, label, sub) in enumerate(TILES):
+    x = X0 + (i % 2) * DX
+    y = Y0 + (i // 2) * DY
+    t = s11.shapes.add_textbox(Inches(x), Inches(y), Inches(W), Inches(2.00))
+    bp = t.text_frame._txBody.find(q("bodyPr"))
+    for k in ("lIns", "tIns", "rIns", "bIns"): bp.set(k, "0")
+    t.text_frame.word_wrap = True
+    set_body(t, [
+        para([(big, True)], level=0, sz=4000, spc=120, bullet=False),
+        para([(label, True)], level=0, sz=1500, spc=100, bullet=False),
+        para([(sub, False)], level=0, sz=1250, spc=0, bullet=False),
+    ])
+
+add_text(s11, 0.70, 6.45, 11.90, 0.45, [
+    para([("Stated plainly: ", True),
+          ("LTspice and Spectre decks are faithful ports re-simulated to the same numbers, but "
+           "neither simulator has itself been run — no installation was available.", False)],
+         level=0, sz=1150, spc=0, bullet=False)])
+
+# ---- page numbers on every slide from 10 onward --------------------------
+for n, sl in enumerate(S, start=1):
+    if n >= 10:
+        renumber(sl, n)
+
+p.save(OUT)
+print("slides 10 (demo, video embedded) and 11 (evidence) built; page numbers fixed")
