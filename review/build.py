@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lxml import etree
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from fill import para, set_body, find_shape, q, A, esc, RUN_TPL, PARA_TPL
+from fill import para, set_body, find_shape, set_title, q, A, esc, RUN_TPL, PARA_TPL
 import content
 
 RES = "/home/user/gan-driver/results"
@@ -63,8 +63,8 @@ set_run_after(S[1], "Guide:", "Dr. Bindu, School of Electronics Engineering (SEN
 
 # ---------------- slides 4, 6, 7 : bulleted content ------------------------
 for idx, spec, needle in ((3, content.SLIDE4, "Problem Statement:"),
-                          (5, content.SLIDE6, "Proposed Solution:"),
-                          (6, content.SLIDE7, "Work completed so far")):
+                          (6, content.SLIDE6, "Proposed Solution:"),
+                          (7, content.SLIDE7, "Work completed so far")):
     sh = find_shape(S[idx], needle)
     set_body(sh, build_paras(spec))
     print("slide %d: %.2f in of %.2f  %s"
@@ -73,25 +73,17 @@ for idx, spec, needle in ((3, content.SLIDE4, "Problem Statement:"),
 p.save(OUT)
 print("wrote", OUT)
 
-# ---------------- slide 5 : literature survey table ------------------------
+# ---------------- slides 5 & 6 : literature survey (4 refs each) -----------
 from pptx.dml.color import RGBColor
+import refs as R
 
-REFS = [
- ("Zhang, Wang, Tolbert & Blalock (2014)",
-  "Active Gate Driver for Crosstalk Suppression of SiC Devices in a Phase-Leg Configuration — IEEE TPEL 29(4), 1986–1997",
-  "Two gate-assist circuits on a SiC MOSFET phase leg; suppresses the spurious gate pulse",
-  "Up to 17 % less turn-on loss. SiC has a body diode, so the third-quadrant cost of negative off-bias — the GaN-specific trade — never appears."),
- ("Xie, Wang, Tang, Yang & Chen (2017)",
-  "An Analytical Model for False Turn-On Evaluation of High-Voltage Enhancement-Mode GaN Transistor in Bridge-Leg Configuration — IEEE TPEL 32(8), 6416–6433",
-  "Closed-form model of the crosstalk loop for e-mode GaN; predicts the spurious gate peak",
-  "Models the mechanism accurately but does not optimise a driver against it, and does not ask whether settings must adapt per operating point."),
- ("Reusch & Strydom (2014)",
-  "Understanding the Effect of PCB Layout on Circuit Performance in a High-Frequency GaN-Based Point of Load Converter — IEEE TPEL 29(4), 2008–2015",
-  "Measures GaN converter performance across deliberately varied board layouts",
-  "Loop inductance is set by layout, not by the device. Our robustness study finds the scheduling ceiling depends on exactly this parameter (13.5 % at 1.5 nH vs 0.6 % at 4.5 nH)."),
-]
+def set_cell(cell, runs, size=Pt(10.5), grey=False):
+    """runs: list of (text, bold) or a plain string.
 
-def set_cell(cell, text, bold=False, size=Pt(11), grey=False):
+    A newline inside an <a:t> is not a line break in OOXML - PowerPoint
+    swallows it - so "\n" starts a new PARAGRAPH instead."""
+    if isinstance(runs, str):
+        runs = [(runs, False)]
     tf = cell.text_frame
     tf.word_wrap = True
     pa = tf.paragraphs[0]
@@ -99,29 +91,56 @@ def set_cell(cell, text, bold=False, size=Pt(11), grey=False):
         r._r.getparent().remove(r._r)
     for extra in list(tf.paragraphs)[1:]:
         extra._p.getparent().remove(extra._p)
-    run = pa.add_run(); run.text = text
-    run.font.size = size; run.font.bold = bold; run.font.name = "Calibri"
-    run.font.color.rgb = RGBColor(0x80, 0x80, 0x80) if grey else RGBColor(0, 0, 0)
+    col = RGBColor(0x7A, 0x7A, 0x7A) if grey else RGBColor(0, 0, 0)
+    for txt, bold in runs:
+        for i, line in enumerate(txt.split("\n")):
+            if i:
+                pa = tf.add_paragraph()
+            if not line:
+                continue
+            run = pa.add_run(); run.text = line
+            run.font.size = size; run.font.bold = bold; run.font.name = "Calibri"
+            run.font.color.rgb = col
 
-tbl = None
-for sh in S[4].shapes:
-    if sh.has_table: tbl = sh.table
-for i, (auth, title, method, find) in enumerate(REFS, start=1):
-    for c, txt in enumerate((auth, title, method, find), start=1):
-        set_cell(tbl.cell(i, c), txt)
-for i in (4, 5, 6):
-    set_cell(tbl.cell(i, 1), "— to be added —", grey=True)
-    for c in (2, 3, 4):
-        set_cell(tbl.cell(i, c), "", grey=True)
+def table_of(slide):
+    for sh in slide.shapes:
+        if sh.has_table: return sh.table
+    raise KeyError("no table")
 
-note = find_shape(S[4], "Minimum 8")
-set_body(note, [para([("3 of the minimum 8–10 references are filled and verified against the "
-                       "publisher record (volume, issue, pages, author list). ", False),
-                      ("Five more still to add", True),
-                      (" — duplicate this slide for rows 7–10.", False)],
-                     level=0, sz=1200, spc=0, bullet=False)])
-p.save(OUT)
-print("slide 5: %d verified refs filled, 3 rows marked to add" % len(REFS))
+for page, sidx in ((0, 4), (1, 5)):
+    tbl = table_of(S[sidx])
+    group = R.REFS[page * 4:(page + 1) * 4]
+    for row, (num, auth, title, venue, method, find, xid, ok) in enumerate(group, start=1):
+        set_cell(tbl.cell(row, 0), str(num))
+        set_cell(tbl.cell(row, 1), [(auth, False)] if ok else
+                 [(auth, False), ("\nauthors: complete from Xplore", True)], grey=not ok)
+        set_cell(tbl.cell(row, 2), [(title, False), ("\n" + venue, True)])
+        set_cell(tbl.cell(row, 3), method)
+        set_cell(tbl.cell(row, 4), find)
+    # Each table ships with 6 body rows and each slide now carries 4. Delete the
+    # spare rows rather than blanking them: an empty row still occupies 0.62 in,
+    # and PowerPoint grows rows to fit their text, so leaving two behind would
+    # push the table under the footnote.
+    for row in (6, 5):
+        tbl._tbl.remove(tbl.rows[row]._tr)
+    # give the four remaining rows room to breathe
+    for row in range(len(tbl.rows)):
+        tbl.rows[row].height = Inches(0.95 if row else 0.40)
+    if page == 0:
+        set_title(S[sidx], "Literature Survey  (1 – 4)")
+        note = find_shape(S[sidx], "Minimum 8")
+        set_body(note, [para([("References [1]–[3] are verified against the publisher record "
+                               "— author list, volume, issue and pages all confirmed.", False)],
+                             level=0, sz=1150, spc=0, bullet=False)])
+    else:
+        set_title(S[sidx], "Literature Survey  (5 – 8)")
+        note = find_shape(S[sidx], "Minimum 8")
+        set_body(note, [para([("References [4]–[8]: title, journal status and IEEE Xplore document "
+                               "ID confirmed. Volume, issue, pages and authors are marked XX — every "
+                               "publisher and metadata service was unreachable from the build "
+                               "environment, and they are not invented. One click on Xplore's "
+                               "\u201cCite This\u201d completes each.", False)],
+                             level=0, sz=1150, spc=0, bullet=False)])
 
 # ---------------- slides 8 & 9 : results ----------------------------------
 # Both arrive empty from the template (title + logo only). Content area runs
@@ -150,7 +169,7 @@ def stat(slide, x, y, w, big, label, sub):
     return t
 
 # --- slide 8: the problem reproduced, and fixed ---------------------------
-s8 = S[7]
+s8 = S[8]
 s8.shapes.add_picture(RES + "/fig1_crosstalk.png",
                       Inches(0.70), Inches(1.45), width=Inches(7.30))
 add_text(s8, 0.70, 6.30, 7.30, 0.45, [
@@ -173,7 +192,7 @@ add_text(s8, 8.35, 4.75, 4.25, 2.00, [
 ])
 
 # --- slide 9: the headline negative result -------------------------------
-s9 = S[8]
+s9 = S[9]
 s9.shapes.add_picture(RES + "/paper_fig2_ceiling.png",
                       Inches(0.70), Inches(1.55), width=Inches(6.60))
 add_text(s9, 0.70, 5.35, 6.60, 0.45, [
@@ -206,74 +225,42 @@ add_text(s9, 7.65, 3.45, 4.95, 3.40, [
 p.save(OUT)
 print("slides 8 and 9 built")
 
-# ---------------- slide 10 : references -----------------------------------
-ref_shape = find_shape(S[11], "A. Author")
-set_body(ref_shape, [
- para([("[1]  Z. Zhang, F. Wang, L. M. Tolbert and B. J. Blalock, “Active Gate Driver for "
-        "Crosstalk Suppression of SiC Devices in a Phase-Leg Configuration,” ", False),
-       ("IEEE Trans. Power Electron.", False),
-       (", vol. 29, no. 4, pp. 1986–1997, Apr. 2014.", False)], level=0, sz=1400, spc=500,
-      bullet=False),
- para([("[2]  R. Xie, H. Wang, G. Tang, X. Yang and K. J. Chen, “An Analytical Model for False "
-        "Turn-On Evaluation of High-Voltage Enhancement-Mode GaN Transistor in Bridge-Leg "
-        "Configuration,” ", False), ("IEEE Trans. Power Electron.", False),
-       (", vol. 32, no. 8, pp. 6416–6433, Aug. 2017.", False)], level=0, sz=1400, spc=500,
-      bullet=False),
- para([("[3]  D. Reusch and J. Strydom, “Understanding the Effect of PCB Layout on Circuit "
-        "Performance in a High-Frequency Gallium-Nitride-Based Point of Load Converter,” ", False),
-       ("IEEE Trans. Power Electron.", False),
-       (", vol. 29, no. 4, pp. 2008–2015, Apr. 2014.", False)], level=0, sz=1400, spc=500,
-      bullet=False),
- para([("Each of the three above has been verified against the publisher record. Five more are "
-        "needed to meet the 8–10 minimum; they are deliberately not listed until verified, so "
-        "that nothing unchecked is cited.", False)], level=0, sz=1200, spc=0, bullet=False),
-])
+# ---------------- references slide -----------------------------------------
+IEEE_FULL = {
+ 1: "Z. Zhang, F. Wang, L. M. Tolbert and B. J. Blalock, \u201cActive Gate Driver for Crosstalk "
+    "Suppression of SiC Devices in a Phase-Leg Configuration,\u201d IEEE Trans. Power Electron., "
+    "vol. 29, no. 4, pp. 1986\u20131997, Apr. 2014.",
+ 2: "R. Xie, H. Wang, G. Tang, X. Yang and K. J. Chen, \u201cAn Analytical Model for False Turn-On "
+    "Evaluation of High-Voltage Enhancement-Mode GaN Transistor in Bridge-Leg Configuration,\u201d "
+    "IEEE Trans. Power Electron., vol. 32, no. 8, pp. 6416\u20136433, Aug. 2017.",
+ 3: "D. Reusch and J. Strydom, \u201cUnderstanding the Effect of PCB Layout on Circuit Performance "
+    "in a High-Frequency Gallium-Nitride-Based Point of Load Converter,\u201d IEEE Trans. Power "
+    "Electron., vol. 29, no. 4, pp. 2008\u20132015, Apr. 2014.",
+}
+ref_shape = find_shape(S[12], "A. Author")
+paras = []
+for num, auth, title, venue, method, find, xid, ok in R.REFS:
+    if ok:
+        paras.append(para([("[%d]  " % num, True), (IEEE_FULL[num], False)],
+                          level=0, sz=1150, spc=340, bullet=False))
+    else:
+        paras.append(para([("[%d]  " % num, True),
+                           ("\u201c%s,\u201d " % title, False),
+                           ("IEEE journal; Xplore document %s. " % xid, False),
+                           ("Authors, vol., no., pp., year to be completed from Xplore.", True)],
+                          level=0, sz=1150, spc=340, bullet=False))
+paras.append(para([("[1]\u2013[3] verified against the publisher record. [4]\u2013[8]: title, "
+                    "journal status and Xplore document ID confirmed; the remaining fields were "
+                    "not reachable from the build environment and are deliberately left blank "
+                    "rather than guessed.", False)], level=0, sz=1050, spc=0, bullet=False))
+set_body(ref_shape, paras)
 
-# the template's trailing note under the reference list
 try:
-    n2 = find_shape(S[11], "Use IEEE format")
+    n2 = find_shape(S[12], "Use IEEE format")
     set_body(n2, [para([("Use IEEE format. Every reference listed must be cited in the slides / "
                          "report.", False)], level=0, sz=1200, spc=0, bullet=False)])
 except KeyError:
     pass
-
-p.save(OUT)
-print("slide 10 references written")
-
-# ---------------- slide 2 : name / guide fields ---------------------------
-# The label and its value live in SEPARATE shapes, so a run-follows-run search
-# within one shape never finds them.
-REPL = {
-    "Name — Reg. No.":       "Amritha  —  Reg. No. ________",
-    "Dr. Guide Name, School": "Dr. Bindu  —  SENSE",
-}
-hits = 0
-for sh in S[1].shapes:
-    if not sh.has_text_frame: continue
-    for pa in sh.text_frame.paragraphs:
-        for r in pa.runs:
-            k = r.text.strip()
-            if k in REPL:
-                r.text = REPL[k]; hits += 1
-p.save(OUT)
-print("slide 2: %d of %d fields replaced" % (hits, len(REPL)))
-
-# ---------------- geometry fixes found by qa.py ---------------------------
-# The project title is longer than the template's stub, so it wraps to two
-# lines at 32 pt and needs a taller box. There is 2.35 in of clear space below
-# it before the name fields, so growing it cannot collide with anything.
-for sh in S[1].shapes:
-    if sh.has_text_frame and sh.text_frame.text.startswith("A Segmented Gate Driver"):
-        sh.height = Inches(1.30)
-
-# The reference list inherited the template's full-height content box (5.40 in)
-# but holds about 2 in of text, so the empty box ran under the footnote.
-for sh in S[11].shapes:
-    if sh.has_text_frame and sh.text_frame.text.startswith("[1]"):
-        sh.height = Inches(4.60)
-
-p.save(OUT)
-print("geometry fixes applied")
 
 # ================= new slides 10 (demo) and 11 (evidence) ==================
 # Both were cloned from the empty "Results (contd.)" slide, so each already
@@ -296,7 +283,7 @@ def renumber(slide, n):
                     r.text = str(n); return
 
 # ---- slide 10 : the demo video ------------------------------------------
-s10 = S[9]
+s10 = S[10]
 retitle(s10, "Demo")
 # pipeline_demo.mp4 trimmed to 17.5 s. The original's closing caption read
 # "the Miller clamp buys 14.7 %", the superseded 36-corner shortlist figure;
@@ -328,7 +315,7 @@ add_text(s10, 8.65, 1.55, 3.95, 4.60, [
 ])
 
 # ---- slide 11 : the evidence behind the numbers --------------------------
-s11 = S[10]
+s11 = S[11]
 retitle(s11, "Why the numbers hold")
 
 TILES = [
@@ -363,8 +350,26 @@ add_text(s11, 0.70, 6.45, 11.90, 0.45, [
 
 # ---- page numbers on every slide from 10 onward --------------------------
 for n, sl in enumerate(S, start=1):
-    if n >= 10:
+    if n >= 5:
         renumber(sl, n)
 
 p.save(OUT)
 print("slides 10 (demo, video embedded) and 11 (evidence) built; page numbers fixed")
+
+# ---------------- geometry fixes found by qa.py ---------------------------
+# The project title is longer than the template's stub, so it wraps to two
+# lines at 32 pt and needs a taller box. There is 2.35 in of clear space below
+# it, so growing it cannot collide with anything.
+for sh in S[1].shapes:
+    if sh.has_text_frame and sh.text_frame.text.startswith("A Segmented Gate Driver"):
+        sh.height = Inches(1.30)
+
+# The reference list inherited the template's full-height content box (5.40 in)
+# but holds about 4 in of text, so the tail ran under the footnote.
+for sh in S[12].shapes:
+    if sh.has_text_frame and sh.text_frame.text.startswith("[1]"):
+        sh.height = Inches(4.75)
+
+p.save(OUT)
+print("geometry fixes applied")
+

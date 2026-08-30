@@ -11,15 +11,17 @@ SLIDE4 = [
        "pulse can exceed it and turn that device partially on — shoot-through, extra loss, and at "
        "worst destruction.", False)], 1),
     ([("Background & Significance:", B)], 0),
-    ([("Every mitigation costs something, and negative off-bias is uniquely expensive on GaN: with "
-       "no body diode the reverse drop is V", False), ("th", False), (" + I·R + |V", False),
-      ("GS,off", False),
-      ("|, so each volt of crosstalk margin is paid for again across the whole dead time.", False)], 1),
+    ([("GaN half-bridges are the switching core of EV and HEV traction inverters, on-board "
+       "chargers and high-density server supplies, where the whole reason to choose GaN is to "
+       "switch faster — which is exactly what makes this failure mode worse.", False)], 1),
+    ([("Negative off-bias is uniquely expensive on GaN: with no body diode the reverse drop is V",
+       False), ("th", False), (" + I·R + |V", False), ("GS,off", False),
+      ("|, so each volt of margin is paid for again across the dead time.", False)], 1),
     ([("Existing Solutions:", B)], 0),
     ([("Active gate drivers with segmented drive strength, Miller clamps, programmable dead time "
-       "and negative off-bias [1], [2]. Recent work computes Pareto fronts over gate-current "
-       "profiles, reports up to 60 % less switching loss than a conventional driver, and proposes "
-       "deploying the result as adaptive lookup-table control.", False)], 1),
+       "and negative off-bias [1]–[4]. Closed-loop designs adapt to the operating point and report "
+       "large gains — 30.5 % less overshoot, 75 % less turn-off loss — against a conventional "
+       "driver [5]–[7].", False)], 1),
     ([("Limitations / Research Gap:", B)], 0),
     ([("That comparison conflates ", False), ("choosing better fixed settings", B), (" with ", False),
       ("adapting settings per operating point", B),
