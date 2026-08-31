@@ -237,7 +237,7 @@ IEEE_FULL = {
     "in a High-Frequency Gallium-Nitride-Based Point of Load Converter,\u201d IEEE Trans. Power "
     "Electron., vol. 29, no. 4, pp. 2008\u20132015, Apr. 2014.",
 }
-ref_shape = find_shape(S[12], "A. Author")
+ref_shape = find_shape(S[14], "A. Author")
 paras = []
 for num, auth, title, venue, method, find, xid, ok in R.REFS:
     if ok:
@@ -256,7 +256,7 @@ paras.append(para([("[1]\u2013[3] verified against the publisher record. [4]\u20
 set_body(ref_shape, paras)
 
 try:
-    n2 = find_shape(S[12], "Use IEEE format")
+    n2 = find_shape(S[14], "Use IEEE format")
     set_body(n2, [para([("Use IEEE format. Every reference listed must be cited in the slides / "
                          "report.", False)], level=0, sz=1200, spc=0, bullet=False)])
 except KeyError:
@@ -283,7 +283,7 @@ def renumber(slide, n):
                     r.text = str(n); return
 
 # ---- slide 10 : the demo video ------------------------------------------
-s10 = S[10]
+s10 = S[11]
 retitle(s10, "Demo")
 # pipeline_demo.mp4 trimmed to 17.5 s. The original's closing caption read
 # "the Miller clamp buys 14.7 %", the superseded 36-corner shortlist figure;
@@ -310,12 +310,13 @@ add_text(s10, 8.65, 1.55, 3.95, 4.60, [
           (" — safe.", False)], level=0, sz=1300, spc=180, bullet=True),
     para([("The full 720-word search at four corners: 474 feasible, ceiling ", False),
           ("5.2 %", True), (".", False)], level=0, sz=1300, spc=240, bullet=True),
-    para([("Two more videos ship in the project folder: a 33 s waveform viewer and "
-           "the research walk-through.", False)], level=0, sz=1150, spc=0, bullet=False),
+    para([("A second video ships in the project folder: a 20 s interactive waveform "
+           "viewer over the same simulation data.", False)],
+         level=0, sz=1150, spc=0, bullet=False),
 ])
 
 # ---- slide 11 : the evidence behind the numbers --------------------------
-s11 = S[11]
+s11 = S[12]
 retitle(s11, "Why the numbers hold")
 
 TILES = [
@@ -366,10 +367,126 @@ for sh in S[1].shapes:
 
 # The reference list inherited the template's full-height content box (5.40 in)
 # but holds about 4 in of text, so the tail ran under the footnote.
-for sh in S[12].shapes:
+for sh in S[14].shapes:
     if sh.has_text_frame and sh.text_frame.text.startswith("[1]"):
         sh.height = Inches(4.75)
 
 p.save(OUT)
 print("geometry fixes applied")
 
+
+# ================= slide 11 : robustness ==================================
+s_rob = S[10]
+retitle(s_rob, "Results — robustness of the ceiling")
+
+ROWS = [("Loop inductance −50 %  (1.5 nH)", "13.54 %", "+7.59", True),
+        ("Input capacitance +30 %",              "7.71 %", "+1.76", False),
+        ("Miller capacitance −50 %",        "6.93 %", "+0.99", False),
+        ("nominal",                              "5.95 %",     "—", None),
+        ("Threshold −20 %",                 "5.64 %", "−0.31", False),
+        ("Transconductance +30 %",               "5.08 %", "−0.87", False),
+        ("Threshold +20 %",                      "4.90 %", "−1.05", False),
+        ("Input capacitance −30 %",         "4.76 %", "−1.19", False),
+        ("Transconductance −30 %",          "4.45 %", "−1.49", False),
+        ("Miller capacitance +50 %",             "4.32 %", "−1.63", False),
+        ("Loop inductance +50 %  (4.5 nH)",      "0.55 %", "−5.39", True)]
+
+# Three separate boxes per row. Space-padding does not align columns in a
+# proportional font, so the numeric columns get their own x positions.
+COL_L, COL_C, COL_D = 0.70, 4.55, 5.75
+def row(y, label, ceil, delta, bold, sz=1200):
+    add_text(s_rob, COL_L, y, 3.80, 0.30,
+             [para([(label, bold)], level=0, sz=sz, spc=0, bullet=False)])
+    add_text(s_rob, COL_C, y, 1.10, 0.30,
+             [para([(ceil, bold)], level=0, sz=sz, spc=0, bullet=False)])
+    add_text(s_rob, COL_D, y, 1.20, 0.30,
+             [para([(delta, False)], level=0, sz=sz, spc=0, bullet=False)])
+
+row(1.45, "Perturbation", "Ceiling", "vs nom.", True, 1150)
+y = 1.88
+for label, ceil, delta, big in ROWS:
+    row(y, label, ceil, delta, big is True or big is None)
+    y += 0.335
+
+add_text(s_rob, 7.55, 1.45, 5.05, 0.60, [
+    para([("Robust to the device,", True)], level=0, sz=1500, spc=0, bullet=False),
+    para([("conditional on the layout.", True)], level=0, sz=1500, spc=0, bullet=False)])
+add_text(s_rob, 7.55, 2.25, 5.05, 4.50, [
+    para([("21,600 transients", True), (" — a full 720-word search at two corners under each "
+           "of eleven single-parameter perturbations. One failure.", False)],
+         level=0, sz=1300, spc=200, bullet=True),
+    para([("Every ", False), ("device", True),
+          (" parameter leaves the ceiling between 4.3 % and 7.7 % — at most 1.76 points from "
+           "nominal. The objection this study was built to answer is not supported.", False)],
+         level=0, sz=1300, spc=200, bullet=True),
+    para([("The one thing that moves it is ", False), ("loop inductance", True),
+          (", which is board layout, not the transistor. A tighter loop commutates faster, so "
+           "more charge couples through C", False), ("GD", False),
+          (": the median spurious gate voltage goes 0.640 V to 3.522 V and the feasible set "
+           "collapses 474 → 158.", False)], level=0, sz=1300, spc=200, bullet=True),
+    para([("So the claim is narrower and more useful than “robust”: on a loop of about "
+           "3 nH or looser a fixed word is nearly as good; on a substantially tighter loop the "
+           "question has to be re-asked.", False)], level=0, sz=1300, spc=0, bullet=True),
+])
+
+# ================= slide 14 : conclusion ==================================
+s_con = S[13]
+set_title(s_con, "Conclusion & next steps")
+con_shape = find_shape(s_con, "Problem Statement:")
+set_body(con_shape, [
+    para([("What the data supports", True)], level=0, sz=1600, spc=200, bullet=False),
+    para([("Choosing the control word well matters enormously — it spans roughly fivefold in "
+           "switching energy. ", False),
+          ("Adapting it to the operating point does not: 5.2 %, and a single fixed word is "
+           "nearly as good.", True)], level=0, sz=1450, spc=180, bullet=True),
+    para([("The benefit that exists is carried by the ", False), ("dead time", True),
+          (", not by the drive-strength segmentation that motivates the hardware. Crosstalk "
+           "safety is nearly free once the Miller clamp is present.", False)],
+         level=0, sz=1450, spc=180, bullet=True),
+    para([("This is a negative result about the ", False), ("adaptive", True),
+          (" premise, and it is reported as one rather than hidden.", False)],
+         level=0, sz=1450, spc=260, bullet=True),
+    para([("What it does not support, and what is next", True)], level=0, sz=1600, spc=200,
+         bullet=False),
+    para([("The objective prices loss and overshoot only. Pull-up strength is worth 0.00 % to "
+           "schedule under it, yet swings turn-on slew rate by 123 % and ringing energy by "
+           "128 % — an EMI-bound design could reach the opposite conclusion.", False)],
+         level=0, sz=1450, spc=180, bullet=True),
+    para([("Review-II: ", True), ("transistor-level output stage in Cadence on a 5 V-capable "
+           "PDK; re-run the ceiling on real devices. ", False), ("Review-III: ", True),
+          ("measure a hardware half-bridge at one corner — until then this is a simulation "
+           "study and is titled as one.", False)], level=0, sz=1450, spc=0, bullet=True),
+])
+
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("slides 11 (robustness) and 14 (conclusion) built")
+
+# ---------------- slide 2 : name / guide fields ---------------------------
+# The label and its value live in SEPARATE shapes, so a run-follows-run search
+# within one shape never finds them. Kept last so nothing can clobber it.
+REPL = {
+    "Name — Reg. No.":        "Amritha  —  Reg. No. ________",
+    "Dr. Guide Name, School": "Dr. Bindu  —  SENSE",
+}
+hits = 0
+for sh in S[1].shapes:
+    if not sh.has_text_frame: continue
+    for pa in sh.text_frame.paragraphs:
+        for r in pa.runs:
+            if r.text.strip() in REPL:
+                r.text = REPL[r.text.strip()]; hits += 1
+
+# ---------------- informative titles on the two results slides ------------
+for sl, txt in ((S[8],  "Results — the problem, and the fix"),
+                (S[9],  "Results — what scheduling is actually worth")):
+    for sh in sl.shapes:
+        if sh.has_text_frame and sh.text_frame.text.strip() in ("Results", "Results (contd.)"):
+            for pa in sh.text_frame.paragraphs:
+                for r in pa.runs:
+                    r.text = txt
+            break
+
+p.save(OUT)
+print("slide 2: %d of %d fields set; results slides retitled" % (hits, len(REPL)))

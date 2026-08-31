@@ -23,7 +23,19 @@ for f in sweep_nominal corners full_corners sky130_drive_strength robust emi_swe
     [ -f "$SRC/results/$f.csv" ] && cp "$SRC/results/$f.csv" "$D"/4-RESULTS/
 done
 for f in "$SRC"/results/*.log; do [ -f "$f" ] && cp "$f" "$D"/4-RESULTS/; done
-cp "$SRC"/results/*.mp4                    "$D"/6-VIDEO/
+# Ship only the two videos whose every frame still reproduces.
+#   pipeline_demo_review1.mp4  trimmed at 17.5 s: the original closed on
+#       "the Miller clamp buys 14.7 %", the superseded 36-corner figure.
+#   scope_demo_review1.mp4     trimmed from 12.9 s: the original opened with
+#       13 s of blank white, 40 % of its length.
+#   research_demo.mp4          NOT SHIPPED. Its closing caption says the
+#       benefit "collapses to one bit - the off-bias rail", which the freeze
+#       test corrected to dead time, and its body shows decompose.py's old
+#       hardcoded "price of crosstalk safety 0%", corrected to 0.04%. Two
+#       stale claims in a 14 s clip; the untrimmed originals stay in the repo
+#       under results/ for the record.
+cp "$SRC"/results/pipeline_demo_review1.mp4 "$D"/6-VIDEO/
+cp "$SRC"/results/scope_demo_review1.mp4    "$D"/6-VIDEO/
 cp "$SRC"/cadence/*                        "$D"/7-CADENCE/
 cp "$SRC"/results/paper_draft.html         "$D"/8-PAPER/paper.html
 cp "$SRC"/results/paper_fig*.png           "$D"/8-PAPER/
