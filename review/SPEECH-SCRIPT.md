@@ -81,6 +81,12 @@ contribution."
 
 ## Slide 7 — Proposed solution (30 s)
 
+Open with the aim — the examiner is listening for it.
+
+"The aim is to measure how much of an active gate driver's benefit actually
+needs per-operating-point adaptation, and how much you get from simply
+choosing a better fixed setting."
+
 "The driver has six things you can set. We make all six a digital word, and
 we search all 720 of them at every operating corner. Not a shortlist —
 every one. That means each per-corner optimum is a true optimum, so when we
@@ -281,9 +287,11 @@ that is already small. Different kinds of quantity.
 No. This is a simulation study and the title says so. Review-III.
 
 **"Did Cadence actually run?"**
-No, and the deck states that. The Spectre and LTspice decks are faithful
-ports, re-simulated to the same numbers in ngspice — not cross-simulator
-agreement.
+No, and the deck states that. Everything is ngspice. The Spectre deck is a
+port, not a cross-simulator check. For LTspice, open sim/dpt.cir — that is
+the complete model and it carries the Miller clamp. The three ltspice/*.asc
+sheets are teaching illustrations of the crosstalk mechanism and do NOT draw
+the clamp; do not present them as the clamped design.
 
 **"Your dead-time number depends on which corners you pick."**
 Yes, and we found that ourselves. It is one light-load corner: drop
@@ -300,3 +308,18 @@ There are thirteen. Eight to ten was the stated minimum.
 **"How do we know the numbers are right?"**
 Ten wrong numbers were caught by our own convergence and resampling checks
 before any of them reached the report. That is on the backup slide.
+
+**"Show me the Miller clamp in the schematic."**
+sim/dpt.cir with models/segdrv.lib — the clamp is `Sclk out nclk clk ref SWP`
+with `Rclk nclk vn 0.5`, a 0.5 ohm switch from the off device's gate to the
+negative rail, timed separately from the pull-down. Do not open the .asc
+sheets for this; they don't have it.
+
+**"Slide 17 says 5.2 per cent, slide 20 says nominal 5.95. Which is it?"**
+Both, for different searches. 5.2 is the four-corner search — that is the
+headline. 5.95 is the nominal of the perturbation study, which is a
+two-corner search on its own sweep, so its absolute value isn't comparable;
+its "vs nom." column is. Same cost weight in both, w_ov = 0.05, so the
+difference is the corner set, not the weighting. And 5.2 per cent against the
+best fixed word is the same thing as the 3.9 per cent of baseline in the
+results summary — 3.9 divided by 74.9.
