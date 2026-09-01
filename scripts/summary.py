@@ -18,7 +18,7 @@ ROWS = [
 
  ("THE SEARCH", None, None),
  ("Control-word space, searched in full", "720 words × 4 corners", "sweep.py, corners.py"),
- ("Transient simulations, all studies", "≈ 33,200", "—"),
+ ("Transient simulations, all studies", "34,622", "row count, all result CSVs"),
  ("Switching-energy spread across the word", "up to 483 %", "figures.py"),
 
  ("WHAT ADAPTATION IS WORTH", None, None),

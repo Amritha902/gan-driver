@@ -157,7 +157,20 @@ Open things in this order:
    Octave, no toolboxes. Produces `pareto_matlab.png` (objectives conflict)
    and `crosstalk_model_matlab.png` (analytical model vs SPICE).
 4. **`rtl/seg_gate_ctrl.v`** — the controller that would emit the control word
-   on the FPGA.
+   on the FPGA. You can run its self-check live, and it is worth doing:
+
+   ```bash
+   cd rtl
+   iverilog -g2012 -o /tmp/tb seg_gate_ctrl_tb.v seg_gate_ctrl.v \
+            dead_time_gen.v thermo_decode.v && /tmp/tb
+   #   -> ALL CHECKS PASSED   (properties T1-T8)
+   sh mutate.sh
+   #   -> injects a real shoot-through bug; bench catches it,
+   #      221 failures across T1, T3, T8
+   ```
+
+   The mutation run is the stronger demo: it shows the testbench can actually
+   fail, which a passing test alone never proves.
 5. **`results/RESULTS-SUMMARY.txt`** — every number with the script that
    regenerates it.
 
