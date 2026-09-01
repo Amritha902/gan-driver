@@ -90,8 +90,11 @@ def build(name, title, note, clken=0, vneg=0):
     W("SYMATTR Value PULSE(0 5 0 2n 2n 1u 10u)")
 
     # ---------------- directives ----------------
-    W(".model EPC2010 VDMOS(Rg=0.4 Vto=1.4 Kp=5.5 Cgdmax=150p Cgdmin=7p "
-      "Cgs=350p Cjo=180p Rd=0.03 Rs=0.01 Rds=1e7)")
+    # A SPICE directive in a .asc MUST be a TEXT line beginning with "!".
+    # A bare ".model ..." line makes LTspice abort with "Unknown schematic
+    # syntax" before the schematic even opens.
+    W('TEXT 300 736 Left 2 !.model EPC2010 VDMOS(Rg=0.4 Vto=1.4 Kp=5.5 '
+      'Cgdmax=150p Cgdmin=7p Cgs=350p Cjo=180p Rd=0.03 Rs=0.01 Rds=1e7)')
     W("TEXT 300 640 Left 2 !.tran 0 3u 0 0.02n")
     W("TEXT 300 672 Left 2 !.param RG=%s" % ("1" if not clken else "0.25"))
     W("TEXT 300 704 Left 2 !.meas TRAN vspur MAX V(hsg,sw) FROM 1.9u TO 2.2u")

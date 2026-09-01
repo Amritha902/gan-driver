@@ -505,7 +505,7 @@ add_text(s_rob, 7.55, 2.25, 5.05, 4.50, [
            "collapses 474 → 158.", False)], level=0, sz=1300, spc=200, bullet=True),
     para([("So the claim is narrower and more useful than “robust”: from about 2.5 nH "
            "upward a fixed word is nearly as good; on a tighter loop the question has to be "
-           "re-asked, and the answer there is not even monotonic — see slide 18.", False)],
+           "re-asked, and the answer there is not even monotonic — see slide 19.", False)],
          level=0, sz=1300, spc=0, bullet=True),
 ])
 
@@ -601,7 +601,7 @@ NOTES = {
  2:  ("15 s", "CORE. Project name and the one-line claim: a segmented GaN gate driver, and a "
                "measurement of what per-operating-point adaptation is actually worth."),
  3:  ("skip", "SKIP. Template slide."),
- 4:  ("70 s", "CORE — the 2-mark slide, the biggest block in the review. Land two things: the "
+ 4:  ("60 s", "CORE — the 2-mark slide, the biggest block in the review. Land two things: the "
               "failure is real and specific (1.65 V on a 1.40 V threshold), and the gap is "
               "that prior work conflates 'better fixed settings' with 'settings that adapt'."),
  5:  ("30 s", "CORE — literature mark. Do not read the table. Eight references, three verified "
@@ -614,11 +614,11 @@ NOTES = {
  7:  ("30 s", "CORE — proposed-solution mark. The 720-point control word and the method: "
               "exhaustive search at every corner, so each per-corner optimum is a TRUE optimum "
               "and not the best of a shortlist."),
- 8:  ("35 s", "CORE. Walk the diagram left to right in one sentence, then stop on the dashed "
+ 8:  ("30 s", "CORE. Walk the diagram left to right in one sentence, then stop on the dashed "
               "block: that is the sensing and lookup-table machinery the adaptive premise "
               "needs. The whole project is a measurement of what it buys. Let the picture do "
               "the work — do not narrate every box."),
- 9:  ("45 s", "CORE — the 50 %-completion requirement. Five claims, each with a number. If "
+ 9:  ("40 s", "CORE — the 50 %-completion requirement. Five claims, each with a number. If "
               "asked 'is this really 50 %?': the search is complete, stress-tested, and both "
               "objections to it - layout and EMI - have been tested rather than argued. What "
               "remains is silicon and hardware."),
@@ -630,9 +630,9 @@ NOTES = {
  12: ("40 s", "CORE. The problem reproduced and fixed. Point at the red X below the threshold "
               "line. Then: safety costs 0.04 % — nearly free once the clamp is present."),
  13: ("25 s", "CORE. 5.2 %. Say plainly this is a NEGATIVE result about the adaptive premise "
-              "and you are reporting it rather than hiding it. Keep it short — slides 17 and "
-              "18 do the real work."),
- 14: ("50 s", "CORE — the novelty slide, and the one sentence the panel should leave with: "
+              "and you are reporting it rather than hiding it. Keep it short — slides 18 and "
+              "19 do the real work."),
+ 14: ("45 s", "CORE — the novelty slide, and the one sentence the panel should leave with: "
               "'a full sense-plus-ADC-plus-lookup-table is left justifying 3.7 % of the gain "
               "over a fixed word and one comparator.' Build it in three steps. (1) Choosing "
               "the fixed word well is worth 25.1 %. (2) Adapting per corner adds only 3.9 % "
@@ -653,14 +653,14 @@ NOTES = {
  16: ("BACKUP", "BACKUP — the robustness table. Best answer to 'is this just your model?': "
                 "every device parameter leaves the ceiling at 4.3-7.7 %; only loop inductance "
                 "moves it, and that is board layout, not the transistor."),
- 17: ("30 s", "CORE. Play the video. Real captured ngspice output — the failure, the fix, the "
+ 17: ("25 s", "CORE. Play the video. Real captured ngspice output — the failure, the fix, the "
               "search. Let it run; do not talk over it."),
  18: ("BACKUP", "BACKUP — use if the panel probes rigour. TEN wrong numbers caught by our own "
                 "checks is a strength; say it that way. The best one to tell: dead time ranked "
                 "first at 5.45 % on four corners and dead LAST at 0.00 % on two, and we chased "
                 "it to a single light-load corner rather than quoting the flattering number. The "
                 "leave-one-out table is in results/FINDINGS.md section 32 if they want it."),
- 19: ("40 s", "CORE. Close on what the data supports and what it now answers. Do NOT concede "
+ 19: ("35 s", "CORE. Close on what the data supports and what it now answers. Do NOT concede "
               "EMI as a limitation any more - it was tested: pricing it makes scheduling worth "
               "LESS, 5.95 % down to 0.15 %. State the remaining limits yourself instead: the "
               "two EMI measures disagree about drive strength, no silicon has been measured, "
@@ -1032,3 +1032,61 @@ for n, sl in enumerate(S, start=1):
     renumber(sl, n)
 p.save(OUT)
 print("slide 9 (circuit schematic) inserted; deck now %d slides" % len(S))
+
+
+# ============ slide : MATLAB results ======================================
+# The MATLAB work existed as scripts and loose PNGs and appeared nowhere in
+# the deck. Both figures were regenerated by running the scripts.
+s_mat = clone_after(p, 11, 15)
+for sh in list(s_mat.shapes):
+    if sh.has_text_frame and sh.text_frame.text.strip() and not sh.has_table:
+        if sh.width > Inches(4) and sh.top > Inches(1.0):
+            sh._element.getparent().remove(sh._element)
+    elif sh.shape_type == 13 and sh.left < Inches(11):
+        sh._element.getparent().remove(sh._element)
+for sh in s_mat.shapes:
+    if sh.has_text_frame and sh.top is not None and sh.top < Inches(1.0) \
+       and sh.left is not None and sh.left < Inches(1.0):
+        tf = sh.text_frame
+        for extra in list(tf.paragraphs)[1:]:
+            extra._p.getparent().remove(extra._p)
+        runs = list(tf.paragraphs[0].runs)
+        if runs:
+            runs[0].text = "MATLAB — the Pareto front and the model check"
+            for r in runs[1:]:
+                r._r.getparent().remove(r._r)
+        break
+
+s_mat.shapes.add_picture(RES + "/pareto_matlab.png",
+                         Inches(0.60), Inches(1.30), height=Inches(3.65))
+s_mat.shapes.add_picture(RES + "/crosstalk_model_matlab.png",
+                         Inches(6.95), Inches(1.30), height=Inches(3.65))
+add_text(s_mat, 0.60, 5.10, 5.95, 1.05, [
+    para([("720 words, 504 feasible (70 %).", True),
+          (" A 7-word Pareto front; buying one point of overshoot back costs "
+           "0.039 µJ. The green marker is the word the cost function picks.", False)],
+         level=0, sz=1150, spc=0, bullet=False)])
+add_text(s_mat, 6.95, 5.10, 5.75, 1.05, [
+    para([("The two hand calculations disagree by 8.7×.", True),
+          (" The peak-C bound says 7.50 V, charge-averaging says 0.86 V, SPICE measures "
+           "1.65 V — inside the bracket. That gap is why this is simulated, not "
+           "hand-calculated.", False)], level=0, sz=1150, spc=0, bullet=False)])
+add_text(s_mat, 0.60, 6.28, 12.10, 0.75, [
+    para([("Dead-time margin saturates at about 15 ns", True),
+          (": the marginal gain runs 269 → 31.5 → 1.8 → 0.0 mV/ns across 10/15/25/35 ns. "
+           "Past 15 ns dead time costs conduction loss and buys nothing. ", False),
+          ("results/gan_analysis.m", True), (", ", False),
+          ("results/crosstalk_standalone.m", True), (" — both run in MATLAB or Octave.",
+           False)], level=0, sz=1200, spc=0, bullet=False)])
+set_note(s_mat, "[35 s]  CORE — this is the MATLAB evidence, and it answers 'did you only "
+                "use SPICE?'. Land two things. Left: 720 words searched, 504 feasible, and "
+                "the Pareto front is only 7 words wide — the choice really is that "
+                "constrained. Right: two textbook hand calculations for the same spurious "
+                "voltage disagree by 8.7x, and the SPICE number sits between them. That is "
+                "the argument for simulating. If you have time, add the dead-time "
+                "saturation at 15 ns from the caption.")
+
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("MATLAB results slide inserted; deck now %d slides" % len(S))
