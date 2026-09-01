@@ -78,6 +78,16 @@ box(95, 45, 32, 11, "GaN half-bridge", ("high side + low side",))
 box(95, 30, 32, 11, "L$_{loop}$ = 3 nH", ("layout parasitic",))
 box(95, 15, 32, 11, "Load", ("2–10 A  ·  50–200 V",))
 
+# The switching node is the node the whole failure mechanism runs through, so
+# it is named on the diagram instead of being implied by an unlabelled wire.
+# both labels must sit in the 41-45 gap between the half-bridge and L_loop;
+# anything lower lands inside the L_loop box
+ax.plot([111], [43.0], marker="o", ms=5.5, color=INK, zorder=6)
+ax.text(113.2, 44.0, "SW node", fontsize=8.6, fontweight="bold", color=INK,
+        va="center", family=FONT)
+ax.text(113.2, 41.9, "the dV/dt source", fontsize=7.4, color=MUTED,
+        va="center", family=FONT)
+
 # ---- arrows ---------------------------------------------------------------
 arrow((23, 50.5), (29, 50.5))
 for i in range(4):
@@ -90,7 +100,7 @@ arrow((111, 30), (111, 26))
 # The failure mechanism: C_GD couples the switching node back into the gate of
 # the device that is meant to be off. The arrow is the path; the callout below
 # carries the text, because anywhere nearer would sit on top of a block.
-arrow((97, 44.5), (88.5, 41.5), rad=-0.34, lw=1.8)
+arrow((110.2, 43.0), (88.5, 41.0), rad=-0.30, lw=1.8)
 ax.add_patch(FancyBboxPatch((60, 1.2), 33, 10.0,
              boxstyle="round,pad=0.35,rounding_size=0.7",
              fc="#FFFFFF", ec=INK, lw=1.35, zorder=2))
@@ -101,6 +111,18 @@ ax.text(61.8, 5.9, "The switching node couples charge into the",
 ax.text(61.8, 3.1, "off device: 1.65 V against a 1.40 V threshold.",
         fontsize=8, color=INK, family=FONT)
 arrow((90, 11.2), (89.5, 40), rad=0.20, lw=1.0, color=RULE)
+
+# ---- the corners: every result in the deck is measured at these ----------
+ax.add_patch(FancyBboxPatch((95, 1.2), 32, 10.0,
+             boxstyle="round,pad=0.35,rounding_size=0.7",
+             fc="#FAFAFA", ec=RULE, lw=1.0, zorder=2))
+ax.text(96.8, 8.9, "THE FOUR CORNERS", fontsize=8.2, fontweight="bold",
+        color=INK, family=FONT)
+ax.text(96.8, 6.1, "50 V/2 A/25 °C   ·   100 V/10 A/25 °C", fontsize=7.6,
+        color=INK, family=FONT)
+ax.text(96.8, 3.4, "200 V/2 A/125 °C   ·   200 V/10 A/125 °C", fontsize=7.6,
+        color=INK, family=FONT)
+arrow((111, 15), (111, 11.8), lw=1.0, color=RULE)
 
 # ---- the annotation that carries the result -------------------------------
 ax.text(42, 19.4, "worth %.1f %% of the total gain" % N["share"], fontsize=9.2,

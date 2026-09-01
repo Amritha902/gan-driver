@@ -45,7 +45,7 @@
   drain overshoot drift over that range                      1.14 %                         metric_converge.py
   spurious gate peak drift                                   0.04 %                         metric_converge.py
   feasibility verdicts flipped by refinement                 0 of 80                        verdict_stability.py
-  RTL properties asserted, all passing                       7                              seg_gate_ctrl_tb.v
+  RTL properties asserted, all passing                       8                              seg_gate_ctrl_tb.v
   wrong numbers caught by these checks                       10                             FINDINGS.md §24–32
 =======================================================================================================
   Anything here that disagrees with a slide means the slide is wrong.

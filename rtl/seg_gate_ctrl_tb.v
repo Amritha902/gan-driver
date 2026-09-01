@@ -87,13 +87,31 @@ module seg_gate_ctrl_tb;
     // simply forgets to clear its outputs still satisfies it, because only one
     // was high to begin with. The contract is that BOTH are low for the whole
     // dead time, and that is what this checks.
+    // Declared BEFORE the block that reads them. Icarus 12.0 accepts the other
+    // order by inferring an implicit net; 12.x is lenient, 13.0 is not and
+    // rejects it with "Unable to bind wire/reg/memory". A reviewer running
+    // this on a newer toolchain would have seen a compile error, so the
+    // declarations lead.
+    wire hs_on_probe = dut.hs_on;
+    wire ls_on_probe = dut.ls_on;
+
     always @(posedge clk) if (rst_n && in_dt && (hs_on_probe || ls_on_probe)) begin
         errors = errors + 1;
         $display("  FAIL  T7 dead_time_gen held a side on during dead time (t=%0t)",
                  $time);
     end
-    wire hs_on_probe = dut.hs_on;
-    wire ls_on_probe = dut.ls_on;
+
+    // T8 -- the property that was MISSING. T7 checks the generator's internal
+    // hs_on/ls_on, but nothing checked the thing that actually reaches the
+    // gate: the pull-up banks. Deleting the "&& !in_dt" term from ls_pu or
+    // hs_pu in seg_gate_ctrl.v is a real shoot-through bug, and the bench
+    // passed it with ALL CHECKS PASSED. It does not any more.
+    always @(posedge clk) if (rst_n && in_dt && ((|ls_pu) || (|hs_pu))) begin
+        errors = errors + 1;
+        if (errors < 40)
+            $display("  FAIL  T8 a pull-up bank was driven during dead time (t=%0t)",
+                     $time);
+    end
 
     // ---- measure dead-time length ----------------------------------------
     always @(posedge clk) begin

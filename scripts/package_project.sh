@@ -12,6 +12,7 @@ trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$D"/1-LTSPICE "$D"/2-FIGURES "$D"/3-MATLAB "$D"/4-RESULTS \
          "$D"/5-SOURCE "$D"/6-VIDEO "$D"/7-CADENCE "$D"/8-PAPER
 
+cp "$SRC"/ltspice/*.asc                    "$D"/1-LTSPICE/
 cp "$SRC"/ltspice/*.cir                    "$D"/1-LTSPICE/
 cp "$SRC"/ltspice/*.lib                    "$D"/1-LTSPICE/
 cp "$SRC"/ltspice/README-LTSPICE.txt       "$D"/1-LTSPICE/README.txt

@@ -28,25 +28,45 @@ there is exactly one place to edit and no chance of the two disagreeing.
 
 class Ref:
     def __init__(self, n, authors, title, venue, method, finding, xplore="", ieee="",
-                 done=False):
+                 done=False, doi="", year="", base=False, closest=False):
         self.n, self.authors, self.title, self.venue = n, authors, title, venue
         self.method, self.finding, self.xplore = method, finding, xplore
         self.ieee, self.done = ieee, done
+        # venue/year/DOI are verifiable without Xplore; author lists and page
+        # numbers are not, and are never invented here.
+        self.doi, self.year, self.base, self.closest = doi, year, base, closest
 
     def cite(self):
         """The IEEE-format line for the reference list."""
         if self.done:
             return self.ieee
-        return ("“%s,” IEEE journal; Xplore document %s. "
-                "[Authors, vol., no., pp., year to be completed from Xplore.]"
-                % (self.title, self.xplore))
+        bits = []
+        if self.authors and self.authors.strip() not in ("", "—"):
+            bits.append(self.authors.split(" (")[0] + ",")
+        bits.append("“%s,”" % self.title)
+        if self.venue: bits.append(self.venue + ",")
+        if self.year:  bits.append(str(self.year) + ",")
+        if self.doi:   bits.append("doi: %s." % self.doi)
+        line = " ".join(bits)
+        return line + "  [author list and page range: Xplore “Cite This”]"
 
     def table_author(self):
-        return self.authors if self.done else self.authors + "\n[complete from Xplore]"
+        """The slide column. Year is verified; the author list is not, so it
+        says so in three words rather than shouting a placeholder."""
+        if self.done:
+            return self.authors
+        return ("%s\nauthors: Xplore “Cite This”" % (self.year or "—"))
+
+    def url(self):
+        """A link the panel can actually type or click."""
+        if self.doi:   return "doi.org/" + self.doi
+        if self.xplore: return "ieeexplore.ieee.org/document/" + self.xplore
+        return ""
 
     def table_venue(self):
-        return self.venue if self.done else \
-            "IEEE journal · Xplore doc. %s · vol./pp. XX" % self.xplore
+        v = self.venue or "IEEE"
+        u = self.url()
+        return "%s\n%s" % (v, u) if u else v
 
 
 REFS = [
@@ -86,44 +106,93 @@ REFS = [
           "IEEE Trans. Power Electron., vol. 29, no. 4, pp. 2008–2015, Apr. 2014."),
  Ref(4, "—",
      "Crosstalk Suppression Method for GaN-Based Bridge Configuration Using Negative Voltage "
-     "Self-Recovery Gate Drive", "",
+     "Self-Recovery Gate Drive",
+     "IEEE Trans. Power Electron.",
      "RC-diode divider generates negative V_GS; antiparallel diode gives a low-impedance Miller "
      "path",
      "Suppresses positive and negative crosstalk together. Treats the negative rail as always "
      "beneficial; our freeze test finds off-bias worth 2.55 % to schedule, and nothing at a 1 V "
      "guard band.",
-     xplore="9573371"),
+     xplore="9573371", year="2021"),
  Ref(5, "—",
      "A Novel Control Strategy for Optimal Tradeoff between Overshoot and Switching Loss Based "
-     "on Double Closed-Loop Self-Regulating Active Gate Driver", "",
+     "on Double Closed-Loop Self-Regulating Active Gate Driver",
+     "IEEE journal",
      "Weight-based closed-loop control balancing overshoot against turn-off loss per operating "
      "condition",
      "Reports 30.5 % less overshoot and 75 % less turn-off loss. Optimises the same two "
      "objectives as our cost function, but never bounds what the adaptation itself is worth "
      "against a fixed setting.",
-     xplore="10553383"),
+     xplore="10553383", year="2024"),
  Ref(6, "—",
      "A Self-Regulating Active Gate Driver of Voltage Overshoot Suppression for SiC MOSFETs "
-     "Under Variable Load Current Conditions", "",
+     "Under Variable Load Current Conditions",
+     "IEEE journal",
      "Gate drive self-regulates as load current varies",
      "Adaptation to the operating point is the premise, not a tested hypothesis. This is "
      "precisely the claim our exhaustive search isolates and measures at 5.2 %.",
-     xplore="10964227"),
+     xplore="10964227", year="2025"),
  Ref(7, "—",
      "Universal Active Gate Driver IC With Closed-Loop Timing Control and Gate-Sensing Technique "
-     "for Silicon Carbide Power Devices", "",
+     "for Silicon Carbide Power Devices",
+     "IEEE journal",
      "Integrated driver with closed-loop timing and on-chip gate sensing",
      "The sensing and control hardware that per-operating-point scheduling requires. Our result "
      "bounds the benefit that hardware can deliver on this architecture at a few per cent.",
-     xplore="10813402"),
+     xplore="10813402", year="2025"),
  Ref(8, "—",
      "An Integrated Driver With Dual-Edge Adaptive Dead-Time Control for GaN-Based Synchronous "
-     "Buck Converter", "",
+     "Buck Converter",
+     "IEEE Trans. Ind. Appl., vol. 60",
      "Dual-edge adaptive dead-time control; sub-1 ns dead times across a 0.2–2 A range",
      "Adapts the one field our freeze test says actually carries the benefit — dead time, "
      "5.45 % of the cost, 2.1× the next field — and does it across a 0.2–2 A range, which is "
      "exactly the light-load corner our leave-one-out test shows carries all of it.",
-     xplore="10664041"),
+     xplore="10664041", year="2024", doi="10.1109/TIA.2024.3454198"),
+ Ref(9, "Takayama & Hikihara (2022)",
+     "Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior — "
+     "Preparation Toward Universal Digitization of Power Switching",
+     "Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183–196",
+     "A DAC-inspired driver: a multibit gate signal SEQUENCE sets the gate waveform digitally, "
+     "so switching behaviour is chosen by a code rather than by a resistor.",
+     "THE BASE PAPER. Its multibit gate code is the direct ancestor of our 720-point control "
+     "word, and it is digital — implementable on an FPGA — rather than a fixed analogue "
+     "network. We replicate its premise on GaN and then ask the question it does not: of the "
+     "gain a code buys, how much needs per-operating-point adaptation at all?",
+     year="2022", doi="10.1002/cta.3136", base=True),
+ Ref(10, "—",
+     "A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control",
+     "IEEE conference",
+     "Segmented output stage on E-mode GaN with an on-chip pattern generator for drive strength",
+     "Architecturally the closest published driver to ours — segmented slices, pattern-selected "
+     "strength. It is an ASIC with a fixed pattern set; our contribution is to search the whole "
+     "pattern space exhaustively and price what the search actually buys.",
+     xplore="9170108", year="2020", closest=True),
+ Ref(11, "—",
+     "High-Frequency Three-Level Gate Driver for GaN HEMT Bridge Crosstalk Suppression",
+     "IEEE journal",
+     "Three-level drive; capacitor–diode negative rail with a digitally-clamped zero level, to "
+     "5 MHz",
+     "Recent, GaN, and on exactly our failure mode. It suppresses crosstalk with added passives; "
+     "we get the same protection from the Miller clamp already in the cell and measure its price "
+     "at 0.04 %.",
+     xplore="10286072", year="2024", closest=True),
+ Ref(12, "—",
+     "An Integrated Suppression Method of Both Gate-Source Voltage Oscillation and Crosstalk for "
+     "GaN HEMT Gate Driver",
+     "IEEE journal",
+     "One driver addressing gate-source ringing and crosstalk together",
+     "Confirms the two effects are coupled, which is why our cost function prices loss and "
+     "overshoot jointly rather than optimising either alone.",
+     xplore="10591431", year="2024", closest=True),
+ Ref(13, "—",
+     "A High-Efficient GaN Driver With Hybrid Adaptive Dead-Time Control and Peak Delay Control "
+     "for Synchronous Buck Converter",
+     "IEEE journal",
+     "Hybrid adaptive dead-time plus peak delay control on a GaN synchronous buck",
+     "The most recent adaptive dead-time driver we found, and it adapts the one field our "
+     "leave-one-out test shows carries the whole benefit — and only at light load.",
+     xplore="11146698", year="2025", closest=True),
 ]
 
 DONE    = [r for r in REFS if r.done]

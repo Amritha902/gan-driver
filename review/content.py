@@ -124,9 +124,11 @@ SLIDE_RTL = [
        "— no shoot-through, exact dead-time length at three settings, all slices off and clamps "
        "on during dead time, thermometer monotonicity over the full range, safe reset, and no "
        "truncation on a late update. ", False), ("All pass under Icarus Verilog.", B)], 1),
-    ([("Then mutation-tested: a deliberate shoot-through bug draws 70 assertion failures, a "
-       "decoder off-by-one draws 9. One mutant that passed exposed a weak assertion, which was "
-       "rewritten until it caught it.", False)], 1),
+    ([("Then mutation-tested, reproducibly \u2014 ", False), ("sh rtl/mutate.sh", True),
+      (". A deliberate shoot-through bug (the low-side pull-up driven unconditionally) is "
+       "caught 221 times across three properties; the clean design passes. Mutants that only "
+       "delete the dead-time term are semantically equivalent \u2014 the FSM already holds both "
+       "sides off \u2014 and are correctly not counted.", False)], 1),
 ]
 
 
@@ -140,6 +142,6 @@ SLIDE_RTL_SHORT = [
        "worth 5.45 % to schedule (carried by the light-load corner alone) and pull-up 0.00 %.",
        False)], 1),
     ([("Reset lands on the safest word, not the fastest.", False)], 1),
-    ([("Seven asserted properties, all passing under Icarus Verilog; then mutation-tested — a "
-       "deliberate shoot-through bug draws 70 failures.", False)], 1),
+    ([("Eight asserted properties, all passing under Icarus Verilog; a deliberate "
+       "shoot-through mutant is caught 221 times (sh rtl/mutate.sh).", False)], 1),
 ]
