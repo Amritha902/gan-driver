@@ -323,3 +323,11 @@ its "vs nom." column is. Same cost weight in both, w_ov = 0.05, so the
 difference is the corner set, not the weighting. And 5.2 per cent against the
 best fixed word is the same thing as the 3.9 per cent of baseline in the
 results summary — 3.9 divided by 74.9.
+
+**"Isn't 13.4 per cent an artefact of your cost function?"**
+Partly, and we quantified it rather than defending it. Over 106 overshoot
+weights the fixed word is worth 23 to 29 per cent and adaptation 1.3 to 6.4.
+The number moves; the ordering doesn't. The fixed word wins at every weight we
+tested, out to five, which is already an extreme price on overshoot. So the
+claim we actually make — that most of the benefit needs no sensing, no ADC and
+no lookup table — is weight-independent even though 13.4 is not.

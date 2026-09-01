@@ -760,9 +760,11 @@ add_text(s_nov, 0.70, 5.92, 12.10, 1.10, [
           (" over a fixed word plus one comparator. Adaptation is 13.4 % of the gain; a single "
            "threshold takes 72 % of that.", False)], level=0, sz=1300, spc=130, bullet=False),
     para([("Every figure shares one baseline — the median control word that is safe at all four "
-           "corners. Robust across cost weightings: adaptation is 5.5–20.1 % of the gain for "
-           "overshoot weights 0 to 1.0. ", False),
-          ("scripts/novelty.py", True), (", ", False), ("scripts/howmanywords.py", True),
+           "corners. The split does not rest on the weighting: swept over 106 overshoot "
+           "weights, (A) stays ", False), ("23.4–29.0 %", True), (" and (B) ", False),
+          ("1.3–6.4 %", True), (" — and (A) exceeds (B) at ", False), ("every", True),
+          (" weight tested, out to 5.0. ", False),
+          ("scripts/novelty.py", True), (", ", False), ("scripts/weight_sensitivity.py", True),
           (".", False)], level=0, sz=1200, spc=0, bullet=False),
 ])
 

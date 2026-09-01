@@ -200,6 +200,16 @@ The decomposition in §4 — separating how much of an active gate driver's
 benefit comes from a better *fixed* setting versus genuine *per-operating-point
 adaptation*, measured by exhaustive search rather than argued.
 
+**"Your 13.4 % depends on how you weighted overshoot."**
+It does, and we measured exactly how much. Swept over 106 overshoot weights,
+choosing a better fixed word is worth 23.4–29.0 % of baseline and adaptation
+1.3–6.4 % (over the studied range 0 to 1.0). The magnitude of 13.4 % is
+weight-dependent; the **ordering is not** — the fixed word beats adaptation at
+every weight tested, out to a weight of 5.0, which is already physically
+extreme. So the conclusion "most of the benefit needs no adaptive hardware"
+does not rest on the weighting. `scripts/weight_sensitivity.py`, and
+`results/fig_weight_sensitivity.png`.
+
 **"What is the price of safety?"**
 Under 0.04% of switching energy. Crosstalk safety is essentially free once the
 clamp and off-bias are configured — that is itself a result worth stating.
