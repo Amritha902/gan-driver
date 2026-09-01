@@ -284,7 +284,7 @@ add_text(s9, 0.70, 5.95, 6.60, 0.90, [
 add_text(s9, 7.65, 1.45, 4.95, 0.45, [
     para([("What adaptation is actually worth", True)], level=0, sz=1500, spc=0, bullet=False)])
 stat(s9, 7.65, 2.00, 4.95, "5.2 %", "ceiling on operating-point scheduling",
-     "vs the best single fixed word. A fixed word is nearly as good.")
+     "vs the best single fixed word (= 3.9 % of baseline). A fixed word is nearly as good.")
 add_text(s9, 7.65, 3.45, 4.95, 3.40, [
     para([("The benefit is not spread out. ", True),
           ("Three corners lose 1–4 % from a fixed word; one loses 12.7 %.", False)],
@@ -506,7 +506,12 @@ add_text(s_rob, 7.55, 2.25, 5.05, 4.50, [
     para([("So the claim is narrower and more useful than “robust”: from about 2.5 nH "
            "upward a fixed word is nearly as good; on a tighter loop the question has to be "
            "re-asked, and the answer there is not even monotonic — see slide 19.", False)],
-         level=0, sz=1300, spc=0, bullet=True),
+         level=0, sz=1300, spc=200, bullet=True),
+    para([("Baseline note. ", True),
+          ("Nominal here is 5.95 %, not the 5.2 % headline — a two-corner search on its "
+           "own sweep. Compare the ", False), ("vs nom.", True),
+          (" column, not the absolute values.", False)],
+         level=0, sz=1150, spc=0, bullet=True),
 ])
 
 # ================= slide 14 : conclusion ==================================
