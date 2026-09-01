@@ -955,3 +955,242 @@ an edge worth stating plainly: **a team that has engineered its layout down to
 1.5 nH — which is the right thing to do — is exactly the team whose design
 might need the scheduling this paper argues against.** The negative result and
 its exception point at the same physics.
+
+## 29. The novelty, restated as something a designer can act on
+
+§28 left the project with a correct but negative headline: scheduling buys
+5.2 %. A negative result is honest and it is worth reporting, but it is not a
+deliverable. Three further analyses — none of which needed a new simulation —
+turn it into one.
+
+### Finding 1: a share was being computed against two different baselines
+
+`novelty.py` originally reported adaptation as "10.7 % of the total gain". It
+was computing (B) as a fraction of the **best** fixed word and the total as a
+fraction of the **worst**, then dividing one by the other. That quotient is
+not a share of anything.
+
+Recomputed against a single baseline — the median control word that is safe at
+all four corners, mean cost 8.956:
+
+| | cost | of baseline |
+|---|---|---|
+| (A) choosing a better fixed word | 2.244 | **25.1 %** |
+| (B) adapting it per operating point | 0.347 | **3.9 %** |
+| total available | 2.591 | 28.9 % |
+
+**Adaptation is 13.4 % of the total gain**, not 10.7 %. The correction makes
+the claim stronger, which is the second time in this project that fixing an
+arithmetic error moved a number in the favourable direction (§25 was the
+first). That is not luck: a number that flatters the argument is the one
+nobody re-derives.
+
+### Finding 2: the benefit does not need a lookup table — it needs a comparator
+
+The field frames this as a binary: one fixed word, or per-operating-point
+adaptation with sensing, an ADC and a lookup table. `howmanywords.py` asks a
+question that framing hides — if the controller may pick between **K** words,
+how much of the benefit survives? Exhaustive over every partition of the four
+corners:
+
+| K | mean cost | gain vs K=1 | of the full benefit | hardware |
+|---|---|---|---|---|
+| 1 | 6.712 | — | 0 % | strapped, none |
+| **2** | **6.462** | **3.73 %** | **72 %** | **one comparator** |
+| 3 | 6.365 | 5.17 % | 100 % | two thresholds |
+| 4 | 6.365 | 5.17 % | 100 % | sense + ADC + LUT |
+
+Two results here, and the second is the sharper one. **A single comparator
+captures 72 % of everything full per-corner scheduling delivers**, and the
+split it wants is {200 V, 2 A, 125 °C} against everything else — a light-load
+detect, the cheapest discrimination in power electronics. And **K = 4 buys
+nothing over K = 3**: the fourth word is dead weight even for a designer who
+has already paid for the lookup table.
+
+### The composite claim
+
+Multiplying the two: adaptation is 13.4 % of the gain, and a comparator takes
+72 % of that, so
+
+> **a full sense + ADC + lookup table is left justifying 3.7 % of the total
+> achievable gain over a fixed word plus one comparator.**
+
+That is the strongest honest statement the data supports, it is positive
+rather than negative — it tells a designer what to *build* — and it is novel
+in a way the 5.2 % figure was not, because it prices the hardware rather than
+the schedule.
+
+### Finding 3: the deliverable itself
+
+`design_rule.py` prints what a reader should actually take away: the single
+control word to strap, and what it delivers at every corner.
+
+| guard band | word | mean penalty vs the unreachable optimum |
+|---|---|---|
+| none | 8/8/1/25n/clamp on/0 V | 5.2 % |
+| 1 V | 8/8/1/15n/clamp on/−2 V | 10.2 % |
+
+At the no-guard setting it is within 1.1–3.8 % of the per-corner optimum at
+three corners and 12.7 % at the fourth — which is precisely the corner the
+comparator is for.
+
+### Robustness of the split
+
+Across overshoot weights from 0 to 1.0, adaptation is 5.5 %–20.1 % of the
+total gain. It is a minority at every weighting tested.
+
+## 30. The scheduling ceiling is not monotonic in loop inductance
+
+The three-point read in §22 suggested a clean threshold: tighten the loop and
+adaptive control pays, loosen it and one fixed word is as good. The full
+eight-point sweep (`scripts/lloop_sweep.py`, 7,200 transients, 4,587 s)
+does not support that shape.
+
+```
+    L (nH)    ceiling   feasible   best fixed word
+       1.0      8.11%        165   3/8/8/10n/0/+0
+       1.5     13.54%        158   3/8/8/10n/0/+0
+       2.0      9.83%        246   8/8/1/5n/1/-2
+       2.5     10.22%        384   8/8/1/25n/1/+0
+       3.0      5.95%        474   8/8/8/5n/1/+0
+       3.5      4.87%        474   8/8/1/25n/1/+0
+       4.5      0.55%        484   8/8/1/25n/1/+0
+       6.0      0.97%        484   8/8/1/25n/1/+0
+```
+
+The ceiling rises to 13.54 % at 1.5 nH and then *falls back* to 8.11 % at
+1.0 nH. Two candidate explanations, one of which we could rule out:
+
+**Not clamp chatter.** Chatter incidence is 43 % at 1.0 nH against 0 % at
+3.5 nH, so the artefact is concentrated exactly where the anomaly is.
+Re-running the analysis with `--drop-chatter`, which excludes every point
+whose clamp switch chatters, leaves **all eight ceilings unchanged to the
+digit**. The cost function penalises overshoot, so it never selects a
+chattering word in the first place; excluding them removes nothing that was
+being chosen.
+
+**It is feasibility.** The count of words safe at both corners rises
+monotonically with inductance, 165 → 484. A tighter loop commutates faster
+and couples more charge through C_GD, so fewer words stay below the false
+turn-on threshold. At 1.0–1.5 nH so few words survive that the best fixed
+word and the per-corner optima are forced into the same narrow region — and
+the gap between them is precisely what scheduling exploits. Below about
+2 nH the binding constraint is feasibility, not optimisation.
+
+**Consequence for the claim.** The honest deliverable is a *band*, not a
+threshold: adaptive control earns its hardware from roughly 2.5 nH down,
+with the return peaking at 1.5 nH and receding again below it. Slide 15 and
+`scripts/plot_lloop.py` now plot the feasible-word count as a second panel,
+because the count is part of the result rather than decoration. The earlier
+deck wording ("below the crossover the adaptive path earns its hardware")
+overstated a three-point read and has been replaced.
+
+This is the fourth number in this project that a wider sweep corrected
+rather than confirmed (see §14, §18, §24). The pattern is consistent: every
+figure taken from a coarse sample here has moved when resampled.
+
+## 31. Pricing EMI does not rescue the adaptive premise — it weakens it
+
+Section III.E conceded a limitation rather than testing it: pull-up drive
+strength measures at 0.00 % under a loss-and-overshoot cost, but the active
+gate driver literature schedules drive strength *for EMI*, which our cost
+never prices. `scripts/emi_sweep.py` closes this — the same 720-word grid at
+the same two corners as the robustness study, 1,440 transients, 0 failed,
+905 s, recording two extra turn-on measures alongside the frozen metrics.
+
+Both EMI measures were checked for timestep convergence first (§24). Over a
+25× refinement `dvdt_1090` moves 27.89 → 28.03 (four significant figures)
+and `E_osc_on` moves 20.69 → 20.21 (~3 %). The peak measure `dvdt_pk` drifts
+118 → 160 and is reported but carries no conclusion.
+
+The objective is `cost(r; α) = (1−α)·loss_term/L0 + α·EMI(r)/D0`, so α = 0
+recovers the paper's objective and α = 1 optimises for EMI alone.
+
+**Self-check.** At α = 0 the ceiling is 5.95 %, matching the robustness
+study's nominal to the digit on 1,440 transients run independently of it.
+(It must *not* be checked against `ceiling.py`'s 5.2 %, which is a
+four-corner number. An earlier version of the docstring said exactly that
+and was wrong.)
+
+**Result 1 — the ceiling falls, monotonically, as EMI is priced.**
+
+```
+    α        0.0   0.1   0.2   0.3   0.5   0.7   0.9   1.0
+    dvdt    5.95  4.33  5.14  2.80  1.43  0.89  0.53  0.15
+    E_osc   5.95  4.94  4.01  3.15  1.60  0.25  0.20  0.38
+```
+
+Scheduling is worth *less* under an EMI-aware objective, not more. The
+paper's central negative result survives the limitation it conceded, and
+comes out stronger for it.
+
+**Result 2 — drive strength needs a different fixed value, not scheduling.**
+
+Under `dvdt_1090` the pull-up freeze penalty is a smooth hump, resolved on a
+nine-point α grid rather than inferred from the coarse one:
+
+```
+    α        0.00  0.05  0.10  0.15  0.20  0.25  0.30  0.35  0.40
+    penalty  0.00  0.00  0.29  1.35  2.27  1.63  0.69  0.15  0.00
+    best NPU    8     8     8     6     3     2     2     2     1
+```
+
+The frozen optimum walks monotonically 8 → 1 while the penalty rises and
+falls. The mechanism is a crossover: at low α the objective is loss-dominated
+and both corners want the strongest pull-up; at high α it is EMI-dominated
+and both want the weakest. Only in the transition band do the two corners
+disagree, and only there does freezing cost anything — peaking at 2.27 %.
+
+So even on the objective the literature actually uses, drive strength does
+not need *scheduling*. It needs a different *fixed* value. That is precisely
+the distinction this project exists to draw, now tested on the literature's
+own terms.
+
+**Caveat, stated rather than buried.** This depends on which EMI measure is
+priced. Under `E_osc_on` (30–500 MHz band energy) the pull-up penalty is
+0.00 % at every α and the frozen optimum stays at 8 throughout. Slew rate is
+what the drive-strength literature targets; band energy is closer to what an
+EMC test measures. They disagree, and this project does not claim to settle
+which one a designer should price.
+
+## 32. The dead-time result rests entirely on one corner
+
+Chasing §31 surfaced a contradiction. `whichbit.py` ranks dead time first at
+5.45 %, and the deck says "the benefit that exists is carried by the dead
+time". But the α = 0 freeze ranking on the EMI sweep puts dead time at
+**0.00 %, tied last**, with off-bias first at 5.46 %.
+
+The near-identical 5.45 % and 5.46 % are two different fields on two
+different corner sets — a coincidence, and a misleading one.
+
+`whichbit.py` uses four corners; `robust.py` and `emi_sweep.py` use two. The
+difference is not a bug in either. Leave-one-out isolates it:
+
+```
+    corner set                    dead time   off-bias
+    all four corners                  5.45%      2.55%
+    without 100V_10A_25C              6.07%      3.19%
+    without 200V_10A_125C             8.55%      5.10%
+    without 200V_2A_125C              2.08%      0.00%
+    without 50V_2A_25C                0.00%      2.64%
+    the two-corner pair               0.00%      5.46%
+```
+
+Removing **50 V / 2 A / 25 °C** takes dead time from first place to exactly
+zero. No other corner does this. The reason is direct: three of the four
+corners choose DT = 5 ns; only the light-load corner chooses 15 ns, and its
+absolute cost is small (0.858 against 5.05–12.70), so forcing it off its
+optimum moves the mean sharply.
+
+**This sharpens the claim rather than destroying it.** "Dead time is worth
+5.45 % to schedule" is corner-set dependent and cannot be stated bare. What
+*is* robust is the design rule underneath it: the entire dead-time benefit
+is one light-load corner wanting a longer dead time. A single light-load
+detector selecting between two dead-time values captures all of it — no
+sensing chain, no ADC, no lookup table. That is buildable, and it is the
+same shape as the independent finding in §29 that one comparator closes 72 %
+of the adaptive gap.
+
+The deck overstated this and has been corrected. Fifth number caught by this
+project's own checks; every one so far has come from resampling or
+re-deriving a figure rather than from a reviewer.

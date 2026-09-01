@@ -1,0 +1,35 @@
+FINISHING THE FIVE CITATIONS
+============================
+Five of the eight references need volume, issue, pages, year and authors.
+They are not filled in because every publisher and metadata service is
+blocked by this environment's egress policy - IEEE Xplore, doi.org,
+Crossref, OpenAlex, Semantic Scholar, Springer, MDPI, ResearchGate,
+NSF PAR, DBLP, CORE and OUCI were all tried and all refused. Guessing
+them was not an option worth taking.
+
+On the VIT network this is about five minutes.
+
+  [4]  https://ieeexplore.ieee.org/document/9573371
+  [5]  https://ieeexplore.ieee.org/document/10553383
+  [6]  https://ieeexplore.ieee.org/document/10964227
+  [7]  https://ieeexplore.ieee.org/document/10813402
+  [8]  https://ieeexplore.ieee.org/document/10664041
+
+For each one:
+  1. open the link
+  2. press "Cite This", pick IEEE, copy the string
+  3. in review/refs.py find the Ref(N, ...) entry with that xplore= number
+  4. paste the string into      ieee="..."
+  5. replace                    "—"        with the author list, e.g. "Chen et al. (2021)"
+  6. set                        done=True
+
+Then, from the gan-driver directory:
+
+     cd review && python3 build.py
+
+Both the survey table (slide 6) and the reference list (slide 16) rebuild
+from refs.py, so there is one place to edit and the two cannot disagree.
+The footer line counts itself: "3 of 8 verified" becomes "8 of 8".
+
+Check it worked:   python3 qa.py
+                   python3 <skill>/office/validate.py Review1_...pptx

@@ -14,8 +14,13 @@ freeze test under a family of objectives that DOES price it:
     cost(r; a) = (1-a) * [E_tot*1e6 + w_ov*ov_pct] / L0  +  a * EMI(r) / D0
 
 a = 0 recovers the paper's objective exactly; a = 1 optimises for EMI alone.
-At a = 0 the ceiling printed here must equal ceiling.py's 5.2 % on the same
-corners; that is the check that this script is measuring the same thing.
+
+SELF-CHECK: at a = 0 the ceiling printed here must equal the nominal ceiling
+of the ROBUSTNESS study, 5.95 %, because emi_sweep.py runs robust.py's two
+corners. It must NOT be compared with ceiling.py's 5.2 %, which is a
+four-corner number - an earlier version of this docstring said exactly that
+and was wrong. The two-corner check passes to the digit, on 1,440 transients
+run independently of the robustness sweep.
 L0 and D0 are medians over the feasible set, computed once so that costs stay
 comparable across corners.
 
@@ -27,7 +32,7 @@ Two EMI measures are run separately, because they disagree in sign:
 An objective built on either one is defensible, and if they give opposite
 answers about scheduling that is itself the result.
 """
-import csv, os, sys
+import csv, gzip, os, sys
 from collections import defaultdict
 from statistics import median
 
@@ -41,11 +46,17 @@ ALPHAS = [0.0, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.0]
 
 
 def load():
+    # the gzipped sweep is committed so a fresh clone reproduces this without
+    # re-running emi_sweep.py (1,440 transients, ~15 min)
     p = os.path.join(ROOT, "results", "emi_sweep.csv")
-    if not os.path.exists(p):
+    if os.path.exists(p):
+        fh = open(p)
+    elif os.path.exists(p + ".gz"):
+        fh = gzip.open(p + ".gz", "rt")
+    else:
         sys.exit("results/emi_sweep.csv not found -- run scripts/emi_sweep.py first")
     rows = []
-    for r in csv.DictReader(open(p)):
+    for r in csv.DictReader(fh):
         for k, v in list(r.items()):
             if k in ("corner", "DT", "CLKDEL"): continue
             try: r[k] = float(v)
@@ -100,7 +111,7 @@ def analyse(rows, emi_key, sign):
         c_sched = sum(cost(sched[c]) for c in corners) / len(corners)
         univ = [k for k, d in per.items() if len(d) == len(corners)]
         if not univ:
-            print("  %5.1f   no universal word" % a); continue
+            print("  %5.2f   no universal word" % a); continue
         bw = min(univ, key=lambda k: sum(cost(per[k][c]) for c in corners))
         c_fix = sum(cost(per[bw][c]) for c in corners) / len(corners)
         # denominator is the FIXED cost, matching ceiling.py, scaling.py and
@@ -123,7 +134,7 @@ def analyse(rows, emi_key, sign):
         pens.sort(key=lambda x: -(x[1] if x[1] == x[1] else -1))
         tag = "  ".join("%s %.2f%%" % (f, p) for f, p in pens[:3])
         wstr = "%d/%d/%d/%s/%d/%+d" % (bw[0], bw[1], bw[2], bw[3], bw[4], bw[5])
-        print("  %5.1f %9.2f%%  %-22s %s" % (a, ceiling, wstr, tag))
+        print("  %5.2f %9.2f%%  %-22s %s" % (a, ceiling, wstr, tag))
 
     # ---- the specific question: when does pull-up start to matter? --------
     print("\n  pull-up freeze penalty vs alpha:")
@@ -138,7 +149,7 @@ def analyse(rows, emi_key, sign):
             pen = 100 * (pen - c_free) / abs(c_free)
             if got is None or pen < got[0]: got = (pen, v)
         if got:
-            print("    alpha=%.1f   penalty %.2f%%   best frozen N_PU = %d"
+            print("    alpha=%.2f   penalty %.2f%%   best frozen N_PU = %d"
                   % (a, got[0], int(got[1])))
 
 

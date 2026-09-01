@@ -36,6 +36,12 @@ def build_paras(spec):
                         spc=600, bullet=True))
     return out
 
+# A previous run's output must not survive a crash: qa.py and validate.py
+# read OUT by name, and a stale file from the last SUCCESSFUL build looks
+# exactly like a passing result. Delete it before doing any work.
+if os.path.exists(OUT):
+    os.remove(OUT)
+
 p = Presentation(SRC)
 S = p.slides
 
@@ -64,11 +70,30 @@ set_run_after(S[1], "Guide:", "Dr. Bindu, School of Electronics Engineering (SEN
 # ---------------- slides 4, 6, 7 : bulleted content ------------------------
 for idx, spec, needle in ((3, content.SLIDE4, "Problem Statement:"),
                           (6, content.SLIDE6, "Proposed Solution:"),
-                          (7, content.SLIDE7, "Work completed so far")):
+                          (8, content.SLIDE7,  "Work completed so far"),
+                          (9, content.SLIDE7B, "Problem Statement:")):
     sh = find_shape(S[idx], needle)
     set_body(sh, build_paras(spec))
     print("slide %d: %.2f in of %.2f  %s"
           % (idx + 1, fits(spec), BOX_H, "OK" if fits(spec) <= BOX_H else "OVERFLOW"))
+
+rtl_shape = find_shape(S[10], "Problem Statement:")
+set_body(rtl_shape, build_paras(content.SLIDE_RTL_SHORT))
+set_title(S[10], "FPGA Controller — verified RTL")
+print("slide 11 (RTL text block): %.2f in of 2.55  %s"
+      % (fits(content.SLIDE_RTL_SHORT),
+         "OK" if fits(content.SLIDE_RTL_SHORT) <= 2.55 else "OVERFLOW"))
+
+# The official brief says 10 minutes; the template stub said 8-10.
+for sh in S[2].shapes:
+    if sh.has_text_frame:
+        for pa in sh.text_frame.paragraphs:
+            for r in pa.runs:
+                if "8\u201310 minutes" in r.text:
+                    r.text = r.text.replace("8\u201310 minutes", "10 minutes")
+
+set_title(S[8], "Work Completed — 50 %")
+set_title(S[9], "Timeline, Milestones & Tools")
 
 p.save(OUT)
 print("wrote", OUT)
@@ -110,20 +135,14 @@ def table_of(slide):
 for page, sidx in ((0, 4), (1, 5)):
     tbl = table_of(S[sidx])
     group = R.REFS[page * 4:(page + 1) * 4]
-    for row, (num, auth, title, venue, method, find, xid, ok) in enumerate(group, start=1):
-        set_cell(tbl.cell(row, 0), str(num))
-        set_cell(tbl.cell(row, 1), [(auth, False)] if ok else
-                 [(auth, False), ("\nauthors: complete from Xplore", True)], grey=not ok)
-        set_cell(tbl.cell(row, 2), [(title, False), ("\n" + venue, True)])
-        set_cell(tbl.cell(row, 3), method)
-        set_cell(tbl.cell(row, 4), find)
-    # Each table ships with 6 body rows and each slide now carries 4. Delete the
-    # spare rows rather than blanking them: an empty row still occupies 0.62 in,
-    # and PowerPoint grows rows to fit their text, so leaving two behind would
-    # push the table under the footnote.
+    for row, ref in enumerate(group, start=1):
+        set_cell(tbl.cell(row, 0), str(ref.n))
+        set_cell(tbl.cell(row, 1), ref.table_author(), grey=not ref.done)
+        set_cell(tbl.cell(row, 2), [(ref.title, False), ("\n" + ref.table_venue(), True)])
+        set_cell(tbl.cell(row, 3), ref.method)
+        set_cell(tbl.cell(row, 4), ref.finding)
     for row in (6, 5):
         tbl._tbl.remove(tbl.rows[row]._tr)
-    # give the four remaining rows room to breathe
     for row in range(len(tbl.rows)):
         tbl.rows[row].height = Inches(0.95 if row else 0.40)
     if page == 0:
@@ -135,11 +154,11 @@ for page, sidx in ((0, 4), (1, 5)):
     else:
         set_title(S[sidx], "Literature Survey  (5 – 8)")
         note = find_shape(S[sidx], "Minimum 8")
-        set_body(note, [para([("References [4]–[8]: title, journal status and IEEE Xplore document "
-                               "ID confirmed. Volume, issue, pages and authors are marked XX — every "
-                               "publisher and metadata service was unreachable from the build "
-                               "environment, and they are not invented. One click on Xplore's "
-                               "\u201cCite This\u201d completes each.", False)],
+        set_body(note, [para([("References [4]–[8]: title, journal status and IEEE Xplore "
+                               "document ID confirmed. Volume, issue, pages and authors are "
+                               "marked XX — every publisher and metadata service was unreachable "
+                               "from the build environment, and they are not invented. One click "
+                               "on Xplore\u2019s \u201cCite This\u201d completes each.", False)],
                              level=0, sz=1150, spc=0, bullet=False)])
 
 # ---------------- slides 8 & 9 : results ----------------------------------
@@ -169,7 +188,7 @@ def stat(slide, x, y, w, big, label, sub):
     return t
 
 # --- slide 8: the problem reproduced, and fixed ---------------------------
-s8 = S[8]
+s8 = S[11]
 s8.shapes.add_picture(RES + "/fig1_crosstalk.png",
                       Inches(0.70), Inches(1.45), width=Inches(7.30))
 add_text(s8, 0.70, 6.30, 7.30, 0.45, [
@@ -192,7 +211,7 @@ add_text(s8, 8.35, 4.75, 4.25, 2.00, [
 ])
 
 # --- slide 9: the headline negative result -------------------------------
-s9 = S[9]
+s9 = S[12]
 s9.shapes.add_picture(RES + "/paper_fig2_ceiling.png",
                       Inches(0.70), Inches(1.55), width=Inches(6.60))
 add_text(s9, 0.70, 5.35, 6.60, 0.45, [
@@ -212,11 +231,14 @@ add_text(s9, 7.65, 3.45, 4.95, 3.40, [
     para([("The benefit is not spread out. ", True),
           ("Three corners lose 1–4 % from a fixed word; one loses 12.7 %.", False)],
          level=0, sz=1300, spc=180, bullet=False),
-    para([("It is carried by the dead time. ", True),
-          ("Freezing dead time costs 5.45 %; freezing pull-up drive strength costs ", False),
-          ("0.00 %", True),
+    para([("It is carried by the dead time — and the dead time by one corner. ", True),
+          ("Freezing dead time costs 5.45 % across four corners. Drop the light-load "
+           "50 V / 2 A corner and it costs ", False), ("0.00 %", True),
+          (": three corners want 5 ns, only that one wants 15 ns. So the adaptive hardware "
+           "reduces to a light-load detector picking one of two dead times. Freezing pull-up "
+           "drive strength costs ", False), ("0.00 %", True),
           (" — and drive strength is what the active-gate-driver literature actually schedules.",
-           False)], level=0, sz=1300, spc=180, bullet=False),
+           False)], level=0, sz=1200, spc=180, bullet=False),
     para([("Robust to the device, conditional on the layout. ", True),
           ("Across 21,600 transients, no device parameter moves the ceiling outside 4.3–7.7 %. "
            "Halving the loop inductance takes it to 13.5 %, and loop inductance is board layout, "
@@ -226,37 +248,19 @@ p.save(OUT)
 print("slides 8 and 9 built")
 
 # ---------------- references slide -----------------------------------------
-IEEE_FULL = {
- 1: "Z. Zhang, F. Wang, L. M. Tolbert and B. J. Blalock, \u201cActive Gate Driver for Crosstalk "
-    "Suppression of SiC Devices in a Phase-Leg Configuration,\u201d IEEE Trans. Power Electron., "
-    "vol. 29, no. 4, pp. 1986\u20131997, Apr. 2014.",
- 2: "R. Xie, H. Wang, G. Tang, X. Yang and K. J. Chen, \u201cAn Analytical Model for False Turn-On "
-    "Evaluation of High-Voltage Enhancement-Mode GaN Transistor in Bridge-Leg Configuration,\u201d "
-    "IEEE Trans. Power Electron., vol. 32, no. 8, pp. 6416\u20136433, Aug. 2017.",
- 3: "D. Reusch and J. Strydom, \u201cUnderstanding the Effect of PCB Layout on Circuit Performance "
-    "in a High-Frequency Gallium-Nitride-Based Point of Load Converter,\u201d IEEE Trans. Power "
-    "Electron., vol. 29, no. 4, pp. 2008\u20132015, Apr. 2014.",
-}
-ref_shape = find_shape(S[14], "A. Author")
-paras = []
-for num, auth, title, venue, method, find, xid, ok in R.REFS:
-    if ok:
-        paras.append(para([("[%d]  " % num, True), (IEEE_FULL[num], False)],
-                          level=0, sz=1150, spc=340, bullet=False))
-    else:
-        paras.append(para([("[%d]  " % num, True),
-                           ("\u201c%s,\u201d " % title, False),
-                           ("IEEE journal; Xplore document %s. " % xid, False),
-                           ("Authors, vol., no., pp., year to be completed from Xplore.", True)],
-                          level=0, sz=1150, spc=340, bullet=False))
-paras.append(para([("[1]\u2013[3] verified against the publisher record. [4]\u2013[8]: title, "
-                    "journal status and Xplore document ID confirmed; the remaining fields were "
-                    "not reachable from the build environment and are deliberately left blank "
-                    "rather than guessed.", False)], level=0, sz=1050, spc=0, bullet=False))
+ref_shape = find_shape(S[19], "A. Author")
+paras = [para([("[%d]  " % r.n, True), (r.cite(), False)],
+              level=0, sz=1150, spc=300, bullet=False) for r in R.REFS]
+n_done, n_pend = len(R.DONE), len(R.PENDING)
+paras.append(para([
+    ("%d of %d verified against the publisher record. " % (n_done, len(R.REFS)), False),
+    ("The remaining %d carry title, journal status and Xplore document ID; " % n_pend, False),
+    ("volume, issue, pages and authors were not reachable from the build environment and are "
+     "left blank rather than guessed.", False)], level=0, sz=1050, spc=0, bullet=False))
 set_body(ref_shape, paras)
 
 try:
-    n2 = find_shape(S[14], "Use IEEE format")
+    n2 = find_shape(S[19], "Use IEEE format")
     set_body(n2, [para([("Use IEEE format. Every reference listed must be cited in the slides / "
                          "report.", False)], level=0, sz=1200, spc=0, bullet=False)])
 except KeyError:
@@ -283,7 +287,7 @@ def renumber(slide, n):
                     r.text = str(n); return
 
 # ---- slide 10 : the demo video ------------------------------------------
-s10 = S[11]
+s10 = S[16]
 retitle(s10, "Demo")
 # pipeline_demo.mp4 trimmed to 17.5 s. The original's closing caption read
 # "the Miller clamp buys 14.7 %", the superseded 36-corner shortlist figure;
@@ -316,18 +320,19 @@ add_text(s10, 8.65, 1.55, 3.95, 4.60, [
 ])
 
 # ---- slide 11 : the evidence behind the numbers --------------------------
-s11 = S[12]
+s11 = S[17]
 retitle(s11, "Why the numbers hold")
 
 TILES = [
-    ("25,990", "transient simulations",
-     "Every sweep, corner study and robustness run, start to finish."),
+    ("34,622", "transient simulations",
+     "Every sweep, corner study, robustness run, loop-inductance and EMI sweep, start to finish."),
     ("720", "control words, searched in full",
      "At every corner — so each per-corner optimum is a true optimum, not the best of a shortlist."),
     ("25×", "timestep refinement survived",
      "Every reported quantity must be flat across it. Enforced, not assumed."),
-    ("7", "wrong numbers caught, and corrected",
-     "By that discipline, before any of them reached the report."),
+    ("10", "wrong numbers caught, and corrected",
+     "By that discipline, before any of them reached the report. Every one came from resampling "
+     "or re-deriving a figure of our own — none from a reviewer."),
 ]
 X0, Y0, W, DX, DY = 0.70, 1.70, 5.75, 6.15, 2.35
 for i, (big, label, sub) in enumerate(TILES):
@@ -365,9 +370,15 @@ for sh in S[1].shapes:
     if sh.has_text_frame and sh.text_frame.text.startswith("A Segmented Gate Driver"):
         sh.height = Inches(1.30)
 
+# The RTL slide's text box inherited the template's full 5.40 in height, so it
+# ran under the waveform figure that now sits at y=4.05.
+for sh in S[10].shapes:
+    if sh.has_text_frame and sh.text_frame.text.startswith("Three modules emitting"):
+        sh.height = Inches(2.45)
+
 # The reference list inherited the template's full-height content box (5.40 in)
 # but holds about 4 in of text, so the tail ran under the footnote.
-for sh in S[14].shapes:
+for sh in S[19].shapes:
     if sh.has_text_frame and sh.text_frame.text.startswith("[1]"):
         sh.height = Inches(4.75)
 
@@ -376,7 +387,7 @@ print("geometry fixes applied")
 
 
 # ================= slide 11 : robustness ==================================
-s_rob = S[10]
+s_rob = S[15]
 retitle(s_rob, "Results — robustness of the ceiling")
 
 ROWS = [("Loop inductance −50 %  (1.5 nH)", "13.54 %", "+7.59", True),
@@ -424,33 +435,46 @@ add_text(s_rob, 7.55, 2.25, 5.05, 4.50, [
            "more charge couples through C", False), ("GD", False),
           (": the median spurious gate voltage goes 0.640 V to 3.522 V and the feasible set "
            "collapses 474 → 158.", False)], level=0, sz=1300, spc=200, bullet=True),
-    para([("So the claim is narrower and more useful than “robust”: on a loop of about "
-           "3 nH or looser a fixed word is nearly as good; on a substantially tighter loop the "
-           "question has to be re-asked.", False)], level=0, sz=1300, spc=0, bullet=True),
+    para([("So the claim is narrower and more useful than “robust”: from about 2.5 nH "
+           "upward a fixed word is nearly as good; on a tighter loop the question has to be "
+           "re-asked, and the answer there is not even monotonic — see slide 15.", False)],
+         level=0, sz=1300, spc=0, bullet=True),
 ])
 
 # ================= slide 14 : conclusion ==================================
-s_con = S[13]
+s_con = S[18]
 set_title(s_con, "Conclusion & next steps")
 con_shape = find_shape(s_con, "Problem Statement:")
 set_body(con_shape, [
     para([("What the data supports", True)], level=0, sz=1600, spc=200, bullet=False),
     para([("Choosing the control word well matters enormously — it spans roughly fivefold in "
            "switching energy. ", False),
-          ("Adapting it to the operating point does not: 5.2 %, and a single fixed word is "
-           "nearly as good.", True)], level=0, sz=1450, spc=180, bullet=True),
-    para([("The benefit that exists is carried by the ", False), ("dead time", True),
-          (", not by the drive-strength segmentation that motivates the hardware. Crosstalk "
-           "safety is nearly free once the Miller clamp is present.", False)],
+          ("Adapting it to the operating point does not: 3.9 %, a seventh of the total gain, "
+           "and one comparator takes 72 % of even that.", True)],
          level=0, sz=1450, spc=180, bullet=True),
-    para([("This is a negative result about the ", False), ("adaptive", True),
-          (" premise, and it is reported as one rather than hidden.", False)],
-         level=0, sz=1450, spc=260, bullet=True),
-    para([("What it does not support, and what is next", True)], level=0, sz=1600, spc=200,
+    para([("The benefit that exists is carried by the ", False), ("dead time", True),
+          (" — and the dead time, in turn, by the ", False), ("light-load corner alone", True),
+          (": leave it out and freezing dead time costs 0.00 %. Not by the drive-strength "
+           "segmentation that motivates the hardware, which stays at 0.00 % even when the "
+           "objective prices EMI. Crosstalk safety is nearly free once the clamp is present.",
+           False)], level=0, sz=1400, spc=180, bullet=True),
+    para([("Stated positively — and this is the deliverable, not the percentage: ", True),
+          ("use the recommended fixed word with a light-load comparator, and the full "
+           "sense + ADC + lookup table is left justifying 3.7 % of the achievable gain.",
+           False)], level=0, sz=1450, spc=260, bullet=True),
+    para([("What the data now answers, and what is next", True)], level=0, sz=1600, spc=200,
          bullet=False),
-    para([("The objective prices loss and overshoot only. Pull-up strength is worth 0.00 % to "
-           "schedule under it, yet swings turn-on slew rate by 123 % and ringing energy by "
-           "128 % — an EMI-bound design could reach the opposite conclusion.", False)],
+    para([("The EMI objection is now tested rather than conceded.", True),
+          (" Re-running the full search under objectives that price turn-on slew rate, and "
+           "again under 30–500 MHz band energy, makes scheduling worth ", False),
+          ("less", True), (", not more: 5.95 % falls to 0.15 %. Pull-up strength still does "
+           "not need scheduling — it needs a different fixed value.", False)],
+         level=0, sz=1450, spc=180, bullet=True),
+    para([("What it does not support.", True),
+          (" Which EMI measure a designer should price is unsettled, and the two disagree: "
+           "under band energy freezing pull-up costs 0.00 % at every weight, under slew rate "
+           "up to 2.27 % in a narrow transition band. No silicon has been measured, and one "
+           "device model underlies everything.", False)],
          level=0, sz=1450, spc=180, bullet=True),
     para([("Review-II: ", True), ("transistor-level output stage in Cadence on a 5 V-capable "
            "PDK; re-run the ceiling on real devices. ", False), ("Review-III: ", True),
@@ -479,8 +503,8 @@ for sh in S[1].shapes:
                 r.text = REPL[r.text.strip()]; hits += 1
 
 # ---------------- informative titles on the two results slides ------------
-for sl, txt in ((S[8],  "Results — the problem, and the fix"),
-                (S[9],  "Results — what scheduling is actually worth")):
+for sl, txt in ((S[11], "Results — the problem, and the fix"),
+                (S[12], "Results — what scheduling is actually worth")):
     for sh in sl.shapes:
         if sh.has_text_frame and sh.text_frame.text.strip() in ("Results", "Results (contd.)"):
             for pa in sh.text_frame.paragraphs:
@@ -490,3 +514,193 @@ for sl, txt in ((S[8],  "Results — the problem, and the fix"),
 
 p.save(OUT)
 print("slide 2: %d of %d fields set; results slides retitled" % (hits, len(REPL)))
+
+# ================= speaker notes + time budget ============================
+# 17 slides against an 8-10 minute slot. Without a budget the talk overruns
+# and the marker docks presentation quality, so each slide carries its target
+# and the two droppable slides say so.
+# Official brief: 10 minutes, and the mark split is problem clarity 2,
+# literature 1, proposed solution 1, presentation quality 1.
+#
+# The CORE set below totals 535 s = 8.9 min, leaving ~1 min for transitions
+# and the inevitable overrun. Three slides are marked BACKUP: they stay in the
+# deck and are strong answers to likely questions, but they are not presented
+# unless asked. Presentation quality is a mark, and overrunning a 10-minute
+# slot is the easiest way to lose it.
+# 20 slides, 10-minute slot. CORE totals 570 s = 9.5 min, leaving 30 s of
+# margin. Four slides are BACKUP: in the deck, prepared, not presented.
+NOTES = {
+ 2:  ("20 s", "CORE. Project name and the one-line claim: a segmented GaN gate driver, and a "
+               "measurement of what per-operating-point adaptation is actually worth."),
+ 3:  ("skip", "SKIP. Template slide."),
+ 4:  ("90 s", "CORE — the 2-mark slide, the biggest block in the review. Land two things: the "
+              "failure is real and specific (1.65 V on a 1.40 V threshold), and the gap is "
+              "that prior work conflates 'better fixed settings' with 'settings that adapt'."),
+ 5:  ("35 s", "CORE — literature mark. Do not read the table. Eight references, three verified "
+              "to page level; point at [3], layout sets loop inductance, which decides our "
+              "answer."),
+ 6:  ("25 s", "CORE — literature mark. Closest prior work. [8] adapts dead time, the one field "
+              "we find worth scheduling — and it does so across a 0.2-2 A range, which is "
+              "exactly the light-load corner our leave-one-out test shows carries all of that "
+              "benefit. Independent support, not competition."),
+ 7:  ("35 s", "CORE — proposed-solution mark. The 720-point control word and the method: "
+              "exhaustive search at every corner, so each per-corner optimum is a TRUE optimum "
+              "and not the best of a shortlist."),
+ 8:  ("40 s", "CORE. Walk the diagram left to right in one sentence, then stop on the dashed "
+              "block: that is the sensing and lookup-table machinery the adaptive premise "
+              "needs. The whole project is a measurement of what it buys. Let the picture do "
+              "the work — do not narrate every box."),
+ 9:  ("55 s", "CORE — the 50 %-completion requirement. Five claims, each with a number. If "
+              "asked 'is this really 50 %?': the search is complete, stress-tested, and both "
+              "objections to it - layout and EMI - have been tested rather than argued. What "
+              "remains is silicon and hardware."),
+ 10: ("35 s", "CORE — the timeline and tools requirement. M1-M6. If asked what could go wrong: "
+              "M1, the PDK — a 1.8 V / 3.3 V teaching PDK cannot take a 5 V rail."),
+ 11: ("BACKUP", "BACKUP — the FPGA. If asked: written AND verified, seven asserted properties, "
+                "then mutation-tested. Dead time gets a live register and drive strength is "
+                "strapped, because that is what the study found."),
+ 12: ("40 s", "CORE. The problem reproduced and fixed. Point at the red X below the threshold "
+              "line. Then: safety costs 0.04 % — nearly free once the clamp is present."),
+ 13: ("30 s", "CORE. 5.2 %. Say plainly this is a NEGATIVE result about the adaptive premise "
+              "and you are reporting it rather than hiding it. Keep it short — slides 14 and "
+              "15 do the real work."),
+ 14: ("50 s", "CORE — the novelty slide, and the one sentence the panel should leave with: "
+              "'a full sense-plus-ADC-plus-lookup-table is left justifying 3.7 % of the gain "
+              "over a fixed word and one comparator.' Build it in three steps. (1) Choosing "
+              "the fixed word well is worth 25.1 %. (2) Adapting per corner adds only 3.9 % "
+              "— a seventh of the total. (3) And 72 % of even THAT is capturable with a "
+              "single light-load comparator, not a lookup table. No published work separates "
+              "these, because separating them needs the exhaustive search rather than a "
+              "shortlist. If asked why nobody found this: they report one number."),
+ 15: ("40 s", "CORE — the design chart, and the most USEFUL thing in the deck. Do NOT call it "
+              "a single crossover: eight points show a BAND. Adaptive control pays from about "
+              "2.5 nH down, peaks at 13.5 % at 1.5 nH, then FALLS BACK to 8.1 % at 1.0 nH. Say "
+              "why, because it is the interesting part: at 1.0 nH only 165 of 720 words are "
+              "still safe, so the fixed word and the per-corner optima are squeezed into the "
+              "same narrow region and the gap scheduling exploits shrinks. Below ~2 nH "
+              "feasibility binds, not optimisation. We checked it is not the clamp-chatter "
+              "artefact — excluding every chatter point leaves all eight ceilings unchanged to "
+              "the digit. The literature does not state this trade-off because it never "
+              "separates the fixed and adaptive halves."),
+ 16: ("BACKUP", "BACKUP — the robustness table. Best answer to 'is this just your model?': "
+                "every device parameter leaves the ceiling at 4.3-7.7 %; only loop inductance "
+                "moves it, and that is board layout, not the transistor."),
+ 17: ("40 s", "CORE. Play the video. Real captured ngspice output — the failure, the fix, the "
+              "search. Let it run; do not talk over it."),
+ 18: ("BACKUP", "BACKUP — use if the panel probes rigour. TEN wrong numbers caught by our own "
+                "checks is a strength; say it that way. The best one to tell: dead time ranked "
+                "first at 5.45 % on four corners and dead LAST at 0.00 % on two, and we chased "
+                "it to a single light-load corner rather than quoting the flattering number. The "
+                "leave-one-out table is in results/FINDINGS.md section 32 if they want it."),
+ 19: ("40 s", "CORE. Close on what the data supports and what it now answers. Do NOT concede "
+              "EMI as a limitation any more - it was tested: pricing it makes scheduling worth "
+              "LESS, 5.95 % down to 0.15 %. State the remaining limits yourself instead: the "
+              "two EMI measures disagree about drive strength, no silicon has been measured, "
+              "and one device model underlies everything."),
+ 20: ("skip", "Reference list. Leave up during questions."),
+ 21: ("—",    "Thank you. Expect: 'why is the clamp worth more than scheduling?', 'have you run "
+              "real silicon?' (no — Review-II), 'did Cadence actually run?' (no, and the deck "
+              "says so), 'is 8 references enough?' (it is the stated minimum). Newer ones: "
+              "'your dead-time number depends on which corners you pick' — yes, and we found "
+              "that ourselves; it is one light-load corner - leave-one-out table in "
+              "FINDINGS.md section 32. "
+              "'Doesn't EMI change your answer?' — we ran it; it makes scheduling worth less, "
+              "not more."),
+}
+
+NOTES_BODY = (
+ '<p:sp xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" '
+ 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">'
+ '<p:nvSpPr><p:cNvPr id="99" name="Notes Placeholder"/>'
+ '<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>'
+ '<p:nvPr><p:ph type="body" idx="1"/></p:nvPr></p:nvSpPr>'
+ '<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>')
+
+for n, (budget, note) in NOTES.items():
+    ns = S[n - 1].notes_slide
+    if ns.notes_text_frame is None:
+        # Slides cloned by add_slide.py inherit a notes part with no body
+        # placeholder, so python-pptx has nothing to write into. Add one.
+        ns.shapes._spTree.append(etree.fromstring(NOTES_BODY))
+    ns.notes_text_frame.text = "[%s]  %s" % (budget, note)
+
+p.save(OUT)
+print("speaker notes added to %d slides (budget: ~8 min of talking)" % len(NOTES))
+
+# 2480x900 -> aspect 2.756. At 7.30 in wide the figure is 2.65 in tall.
+S[10].shapes.add_picture(RES + "/fig_rtl_waveform.png",
+                         Inches(3.00), Inches(4.05), width=Inches(7.30))
+add_text(S[10], 3.00, 6.80, 7.30, 0.34, [
+    para([("Icarus Verilog VCD. ls_pu falls to 0 before hs_pu rises — the shaded dead time is "
+           "the gap, and no shoot-through window exists.", False)],
+         level=0, sz=1000, spc=0, bullet=False)])
+
+# ================= slide 8 : architecture =================================
+s_arch = S[7]
+retitle(s_arch, "System Architecture")
+# 2640x1260 -> aspect 2.095. The band from 1.30 in to the caption at 6.55 in
+# is 5.25 in tall, so the width that fits is 5.25 * 2.095 = 11.0 in.
+s_arch.shapes.add_picture(RES + "/fig_architecture.png",
+                          Inches(1.17), Inches(1.32), width=Inches(11.00))
+add_text(s_arch, 0.70, 6.66, 11.90, 0.38, [
+    para([("Solid blocks are configured once at power-up. The dashed block — sensing, ADC and "
+           "lookup table — is the adaptive machinery this project exists to price.", False)],
+         level=0, sz=1100, spc=0, bullet=False)])
+
+# ================= slide 13 : the novelty =================================
+s_nov = S[13]
+retitle(s_nov, "What is novel")
+
+add_text(s_nov, 0.70, 1.38, 12.10, 0.80, [
+    para([("Every active-gate-driver paper reports ", False), ("one", True),
+          (" number — the improvement over a conventional driver. It bundles two separable "
+           "effects, and only the second needs sensing, an ADC and a lookup table.", False)],
+         level=0, sz=1350, spc=0, bullet=False)])
+
+NOV = [("(A)   Choose a better FIXED word",        "25.1 %", "no sensing · no LUT"),
+       ("(B)   ADAPT it per operating point",      "3.9 %",  "needs all of it"),
+       ("(B′)  …but ONE comparator captures 72 % of (B)", "2.8 %", "a threshold, not a LUT")]
+for i, (label, val, sub) in enumerate(NOV):
+    y = 2.42 + i * 1.12
+    add_text(s_nov, 0.70, y, 6.55, 0.40,
+             [para([(label, True)], level=0, sz=1400, spc=0, bullet=False)])
+    add_text(s_nov, 7.45, y - 0.20, 2.15, 0.72,
+             [para([(val, True)], level=0, sz=2600, spc=0, bullet=False)])
+    add_text(s_nov, 9.85, y + 0.04, 2.95, 0.60,
+             [para([(sub, False)], level=0, sz=1100, spc=0, bullet=False)])
+
+add_text(s_nov, 0.70, 5.92, 12.10, 1.10, [
+    para([("So the full sense + ADC + lookup table is left justifying ", False),
+          ("3.7 % of the total achievable gain", True),
+          (" over a fixed word plus one comparator. Adaptation is 13.4 % of the gain; a single "
+           "threshold takes 72 % of that.", False)], level=0, sz=1300, spc=130, bullet=False),
+    para([("Every figure shares one baseline — the median control word that is safe at all four "
+           "corners. Robust across cost weightings: adaptation is 5.5–20.1 % of the gain for "
+           "overshoot weights 0 to 1.0. ", False),
+          ("scripts/novelty.py", True), (", ", False), ("scripts/howmanywords.py", True),
+          (".", False)], level=0, sz=1200, spc=0, bullet=False),
+])
+
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+# ================= slide 15 : the design chart ============================
+s_chart = S[14]
+retitle(s_chart, "When is adaptive control worth building?")
+# aspect 1.856 (two stacked panels); 1.35 in to the caption at 6.36 in is
+# 4.90 in tall, so the width that fits is 4.90 * 1.856 = 9.09 in, centred.
+s_chart.shapes.add_picture(RES + "/fig_lloop.png",
+                           Inches(2.12), Inches(1.35), width=Inches(9.09))
+add_text(s_chart, 0.70, 6.36, 11.90, 0.70, [
+    para([("Eight inductances, 7,200 transients. The answer is a ", False), ("band", True),
+          (", not a threshold: adaptive control pays only from about 2.5 nH down, peaking at "
+           "13.5 % at 1.5 nH, and it falls back to 8.1 % at 1.0 nH because only 165 of 720 "
+           "words stay safe there — below ~2 nH feasibility binds, not optimisation. ", False),
+          ("A designer measures their loop and reads off the decision", True),
+          (" — a trade-off the literature does not state.", False)],
+         level=0, sz=1200, spc=0, bullet=False)])
+
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("slides 8 (architecture), 14 (novelty) and 15 (design chart) built")

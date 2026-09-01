@@ -16,9 +16,11 @@ cp "$SRC"/ltspice/*.cir                    "$D"/1-LTSPICE/
 cp "$SRC"/ltspice/*.lib                    "$D"/1-LTSPICE/
 cp "$SRC"/ltspice/README-LTSPICE.txt       "$D"/1-LTSPICE/README.txt
 cp "$SRC"/results/fig*.png                 "$D"/2-FIGURES/
+cp "$SRC"/results/*.vcd                    "$D"/9-RTL/ 2>/dev/null || true
 cp "$SRC"/results/pareto_matlab.png "$SRC"/results/crosstalk_model_matlab.png "$D"/2-FIGURES/
 cp "$SRC"/results/*.m "$SRC"/results/sweep_matlab.csv "$SRC"/results/README-MATLAB.txt "$D"/3-MATLAB/
 cp "$SRC"/results/FINDINGS.md              "$D"/4-RESULTS/
+cp "$SRC"/results/RESULTS-SUMMARY.txt      "$D"/4-RESULTS/ 2>/dev/null || true
 for f in sweep_nominal corners full_corners sky130_drive_strength robust emi_sweep; do
     [ -f "$SRC/results/$f.csv" ] && cp "$SRC/results/$f.csv" "$D"/4-RESULTS/
 done
@@ -38,6 +40,11 @@ cp "$SRC"/results/pipeline_demo_review1.mp4 "$D"/6-VIDEO/
 cp "$SRC"/results/scope_demo_review1.mp4    "$D"/6-VIDEO/
 cp "$SRC"/cadence/*                        "$D"/7-CADENCE/
 cp "$SRC"/results/paper_draft.html         "$D"/8-PAPER/paper.html
+mkdir -p "$D"/9-RTL "$D"/10-REVIEW-DECK
+cp "$SRC"/rtl/*.v                          "$D"/9-RTL/
+cp "$SRC"/rtl/README-RTL.txt               "$D"/9-RTL/ 2>/dev/null || true
+cp "$SRC"/review/Review1_*.pptx             "$D"/10-REVIEW-DECK/
+cp "$SRC"/review/FINISH-CITATIONS.txt       "$D"/10-REVIEW-DECK/ 2>/dev/null || true
 cp "$SRC"/results/paper_fig*.png           "$D"/8-PAPER/
 
 # 5-SOURCE: the runnable project, minus caches and raw waveform dumps
