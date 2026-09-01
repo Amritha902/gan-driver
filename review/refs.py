@@ -55,6 +55,8 @@ class Ref:
         says so in three words rather than shouting a placeholder."""
         if self.done:
             return self.authors
+        if self.authors and self.authors.strip() not in ("", "—"):
+            return self.authors          # known — do not print a placeholder
         return ("%s\nauthors: Xplore “Cite This”" % (self.year or "—"))
 
     def url(self):

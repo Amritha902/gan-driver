@@ -940,7 +940,7 @@ add_text(s_cmp, 0.70, 1.22, 12.0, 0.40, [
 CMP = [
  ("Device",            "SiC MOSFET",                     "GaN HEMT (e-mode)  —  no body diode, so off-bias costs third-quadrant drop"),
  ("Control handle",    "multibit gate code, one field",  "6-field, 720-point control word  —  strength, dead time, clamp, off-bias"),
- ("Implementation",    "digital driver",                 "FPGA RTL in Verilog  ·  7 asserted properties, all passing"),
+ ("Implementation",    "digital driver",                 "FPGA RTL in Verilog  ·  8 asserted properties, mutation-tested"),
  ("How codes chosen",  "selected codes, measured",       "EXHAUSTIVE  —  all 720 words at every corner, 34,622 transients"),
  ("Crosstalk",         "not addressed",                  "1.65 V spurious gate  →  −1.18 V  (2.58 V margin), clamp + off-bias"),
  ("What is reported",  "one number vs a conventional driver",
