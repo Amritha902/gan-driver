@@ -165,7 +165,7 @@ REFS = [
  Ref(10, "—",
      "A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control",
      "IEEE conference",
-     "Segmented output stage on E-mode GaN with an on-chip pattern generator for drive strength",
+     "Segmented output stage on E-mode GaN: 7 slices, pattern timing 0.5\u20135 ns, strength set by one external bias resistor",
      "Architecturally the closest published driver to ours — segmented slices, pattern-selected "
      "strength. It is an ASIC with a fixed pattern set; our contribution is to search the whole "
      "pattern space exhaustively and price what the search actually buys.",

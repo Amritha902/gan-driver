@@ -550,7 +550,9 @@ set_body(con_shape, [
            "device model underlies everything.", False)],
          level=0, sz=1450, spc=180, bullet=True),
     para([("Review-II: ", True), ("transistor-level output stage in Cadence on a 5 V-capable "
-           "PDK; re-run the ceiling on real devices. ", False), ("Review-III: ", True),
+           "PDK; re-run the ceiling on real devices \u2014 sub-nanosecond dead-time control needs "
+           "silicon, not fabric: [13] reaches 0.19 ns where a 200 MHz FPGA grid is 5 ns. ", False),
+          ("Review-III: ", True),
           ("measure a hardware half-bridge at one corner — until then this is a simulation "
            "study and is titled as one.", False)], level=0, sz=1450, spc=0, bullet=True),
 ])
