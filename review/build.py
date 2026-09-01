@@ -7,7 +7,7 @@ from pptx.util import Inches, Pt
 from fill import para, set_body, find_shape, set_title, q, A, esc, RUN_TPL, PARA_TPL
 import content
 
-RES = "/home/user/gan-driver/results"
+RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
 SRC = "template_ext.pptx"
 OUT = "Review1_GaN_Segmented_Gate_Driver.pptx"
 
@@ -1016,8 +1016,10 @@ s_ckt.shapes.add_picture(RES + "/fig_circuit.png",
                          Inches(2.22), Inches(1.22), width=Inches(8.89))
 add_text(s_ckt, 0.70, 6.20, 12.10, 0.85, [
     para([("Every element is in ", False), ("sim/dpt.cir", True),
-          (", and the same three experiments ship as LTspice schematics in ", False),
+          (", which is the file to open in LTspice — it carries the active Miller clamp "
+           "(S", False), ("clk", False), (" through 0.5 \u03a9). The three ", False),
           ("ltspice/*.asc", True),
+          (" sheets illustrate the crosstalk mechanism only and do not draw the clamp", False),
           (". C", False), ("GD", False),
           (" on Q2 in red is the crosstalk path; GaN has no body diode, so holding the gate "
            "below threshold is paid for again across the dead time.", False)],

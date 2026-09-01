@@ -31,27 +31,28 @@ SLIDE4 = [
 ]
 
 SLIDE6 = [
+    ([("Aim:", B)], 0),
+    ([("To measure how much of an active gate driver\u2019s benefit actually requires "
+       "per-operating-point adaptation, and how much comes from simply choosing a better "
+       "fixed setting \u2014 by searching the control word exhaustively rather than arguing "
+       "the case.", False)], 1),
     ([("Proposed Solution:", B)], 0),
     ([("A segmented GaN gate driver with a 720-point control word: 8 pull-up slices, 8 pull-down "
-       "slices, dead time 5–35 ns, an active Miller clamp, and a selectable off-bias rail "
-       "(0 / −2 V).", False)], 1),
-    ([("The contribution is to ", False), ("separate the two claims by exhaustive search", B),
-      (": sweep the full word at every corner, so each per-corner optimum is a true optimum and not "
-       "the best of a shortlist, then compare against the best single fixed word. That difference "
-       "is the value of adaptation, and nothing else.", False)], 1),
+       "slices, dead time 5\u201335 ns, an active Miller clamp, and a selectable off-bias rail "
+       "(0 / \u22122 V).", False)], 1),
+    ([("Method: ", B), ("sweep the full word at every corner, so each per-corner optimum is a "
+       "true optimum, then compare against the best single fixed word. That difference is the "
+       "value of adaptation, and nothing else.", False)], 1),
     ([("Methodology / Approach:", B)], 0),
-    ([("Double-pulse test in ngspice with a behavioural eGaN model from datasheet quantities. Its "
-       "channel is symmetric by design, so the third-quadrant penalty of negative bias emerges "
-       "from device physics rather than being added by hand.", False)], 1),
-    ([("Eight metrics per run — three energies, overshoot, settling, oscillation energy, spurious "
-       "gate voltage, crosstalk margin — frozen in one extractor early, so no later sweep becomes "
-       "incomparable.", False)], 1),
-    ([("Every reported quantity must be flat across a 5× timestep range. Enforced, not assumed: it "
-       "has twice rejected a number that had already reached a draft.", False)], 1),
+    ([("Double-pulse test in ngspice with a behavioural eGaN model from datasheet quantities; "
+       "its symmetric channel makes the third-quadrant cost of negative bias emerge from device "
+       "physics.", False)], 1),
+    ([("Eight metrics per run, frozen in one extractor early; every reported quantity must be "
+       "flat across a 5\u00d7 timestep range \u2014 enforced, not assumed.", False)], 1),
     ([("Project Scope:", B)], 0),
     ([("In scope: ", B), ("driver architecture, control-word optimisation, transistor-level output "
        "stage in SKY130. ", False), ("Out of scope: ", B),
-      ("GaN device fabrication, closed-loop sensing hardware, PCB build.", False)], 1),
+      ("GaN device fabrication, sensing hardware, PCB build.", False)], 1),
 ]
 
 SLIDE7 = [
