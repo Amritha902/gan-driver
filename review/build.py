@@ -974,7 +974,7 @@ for sh in s_cmp.shapes:
                 r._r.getparent().remove(r._r)
         break
 
-add_text(s_cmp, 0.70, 1.22, 12.0, 0.40, [
+add_text(s_cmp, 0.70, 1.22, 12.0, 0.28, [
     para([("Base paper [9]: Takayama & Hikihara, Int. J. Circuit Theory Appl., 50(1):183–196, "
            "2022 — a gate waveform chosen by a multibit digital code.", False)],
          level=0, sz=1150, spc=0, bullet=False)])
