@@ -104,7 +104,7 @@ def fig2():
         ax.text(p + .25, i, "%.1f %%" % p, va="center", fontsize=8,
                 color=cols[i], fontweight="bold" if p == max(pen) else "normal")
     ax.axvline(np.mean(pen), color=INK, lw=1.1, ls="--")
-    ax.text(np.mean(pen) + .25, -.72, "mean = ceiling, %.1f %%" % np.mean(pen),
+    ax.text(np.mean(pen) + .25, -.72, "mean of corners, %.1f %%" % np.mean(pen),
             fontsize=7.5, color=INK)
     ax.set_xlabel("Cost penalty for using one fixed control word (%)")
     ax.set_title("Scheduling pays at one corner type, not generally", fontsize=9)
