@@ -29,6 +29,11 @@ ROWS = [
  ("left for a full sense + ADC + LUT", "3.7 % of the total gain", "novelty.py"),
  ("words needed for the full benefit", "3 of 4  (K = 4 adds nothing)", "howmanywords.py"),
 
+ ("WHAT THE ADAPTIVE HARDWARE COSTS", None, None),
+ ("controller, all six fields live", "371 cells / 32 FF", "synth_cost.sh"),
+ ("controller, word strapped + 1 comparator", "129 cells / 24 FF", "synth_cost.sh"),
+ ("logic saved by strapping the word", "65 %", "synth_cost.sh"),
+
  ("WHICH FIELD, AND WHAT IT COSTS", None, None),
  ("dead time, frozen  (four corners)", "5.45 %  (8.92 % at a 1 V guard)", "whichbit.py"),
  ("dead time, frozen  (without the light-load corner)", "0.00 %", "FINDINGS.md §32"),

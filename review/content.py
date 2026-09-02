@@ -145,4 +145,8 @@ SLIDE_RTL_SHORT = [
     ([("Reset lands on the safest word, not the fastest.", False)], 1),
     ([("Eight asserted properties, all passing under Icarus Verilog; a deliberate "
        "shoot-through mutant is caught 221 times (sh rtl/mutate.sh).", False)], 1),
+    ([("Synthesised. ", B), ("Strapping the word instead of leaving all six fields live takes "
+       "the controller from ", False), ("371 cells to 129", B),
+      (" \u2014 65 % less logic for the 3.9 % of baseline that adaptation buys. Generic gates, "
+       "not Xilinx LUTs.", False)], 1),
 ]
