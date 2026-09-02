@@ -1,48 +1,58 @@
 RUNNING THIS IN LTSPICE
 =======================
 
-1. Put all three files in the SAME folder:
-       dpt.cir      egan.lib     segdrv.lib
+OPEN THESE THREE FILES. They contain the real active Miller clamp.
 
-2. LTspice -> File -> Open.  Change the file-type dropdown to "All Files"
-   (LTspice hides .cir by default).  Open dpt.cir.
+    A_baseline_FALSE_TURN_ON.cir      no clamp, 0 V off-bias   -> FAILS
+    B_miller_clamp_ON.cir             clamp on, 0 V off-bias   -> safe
+    C_clamp_and_negative_bias.cir     clamp + -2 V off-bias    -> shipped
 
-3. Press Run (the little running man), or Simulate -> Run.
+HOW
+    1. Keep them in this folder, together with egan.lib and segdrv.lib.
+    2. LTspice > File > Open. Change the file-type dropdown to "All Files"
+       (LTspice hides .cir by default).
+    3. Open one of the three and press Run.
+    4. Probe  V(hsg,sw)  -- the high-side gate-source voltage. Threshold 1.4 V.
+    5. View > SPICE Error Log shows the measured vspur.
 
-4. Plot these traces:
-       V(sw)      switch node
-       V(lsg)     low-side gate
-       V(hsg)-V(sw)   high-side gate-source   <- THE ONE THAT MATTERS
+WHAT YOU SHOULD SEE  -- verified in ngspice on these exact files, 1 Sep 2026
 
-WHAT YOU SHOULD SEE  (verified numbers -- if LTspice disagrees, something
-is wrong with the port, tell me)
+    A   vspur =  1.649 V   vs 1.4 V threshold  -> FALSE TURN-ON, margin -0.249 V
+    B   vspur =  0.830 V                       -> SAFE,          margin +0.570 V
+    C   vspur = -1.176 V                       -> SAFE,          margin +2.576 V
 
-   gate on-state, at t = 0.9 us .............  5.00 V
-   peak V(lsd) after turn-off at t = 1 us ...  122.4 V   (bus is 100 V)
-   peak V(hsg)-V(sw), 2.015-2.10 us .........  1.65 V
+If LTspice disagrees with these, the port is wrong -- say so, do not present it.
 
-   The threshold is 1.4 V.  1.65 V is ABOVE it: that is the false turn-on
-   this whole project exists to fix.
+WHERE THE CLAMP IS
+    segdrv.lib:
+        Sclk out nclk clk ref SWP     the clamp switch, separately timed
+        Rclk nclk vn {rclamp}         0.5 ohm to the NEGATIVE rail
+    It clamps to the negative rail, not to the source. That matters: clamping
+    to source would fight the -2 V off-bias instead of reinforcing it.
 
-TO FIX IT, edit the PARAM BLOCK near the top of dpt.cir:
+    .param CLKEN=1   engages the clamp
+    .param VNEG=-2   selects the negative off-bias rail
 
-   .param CLKEN=1        turns the active Miller clamp on
-   .param VNEG=-2        adds negative off-bias
+THE THREE .asc SCHEMATIC SHEETS
+    1_baseline_FALSE_TURN_ON.asc, 2_miller_clamp_on.asc,
+    3_clamp_and_negative_bias.asc
 
-   With CLKEN=1 the peak drops to 0.83 V (margin +0.57 V).
-   With CLKEN=1 and VNEG=-2 it drops to -1.18 V (margin +2.58 V).
+    These are simplified DRAWINGS for explaining the crosstalk mechanism.
+    They do NOT contain the Miller clamp, and their stimulus does not even
+    produce a switching event inside their own measurement window, so their
+    .meas returns ~0.02 V rather than the 1.65 V annotated on them. Their
+    labels now say this.
 
-CHANGING THE DRIVE STRENGTH
-   The slice enables are baked in as literal numbers so LTspice has no
-   conditionals to evaluate.  To change the control word, re-run:
+    Do not present the .asc sheets as the clamped design. Use the .cir files
+    above -- those are the verified model.
 
-       python3 scripts/to_ltspice.py --npu 4 --npd 8
+CHANGING THE CONTROL WORD
+    Edit the PARAM BLOCK near the top of any of the three files:
+        NPU_LS NPD_LS NPU_HS NPD_HS   slice counts, 0..8
+        DT                            dead time
+        CLKEN                         Miller clamp on/off
+        VNEG                          off-bias rail, 0 or -2
 
-   and re-open the regenerated files.
-
-WHAT IS DIFFERENT FROM THE ngspice VERSION
-   Nothing electrical.  The converter only: deletes the .control block
-   (LTspice has no equivalent), turns ngspice's "$" end-of-line comments
-   into ";", and bakes the slice enables to literals.  The conversion was
-   checked by running the converted netlist and confirming it reproduces
-   122.4 V / 5.00 V / 1.65 V exactly.
+    Slice enables are baked to literals by scripts/to_ltspice.py so LTspice
+    has no ternaries to evaluate. To change npu/npd, re-run:
+        python3 scripts/to_ltspice.py --npu 4 --npd 8
