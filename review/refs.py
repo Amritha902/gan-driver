@@ -151,7 +151,7 @@ REFS = [
      "5.45 % of the cost, 2.1× the next field — and does it across a 0.2–2 A range, which is "
      "exactly the light-load corner our leave-one-out test shows carries all of it.",
      xplore="10664041", year="2024", doi="10.1109/TIA.2024.3454198"),
- Ref(9, "Takayama & Hikihara (2022)",
+ Ref(9, "H. Takayama, T. Okuda & T. Hikihara (2022)",
      "Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior — "
      "Preparation Toward Universal Digitization of Power Switching",
      "Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183–196",

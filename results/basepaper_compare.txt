@@ -1,0 +1,12 @@
+
+  BASE PAPER vs THIS WORK
+  identical device, identical testbench (sim/dpt.cir); only the driver differs
+  --------------------------------------------------------------------------
+                                                   V_spur     margin
+  BASE PAPER   multibit code, no clamp, 0 V        0.867 V    +0.533 V   safe
+  OURS         clamp OFF, 0 V  (their control)     1.649 V    -0.249 V   FALSE TURN-ON
+  OURS         clamp ON,  0 V                      0.830 V    +0.570 V   safe
+  OURS         clamp ON, -2 V  (shipped)          -1.176 V    +2.576 V   safe
+
+  Threshold 1.4 V. Margin = Vth - max(V_GS,HS) at the hard turn-on (T4).
+

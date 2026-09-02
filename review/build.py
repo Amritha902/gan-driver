@@ -763,6 +763,8 @@ add_text(s_arch, 0.70, 6.66, 11.90, 0.38, [
 s_nov = S[13]
 retitle(s_nov, "Result 3 — the two halves nobody separates")
 
+# The base paper is not just cited, it is IMPLEMENTED and run on the same
+# testbench. models/basedrv.lib + scripts/basepaper_compare.py.
 add_text(s_nov, 0.70, 1.38, 12.10, 0.80, [
     para([("The base paper [9] ", False), ("(doi.org/10.1002/cta.3136)", True),
           (" shows a gate waveform can be chosen by a digital code. It, and every "
@@ -1190,3 +1192,60 @@ for n, sl in enumerate(S, start=1):
     renumber(sl, n)
 p.save(OUT)
 print("THE GAP slide inserted; deck now %d slides" % len(S))
+
+# ============ BASE PAPER, IMPLEMENTED AND RUN =============================
+# The panel asked for the base paper to be BUILT, not just cited, so that
+# "what they did / what we add" is a measurement and not an assertion.
+s_bp = clone_after(p, len(S) - 1, 12)
+for sh in list(s_bp.shapes):
+    if sh.has_text_frame and sh.text_frame.text.strip() and sh.top and sh.top > Inches(1.0):
+        sh._element.getparent().remove(sh._element)
+    elif sh.shape_type == 13 and sh.left is not None and sh.left < Inches(11):
+        sh._element.getparent().remove(sh._element)
+S = list(p.slides)
+add_text(s_bp, 0.60, 0.35, 10.50, 0.75,
+         [para([("We implemented the base paper, then ours", True)],
+               level=0, sz=2800, spc=0, bullet=False)])
+add_text(s_bp, 12.53, 7.05, 0.50, 0.30,
+         [para([("13", False)], level=0, sz=1100, spc=0, bullet=False)])
+add_text(s_bp, 0.70, 1.32, 12.10, 0.95, [
+    para([("Citing a base paper is not a comparison. ", True),
+          ("models/basedrv.lib implements Takayama, Okuda & Hikihara's DAC-architecture "
+           "driver — a multibit code that changes DURING the switching edge, with no "
+           "Miller clamp and no negative off-bias rail, because those are ours. It runs "
+           "inside sim/dpt.cir, byte-identical otherwise, so only the driver differs.",
+           False)], level=0, sz=1250, spc=0, bullet=False)])
+BPC = [
+ ("Base paper, as we built it", "+0.533 V", False,
+  "Their time-sequenced multibit code alone already clears the 1.4 V threshold."),
+ ("Ours, constant code, no clamp", "−0.249 V", False,
+  "FALSE TURN-ON. A fast FIXED code is worse than their sequenced one — their "
+  "contribution is real, and we reproduce it."),
+ ("Ours, active Miller clamp on", "+0.570 V", False,
+  "Only marginally past the base paper. The clamp alone is not the story."),
+ ("Ours, clamp + −2 V off-bias", "+2.576 V", True,
+  "4.8× the base paper's margin. This is the shipped configuration."),
+]
+for i, (lab, val, hot, note) in enumerate(BPC):
+    y = 2.62 + i * 0.70
+    add_text(s_bp, 0.70, y, 3.90, 0.58,
+             [para([(lab, hot)], level=0, sz=1300, spc=0, bullet=False)])
+    add_text(s_bp, 4.75, y - 0.06, 1.55, 0.48,
+             [para([(val, True)], level=0, sz=1700, spc=0, bullet=False)])
+    add_text(s_bp, 6.50, y, 6.10, 0.60,
+             [para([(note, False)], level=0, sz=1150, spc=0, bullet=False)])
+add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
+    para([("What the comparison shows. ", True),
+          ("The base paper shapes the gate waveform in TIME; we hold the code constant and "
+           "add two actuators it does not have. Both clear the threshold — theirs works "
+           "— but ours clears it by 4.8× more, and ours is the one whose settings "
+           "can then be searched exhaustively to ask what adaptation is actually worth.",
+           False)], level=0, sz=1250, spc=150, bullet=False),
+    para([("Reproduce: ", True), ("python3 scripts/basepaper_compare.py", True),
+          ("  — four ngspice runs, prints this table.", False)],
+         level=0, sz=1150, spc=0, bullet=False),
+])
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("base-paper implementation slide inserted; deck now %d slides" % len(S))

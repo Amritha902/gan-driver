@@ -1,0 +1,70 @@
+* ===================================================================
+* basedrv.lib -- BASE PAPER driver, implemented for comparison
+*
+* Implements the premise of:
+*   H. Takayama, T. Okuda and T. Hikihara, "Digital active gate drive of
+*   SiC MOSFETs for controlling switching behavior -- Preparation toward
+*   universal digitization of power switching," Int. J. Circuit Theory
+*   Appl., 50(1):183-196, 2022.  doi:10.1002/cta.3136
+*
+* WHAT THEIR DRIVER DOES, AND WHAT THIS REPRODUCES
+* A DAC-architecture gate driver: a multibit digital code selects the
+* drive strength, and the code CHANGES DURING the switching transient,
+* so the gate is driven by a programmed multi-level waveform rather than
+* one fixed strength. That time-sequencing is the paper's contribution
+* and is what this file implements: strength A for the first TSEG of the
+* edge, then strength B for the remainder.
+*
+* WHAT IT DELIBERATELY DOES NOT HAVE -- these are OUR additions, and
+* leaving them out is the whole point of building this comparison:
+*   - no active Miller clamp
+*   - no negative off-bias rail  (vn is tied to ref by the testbench)
+*   - no programmable dead time as a searched field
+*
+* Built on the same 8-slice array and the same SWP switch model as
+* segdrv.lib so the two drivers differ ONLY in their control scheme,
+* never in their output-stage physics. Any difference in the measured
+* numbers is therefore attributable to the control, which is the claim
+* the comparison has to support.
+*
+* Pins:  pu  pd  seg  out  vp  vn  ref
+*   pu  : logic high => pull up            (referenced to ref)
+*   pd  : logic high => pull down          (referenced to ref)
+*   seg : logic high => use strength B     (the second segment)
+*   ref : local driver ground (0 low side, SW high side)
+* ===================================================================
+
+* Same switch model as segdrv.lib -- identical output-stage physics.
+.model SWPB SW(Ron=0.01 Roff=1e9 Vt=0.5 Vh=0.05)
+
+.subckt BASEDRV pu pd seg out vp vn ref params: na=8 nb=2 runit=8
+
+* Segment select: A active while seg is low, B active while seg is high.
+* Two gated banks in parallel; exactly one conducts at a time.
+Ssega nsa ref seg ref SWPB
+Rsega nsa ref 1e9
+Bsa   sa  ref V = (V(seg,ref) > 0.5) ? 0 : 5
+Bsb   sb  ref V = (V(seg,ref) > 0.5) ? 5 : 0
+
+* ---- pull-up, segment A (strength na) ----------------------------
+Spua1 vp nua pu ref SWPB
+Sgua  nua nua2 sa ref SWPB
+Rpua  nua2 out {runit/na}
+
+* ---- pull-up, segment B (strength nb) ----------------------------
+Spub1 vp nub pu ref SWPB
+Sgub  nub nub2 sb ref SWPB
+Rpub  nub2 out {runit/nb}
+
+* ---- pull-down, segment A ----------------------------------------
+Spda1 nda vn pd ref SWPB
+Sgda  nda2 nda sa ref SWPB
+Rpda  out nda2 {runit/na}
+
+* ---- pull-down, segment B ----------------------------------------
+Spdb1 ndb vn pd ref SWPB
+Sgdb  ndb2 ndb sb ref SWPB
+Rpdb  out ndb2 {runit/nb}
+
+* NO Miller clamp and NO negative rail. That is the comparison.
+.ends BASEDRV
