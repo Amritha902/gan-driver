@@ -391,28 +391,31 @@ retitle(s10, "Demo")
 # number in it still reproduces. research_demo.mp4 is not used at all: its
 # closing caption says the benefit "collapses to one bit - the off-bias rail",
 # which the freeze test corrected to dead time.
-VID = "pipeline_demo_review1.mp4"
+VID = "demo_crosstalk_explained.mp4"
 # 1200x700 source -> 1.714 aspect. 7.60 in wide gives 4.43 in tall.
 s10.shapes.add_movie(VID, Inches(0.70), Inches(1.55), Inches(7.60), Inches(4.43),
-                     poster_frame_image="poster_pipeline.png", mime_type="video/mp4")
+                     poster_frame_image="poster_crosstalk.png", mime_type="video/mp4")
 add_text(s10, 0.70, 6.15, 7.60, 0.40, [
-    para([("Click to play (17 s). Real captured output — only the pacing is "
-           "presentational.", False)], level=0, sz=1100, spc=0, bullet=False)])
+    para([("Click to play (18 s). Real ngspice waveforms from sim/dpt.cir, run twice "
+           "— only the pacing and the captions are presentational.", False)],
+         level=0, sz=1100, spc=0, bullet=False)])
 
 add_text(s10, 8.65, 1.55, 3.95, 4.60, [
     para([("What it shows", True)], level=0, sz=1500, spc=240, bullet=False),
-    para([("ngspice 42 running the real double-pulse test.", False)],
-         level=0, sz=1300, spc=180, bullet=True),
-    para([("Fastest drive, no clamp: spurious gate 1.649 V, margin ", False),
-          ("−0.249 V", True), (" — false turn-on.", False)],
-         level=0, sz=1300, spc=180, bullet=True),
-    para([("Miller clamp on: 0.830 V, margin ", False), ("+0.570 V", True),
-          (" — safe.", False)], level=0, sz=1300, spc=180, bullet=True),
-    para([("The full 720-word search at four corners: 474 feasible, ceiling ", False),
-          ("5.2 %", True), (".", False)], level=0, sz=1300, spc=240, bullet=True),
-    para([("A second video ships in the project folder: a 20 s interactive waveform "
-           "viewer over the same simulation data.", False)],
-         level=0, sz=1150, spc=0, bullet=False),
+    para([("TOP row: the switch node. The low-side device turns on and V(sw) "
+           "collapses from 100 V in a few nanoseconds. That slew is the cause.",
+           False)], level=0, sz=1250, spc=170, bullet=True),
+    para([("BOTTOM row: the OFF device's gate. The dV/dt couples through C", False),
+          ("GD", False), (" and lifts it.", False)],
+         level=0, sz=1250, spc=170, bullet=True),
+    para([("LEFT, failing: the gate reaches ", False), ("+1.65 V", True),
+          (" — above the 1.4 V threshold drawn on the plot. The device turns on when it "
+           "must not.", False)], level=0, sz=1250, spc=170, bullet=True),
+    para([("RIGHT, shipped: same circuit, same word, plus the Miller clamp and −2 V "
+           "off-bias. Peak ", False), ("−1.18 V", True),
+          (", a 2.58 V margin.", False)], level=0, sz=1250, spc=170, bullet=True),
+    para([("Both panels are the same simulation deck; only CLKEN and VNEG differ.",
+           False)], level=0, sz=1150, spc=0, bullet=False),
 ])
 
 # ---- slide 11 : the evidence behind the numbers --------------------------
