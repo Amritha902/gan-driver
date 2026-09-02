@@ -206,6 +206,31 @@ set_body(note, [para([("[9] is the BASE PAPER: we reproduce its premise \u2014 a
                        "IEEE Xplore, which the build environment cannot reach, and are not "
                        "invented.", False)], level=0, sz=1000, spc=0, bullet=False)])
 tbl = table_of(sn)
+
+# Column headings in the form the review panel asks for:
+#   Ref | Author | Title & source | Aim (what they set out to do) |
+#   Gap we found in it, and the part of that gap THIS project fills.
+HEAD = ["Ref", "Author(s) & Year", "Title / Source",
+        "Aim  —  what the paper sets out to do",
+        "Gap we found  \u2192  what WE fill"]
+for c, h in enumerate(HEAD):
+    set_cell(tbl.cell(0, c), [(h, True)], size=Pt(9.5))
+
+# What this project supplies that each paper leaves open. Kept to one
+# sentence each: the panel reads the row, not an essay.
+FILLS = {
+ 9:  "the exhaustive 720-word search that makes the fixed-vs-adaptive split "
+     "measurable, and the GaN third-quadrant cost their SiC device never pays.",
+ 10: "the price of the pattern space: what an exhaustive search buys over their "
+     "fixed pattern set.",
+ 11: "whether the setting has to change with the operating point at all. It "
+     "does not: 3.9 % of baseline.",
+ 12: "both effects in ONE cost function, showing the objectives genuinely "
+     "conflict (Pareto, slide 16).",
+ 13: "which field is worth scheduling. Only dead time, and only at light load; "
+     "drive strength is worth 0.00 %.",
+}
+
 for row, ref in enumerate(CLOSEST, start=1):
     tag = "BASE" if ref.base else str(ref.n)
     set_cell(tbl.cell(row, 0), [(tag, ref.base)])
@@ -213,7 +238,10 @@ for row, ref in enumerate(CLOSEST, start=1):
     set_cell(tbl.cell(row, 2), [(ref.title, False), ("\n" + ref.table_venue(), True)],
              size=Pt(9))
     set_cell(tbl.cell(row, 3), ref.method, size=Pt(9))
-    set_cell(tbl.cell(row, 4), ref.finding, size=Pt(9))
+    gap = [(ref.finding + "  ", False)]
+    if ref.n in FILLS:
+        gap += [("WE FILL: ", True), (FILLS[ref.n], False)]
+    set_cell(tbl.cell(row, 4), gap, size=Pt(9))
 tbl._tbl.remove(tbl.rows[6]._tr)
 for row in range(len(tbl.rows)):
     tbl.rows[row].height = Inches(0.88 if row else 0.35)
@@ -1101,3 +1129,64 @@ for n, sl in enumerate(S, start=1):
     renumber(sl, n)
 p.save(OUT)
 print("MATLAB results slide inserted; deck now %d slides" % len(S))
+
+# ================= THE GAP, on its own slide ==============================
+# The panel asked for the research gap stated plainly and separately, not as
+# the last bullet of the problem slide. Placed straight after the literature
+# so it reads: what exists -> what is missing -> what we propose.
+s_gap = clone_after(p, len(S) - 1, 6)
+for sh in list(s_gap.shapes):
+    if sh.has_text_frame and sh.text_frame.text.strip() and sh.top and sh.top > Inches(1.0):
+        sh._element.getparent().remove(sh._element)
+    elif sh.shape_type == 13 and sh.left is not None and sh.left < Inches(11):
+        sh._element.getparent().remove(sh._element)
+S = list(p.slides)
+# The clone source carries no usable title placeholder, so place the title and
+# the page-number box explicitly, matching the geometry the other slides use.
+add_text(s_gap, 0.60, 0.35, 10.50, 0.75,
+         [para([("The gap this project fills", True)], level=0, sz=2800, spc=0, bullet=False)])
+add_text(s_gap, 12.53, 7.05, 0.50, 0.30,
+         [para([("7", False)], level=0, sz=1100, spc=0, bullet=False)])
+
+add_text(s_gap, 0.70, 1.35, 12.10, 1.00, [
+    para([("Every active-gate-driver paper reports ONE number: the improvement over a "
+           "conventional driver.", True)], level=0, sz=1500, spc=120, bullet=False),
+    para([("That number bundles two effects that cost completely different hardware.",
+           False)], level=0, sz=1300, spc=0, bullet=False)])
+
+GAPBOX = [
+ ("Effect 1  —  a better FIXED setting",
+  "Pick a better control word once, at design time. Costs nothing at run time: "
+  "no sensor, no ADC, no lookup table, no controller.", "25.1 %", "of baseline"),
+ ("Effect 2  —  ADAPTING per operating point",
+  "Change the word as load, bus voltage and temperature move. This is what needs "
+  "the sensing hardware the architecture is sold on.", "3.9 %", "of baseline"),
+]
+for i, (head, body, num, unit) in enumerate(GAPBOX):
+    x = 0.70 + i * 6.30
+    add_text(s_gap, x, 2.60, 5.90, 0.40,
+             [para([(head, True)], level=0, sz=1450, spc=0, bullet=False)])
+    add_text(s_gap, x, 3.10, 4.05, 1.60,
+             [para([(body, False)], level=0, sz=1200, spc=0, bullet=False)])
+    stat(s_gap, x + 4.20, 3.05, 1.70, num, unit, "")
+
+add_text(s_gap, 0.70, 4.95, 12.10, 2.10, [
+    para([("THE GAP: ", True),
+          ("no published work separates them. Nobody reports how much of an active gate "
+           "driver's benefit actually requires adaptation, because separating the two needs an "
+           "exhaustive search of the control word at every corner — and nobody has run one.",
+           False)], level=0, sz=1400, spc=170, bullet=False),
+    para([("WHY IT MATTERS: ", True),
+          ("only Effect 2 justifies the sense + ADC + lookup table. If it is small, that "
+           "hardware is mostly paying for something a design-time choice already delivers \u2014 "
+           "a buy-or-not decision nobody has costed.", False)],
+         level=0, sz=1400, spc=170, bullet=False),
+    para([("WHAT WE DO: ", True),
+          ("720 control words × 4 corners, exhaustively, in ngspice — then report the "
+           "two numbers separately instead of their sum.", False)],
+         level=0, sz=1400, spc=0, bullet=False),
+])
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("THE GAP slide inserted; deck now %d slides" % len(S))
