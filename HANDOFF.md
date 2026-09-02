@@ -116,6 +116,108 @@ pin offsets cannot be checked without opening LTspice. Node names are `bus`,
 - 13.4 % is weight-dependent; the *ordering* (fixed beats adaptive) is not.
 - Synthesis numbers are generic gates, not LUTs.
 
+## Splitting this project into its own repository
+
+`gan-driver/` is an academic power-electronics project living inside `vero`,
+which is an unrelated Node web app. They should not share a repo. The 3 AM
+routine that was going to do this fired on 1 Sep but could not create the new
+repository (the scheduled session does not inherit GitHub API access), so the
+split is still to do. It is about ten minutes locally.
+
+**Do this AFTER the review, not before.** Nothing here is urgent, and the deck
+you are presenting from lives in `vero/gan-driver/review/`.
+
+### 1. Create the empty repo
+
+On GitHub, create `Amritha902/gan-driver`, private. **Do not** tick
+"Add a README", `.gitignore` or a licence — the target must be completely
+empty or the history push below will be rejected.
+
+### 2. Split the subtree, preserving history
+
+From a clone of `vero`, on the branch that has all the work:
+
+```bash
+cd vero
+git checkout master-orodhc
+git pull
+
+# Rewrites just the gan-driver/ subtree into its own root-level history.
+# Read-only with respect to your existing branches -- it creates a new one.
+git subtree split --prefix=gan-driver -b gan-driver-only
+```
+
+That prints a commit SHA and leaves a branch `gan-driver-only` whose files sit
+at the repo root (no `gan-driver/` prefix) with their full commit history.
+
+### 3. Push it to the new repo
+
+```bash
+git push https://github.com/Amritha902/gan-driver.git gan-driver-only:main
+```
+
+### 4. Verify before trusting it
+
+```bash
+cd ..
+git clone https://github.com/Amritha902/gan-driver.git
+cd gan-driver
+ls                      # ltspice sim models rtl scripts results review cadence
+git log --oneline | wc -l   # should be dozens of commits, not one
+```
+
+If `git log` shows a single commit, the history was flattened — delete the
+repo and redo step 2. A copied working tree is not a split.
+
+### 5. Fix the paths that assumed the nesting
+
+In the new repo the prefix is gone. Checked, and the code is safe: every
+script under `scripts/` resolves `ROOT` from `__file__`, and `review/build.py`
+resolves `RES` the same way, so nothing breaks on the move.
+
+What DOES need editing is text that names the old location:
+
+- **`review/content.py` line ~100 — this one is on a slide.** It reads
+  "github.com/Amritha902/vero, under gan-driver/". After the split that is
+  wrong in front of the panel. Change it to the new repo URL and drop the
+  "under gan-driver/" clause, then rebuild the deck.
+- `HANDOFF.md` and `GUIDE.md` use `gan-driver/...` in their examples
+- `README.md` becomes the project's top-level README
+
+Run these to confirm nothing broke:
+
+```bash
+python3 scripts/gansim.py CLKEN=1 VNEG=-2      # margin +2.576 V
+cd review && python3 build.py && python3 qa.py  # 27 slides, 8 known flags
+```
+
+### 6. Only then, remove it from `vero`
+
+This is the destructive step and there is no hurry. Do it on a branch with a
+PR so the diff is visible before it lands:
+
+```bash
+cd ../vero
+git checkout -b remove-gan-driver
+git rm -r --cached gan-driver
+rm -rf gan-driver
+git commit -m "Move gan-driver to its own repository"
+git push -u origin remove-gan-driver
+```
+
+Open the PR, confirm the new repo really has everything, then merge. Do not
+force-push and do not rewrite `vero`'s history — the subtree split already
+gave you the history in the new repo; deleting the directory in `vero` is
+enough.
+
+### Also worth checking
+
+`Amritha902/Amritha902` is your GitHub profile repo. The 3 AM run was asked to
+look at it and, if earlier automated commits had damaged the README, to open a
+restoring PR. Its last push predates that run, so nothing was pushed to it —
+but a PR may be open. Read the diff before merging; I could not see its
+contents.
+
 ## Paste this as the first message locally
 
 > I'm continuing a GaN segmented gate-driver project for an academic review.
