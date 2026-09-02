@@ -1,105 +1,129 @@
-# Handoff to a local Claude Code session
+# Handoff — continuing this project on your laptop
 
 Everything below is pushed to `origin/master-orodhc` in `Amritha902/vero`.
-Working tree was clean at handoff; nothing is stranded in the remote container.
+Working tree clean at handoff; nothing exists only in the cloud container.
 
-## Getting set up locally
+## Setup
 
 ```bash
-# 1. install Claude Code on your laptop
 npm install -g @anthropic-ai/claude-code     # or: brew install claude-code
 
-# 2. get the work
 git clone https://github.com/Amritha902/vero.git
-cd vero
-git checkout master-orodhc
-
-# 3. start a session in the project
-cd gan-driver
-claude
+cd vero && git checkout master-orodhc
+cd gan-driver && claude
 ```
 
-Then paste the prompt at the bottom of this file as your first message.
+Paste the prompt at the bottom of this file as your first message.
 
-## What a local session can do that the remote one could not
+## Why local is worth it
 
-These were the blockers, and all of them are laptop-side problems:
+Every remaining blocker is environmental, not conceptual:
 
-| Blocked remotely | Why | Local |
+| Blocked in the cloud | Reason | On your laptop |
 |---|---|---|
-| Rendering slides to look at them | no LibreOffice, apt blocked | install LibreOffice, or just open the .pptx in PowerPoint |
-| LTspice `.asc` verification | LTspice is Windows/macOS | open the file in LTspice directly |
-| Vivado synthesis | not installable, licensed | install Vivado (free WebPACK covers Artix-7) |
-| MATLAB | licence | MATLAB Online in your browser, or Octave |
-| Completing the IEEE references | Xplore + Crossref + OpenAlex all blocked by the egress proxy | campus network, "Cite This" |
+| Looking at the rendered slides | no LibreOffice, apt blocked | open the .pptx |
+| LTspice verification | LTspice is Windows/macOS | run it |
+| Vivado synthesis | not installable, licensed | free WebPACK covers Artix-7 |
+| MATLAB | licence | MATLAB Online, or Octave |
+| Author names for 10 refs | Xplore, Crossref, OpenAlex, Wiley, scispace **all** proxy-blocked | campus network, "Cite This" |
 
-## State of the work
+## What is done, and verified by running it
 
-**Verified by actually running it (numbers reproduce exactly):**
-- Crosstalk margins: −0.249 V (fails) / +0.570 V (clamp) / +2.576 V (clamp + −2 V)
-- `ceiling.py` → 5.2 %; per-corner 1.1 / 2.3 / 12.7 / 3.8 %
-- `novelty.py` → 25.1 % fixed, 3.9 % adaptive, 13.4 % share, 72 % one comparator
-- `weight_sensitivity.py` → the split does not depend on the cost weight; (A) 23.4–29.0 %
-  and (B) 1.3–6.4 % over weights 0–1, and (A) > (B) at every weight out to 5.0
-- RTL: 8 properties T1–T8 pass under Icarus; `mutate.sh` catches the injected
-  shoot-through with 221 failures
-- Vivado top level + its own bench: pass under Icarus
-- Transient count: 34,622, matching the row counts of every result CSV
-- Citations: no fabricated reference found; [10] and [13] content-checked
+Every number below was reproduced by executing the script that owns it, not
+copied from notes. `results/RESULTS-SUMMARY.txt` names the owning script for
+each one.
 
-**Deck:** 25 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`.
-Rebuild with `cd review && python3 build.py`. Geometry QA is `python3 qa.py`.
+**Simulation**
+- Crosstalk margins **−0.249 / +0.570 / +2.576 V** (`scripts/gansim.py`)
+- Ceiling on scheduling **5.2 %**, per-corner 1.1 / 2.3 / 12.7 / 3.8 (`ceiling.py`)
+- Decomposition **25.1 % fixed, 3.9 % adaptive, 13.4 % share**, 72 % from one
+  comparator, 3.7 % residual (`novelty.py`)
+- Weight independence: over 106 overshoot weights, (A) stays 23.4–29.0 % and
+  (B) 1.3–6.4 %, and **(A) exceeds (B) at every weight out to 5.0**
+  (`weight_sensitivity.py`) — the strongest form of the headline claim
+- 34,622 transients, matching the row counts of every result CSV
 
-## The three things still open
+**Base paper, implemented — not just cited**
+`models/basedrv.lib` implements Takayama, Okuda & Hikihara's DAC-architecture
+driver (multibit code changing during the edge; no clamp, no negative rail).
+`scripts/basepaper_compare.py` runs it inside `sim/dpt.cir` verbatim, swapping
+only the driver:
 
-### 1. An LTspice .asc that actually contains the Miller clamp
-The three sheets in `ltspice/*.asc` illustrate the crosstalk mechanism but do
-NOT draw the clamp — their labels now say so. `sim/dpt.cir` is the complete
-clamped model and opens in LTspice (File → Open, set file type to All Files).
+    base paper, as implemented    +0.533 V   safe
+    ours, constant code, no clamp -0.249 V   FALSE TURN-ON
+    ours, clamp on                +0.570 V   safe
+    ours, clamp + -2 V            +2.576 V   safe
 
-What is wanted: a real schematic with the clamp drawn, as a voltage-controlled
-switch from the off device's gate to its source, Ron = 0.5 Ω, engaged while the
-other side turns on. Node names in the existing sheets are `bus`, `sw`, `hsg`,
-`lsg`, `lss`, `0`. The safest construction is to add the switch by SPICE
-directive on those named nodes rather than by placing a symbol, because symbol
-pin offsets cannot be checked without opening LTspice — which you now can.
+Their sequenced code works and beats a fast fixed code. Our margin comes from
+the negative off-bias, 4.8x theirs. Report it that way.
 
-Validate it by comparing against ngspice: `python3 scripts/gansim.py CLKEN=1
-VNEG=-2` must still give margin +2.576 V.
+**RTL**
+- 8 properties T1–T8 pass under Icarus; `mutate.sh` catches an injected
+  shoot-through 221 times
+- Vivado export in `rtl/vivado/`: top level, XDC, `build.tcl`, own bench
+- Synthesis via `yowasp-yosys`: **371 cells → 129** (−65 %) when the word is
+  strapped instead of fully programmable (`scripts/synth_cost.sh`).
+  Generic gates, NOT Xilinx LUTs — ABC does not complete in the WASM build
 
-### 2. Synthesis
-`rtl/vivado/` has the top level, XDC and `build.tcl`. Nothing has ever been
-synthesised — Vivado and Yosys are both unavailable remotely. Run:
+**LTspice** — `ltspice/A_…`, `B_…`, `C_…cir` contain the real Miller clamp and
+were verified in ngspice on the shipped files: 1.6488 / 0.8304 / −1.1759 V.
+The three `.asc` sheets do NOT have the clamp and their stimulus produces no
+event in their own measurement window; their labels say so. Do not present them.
 
-```bash
-cd rtl/vivado && vivado -mode batch -source build.tcl
-```
+**MATLAB** — `results/gan_master.m`, one entry point for the whole results
+section. Independent reimplementation that reproduces the Python exactly.
 
-Reports land in `rtl/vivado/build/`. The script exits non-zero on negative
-slack. **The clock must be 200 MHz**: `dt_cycles` counts clock cycles and the
+**Deck** — 27 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`.
+Rebuild `cd review && python3 build.py`; geometry check `python3 qa.py`
+(8 flags is the known-good baseline, all investigated false positives).
+Speech script in `review/SPEECH-SCRIPT.md`, aligned to the current 27 slides.
+Demo video `results/demo_crosstalk_explained.mp4`, embedded on slide 23.
+
+## Open work, in priority order
+
+**1. Look at the slides.** Nobody has. Everything is verified by text
+extraction, XML validation and a height model — never by eye. Open slides
+**7, 13 and 23** first; those are the newest.
+
+**2. Finish the references.** 10 of 13 still read "authors: Xplore Cite This".
+The papers are real — titles and document IDs resolve — but author lists are
+behind Xplore. Base paper is done: H. Takayama, T. Okuda & T. Hikihara,
+Int. J. Circuit Theory Appl. 50(1):183–196, 2022 (volume 50 confirmed against
+a source that claimed 51). Xplore IDs to look up:
+
+    [4] 9573371  [5] 10553383  [6] 10964227  [7] 10813402
+    [10] 9170108 [11] 10286072 [12] 10591431 [13] 11146698
+
+**3. Run Vivado synthesis.** `cd rtl/vivado && vivado -mode batch -source
+build.tcl`. Replaces the generic gate counts with real LUT/FF utilisation and
+timing. **The clock must be 200 MHz** — `dt_cycles` counts clock cycles and the
 dead-time grid starts at 5 ns, so 100 MHz cannot express it. Feed `clk_200`
 from a Clocking Wizard MMCM.
 
-### 3. One comprehensive MATLAB script
-`results/gan_analysis.m` (179 lines) runs clean in Octave and does Pareto,
-schedule LUT and the analytical crosstalk check. What is wanted is a single
-larger script that regenerates *every* figure and table in the deck from the
-CSVs, so the whole results section has one MATLAB entry point.
+**4. Verify the LTspice files in real LTspice.** Open
+`ltspice/C_clamp_and_negative_bias.cir` (File → Open, filter "All Files"),
+probe `V(hsg,sw)`, confirm −1.176 V. If LTspice disagrees with ngspice, the
+port is wrong — say so rather than presenting it.
 
-Inputs available in `results/`: `sweep_nominal.csv`, `full_corners.csv`,
-`corners.csv`, `robust.csv`, `robust_all.csv`, `robust_fix.csv`,
-`lloop_sweep.csv.gz`, `emi_sweep.csv.gz`, `sweep_matlab.csv`.
+**5. Optional: draw the clamp into a .asc schematic.** Not done because symbol
+pin offsets cannot be checked without opening LTspice. Node names are `bus`,
+`sw`, `hsg`, `lsg`, `lss`, `0`.
 
-## Paste this as the first message in the local session
+## Honest limits to keep saying out loud
 
-> I'm continuing a GaN segmented gate-driver project. Read `gan-driver/HANDOFF.md`
-> and `gan-driver/GUIDE.md` first — they have the full state and the verified
-> numbers. Three things are open, in priority order: (1) build an LTspice .asc
-> that actually contains the Miller clamp and verify it opens and runs in
-> LTspice, cross-checking against `python3 scripts/gansim.py CLKEN=1 VNEG=-2`
-> which must give margin +2.576 V; (2) run Vivado synthesis via
-> `rtl/vivado/build.tcl` and put the real utilisation and timing numbers into
-> the deck; (3) write one comprehensive MATLAB script that regenerates every
-> figure and table in the deck from the CSVs in `results/`. Do not change any
-> reported number without re-running the script that produces it —
-> `results/RESULTS-SUMMARY.txt` lists which script owns each one.
+- Entirely simulation. No silicon, no hardware measurement.
+- One behavioural GaN device model underlies every number.
+- 13.4 % is weight-dependent; the *ordering* (fixed beats adaptive) is not.
+- Synthesis numbers are generic gates, not LUTs.
+
+## Paste this as the first message locally
+
+> I'm continuing a GaN segmented gate-driver project for an academic review.
+> Read `gan-driver/HANDOFF.md` and `gan-driver/GUIDE.md` first — they carry the
+> full state and every verified number. Priorities: (1) render the deck and
+> visually check slides 7, 13 and 23, since nothing in it has ever been seen
+> rendered; (2) run `rtl/vivado/build.tcl` in Vivado and put the real LUT/FF
+> and timing numbers into slide 16, replacing the generic gate counts;
+> (3) open `ltspice/C_clamp_and_negative_bias.cir` in LTspice and confirm it
+> gives −1.176 V. Never change a reported number without re-running the script
+> that produces it — `results/RESULTS-SUMMARY.txt` says which script owns each.
