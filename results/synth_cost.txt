@@ -1,0 +1,3 @@
+Hardware cost of programmability (generic gates, not Xilinx LUTs):
+  seg_gate_ctrl          cells  371   flip-flops  32   comb gates  334
+  seg_gate_ctrl_top      cells  129   flip-flops  24   comb gates   99
