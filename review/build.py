@@ -1120,7 +1120,7 @@ add_text(s_mat, 0.60, 6.28, 12.10, 0.75, [
           (": the marginal gain runs 269 → 31.5 → 1.8 → 0.0 mV/ns across 10/15/25/35 ns. "
            "Past 15 ns dead time costs conduction loss and buys nothing. ", False),
           ("results/gan_analysis.m", True), (", ", False),
-          ("results/crosstalk_standalone.m", True), (" — both run in MATLAB or Octave.",
+          ("results/gan_master.m", True), (" — both run in MATLAB or Octave.",
            False)], level=0, sz=1200, spc=0, bullet=False)])
 set_note(s_mat, "[35 s]  CORE — this is the MATLAB evidence, and it answers 'did you only "
                 "use SPICE?'. Land two things. Left: 720 words searched, 504 feasible, and "

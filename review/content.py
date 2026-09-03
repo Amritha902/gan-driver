@@ -73,7 +73,7 @@ SLIDE7 = [
        "~2.5 nH, peaking at 13.5 %. EMI (1,440 transients): pricing it makes scheduling "
        "worth ", False), ("less", B), (", not more — 5.95 % → 0.15 %.", False)], 1),
     ([("The port to other simulators is written and re-simulated.", B)], 0),
-    ([("LTspice-dialect, Spectre and browser-WASM decks all reproduce "
+    ([("LTspice-dialect and Spectre decks both reproduce "
        "122.4 V / 5.00 V / 1.65 V. Neither has itself been run — no installation was "
        "available — so these are faithful ports.", False)], 1),
     ([("In total: ", B), ("nearly 35,000 transient simulations, a 34-section written record, "

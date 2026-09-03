@@ -6,7 +6,7 @@
   ───────────────────────────────────────────────────────────────────────────────────────────────────
   Spurious gate peak, fastest drive, no clamp                1.65 V vs 1.40 V threshold     gansim.py
   Same word, Miller clamp on                                 0.83 V  (margin +0.57 V)       gansim.py
-  Clamp on + −2 V off-bias                                   −1.18 V  (margin +2.58 V)      gansim.py
+  Clamp on + −2 V off-bias                                   −1.176 V  (margin +2.576 V)    gansim.py
   Feasible words at the nominal corner                       504 of 720  (70 %)             gan_analysis.m
 
   THE SEARCH
@@ -17,6 +17,7 @@
 
   WHAT ADAPTATION IS WORTH
   ───────────────────────────────────────────────────────────────────────────────────────────────────
+  ceiling on scheduling, four corners                        5.2 % (vs best fixed word)     ceiling.py
   (A) choosing a better fixed word                           25.1 % of baseline             novelty.py
   (B) adapting it per operating point                        3.9 % of baseline              novelty.py
   adaptation as a share of the total gain                    13.4 %                         novelty.py
