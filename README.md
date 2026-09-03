@@ -9,6 +9,15 @@ written to port to LTspice and later to Cadence Spectre.
 Built because lab/Cadence access wasn't available yet. Everything here is
 reproducible on a laptop.
 
+> **Two phases live in this repo.** Everything at the top level is the
+> **segmented gate driver** — the phase with the finished Review-I deck and
+> results. `dab/` is the **DAB converter** phase that followed it: it carried
+> over the FPGA policy-engine architecture, `quantiser.v` and the
+> characterisation-table methodology, and deliberately dropped the segmented
+> output stage, the Cadence track and the crosstalk objective
+> (`dab/PROPOSAL.md`, section 5). Different base papers, so read them
+> separately: Takayama *et al.* here, Shi *et al.* 2020 in `dab/`.
+
 ## What it demonstrates
 
 1. **The problem is real and reproduced.** With the fastest driver setting,
