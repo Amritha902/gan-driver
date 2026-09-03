@@ -1,6 +1,6 @@
 # Review-I speech script — 27 slides, ~10 minutes
 
-Timings are the budget, not a target to hit exactly. Total ≈ 10 min 20 s,
+Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
 reads. **Slides 7, 13 and 20 are the ones that matter.** If you are running
 out of time, cut 15, 18 and 22, never those three.
@@ -188,6 +188,14 @@ price adaptation — which their paper can't do.
 > "Synthesised, strapping the word instead of leaving all six fields live
 > takes the controller from **371 cells to 129** — 65 % less logic for the
 > 3.9 % that adaptation buys."
+>
+> "The Vivado export is written too — top level, timing constraints and a
+> build script, with its own bench passing under Icarus. Not yet run: Vivado
+> is Windows and Linux only, so that is a Review-II item."
+
+If asked *why not just run it*: the free WebPACK edition covers the Artix-7
+part, but there is no macOS build. The generic-gate count is honest about
+being generic — it is yosys, not Xilinx LUTs, and the slide says so.
 
 ---
 
@@ -248,9 +256,12 @@ parameter moves the ceiling outside **4.3–7.7 %**.
 
 ---
 
-## 23 — DEMO (40 s)
+## 23 — DEMO (45 s)
 
-Play it. Don't talk over the first five seconds.
+The clip runs **22 s**. Play it and stay quiet for the first five seconds —
+the switch node falling is the whole setup, and narrating over it just
+competes with the picture. The peak labels only appear once each trace
+reaches its peak, so nothing on screen contradicts you before it happens.
 
 > "This is real captured ngspice output, not an animation. Watch the high-side
 > gate. On the left, the fastest drive with no clamp — the gate is pushed

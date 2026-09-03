@@ -120,10 +120,10 @@ SLIDE_RTL = [
        "be silicon paying for nothing.", False)], 1),
     ([("Reset lands on the safest word, not the fastest — a driver that wakes at full drive "
        "into an unknown bus is how devices die.", False)], 1),
-    ([("Verified, not just written.", B), (" A self-checking testbench asserts seven properties "
+    ([("Verified, not just written.", B), (" A self-checking testbench asserts eight properties "
        "— no shoot-through, exact dead-time length at three settings, all slices off and clamps "
-       "on during dead time, thermometer monotonicity over the full range, safe reset, and no "
-       "truncation on a late update. ", False), ("All pass under Icarus Verilog.", B)], 1),
+       "on during dead time, thermometer monotonicity over the full range, safe reset, no "
+       "truncation on a late update, and no pull-up bank driven during a dead time. ", False), ("All pass under Icarus Verilog.", B)], 1),
     ([("Then mutation-tested, reproducibly \u2014 ", False), ("sh rtl/mutate.sh", True),
       (". A deliberate shoot-through bug (the low-side pull-up driven unconditionally) is "
        "caught 221 times across three properties; the clean design passes. Mutants that only "
@@ -142,10 +142,11 @@ SLIDE_RTL_SHORT = [
        "worth 5.45 % to schedule (carried by the light-load corner alone) and pull-up 0.00 %.",
        False)], 1),
     ([("Reset lands on the safest word, not the fastest.", False)], 1),
-    ([("Eight asserted properties, all passing under Icarus Verilog; a deliberate "
-       "shoot-through mutant is caught 221 times (sh rtl/mutate.sh).", False)], 1),
+    ([("Eight asserted properties pass under Icarus; a shoot-through mutant is caught "
+       "221\u00d7 (sh rtl/mutate.sh).", False)], 1),
     ([("Synthesised. ", B), ("Strapping the word instead of leaving all six fields live takes "
        "the controller from ", False), ("371 cells to 129", B),
       (" \u2014 65 % less logic for the 3.9 % of baseline that adaptation buys. Generic gates, "
-       "not Xilinx LUTs.", False)], 1),
+       "not Xilinx LUTs. Vivado export written (rtl/vivado/, bench passes); not yet run "
+       "\u2014 Windows/Linux only.", False)], 1),
 ]

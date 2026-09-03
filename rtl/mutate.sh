@@ -16,7 +16,11 @@ D=$(mktemp -d); cp ./*.v "$D"/; cd "$D"
 iverilog -o clean seg_gate_ctrl_tb.v thermo_decode.v dead_time_gen.v seg_gate_ctrl.v
 echo "--- unmutated ---"; ./clean 2>&1 | grep -E "PASSED|FAILED"
 
-sed -i 's|^    assign ls_pu = .*|    assign ls_pu = pu_ls_v;   // MUTANT|' seg_gate_ctrl.v
+# POSIX rewrite-in-place: GNU sed takes a bare -i, BSD sed (macOS) reads the
+# next argument as the backup suffix and then fails. The deck invites the
+# panel to run this script, so it must not depend on which sed is installed.
+sed 's|^    assign ls_pu = .*|    assign ls_pu = pu_ls_v;   // MUTANT|' \
+    seg_gate_ctrl.v > seg_gate_ctrl.mut && mv seg_gate_ctrl.mut seg_gate_ctrl.v
 iverilog -o mutant seg_gate_ctrl_tb.v thermo_decode.v dead_time_gen.v seg_gate_ctrl.v
 echo "--- with the shoot-through mutant ---"
 ./mutant 2>&1 | grep -E "PASSED|FAILED"

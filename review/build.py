@@ -80,9 +80,9 @@ for idx, spec, needle in ((3, content.SLIDE4, "Problem Statement:"),
 rtl_shape = find_shape(S[10], "Problem Statement:")
 set_body(rtl_shape, build_paras(content.SLIDE_RTL_SHORT))
 set_title(S[10], "FPGA Controller — verified RTL")
-print("slide 11 (RTL text block): %.2f in of 2.55  %s"
+print("slide 11 (RTL text block): %.2f in of 2.45  %s"
       % (fits(content.SLIDE_RTL_SHORT),
-         "OK" if fits(content.SLIDE_RTL_SHORT) <= 2.55 else "OVERFLOW"))
+         "OK" if fits(content.SLIDE_RTL_SHORT) <= 2.45 else "OVERFLOW"))
 
 # The official brief says 10 minutes; the template stub said 8-10.
 for sh in S[2].shapes:
@@ -391,12 +391,16 @@ retitle(s10, "Demo")
 # number in it still reproduces. research_demo.mp4 is not used at all: its
 # closing caption says the benefit "collapses to one bit - the off-bias rail",
 # which the freeze test corrected to dead time.
-VID = "demo_crosstalk_explained.mp4"
+# The generator (scripts/make_demo_video.py) writes to results/. Naming the
+# file bare resolved it against review/, where a stale copy sat: the video
+# was regenerated and the deck silently kept embedding the old one. Take it
+# from the same directory the generator writes to, so the two cannot drift.
+VID = os.path.join(RES, "demo_crosstalk_explained.mp4")
 # 1200x700 source -> 1.714 aspect. 7.60 in wide gives 4.43 in tall.
 s10.shapes.add_movie(VID, Inches(0.70), Inches(1.55), Inches(7.60), Inches(4.43),
                      poster_frame_image="poster_crosstalk.png", mime_type="video/mp4")
 add_text(s10, 0.70, 6.15, 7.60, 0.40, [
-    para([("Click to play (18 s). Real ngspice waveforms from sim/dpt.cir, run twice "
+    para([("Click to play (22 s). Real ngspice waveforms from sim/dpt.cir, run twice "
            "— only the pacing and the captions are presentational.", False)],
          level=0, sz=1100, spc=0, bullet=False)])
 

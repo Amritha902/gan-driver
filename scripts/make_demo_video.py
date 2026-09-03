@@ -48,15 +48,15 @@ ts, sws, vgss = ts[:n], sws[:n], vgss[:n]
 t0 = tb[0]; tb, ts = tb - t0, ts - t0
 print("  %d samples over %.1f ns" % (n, tb[-1]))
 
-FPS, SECS = 25, 18
+FPS, SECS = 25, 22
 FRAMES = FPS * SECS
-HOLD   = int(FPS * 3.0)                    # frames held at the end of each phase
+HOLD   = int(FPS * 3.5)                    # frames held at the end of each phase
 SWEEP  = FRAMES - 2 * HOLD
 
-fig = plt.figure(figsize=(10.0, 5.83), dpi=132)
+fig = plt.figure(figsize=(10.0, 5.84), dpi=150)
 fig.patch.set_facecolor("white")
-gs  = fig.add_gridspec(2, 2, height_ratios=[1.0, 1.25], hspace=0.42, wspace=0.22,
-                       left=0.075, right=0.975, top=0.855, bottom=0.115)
+gs  = fig.add_gridspec(2, 2, height_ratios=[1.0, 1.25], hspace=0.52, wspace=0.27,
+                       left=0.080, right=0.975, top=0.850, bottom=0.165)
 axS = [fig.add_subplot(gs[0, i]) for i in range(2)]
 axG = [fig.add_subplot(gs[1, i]) for i in range(2)]
 
@@ -67,25 +67,29 @@ cols   = [RED, GRN]
 
 for i in range(2):
     axS[i].set_xlim(0, tb[-1]); axS[i].set_ylim(-15, 125)
-    axS[i].set_ylabel("switch node\nV(sw)   [V]", fontsize=8.5)
-    axS[i].set_title(titles[i], fontsize=10, color=cols[i], fontweight="bold", pad=7)
-    axS[i].grid(alpha=0.25, lw=0.6); axS[i].tick_params(labelsize=8)
-    axG[i].set_xlim(0, tb[-1]); axG[i].set_ylim(-2.6, 2.2)
-    axG[i].set_xlabel("time from the low-side turn-on  [ns]", fontsize=8.5)
-    axG[i].set_ylabel("high-side gate\nV(hsg,sw)   [V]", fontsize=8.5)
-    axG[i].grid(alpha=0.25, lw=0.6); axG[i].tick_params(labelsize=8)
-    axG[i].axhline(VTH, color=RED, lw=1.5, ls="--")
-    axG[i].text(tb[-1] * 0.985, VTH + 0.10, "threshold 1.4 V  —  above this the device turns on",
-                fontsize=7.6, color=RED, ha="right", va="bottom")
+    axS[i].set_ylabel("switch node\nV(sw)   [V]", fontsize=11)
+    axS[i].set_title(titles[i], fontsize=11.5, color=cols[i], fontweight="bold", pad=8)
+    axS[i].grid(alpha=0.25, lw=0.6); axS[i].tick_params(labelsize=10)
+    # Top is 2.9, not 2.2: the threshold caption sits at VTH + 0.50 and the
+    # failing peak marker at 1.65, so the old top clipped the caption.
+    axG[i].set_xlim(0, tb[-1]); axG[i].set_ylim(-2.6, 2.9)
+    axG[i].set_xlabel("time from the low-side turn-on  [ns]", fontsize=11)
+    axG[i].set_ylabel("high-side gate\nV(hsg,sw)   [V]", fontsize=11)
+    axG[i].grid(alpha=0.25, lw=0.6); axG[i].tick_params(labelsize=10)
+    axG[i].axhline(VTH, color=RED, lw=2.2, ls="--")
+    # Sits well above the line, not just clear of it: the failing panel's peak
+    # marker lands at 1.65 V and covered this text when it was at VTH + 0.10.
+    axG[i].text(tb[-1] * 0.985, VTH + 0.50, "threshold 1.4 V  —  above this the device turns on",
+                fontsize=10, color=RED, ha="right", va="bottom", fontweight="bold")
 
-lS = [axS[i].plot([], [], lw=1.9, color=INK)[0] for i in range(2)]
-lG = [axG[i].plot([], [], lw=2.1, color=cols[i])[0] for i in range(2)]
-pk = [axG[i].plot([], [], "o", ms=6, color=cols[i])[0] for i in range(2)]
-an = [axG[i].annotate("", xy=(0, 0), xytext=(0, 0), fontsize=9,
+lS = [axS[i].plot([], [], lw=2.4, color=INK)[0] for i in range(2)]
+lG = [axG[i].plot([], [], lw=2.9, color=cols[i])[0] for i in range(2)]
+pk = [axG[i].plot([], [], "o", ms=10, color=cols[i])[0] for i in range(2)]
+an = [axG[i].annotate("", xy=(0, 0), xytext=(0, 0), fontsize=13.5,
                       fontweight="bold", color=cols[i]) for i in range(2)]
 
-sup = fig.text(0.5, 0.955, "", ha="center", fontsize=13, fontweight="bold", color=INK)
-cap = fig.text(0.5, 0.028, "", ha="center", fontsize=9.6, color=MUT)
+sup = fig.text(0.5, 0.958, "", ha="center", fontsize=16, fontweight="bold", color=INK)
+cap = fig.text(0.5, 0.032, "", ha="center", fontsize=11, color=MUT)
 
 PHASES = [
     ("The low-side device turns on. Watch the switch node fall.",
@@ -95,6 +99,10 @@ PHASES = [
     ("Same circuit, same control word, two actuators added.",
      "Right: active Miller clamp plus −2 V off-bias — 2.58 V of margin instead of −0.25 V."),
 ]
+
+# Index of the true peak in each trace, computed once over the WHOLE trace.
+# frame() must not re-derive it from the partially drawn segment: see below.
+MPK = [int(np.argmax(vgsb)), int(np.argmax(vgss))]
 
 def frame(k):
     if k < SWEEP:
@@ -106,19 +114,28 @@ def frame(k):
     for i, (tt, sw, vg) in enumerate(((tb, swb, vgsb), (ts, sws, vgss))):
         lS[i].set_data(tt[:j], sw[:j])
         lG[i].set_data(tt[:j], vg[:j])
-        seg = vg[:j]
-        m = int(np.argmax(seg))
-        pk[i].set_data([tt[m]], [seg[m]])
-        vmax = seg[m]
+        # Label the peak only once the sweep has actually passed it. A running
+        # argmax over the first samples reports the STARTING value, so frame 0
+        # read "peak +0.03 V   safe" on the FAILING panel -- the exact opposite
+        # of what that panel exists to show. Frame 0 is not a private detail:
+        # Keynote ignores PowerPoint's poster_frame_image and shows frame 0 as
+        # the slide's still, so it is what a reader sees before pressing play.
+        if j <= MPK[i]:
+            pk[i].set_data([], [])
+            an[i].set_text("")
+            continue
+        m = MPK[i]
+        vmax = vg[m]
+        pk[i].set_data([tt[m]], [vmax])
         lab = "peak %+.2f V   %s" % (vmax, "FALSE TURN-ON" if vmax > VTH else "safe")
         an[i].set_text(lab)
         an[i].xy = (tt[m], vmax)
-        an[i].set_position((tt[m] + 1.5, vmax + (0.30 if vmax < 1.0 else -0.55)))
+        an[i].set_position((tt[m] + 2.0, vmax + (0.30 if vmax < 1.0 else -0.95)))
     sup.set_text(PHASES[phase][0]); cap.set_text(PHASES[phase][1])
     return lS + lG + pk + an + [sup, cap]
 
 print("rendering %d frames ..." % FRAMES)
 anim = animation.FuncAnimation(fig, frame, frames=FRAMES, blit=False)
-anim.save(OUT, fps=FPS, dpi=132,
+anim.save(OUT, fps=FPS, dpi=150,
           extra_args=["-vcodec", "libx264", "-pix_fmt", "yuv420p", "-crf", "23"])
 print("wrote", OUT)
