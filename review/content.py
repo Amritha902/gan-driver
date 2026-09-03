@@ -23,11 +23,11 @@ SLIDE4 = [
        "large gains — 30.5 % less overshoot, 75 % less turn-off loss — against a conventional "
        "driver [5]–[7].", False)], 1),
     ([("Limitations / Research Gap:", B)], 0),
-    ([("That comparison conflates ", False), ("choosing better fixed settings", B), (" with ", False),
+    ([("No published work has ever measured what the adaptation is worth.", B),
+      (" Those gains bundle ", False), ("choosing better fixed settings", B), (" with ", False),
       ("adapting settings per operating point", B),
-      (". Only the second needs sensing, a lookup table and a controller — the hardware cost that "
-       "justifies the architecture. No published work isolates them, so the value of adaptation "
-       "has never been measured.", False)], 1),
+      (". Only the second needs sensing, a lookup table and a controller — the cost that "
+       "justifies the architecture, and the one nobody has priced.", False)], 1),
 ]
 
 SLIDE6 = [
