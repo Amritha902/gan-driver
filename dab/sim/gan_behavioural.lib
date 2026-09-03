@@ -1,0 +1,64 @@
+* ============================================================================
+* PLACEHOLDER GaN HEMT MODEL  —  ngspice
+*
+*   >>> THIS IS NOT A VENDOR MODEL. DO NOT QUOTE RESULTS FROM IT. <<<
+*
+* Written from published GS66508B datasheet values (650 V, 30 A, GaN Systems) so
+* that the sweep harness, the loss model and the ZVS extraction scripts can be
+* developed and debugged before the real vendor model is available.
+*
+* Replace with the manufacturer's SPICE model before generating anything that
+* goes into the report. Download requires a free account:
+*   GaN Systems / Navitas : gansystems.com  ->  GS66508B  ->  SPICE model
+*   EPC                   : epc-co.com      ->  device    ->  SPICE model
+*
+* What is represented
+*   - channel on-resistance, with a linear positive tempco
+*   - threshold and a soft (tanh) transition rather than a hard switch
+*   - third-quadrant reverse conduction with NO body diode: the channel
+*     self-commutates, so V_SD is roughly V_TH + I*Rds(on). This is the
+*     behaviour novelty claim N2 rests on, so it is modelled explicitly.
+*   - nonlinear C_oss, fitted to C0/(1+v/V0)^m
+*
+* What is NOT represented — and why it matters
+*   - C_oss hysteresis loss (E_DISS). Reference [19] shows soft switching is not
+*     lossless in GaN. This model treats C_oss as lossless, so it will be
+*     OPTIMISTIC about soft-switching efficiency. The real model is needed before
+*     any efficiency number is believed.
+*   - dynamic Rds(on) / current collapse
+*   - gate charge nonlinearity, package inductance, self-heating
+* ============================================================================
+
+.subckt GAN_BEHAV d g s PARAMS: TJ=25
+
+* ---- datasheet-derived parameters -------------------------------------------
+.param VTH   = 1.7        $ V,  gate threshold
+.param RON25 = 50m        $ ohm, Rds(on) at 25 C
+.param KT    = 0.007      $ /K,  Rds(on) tempco (~+70% at 125 C)
+.param RON   = 'RON25*(1+KT*(TJ-25))'
+.param COSS0 = 650p       $ F,  C_oss at v ~ 0
+.param CV0   = 24         $ V,  knee voltage of the C_oss fit
+.param CM    = 0.8        $     exponent of the C_oss fit
+.param CGS   = 380p
+.param CGD0  = 4p
+
+* ---- channel ----------------------------------------------------------------
+* Conducts forward when Vgs > Vth. Conducts in reverse regardless of gate, once
+* Vsd exceeds (Vth - Vgs) — that is the no-body-diode behaviour: the channel
+* turns itself on, and the drop is large, which is what makes dead-time costly.
+* Forward term: gate above threshold turns the channel on, resistance RON.
+* Reverse term: with the gate below threshold the channel still conducts once
+*   |Vds| exceeds (VTH - Vgs) — no body diode, the channel self-commutates, and
+*   the drop is (VTH - Vgs) + I*RON rather than a diode's ~0.7 V. Smoothed with
+*   tanh so the solver has a continuous derivative.
+Bch d s I = '0.5*(1+tanh(4*(v(g,s)-VTH)))*v(d,s)/RON + 0.5*(1-tanh(4*(v(g,s)-VTH)))*0.5*(1+tanh(-4*(v(d,s)+(VTH-v(g,s)))))*min(0,v(d,s)+(VTH-v(g,s)))/RON'
+
+* ---- capacitances -----------------------------------------------------------
+* Voltage-dependent C_oss. ngspice evaluates this as C(v)*dv/dt rather than
+* dQ/dt, so stored energy is approximate — adequate for developing the harness,
+* not for a final loss number.
+Cds d s C = 'COSS0/pwr(1+abs(v(d,s))/CV0, CM)'
+Cgs g s   {CGS}
+Cgd g d   {CGD0}
+
+.ends GAN_BEHAV

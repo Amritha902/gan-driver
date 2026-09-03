@@ -1,0 +1,30 @@
+* Double-pulse test — sanity check on the placeholder GaN model
+.include gan_behavioural.lib
+
+.param VDC=400
+.param LLOAD=200u
+.param LLOOP=5n
+
+Vdc  dcp 0   {VDC}
+Cdc  dcp 0   10u
+Lp   dcp mp  {LLOOP}
+Ln   mn  0   {LLOOP}
+
+* high side held off, freewheels by reverse conduction
+XQH  mp sw_gh sw   GAN_BEHAV
+Vgh  sw_gh sw 0
+
+* low side = DUT
+XQL  sw gl mn      GAN_BEHAV
+Vgl  gl mn PWL(0 0  1n 0  1.01n 6  5u 6  5.01u 0  7u 0  7.01u 6  8u 6  8.01u 0)
+
+Lload dcp sw {LLOAD}
+
+.tran 2n 10u uic
+.control
+run
+meas tran vds_pk   MAX v(sw)          from=5u to=7u
+meas tran il_off   MAX i(Lload)       from=4.9u to=5.05u
+print vds_pk il_off
+.endc
+.end
