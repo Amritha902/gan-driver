@@ -106,51 +106,56 @@ REFS = [
      ieee="D. Reusch and J. Strydom, “Understanding the Effect of PCB Layout on Circuit "
           "Performance in a High-Frequency Gallium-Nitride-Based Point of Load Converter,” "
           "IEEE Trans. Power Electron., vol. 29, no. 4, pp. 2008–2015, Apr. 2014."),
- Ref(4, "—",
+ Ref(4, "Li, Zhang, Li, Wang, Liu & Xu (2022)",
      "Crosstalk Suppression Method for GaN-Based Bridge Configuration Using Negative Voltage "
      "Self-Recovery Gate Drive",
-     "IEEE Trans. Power Electron.",
+     "IEEE Trans. Power Electron., 37(4), 4406–4418",
      "RC-diode divider generates negative V_GS; antiparallel diode gives a low-impedance Miller "
      "path",
      "Suppresses positive and negative crosstalk together. Treats the negative rail as always "
      "beneficial; our freeze test finds off-bias worth 2.55 % to schedule, and nothing at a 1 V "
      "guard band.",
-     xplore="9573371", year="2021"),
- Ref(5, "—",
+     xplore="9573371", year="2022",
+     ieee="B. Li, G. Zhang, C. Li, G. Wang, S. Liu and D. Xu, “Crosstalk Suppression Method for GaN-Based Bridge Configuration Using Negative Voltage Self-Recovery Gate Drive,” IEEE Trans. Power Electron., vol. 37, no. 4, pp. 4406–4418, 2022.", done=True),
+ Ref(5, "Chen, Peng, Song, Tong & Kang (2024)",
      "A Novel Control Strategy for Optimal Tradeoff between Overshoot and Switching Loss Based "
      "on Double Closed-Loop Self-Regulating Active Gate Driver",
-     "IEEE journal",
+     "IEEE Trans. Power Electron., 39(10), 13033–13043",
      "Weight-based closed-loop control balancing overshoot against turn-off loss per operating "
      "condition",
      "Reports 30.5 % less overshoot and 75 % less turn-off loss. Optimises the same two "
      "objectives as our cost function, but never bounds what the adaptation itself is worth "
      "against a fixed setting.",
-     xplore="10553383", year="2024"),
- Ref(6, "—",
+     xplore="10553383", year="2024",
+     ieee="X. Chen, H. Peng, S. Song, Q. Tong and Y. Kang, “A Novel Control Strategy for Optimal Tradeoff between Overshoot and Switching Loss Based on Double Closed-Loop Self-Regulating Active Gate Driver,” IEEE Trans. Power Electron., vol. 39, no. 10, pp. 13033–13043, 2024.", done=True),
+ Ref(6, "Song, Hu, Chen, Tang, Yue & Liu (2025)",
      "A Self-Regulating Active Gate Driver of Voltage Overshoot Suppression for SiC MOSFETs "
      "Under Variable Load Current Conditions",
-     "IEEE journal",
+     "IEEE Trans. Power Electron., 40(8), 10623–10634",
      "Gate drive self-regulates as load current varies",
      "Adaptation to the operating point is the premise, not a tested hypothesis. This is "
      "precisely the claim our exhaustive search isolates and measures at 5.2 %.",
-     xplore="10964227", year="2025"),
- Ref(7, "—",
+     xplore="10964227", year="2025",
+     ieee="W. Song, T. Hu, J. Chen, T. Tang, H. Yue and G. Liu, “A Self-Regulating Active Gate Driver of Voltage Overshoot Suppression for SiC MOSFETs Under Variable Load Current Conditions,” IEEE Trans. Power Electron., vol. 40, no. 8, pp. 10623–10634, 2025.", done=True),
+ Ref(7, "Kuo, Wang, Chen, Tu, Hsiao & Chen (2025)",
      "Universal Active Gate Driver IC With Closed-Loop Timing Control and Gate-Sensing Technique "
      "for Silicon Carbide Power Devices",
-     "IEEE journal",
+     "IEEE Trans. Power Electron., 40(4), 5120–5129",
      "Integrated driver with closed-loop timing and on-chip gate sensing",
      "The sensing and control hardware that per-operating-point scheduling requires. Our result "
      "bounds the benefit that hardware can deliver on this architecture at a few per cent.",
-     xplore="10813402", year="2025"),
- Ref(8, "—",
+     xplore="10813402", year="2025",
+     ieee="C.W. Kuo, T.W. Wang, L.C. Chen, C.C. Tu, Y.K. Hsiao and P.H. Chen, “Universal Active Gate Driver IC With Closed-Loop Timing Control and Gate-Sensing Technique for Silicon Carbide Power Devices,” IEEE Trans. Power Electron., vol. 40, no. 4, pp. 5120–5129, 2025.", done=True),
+ Ref(8, "Thuc & Chen (2024)",
      "An Integrated Driver With Dual-Edge Adaptive Dead-Time Control for GaN-Based Synchronous "
      "Buck Converter",
-     "IEEE Trans. Ind. Appl., vol. 60",
+     "IEEE Trans. Ind. Appl., 60(6), 9157–9170",
      "Dual-edge adaptive dead-time control; sub-1 ns dead times across a 0.2–2 A range",
      "Adapts the one field our freeze test says actually carries the benefit — dead time, "
      "5.45 % of the cost, 2.1× the next field — and does it across a 0.2–2 A range, which is "
      "exactly the light-load corner our leave-one-out test shows carries all of it.",
-     xplore="10664041", year="2024", doi="10.1109/TIA.2024.3454198"),
+     xplore="10664041", year="2024", doi="10.1109/TIA.2024.3454198",
+     ieee="G.H. Thuc and C.J. Chen, “An Integrated Driver With Dual-Edge Adaptive Dead-Time Control for GaN-Based Synchronous Buck Converter,” IEEE Trans. Ind. Appl., vol. 60, no. 6, pp. 9157–9170, 2024.", done=True),
  Ref(9, "H. Takayama, T. Okuda & T. Hikihara (2022)",
      "Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior — "
      "Preparation Toward Universal Digitization of Power Switching",
@@ -161,40 +166,45 @@ REFS = [
      "word, and it is digital — implementable on an FPGA — rather than a fixed analogue "
      "network. We replicate its premise on GaN and then ask the question it does not: of the "
      "gain a code buys, how much needs per-operating-point adaptation at all?",
-     year="2022", doi="10.1002/cta.3136", base=True),
- Ref(10, "—",
+     year="2022", doi="10.1002/cta.3136", base=True,
+     ieee="H. Takayama, T. Okuda and T. Hikihara, “Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior — Preparation Toward Universal Digitization of Power Switching,” Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183–196, 2022.", done=True),
+ Ref(10, "Zhang, Yu, Leng, Cui, Deng & Ng (2020)",
      "A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control",
-     "IEEE conference",
+     "Proc. IEEE ISPSD, 2020, pp. 102–105",
      "Segmented output stage on E-mode GaN: 7 slices, pattern timing 0.5\u20135 ns, strength set by one external bias resistor",
      "Architecturally the closest published driver to ours — segmented slices, pattern-selected "
      "strength. It is an ASIC with a fixed pattern set; our contribution is to search the whole "
      "pattern space exhaustively and price what the search actually buys.",
-     xplore="9170108", year="2020", closest=True),
- Ref(11, "—",
+     xplore="9170108", year="2020", closest=True,
+     ieee="W.J. Zhang, J. Yu, Y. Leng, W.T. Cui, G.Q. Deng and W.T. Ng, “A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control,” in Proc. IEEE 32nd Int. Symp. Power Semicond. Devices ICs (ISPSD), 2020, pp. 102–105.", done=True),
+ Ref(11, "Wang, Tao, Xiao, Luo, He, Zhou, Zhang & Wang (2024)",
      "High-Frequency Three-Level Gate Driver for GaN HEMT Bridge Crosstalk Suppression",
-     "IEEE journal",
+     "IEEE Trans. Power Electron., 39(1), 1343–1352",
      "Three-level drive; capacitor–diode negative rail with a digitally-clamped zero level, to "
      "5 MHz",
      "Recent, GaN, and on exactly our failure mode. It suppresses crosstalk with added passives; "
      "we get the same protection from the Miller clamp already in the cell and measure its price "
      "at 0.04 %.",
-     xplore="10286072", year="2024", closest=True),
- Ref(12, "—",
+     xplore="10286072", year="2024", closest=True,
+     ieee="X. Wang, M. Tao, J. Xiao, D. Luo, M. He, Q. Zhou, X. Zhang and M. Wang, “High-Frequency Three-Level Gate Driver for GaN HEMT Bridge Crosstalk Suppression,” IEEE Trans. Power Electron., vol. 39, no. 1, pp. 1343–1352, 2024.", done=True),
+ Ref(12, "Wang, Sun, Yan, Ma & Xu (2024)",
      "An Integrated Suppression Method of Both Gate-Source Voltage Oscillation and Crosstalk for "
      "GaN HEMT Gate Driver",
-     "IEEE journal",
+     "IEEE Trans. Power Electron., 39(11), 14643–14655",
      "One driver addressing gate-source ringing and crosstalk together",
      "Confirms the two effects are coupled, which is why our cost function prices loss and "
      "overshoot jointly rather than optimising either alone.",
-     xplore="10591431", year="2024", closest=True),
- Ref(13, "—",
+     xplore="10591431", year="2024", closest=True,
+     ieee="L. Wang, X. Sun, Y. Yan, M. Ma and D. Xu, “An Integrated Suppression Method of Both Gate-Source Voltage Oscillation and Crosstalk for GaN HEMT Gate Driver,” IEEE Trans. Power Electron., vol. 39, no. 11, pp. 14643–14655, 2024.", done=True),
+ Ref(13, "Cai, Ye, Lv & Chen (2026)",
      "A High-Efficient GaN Driver With Hybrid Adaptive Dead-Time Control and Peak Delay Control "
      "for Synchronous Buck Converter",
-     "IEEE journal",
+     "IEEE Trans. Power Electron., 41(1), 279–290",
      "Hybrid adaptive dead-time plus peak delay control on a GaN synchronous buck",
      "The most recent adaptive dead-time driver we found, and it adapts the one field our "
      "leave-one-out test shows carries the whole benefit — and only at light load.",
-     xplore="11146698", year="2025", closest=True),
+     xplore="11146698", year="2026", closest=True,
+     ieee="Y. Cai, D. Ye, W. Lv and Z. Chen, “A High-Efficient GaN Driver With Hybrid Adaptive Dead-Time Control and Peak Delay Control for Synchronous Buck Converter,” IEEE Trans. Power Electron., vol. 41, no. 1, pp. 279–290, 2026.", done=True),
 ]
 
 DONE    = [r for r in REFS if r.done]

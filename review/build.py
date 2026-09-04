@@ -348,11 +348,16 @@ for r in R.REFS:
         runs.append(("   " + r.url(), True))
     paras.append(para(runs, level=0, sz=900, spc=120, bullet=False))
 n_done, n_pend = len(R.DONE), len(R.PENDING)
-paras.append(para([
-    ("%d of %d verified against the publisher record. " % (n_done, len(R.REFS)), False),
-    ("The remaining %d carry title, journal status and Xplore document ID; " % n_pend, False),
-    ("volume, issue, pages and authors were not reachable from the build environment and are "
-     "left blank rather than guessed.", False)], level=0, sz=850, spc=0, bullet=False))
+if n_pend == 0:
+    note = [("All %d verified against the publisher record " % len(R.REFS), False),
+            ("— authors, volume, issue and pages resolved through Crossref by DOI and title, "
+             "not transcribed by hand.", False)]
+else:
+    note = [("%d of %d verified against the publisher record. " % (n_done, len(R.REFS)), False),
+            ("The remaining %d carry title, journal status and Xplore document ID; " % n_pend, False),
+            ("volume, issue, pages and authors were not reachable and are left blank rather "
+             "than guessed.", False)]
+paras.append(para(note, level=0, sz=850, spc=0, bullet=False))
 set_body(ref_shape, paras)
 
 try:
