@@ -64,7 +64,7 @@ for sh in S[1].shapes:
                 if r.text.strip() == "Project Title":
                     r.text = ("A Segmented Gate Driver for GaN HEMTs: Measuring What "
                               "Operating-Point Scheduling Is Actually Worth")
-set_run_after(S[1], "Student Name(s):", "Amritha S  —  23BEC1368")
+set_run_after(S[1], "Student Name(s):", "Sanjay Kumar 23BEC1447  ·  Aamir Abdullah 23BPS1197  ·  Amritha S 23BEC1368")
 set_run_after(S[1], "Guide:", "Dr. Bindu, School of Electronics Engineering (SENSE)")
 
 # ---------------- slides 4, 6, 7 : bulleted content ------------------------
@@ -607,7 +607,7 @@ print("slides 11 (robustness) and 14 (conclusion) built")
 # The label and its value live in SEPARATE shapes, so a run-follows-run search
 # within one shape never finds them. Kept last so nothing can clobber it.
 REPL = {
-    "Name — Reg. No.":        "Amritha S  —  23BEC1368",
+    "Name — Reg. No.":        "Sanjay Kumar 23BEC1447  ·  Aamir Abdullah 23BPS1197  ·  Amritha S 23BEC1368",
     "Dr. Guide Name, School": "Dr. Bindu  —  SENSE",
 }
 hits = 0
@@ -617,6 +617,22 @@ for sh in S[1].shapes:
         for r in pa.runs:
             if r.text.strip() in REPL:
                 r.text = REPL[r.text.strip()]; hits += 1
+
+# Three names and reg numbers do not fit the template's one-line value box
+# (4.40 in wide, 0.42 in tall, sized for a single student). Widen it to the
+# signature block's left edge and give it the second line it needs; the row
+# below starts at 4.00 in, so 0.55 in still clears it.
+# The template draws a fixed underline rule under each value field, so a
+# second line is struck through by it. Keep the names to ONE line: widen the
+# box to the signature block's edge and drop this field to 9.5 pt. qa.py does
+# not catch that collision -- the rule is a separate shape, not text.
+for sh in S[1].shapes:
+    if sh.has_text_frame and "23BEC1447" in sh.text_frame.text:
+        sh.width = Inches(5.05)
+        for pa in sh.text_frame.paragraphs:
+            for r in pa.runs:
+                r.font.size = Pt(9.5)
+        break
 
 # ---------------- informative titles on the two results slides ------------
 for sl, txt in ((S[11], "Result 1 — crosstalk is real; the clamp fixes it"),
