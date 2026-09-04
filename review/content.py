@@ -72,10 +72,10 @@ SLIDE7 = [
     ([("Loop inductance (7,192 transients, eight values): adaptive control pays below "
        "~2.5 nH, peaking at 13.5 %. EMI (1,440 transients): pricing it makes scheduling "
        "worth ", False), ("less", B), (", not more — 5.95 % → 0.15 %.", False)], 1),
-    ([("The port to other simulators is written and re-simulated.", B)], 0),
-    ([("LTspice-dialect and Spectre decks both reproduce "
-       "122.4 V / 5.00 V / 1.65 V. Neither has itself been run — no installation was "
-       "available — so these are faithful ports.", False)], 1),
+    ([("The LTspice port has been run in LTspice.", B)], 0),
+    ([("The three shipped .cir files give 1.6487 / 0.8282 / \u22121.1768 V in LTspice 24, "
+       "matching ngspice within 2 mV \u2014 the result is not an artefact of one simulator. "
+       "Spectre remains a port.", False)], 1),
     ([("In total: ", B), ("nearly 35,000 transient simulations, a 34-section written record, "
        "and a full manuscript draft with five tables and four figures.", False)], 1),
 ]

@@ -64,7 +64,7 @@ for sh in S[1].shapes:
                 if r.text.strip() == "Project Title":
                     r.text = ("A Segmented Gate Driver for GaN HEMTs: Measuring What "
                               "Operating-Point Scheduling Is Actually Worth")
-set_run_after(S[1], "Student Name(s):", "Amritha  —  Reg. No. ____________")
+set_run_after(S[1], "Student Name(s):", "Amritha S  —  23BEC1368")
 set_run_after(S[1], "Guide:", "Dr. Bindu, School of Electronics Engineering (SENSE)")
 
 # ---------------- slides 4, 6, 7 : bulleted content ------------------------
@@ -453,8 +453,9 @@ for i, (big, label, sub) in enumerate(TILES):
 
 add_text(s11, 0.70, 6.45, 11.90, 0.45, [
     para([("Stated plainly: ", True),
-          ("LTspice and Spectre decks are faithful ports re-simulated to the same numbers, but "
-           "neither simulator has itself been run — no installation was available.", False)],
+          ("LTspice has now been run: the three shipped .cir files reproduce 1.6487 / 0.8282 / "
+           "\u22121.1768 V, matching ngspice to within 2 mV. Spectre is still a port \u2014 "
+           "no installation available.", False)],
          level=0, sz=1150, spc=0, bullet=False)])
 
 # ---- page numbers on every slide from 10 onward --------------------------
@@ -601,7 +602,7 @@ print("slides 11 (robustness) and 14 (conclusion) built")
 # The label and its value live in SEPARATE shapes, so a run-follows-run search
 # within one shape never finds them. Kept last so nothing can clobber it.
 REPL = {
-    "Name — Reg. No.":        "Amritha  —  Reg. No. ________",
+    "Name — Reg. No.":        "Amritha S  —  23BEC1368",
     "Dr. Guide Name, School": "Dr. Bindu  —  SENSE",
 }
 hits = 0
@@ -1252,6 +1253,22 @@ add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
           ("  — four ngspice runs, prints this table.", False)],
          level=0, sz=1150, spc=0, bullet=False),
 ])
+# ---------------- review date --------------------------------------------
+# template_ext.pptx carries 02.09.2026 on slides 2 and 3. The review moved to
+# the 9th. Both are Wednesdays, so the day name on slide 2 stays correct.
+REVIEW_DATE_OLD, REVIEW_DATE_NEW = "02.09.2026", "09.09.2026"
+dhits = 0
+for sl in S:
+    for sh in sl.shapes:
+        if not sh.has_text_frame:
+            continue
+        for pa in sh.text_frame.paragraphs:
+            for r in pa.runs:
+                if REVIEW_DATE_OLD in r.text:
+                    r.text = r.text.replace(REVIEW_DATE_OLD, REVIEW_DATE_NEW)
+                    dhits += 1
+print("review date set to %s in %d run(s)" % (REVIEW_DATE_NEW, dhits))
+
 for n, sl in enumerate(S, start=1):
     renumber(sl, n)
 p.save(OUT)
