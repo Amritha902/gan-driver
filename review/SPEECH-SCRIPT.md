@@ -1,4 +1,4 @@
-# Review-I speech script — 27 slides, ~10 minutes
+# Review-I speech script — 28 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
@@ -296,9 +296,15 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 26–27 — References, thanks (10 s)
+## 26–28 — References, thanks (10 s)
 
-> "Thirteen references, eight to ten was the minimum. Thank you."
+> "Thirty references, against a minimum of eight to ten. All thirty are
+> verified against the publisher record — authors, volume, issue and pages
+> resolved by DOI, not typed in. Thank you."
+
+If asked how they are organised: four clusters by what the driver *does*,
+not by date. A–C choose or regulate the setting in analogue; only D makes it
+a digital code, which is what makes an exhaustive search possible.
 
 ---
 

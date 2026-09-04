@@ -205,6 +205,200 @@ REFS = [
      "leave-one-out test shows carries the whole benefit — and only at light load.",
      xplore="11146698", year="2026", closest=True,
      ieee="Y. Cai, D. Ye, W. Lv and Z. Chen, “A High-Efficient GaN Driver With Hybrid Adaptive Dead-Time Control and Peak Delay Control for Synchronous Buck Converter,” IEEE Trans. Power Electron., vol. 41, no. 1, pp. 279–290, 2026.", done=True),
+ Ref(14, "Zheng, Zhao, Agarwal, Liu, Zhao & Mantooth (2026)",
+     "A Multi-Level Turn-Off Gate Driver for Crosstalk Noise Suppression of GaN HEMTs",
+     "IEEE Open J. Power Electron., 1–15",
+     "Survey breadth — a Multi-Level Turn-Off Gate Driver for Crosstalk Noise Suppression of "
+     "GaN HEMTs.",
+     "Cluster A. The actuator is chosen once, at design time, and never revisited as the "
+     "operating point moves — exactly the half of the benefit this study separates out.",
+     doi="10.1109/ojpel.2026.3727513", year="2026", done=True,
+     ieee="Y. Zheng, S. Zhao, P. Agarwal, F. Liu, Y. Zhao and A. Mantooth, “A Multi-Level "
+     "Turn-Off Gate Driver for Crosstalk Noise Suppression of GaN HEMTs,” IEEE Open J. Power "
+     "Electron., pp. 1–15, 2026."),
+ Ref(15, "Banda, Madichetty, Natham & Koduru (2026)",
+     "An Event-Triggered Dual-Polarity Gate Clamp for GaN HEMT Gate Oscillation Suppression",
+     "IEEE Trans. Power Electron., 41(9), 14402–14405",
+     "Survey breadth — an Event-Triggered Dual-Polarity Gate Clamp for GaN HEMT Gate "
+     "Oscillation Suppression.",
+     "Cluster A. The actuator is chosen once, at design time, and never revisited as the "
+     "operating point moves — exactly the half of the benefit this study separates out.",
+     doi="10.1109/tpel.2026.3689188", year="2026", done=True,
+     ieee="M.K. Banda, S. Madichetty, D.M. Natham and S. Koduru, “An Event-Triggered "
+     "Dual-Polarity Gate Clamp for GaN HEMT Gate Oscillation Suppression,” IEEE Trans. Power "
+     "Electron., vol. 41, no. 9, pp. 14402–14405, 2026."),
+ Ref(16, "Yuan, Li, Zhang, Yang, Zhao, Wang, Wang & Ding (2026)",
+     "Influence of Negative Gate Bias on Crosstalk Spike in SiC MOSFETs Half-Bridge Circuit",
+     "IEEE J. Emerg. Sel. Topics Power Electron., 14(3), 3217–3229",
+     "Survey breadth — influence of Negative Gate Bias on Crosstalk Spike in SiC MOSFETs "
+     "Half-Bridge Circuit.",
+     "Cluster A. The actuator is chosen once, at design time, and never revisited as the "
+     "operating point moves — exactly the half of the benefit this study separates out.",
+     doi="10.1109/jestpe.2025.3645404", year="2026", done=True,
+     ieee="Z. Yuan, H. Li, M. Zhang, Z. Yang, S. Zhao, H. Wang, X. Wang and L. Ding, “Influence "
+     "of Negative Gate Bias on Crosstalk Spike in SiC MOSFETs Half-Bridge Circuit,” IEEE J. "
+     "Emerg. Sel. Topics Power Electron., vol. 14, no. 3, pp. 3217–3229, 2026."),
+ Ref(17, "Zhang, Wang, Guo & Zhu (2025)",
+     "A Gate Driver for Crosstalk Suppression of eGaN HEMT Power Devices",
+     "J. Low Power Electron. Appl., 15(3), 38",
+     "Survey breadth — a Gate Driver for Crosstalk Suppression of eGaN HEMT Power Devices.",
+     "Cluster A. The actuator is chosen once, at design time, and never revisited as the "
+     "operating point moves — exactly the half of the benefit this study separates out.",
+     doi="10.3390/jlpea15030038", year="2025", done=True,
+     ieee="L. Zhang, K. Wang, S. Guo and B. Zhu, “A Gate Driver for Crosstalk Suppression of eGaN "
+     "HEMT Power Devices,” J. Low Power Electron. Appl., vol. 15, no. 3, pp. 38, 2025."),
+ Ref(18, "Wu (2023)",
+     "Parallel arrangement of MOSFETs, effective suppression of crosstalk: A new gate driver "
+     "topology",
+     "iEnergy, 2(3), 163–163",
+     "Survey breadth — parallel arrangement of MOSFETs, effective suppression of crosstalk: "
+     "A new gate driver topology.",
+     "Cluster A. The actuator is chosen once, at design time, and never revisited as the "
+     "operating point moves — exactly the half of the benefit this study separates out.",
+     doi="10.23919/ien.2023.0032", year="2023", done=True,
+     ieee="J. Wu, “Parallel arrangement of MOSFETs, effective suppression of crosstalk: A new "
+     "gate driver topology,” iEnergy, vol. 2, no. 3, pp. 163–163, 2023."),
+ Ref(19, "Mikhaylov, Buticchi & Galea (2023)",
+     "A gate driver for parallel connected MOSFETs with crosstalk suppression",
+     "iEnergy, 2(3), 240–250",
+     "Survey breadth — a gate driver for parallel connected MOSFETs with crosstalk "
+     "suppression.",
+     "Cluster A. The actuator is chosen once, at design time, and never revisited as the "
+     "operating point moves — exactly the half of the benefit this study separates out.",
+     doi="10.23919/ien.2023.0024", year="2023", done=True,
+     ieee="Y. Mikhaylov, G. Buticchi and M. Galea, “A gate driver for parallel connected MOSFETs "
+     "with crosstalk suppression,” iEnergy, vol. 2, no. 3, pp. 240–250, 2023."),
+ Ref(20, "Liu & Min (2026)",
+     "A Load Adaptive Active Gate Driver with Fast-Switching Three-Level Current Source for "
+     "Overshoot Suppression in GaN-Based Half-Bridge Converters",
+     "IEEE Trans. Power Electron., 1–8",
+     "Survey breadth — a Load Adaptive Active Gate Driver with Fast-Switching Three-Level "
+     "Current Source for Overshoot Suppression in GaN-Based Half-Bridge Converters.",
+     "Cluster B. Closes a loop around the switching waveform so it adapts continuously, but "
+     "never reports how much of the gain needed the loop rather than a better fixed setting.",
+     doi="10.1109/tpel.2026.3724054", year="2026", done=True,
+     ieee="W. Liu and H. Min, “A Load Adaptive Active Gate Driver with Fast-Switching Three-Level "
+     "Current Source for Overshoot Suppression in GaN-Based Half-Bridge Converters,” IEEE "
+     "Trans. Power Electron., pp. 1–8, 2026."),
+ Ref(21, "Chen, Wang, Bai & Tolbert (2026)",
+     "A Simple Gate Driver Circuit for Turn-on Overvoltage Suppression of 10 kV SiC MOSFETs "
+     "With Temporarily Lowering Gate Voltage During <i>dv/dt</i>",
+     "IEEE Trans. Ind. Electron., 1–6",
+     "Survey breadth — a Simple Gate Driver Circuit for Turn-on Overvoltage Suppression of "
+     "10 kV SiC MOSFETs With Temporarily Lowering Gate Voltage During <i>dv/dt</i>.",
+     "Cluster B. Closes a loop around the switching waveform so it adapts continuously, but "
+     "never reports how much of the gain needed the loop rather than a better fixed setting.",
+     doi="10.1109/tie.2026.3725291", year="2026", done=True,
+     ieee="R. Chen, F. Wang, H. Bai and L.M. Tolbert, “A Simple Gate Driver Circuit for Turn-on "
+     "Overvoltage Suppression of 10 kV SiC MOSFETs With Temporarily Lowering Gate Voltage "
+     "During <i>dv/dt</i>,” IEEE Trans. Ind. Electron., pp. 1–6, 2026."),
+ Ref(22, "Yu, Yang, Yin, Hu, Zhang & Fu (2026)",
+     "A Dual-Loop Active Gate Driver With Independent Voltage Slew Rate and Overshoot "
+     "Control for Switching Loss Optimization of SiC MOSFETs",
+     "IEEE Trans. Ind. Electron., 1–12",
+     "Survey breadth — a Dual-Loop Active Gate Driver With Independent Voltage Slew Rate and "
+     "Overshoot Control for Switching Loss Optimization of SiC MOSFETs.",
+     "Cluster B. Closes a loop around the switching waveform so it adapts continuously, but "
+     "never reports how much of the gain needed the loop rather than a better fixed setting.",
+     doi="10.1109/tie.2026.3715930", year="2026", done=True,
+     ieee="D. Yu, M. Yang, L. Yin, K. Hu, W. Zhang and Q. Fu, “A Dual-Loop Active Gate Driver "
+     "With Independent Voltage Slew Rate and Overshoot Control for Switching Loss "
+     "Optimization of SiC MOSFETs,” IEEE Trans. Ind. Electron., pp. 1–12, 2026."),
+ Ref(23, "Xiang, Hao, Cai & You (2023)",
+     "An Active Gate Driver of SiC MOSFET Module Based on PCB Rogowski Coil for Optimizing "
+     "Tradeoff Between Overshoot and Switching Loss",
+     "IEEE Trans. Power Electron., 38(1), 245–260",
+     "Survey breadth — an Active Gate Driver of SiC MOSFET Module Based on PCB Rogowski Coil "
+     "for Optimizing Tradeoff Between Overshoot and Switching Loss.",
+     "Cluster B. Closes a loop around the switching waveform so it adapts continuously, but "
+     "never reports how much of the gain needed the loop rather than a better fixed setting.",
+     doi="10.1109/tpel.2022.3201018", year="2023", done=True,
+     ieee="P. Xiang, R. Hao, J. Cai and X. You, “An Active Gate Driver of SiC MOSFET Module Based "
+     "on PCB Rogowski Coil for Optimizing Tradeoff Between Overshoot and Switching Loss,” "
+     "IEEE Trans. Power Electron., vol. 38, no. 1, pp. 245–260, 2023."),
+ Ref(24, "Fukunaga, Takayama & Hikihara (2022)",
+     "Slew rate control of switching transient for SiC MOSFET in boost converter using "
+     "digital active gate driver",
+     "IET Power Electron., 16(3), 472–482",
+     "Survey breadth — slew rate control of switching transient for SiC MOSFET in boost "
+     "converter using digital active gate driver.",
+     "Cluster B. Closes a loop around the switching waveform so it adapts continuously, but "
+     "never reports how much of the gain needed the loop rather than a better fixed setting.",
+     doi="10.1049/pel2.12398", year="2022", done=True,
+     ieee="S. Fukunaga, H. Takayama and T. Hikihara, “Slew rate control of switching transient "
+     "for SiC MOSFET in boost converter using digital active gate driver,” IET Power "
+     "Electron., vol. 16, no. 3, pp. 472–482, 2022."),
+ Ref(25, "Xu, Fu, Liao, Zhu & Liu (2025)",
+     "An Integrated Driver With Real-Time Predictive Dead-Time Optimization Technique for "
+     "GaN-Based Synchronous Buck Converter",
+     "IEEE J. Emerg. Sel. Topics Power Electron., 13(3), 3173–3183",
+     "Survey breadth — an Integrated Driver With Real-Time Predictive Dead-Time Optimization "
+     "Technique for GaN-Based Synchronous Buck Converter.",
+     "Cluster C. Adapts dead time — the one field our leave-one-out test finds carries the "
+     "benefit, and in our data only at the light-load corner.",
+     doi="10.1109/jestpe.2025.3564383", year="2025", done=True,
+     ieee="C. Xu, P. Fu, X. Liao, Z. Zhu and L. Liu, “An Integrated Driver With Real-Time "
+     "Predictive Dead-Time Optimization Technique for GaN-Based Synchronous Buck Converter,” "
+     "IEEE J. Emerg. Sel. Topics Power Electron., vol. 13, no. 3, pp. 3173–3183, 2025."),
+ Ref(26, "Chen, Chiu, Chen, Wang & Chang (2022)",
+     "An Integrated Driver With Adaptive Dead-Time Control for GaN-Based Synchronous Buck "
+     "Converter",
+     "IEEE Trans. Circuits Syst. II, 69(2), 539–543",
+     "Survey breadth — an Integrated Driver With Adaptive Dead-Time Control for GaN-Based "
+     "Synchronous Buck Converter.",
+     "Cluster C. Adapts dead time — the one field our leave-one-out test finds carries the "
+     "benefit, and in our data only at the light-load corner.",
+     doi="10.1109/tcsii.2021.3098310", year="2022", done=True,
+     ieee="C. Chen, P. Chiu, Y. Chen, P. Wang and Y. Chang, “An Integrated Driver With Adaptive "
+     "Dead-Time Control for GaN-Based Synchronous Buck Converter,” IEEE Trans. Circuits "
+     "Syst. II, vol. 69, no. 2, pp. 539–543, 2022."),
+ Ref(27, "Tan, Zhou & Zou (2024)",
+     "A Programmable Gate Driver Module-Based Multistage Voltage Regulation SiC MOSFET "
+     "Switching Strategy",
+     "Electronics, 13(22), 4379",
+     "Survey breadth — a Programmable Gate Driver Module-Based Multistage Voltage Regulation "
+     "SiC MOSFET Switching Strategy.",
+     "Cluster D. The gate waveform is selected by a discrete code, which is what makes the "
+     "setting space finite and therefore exhaustively searchable.",
+     doi="10.3390/electronics13224379", year="2024", done=True,
+     ieee="J. Tan, Z. Zhou and G. Zou, “A Programmable Gate Driver Module-Based Multistage "
+     "Voltage Regulation SiC MOSFET Switching Strategy,” Electronics, vol. 13, no. 22, pp. "
+     "4379, 2024."),
+ Ref(28, "Chen, Wang, Li, Chen & Chang (2022)",
+     "An Integrated Driver With Bang-Bang Dead-Time Control and Charge Sharing Bootstrap "
+     "Circuit for GaN Synchronous Buck Converter",
+     "IEEE Trans. Power Electron., 37(8), 9503–9514",
+     "Survey breadth — an Integrated Driver With Bang-Bang Dead-Time Control and Charge "
+     "Sharing Bootstrap Circuit for GaN Synchronous Buck Converter.",
+     "Cluster D. The gate waveform is selected by a discrete code, which is what makes the "
+     "setting space finite and therefore exhaustively searchable.",
+     doi="10.1109/tpel.2022.3159717", year="2022", done=True,
+     ieee="C. Chen, P. Wang, S. Li, Y. Chen and Y. Chang, “An Integrated Driver With Bang-Bang "
+     "Dead-Time Control and Charge Sharing Bootstrap Circuit for GaN Synchronous Buck "
+     "Converter,” IEEE Trans. Power Electron., vol. 37, no. 8, pp. 9503–9514, 2022."),
+ Ref(29, "Thuc, Tsai, Chen, Fu, Wu & Lin (2026)",
+     "A Current Source Gate Driver with Dual-Edge Adaptive Slew Rate for GaN Devices",
+     "2026 IEEE Applied Power Electronics Conference and Expositio, 2026",
+     "Survey breadth — a Current Source Gate Driver with Dual-Edge Adaptive Slew Rate for "
+     "GaN Devices.",
+     "Cluster D. The gate waveform is selected by a discrete code, which is what makes the "
+     "setting space finite and therefore exhaustively searchable.",
+     doi="10.1109/apec51134.2026.11516764", year="2026", done=True,
+     ieee="G.H. Thuc, M. Tsai, C. Chen, J. Fu, W. Wu and W. Lin, “A Current Source Gate Driver "
+     "with Dual-Edge Adaptive Slew Rate for GaN Devices,” in Proc. 2026 IEEE Applied Power "
+     "Electronics Conference and Exposition (APEC), 2026."),
+ Ref(30, "Wu, Huang, Chen & Chen (2025)",
+     "Closed-loop Slew Rate Control of Active Current Source Gate Driver with Digital "
+     "Implementation for SiC MOSFET",
+     "2025 IEEE Energy Conversion Conference Congress and Expositi, 2025",
+     "Survey breadth — closed-loop Slew Rate Control of Active Current Source Gate Driver "
+     "with Digital Implementation for SiC MOSFET.",
+     "Cluster D. The gate waveform is selected by a discrete code, which is what makes the "
+     "setting space finite and therefore exhaustively searchable.",
+     doi="10.1109/ecce58356.2025.11259572", year="2025", done=True,
+     ieee="G. Wu, Y. Huang, Y. Chen and C. Chen, “Closed-loop Slew Rate Control of Active Current "
+     "Source Gate Driver with Digital Implementation for SiC MOSFET,” in Proc. 2025 IEEE "
+     "Energy Conversion Conference Congress and Exposition (ECCE), 2025."),
 ]
 
 DONE    = [r for r in REFS if r.done]

@@ -153,19 +153,19 @@ def table_of(slide):
 # and the near neighbours on the next, so that is what these two now are.
 CLUSTERS = [
  ("A · Passive / analogue crosstalk fixes",
-  "[1] [3] [4] [11] [12]",
+  "[1] [3] [4] [11] [12]\n[14]–[19]",
   "Negative off-bias, RC-diode rails, three-level drive, Miller clamps. Cheap and effective, "
   "but the setting is chosen once by hand and never revisited."),
  ("B · Closed-loop analogue adaptation",
-  "[5] [6] [7]",
+  "[5] [6] [7]\n[20]–[24]",
   "Sense the operating point, regulate drive strength or timing in the loop. Reports large "
   "gains — 30.5 % less overshoot, 75 % less turn-off loss — against a conventional driver."),
  ("C · Adaptive dead-time control",
-  "[8] [13]",
+  "[8] [13]\n[25] [26]",
   "Dead time driven to sub-nanosecond across load. The one field our own freeze test finds "
   "actually carries the benefit — and only at light load."),
  ("D · DIGITAL / segmented drive  — where this project sits",
-  "[9] BASE   [10]",
+  "[9] BASE   [10]\n[27]–[30]",
   "The gate waveform selected by a multibit CODE rather than a resistor network. [9] is the "
   "BASE PAPER — doi.org/10.1002/cta.3136 — and [10] is the closest GaN implementation. "
   "Digital means FPGA-implementable, and the code space can be searched exhaustively."),
@@ -173,10 +173,10 @@ CLUSTERS = [
 sc = S[4]
 set_title(sc, "Literature Landscape — four clusters, and where we sit")
 note = find_shape(sc, "Minimum 8")
-set_body(note, [para([("13 references. Grouped by what the driver DOES, not by date. "
-                       "Clusters A\u2013C choose a setting or regulate it in analogue; only "
-                       "cluster D makes the setting a digital code \u2014 which is what makes an "
-                       "exhaustive search, and this project\u2019s question, possible at all.",
+set_body(note, [para([("%d references, all publisher-verified, grouped by what the driver DOES. " % len(R.REFS) + 
+                       "Clusters A\u2013C set or regulate in analogue; only cluster D makes the "
+                       "setting a digital CODE \u2014 which is what makes an exhaustive search "
+                       "possible at all.",
                        False)], level=0, sz=1150, spc=0, bullet=False)])
 tbl = table_of(sc)
 set_cell(tbl.cell(0, 0), "#");        set_cell(tbl.cell(0, 1), "Cluster")
@@ -1258,6 +1258,51 @@ add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
           ("  — four ngspice runs, prints this table.", False)],
          level=0, sz=1150, spc=0, bullet=False),
 ])
+# ---------------- references: split across two slides ---------------------
+# 30 citations need 9.6 in in a 4.75 in box. Splitting is the honest fix: a
+# smaller font would fit but nobody can read 7 pt from the back of a room.
+ridx = None
+for i, sl in enumerate(S):
+    for sh in sl.shapes:
+        if sh.has_text_frame and sh.text_frame.text.strip().startswith("References"):
+            ridx = i; break
+    if ridx is not None: break
+if ridx is None:
+    raise SystemExit("references slide not found")
+
+ref_body = None
+for sh in S[ridx].shapes:
+    if sh.has_text_frame and "[1]" in sh.text_frame.text:
+        ref_body = sh; break
+
+half = (len(R.REFS) + 1) // 2
+first, second = R.REFS[:half], R.REFS[half:]
+
+def ref_paras(items, with_note):
+    out = []
+    for r in items:
+        runs = [("[%d]  " % r.n, True)]
+        if r.base:
+            runs.append(("BASE PAPER — ", True))
+        runs.append((r.cite(), False))
+        out.append(para(runs, level=0, sz=900, spc=60, bullet=False))
+    if with_note:
+        out.append(para([("All %d verified against the publisher record — authors, volume, "
+                          "issue and pages resolved through Crossref by DOI and title, not "
+                          "transcribed by hand." % len(R.REFS), False)],
+                        level=0, sz=850, spc=160, bullet=False))
+    return out
+
+S2 = clone_after(p, ridx, ridx + 1)
+set_title(S[ridx], "References  (1\u2013%d)" % first[-1].n)
+set_title(S2, "References  (%d\u2013%d)" % (second[0].n, second[-1].n))
+set_body(ref_body, ref_paras(first, False))
+for sh in S2.shapes:
+    if sh.has_text_frame and "[1]" in sh.text_frame.text:
+        set_body(sh, ref_paras(second, True)); break
+p.save(OUT)
+print("references split: %d + %d across two slides" % (len(first), len(second)))
+
 # ---------------- review date --------------------------------------------
 # template_ext.pptx carries 02.09.2026 on slides 2 and 3. The review moved to
 # the 9th. Both are Wednesdays, so the day name on slide 2 stays correct.
