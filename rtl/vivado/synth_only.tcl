@@ -44,7 +44,15 @@ read_verilog -sv [list \
 
 # Clock only. The pin-location and IOSTANDARD lines in seg_gate_ctrl.xdc are
 # board-specific placeholders and are not needed for synthesis numbers.
-create_clock -period 5.000 -name clk_200 [get_ports clk_200]
+#
+# The port name is NOT the same in both tops: the wrapper exposes clk_200,
+# the bare controller exposes clk. Hard-coding clk_200 made the second run
+# fail with an empty get_ports, so find whichever exists.
+# Derived from the top module name, NOT looked up with get_ports: this runs
+# before synth_design, so there is no elaborated design to query yet.
+set clkport [expr {$top eq "seg_gate_ctrl_top" ? "clk_200" : "clk"}]
+puts "== clock port: $clkport"
+create_clock -period 5.000 -name clk_200 [get_ports $clkport]
 
 synth_design -top $top -part $part
 report_utilization    -file [file join $out utilization_synth.rpt]
