@@ -1,9 +1,9 @@
-# Review-I speech script — 29 slides, ~10 minutes
+# Review-I speech script — 34 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
-reads. **Slides 7, 13 and 20 are the ones that matter.** If you are running
-out of time, cut 15, 18 and 22, never those three.
+reads. **Slides 8, 15 and 25 are the ones that matter.** If you are running
+out of time, cut 18, 23 and 27, never those three.
 
 Numbers in **bold** were re-verified by running the script that produces them.
 
@@ -20,7 +20,15 @@ once, and move.
 
 ---
 
-## 4 — Problem statement (45 s)
+## 4, 9, 21, 30 — Section dividers (2 s each)
+
+Dark slides: **The problem · What we built · What we found · Where this goes.**
+Say the words on the slide and move on. They break thirty-four slides into four
+acts; they are not content.
+
+---
+
+## 5 — Problem statement (45 s)
 
 > "In a GaN half-bridge, when the bottom device turns on the switch node
 > slews in a few nanoseconds. That dV/dt drives current through the top
@@ -40,7 +48,7 @@ setting is provably not optimal everywhere.
 
 ---
 
-## 5 — Literature landscape (30 s)
+## 6 — The base paper (30 s)
 
 > "Thirteen references, grouped by what the driver *does*, not by date. Three
 > clusters choose a setting or regulate it in analogue. Only cluster D makes
@@ -49,7 +57,7 @@ setting is provably not optimal everywhere.
 
 ---
 
-## 6 — The five closest (40 s)
+## 7 — The five closest (40 s)
 
 Walk the columns once, then stop on the last one.
 
@@ -67,7 +75,7 @@ GaN, where the device has no body diode and the trade changes.
 
 ---
 
-## 7 — THE GAP (60 s) — **core slide, do not rush**
+## 8 — THE GAP (60 s) — **core slide, do not rush**
 
 > "Every active gate driver paper reports one number: the improvement over a
 > conventional driver. That number bundles two completely different things."
@@ -87,7 +95,7 @@ GaN, where the device has no body diode and the trade changes.
 
 ---
 
-## 8 — Proposed solution and aim (40 s)
+## 10 — Proposed solution and aim (40 s)
 
 Open with the aim. The examiner is listening for it.
 
@@ -101,7 +109,22 @@ Open with the aim. The examiner is listening for it.
 
 ---
 
-## 9–10 — Architecture and circuit (45 s)
+## 11 — How it works, one use case (30 s)  — **new, use it**
+
+The slide that makes the project legible to someone seeing it cold. Walk the
+top row, then the bottom row. Do not read the boxes.
+
+> "One case: a storage converter, load falling from ten amps to two as the
+> pack fills. The top row is what the controller decides — and the only live
+> decision is that shaded diamond, one comparator picking between two dead
+> times. Everything else is strapped at power-up. The bottom row is what the
+> circuit then does: the switch node falls, that dV/dt pushes charge into the
+> off device's gate, and either it crosses 1.4 volts or it does not. Ours does
+> not, by 2.58 volts."
+
+---
+
+## 12–13 — Architecture and circuit (45 s)
 
 Slide 9 left to right in one sentence, then stop on the dashed block.
 
@@ -119,7 +142,7 @@ Slide 10 is the real circuit.
 
 ---
 
-## 11 — What a control word is (25 s)
+## 14 — What a control word is (25 s)
 
 > "Six fields: pull-up strength, two pull-down strengths, dead time, clamp
 > enable, and the off-bias rail. 720 combinations. Everything in the rest of
@@ -127,15 +150,7 @@ Slide 10 is the real circuit.
 
 ---
 
-## 12 — Base paper vs this work (30 s)
-
-> "The base paper shows a gate waveform can be chosen by a digital code. It,
-> and every active gate driver paper after it, reports one number against a
-> conventional driver."
-
----
-
-## 13 — WE IMPLEMENTED THE BASE PAPER (60 s) — **core slide**
+## 15 — WE IMPLEMENTED THE BASE PAPER (60 s) — **core slide**
 
 This is the slide that separates you from a literature review. Be fair to
 them; the comparison is stronger when you are.
@@ -159,15 +174,23 @@ the two actuators they don't have, and the exhaustive search that lets us
 price adaptation — which their paper can't do.
 
 ---
+## 16 — Base paper vs this work (30 s)
 
-## 14 — Work completed, 50 % (30 s)
+> "The base paper shows a gate waveform can be chosen by a digital code. It,
+> and every active gate driver paper after it, reports one number against a
+> conventional driver."
+
+---
+
+
+## 17 — Work completed, 50 % (30 s)
 
 > "The problem is reproduced and fixed. The full search is done: 720 words at
 > four corners, about 34,600 transients across every study."
 
 ---
 
-## 15 — Timeline and tools (20 s) — *cut this first if short on time*
+## 18 — Timeline and tools (20 s) — *cut this first if short on time*
 
 > "ngspice for the simulation, LTspice for the portable schematic, Icarus for
 > the RTL, Yosys for synthesis, MATLAB for the analysis. Cadence is Review-II
@@ -175,7 +198,7 @@ price adaptation — which their paper can't do.
 
 ---
 
-## 16 — Tools, and what each produced (25 s)
+## 19 — Tools, and what each produced (25 s)
 
 Do not read the table. Say the one line under it and move.
 
@@ -189,7 +212,7 @@ implements it.
 
 ---
 
-## 17 — FPGA controller (35 s)
+## 20 — FPGA controller (35 s)
 
 > "Three modules emitting exactly the control word the SPICE model consumes.
 > Dead time gets a live register; drive strength is strapped — that's the
@@ -241,7 +264,7 @@ sent for synthesis.
 
 ---
 
-## 18 — Result 1, crosstalk (30 s)
+## 22 — Result 1, crosstalk (30 s)
 
 > "Fastest drive, no clamp: **1.65 V** spurious against a 1.4 V threshold.
 > That's the failure. Clamp on with −2 V off-bias: **−1.18 V**, a **2.58 V**
@@ -249,7 +272,7 @@ sent for synthesis.
 
 ---
 
-## 19 — MATLAB (25 s) — *cut second if short*
+## 23 — MATLAB (25 s) — *cut second if short*
 
 > "720 words, **504 feasible**, a seven-word Pareto front. The objectives
 > genuinely conflict — you cannot minimise loss, overshoot and crosstalk
@@ -257,7 +280,7 @@ sent for synthesis.
 
 ---
 
-## 20 — Result 2, the ceiling (45 s)
+## 24 — Result 2, the ceiling (45 s)
 
 > "Full search at every corner. The ceiling on operating-point scheduling is
 > **5.2 %** against the best single fixed word. And it isn't spread out —
@@ -279,7 +302,7 @@ even weaker in practice.
 
 ---
 
-## 21 — Result 3, the decomposition (45 s) — **core slide**
+## 25 — Result 3, the decomposition (45 s) — **core slide**
 
 > "Here's the split nobody separates. Choosing a better fixed word: **25.1 %**
 > of baseline. Adapting it per operating point on top of that: **3.9 %**. So
@@ -294,7 +317,7 @@ the contribution.
 
 ---
 
-## 22 — Result 4, loop inductance (25 s)
+## 26 — Result 4, loop inductance (25 s)
 
 > "Adaptive control pays only below about **2.5 nH** of loop inductance. Above
 > that a fixed word is nearly as good. And loop inductance is board layout,
@@ -302,14 +325,14 @@ the contribution.
 
 ---
 
-## 23 — Backup (skip unless asked)
+## 27 — Backup (skip unless asked)
 
 Only open this if challenged on robustness. Across 21,600 transients no device
 parameter moves the ceiling outside **4.3–7.7 %**.
 
 ---
 
-## 24 — DEMO (45 s)
+## 28 — DEMO (45 s)
 
 The clip runs **22 s**. Play it and stay quiet for the first five seconds —
 the switch node falling is the whole setup, and narrating over it just
@@ -324,14 +347,14 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 25 — Why the numbers hold (20 s)
+## 29 — Why the numbers hold (20 s)
 
 > "Every number survives a 25× timestep refinement. Ten wrong numbers were
 > caught by our own convergence checks before they reached the report."
 
 ---
 
-## 26 — Conclusion and next steps (40 s)
+## 31 — Conclusion and next steps (40 s)
 
 > "Choosing the control word well matters enormously — roughly fivefold in
 > switching energy. Adapting it does not: 3.9 %, and one comparator takes most
@@ -349,7 +372,7 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 27–29 — References, thanks (10 s)
+## 32–34 — References, thanks (10 s)
 
 > "Thirty references, against a minimum of eight to ten. All thirty are
 > verified against the publisher record — authors, volume, issue and pages
