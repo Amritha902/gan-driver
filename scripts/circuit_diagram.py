@@ -197,14 +197,15 @@ txt(46, GATE_Y - 16.0, "· · ·", fs=13, ha="center")
 txt(26, GATE_Y - 21.2, "8 × PULL-DOWN slice   —   N$_{PD}$ of 8 enabled", fs=8.2, b=True, ha="center")
 
 # active Miller clamp: its own low-impedance path, gate straight to source
-ax.add_patch(FancyBboxPatch((GATE_X - 15.0, 26.0), 6.0, 5.0,
-             boxstyle="square,pad=0", fc="white", ec=INK, lw=1.4, zorder=5))
+# The clamp is ONE switch in series from gate to V_off. There used to be an
+# empty box drawn at GATE_X-15 as well, with the label running through it --
+# a floating rectangle connected to nothing. Removed: the switch IS the clamp.
 wire([(56, GATE_Y), (56, 31.0)])
 ax.plot([56 - 2.2, 56 + 2.2], [29.0, 27.6], lw=1.6, color=INK, zorder=6)
 dot(56 - 2.2, 27.6, r=0.55); dot(56 + 2.2, 29.0, r=0.55)
 wire([(56, 26.0), (56, VOFF)])
-txt(59.5, 28.5, "ACTIVE MILLER CLAMP", fs=8.0, b=True)
-txt(59.5, 25.2, "CLK_EN  ·  shorts G to S", fs=7.2, color=MUTED)
+txt(60.0, 29.4, "ACTIVE MILLER CLAMP", fs=8.0, b=True)
+txt(60.0, 26.4, "closed by CLK_EN \u2014 shorts the gate to V$_{off}$", fs=7.2, color=MUTED)
 
 wire([(10, VOFF), (74, VOFF)], lw=2.0)
 txt(9, VOFF, "V$_{off}$", fs=8.4, b=True, ha="right")
