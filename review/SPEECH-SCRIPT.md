@@ -1,4 +1,4 @@
-# Review-I speech script — 28 slides, ~10 minutes
+# Review-I speech script — 29 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
@@ -175,7 +175,21 @@ price adaptation — which their paper can't do.
 
 ---
 
-## 16 — FPGA controller (35 s)
+## 16 — Tools, and what each produced (25 s)
+
+Do not read the table. Say the one line under it and move.
+
+> "Seven tools, and the point of the slide is the last line: no number rests on
+> one of them. Every headline figure was produced in one program and checked in
+> another — ngspice against LTspice, MATLAB against Octave, yosys against
+> Vivado."
+
+If asked which is the primary: ngspice. Everything else either checks it or
+implements it.
+
+---
+
+## 17 — FPGA controller (35 s)
 
 > "Three modules emitting exactly the control word the SPICE model consumes.
 > Dead time gets a live register; drive strength is strapped — that's the
@@ -227,7 +241,7 @@ sent for synthesis.
 
 ---
 
-## 17 — Result 1, crosstalk (30 s)
+## 18 — Result 1, crosstalk (30 s)
 
 > "Fastest drive, no clamp: **1.65 V** spurious against a 1.4 V threshold.
 > That's the failure. Clamp on with −2 V off-bias: **−1.18 V**, a **2.58 V**
@@ -235,7 +249,7 @@ sent for synthesis.
 
 ---
 
-## 18 — MATLAB (25 s) — *cut second if short*
+## 19 — MATLAB (25 s) — *cut second if short*
 
 > "720 words, **504 feasible**, a seven-word Pareto front. The objectives
 > genuinely conflict — you cannot minimise loss, overshoot and crosstalk
@@ -243,7 +257,7 @@ sent for synthesis.
 
 ---
 
-## 19 — Result 2, the ceiling (45 s)
+## 20 — Result 2, the ceiling (45 s)
 
 > "Full search at every corner. The ceiling on operating-point scheduling is
 > **5.2 %** against the best single fixed word. And it isn't spread out —
@@ -265,7 +279,7 @@ even weaker in practice.
 
 ---
 
-## 20 — Result 3, the decomposition (45 s) — **core slide**
+## 21 — Result 3, the decomposition (45 s) — **core slide**
 
 > "Here's the split nobody separates. Choosing a better fixed word: **25.1 %**
 > of baseline. Adapting it per operating point on top of that: **3.9 %**. So
@@ -280,7 +294,7 @@ the contribution.
 
 ---
 
-## 21 — Result 4, loop inductance (25 s)
+## 22 — Result 4, loop inductance (25 s)
 
 > "Adaptive control pays only below about **2.5 nH** of loop inductance. Above
 > that a fixed word is nearly as good. And loop inductance is board layout,
@@ -288,14 +302,14 @@ the contribution.
 
 ---
 
-## 22 — Backup (skip unless asked)
+## 23 — Backup (skip unless asked)
 
 Only open this if challenged on robustness. Across 21,600 transients no device
 parameter moves the ceiling outside **4.3–7.7 %**.
 
 ---
 
-## 23 — DEMO (45 s)
+## 24 — DEMO (45 s)
 
 The clip runs **22 s**. Play it and stay quiet for the first five seconds —
 the switch node falling is the whole setup, and narrating over it just
@@ -310,14 +324,14 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 24 — Why the numbers hold (20 s)
+## 25 — Why the numbers hold (20 s)
 
 > "Every number survives a 25× timestep refinement. Ten wrong numbers were
 > caught by our own convergence checks before they reached the report."
 
 ---
 
-## 25 — Conclusion and next steps (40 s)
+## 26 — Conclusion and next steps (40 s)
 
 > "Choosing the control word well matters enormously — roughly fivefold in
 > switching energy. Adapting it does not: 3.9 %, and one comparator takes most
@@ -335,7 +349,7 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 26–28 — References, thanks (10 s)
+## 27–29 — References, thanks (10 s)
 
 > "Thirty references, against a minimum of eight to ten. All thirty are
 > verified against the publisher record — authors, volume, issue and pages

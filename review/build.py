@@ -4,6 +4,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lxml import etree
 from pptx import Presentation
 from pptx.util import Inches, Pt
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.dml.color import RGBColor
 from fill import para, set_body, find_shape, set_title, q, A, esc, RUN_TPL, PARA_TPL
 import content
 
@@ -577,48 +579,26 @@ s_con = S[18]
 set_title(s_con, "Conclusion & next steps")
 con_shape = find_shape(s_con, "Problem Statement:")
 set_body(con_shape, [
-    para([("What the data supports", True)], level=0, sz=1600, spc=200, bullet=False),
-    para([("Choosing the control word well matters enormously — it spans roughly fivefold in "
-           "switching energy. ", False),
-          ("Adapting it to the operating point does not: 3.9 %, a seventh of the total gain, "
-           "and one comparator takes 72 % of even that.", True)],
-         level=0, sz=1450, spc=180, bullet=True),
-    para([("The benefit that exists is carried by the ", False), ("dead time", True),
-          (" — and the dead time, in turn, by the ", False), ("light-load corner alone", True),
-          (": leave it out and freezing dead time costs 0.00 %. Not by the drive-strength "
-           "segmentation that motivates the hardware, which stays at 0.00 % even when the "
-           "objective prices EMI. Crosstalk safety is nearly free once the clamp is present.",
-           False)], level=0, sz=1400, spc=180, bullet=True),
-    para([("Stated positively — and this is the deliverable, not the percentage: ", True),
-          ("use the recommended fixed word with a light-load comparator, and the full "
-           "sense + ADC + lookup table is left justifying 3.7 % of the achievable gain.",
-           False)], level=0, sz=1450, spc=260, bullet=True),
-    para([("What the data now answers, and what is next", True)], level=0, sz=1600, spc=200,
-         bullet=False),
-    para([("The EMI objection is now tested rather than conceded.", True),
-          (" Re-running the full search under objectives that price turn-on slew rate, and "
-           "again under 30–500 MHz band energy, makes scheduling worth ", False),
-          ("less", True), (", not more: 5.95 % falls to 0.15 %. Pull-up strength still does "
-           "not need scheduling — it needs a different fixed value.", False)],
-         level=0, sz=1450, spc=180, bullet=True),
-    para([("What it does not support.", True),
-          (" Which EMI measure a designer should price is unsettled, and the two disagree: "
-           "under band energy freezing pull-up costs 0.00 % at every weight, under slew rate "
-           "up to 2.27 % in a narrow transition band. No silicon has been measured, and one "
-           "device model underlies everything.", False)],
-         level=0, sz=1450, spc=180, bullet=True),
-    para([("The FPGA half is now real. ", True),
-          ("Vivado 2024.1.2 synthesises the controller to 20 LUTs and 20 flip-flops on an "
-           "xc7a35t \u2014 0.10 % of the part \u2014 and register-to-register timing closes at "
-           "200 MHz with 1.996 ns of slack. The only failing paths are clock-to-pin against a "
-           "placeholder I/O constraint, not logic.", False)],
-         level=0, sz=1450, spc=180, bullet=True),
-    para([("Review-II: ", True), ("transistor-level output stage in Cadence on a 5 V-capable "
-           "PDK; re-run the ceiling on real devices \u2014 sub-nanosecond dead-time control needs "
-           "silicon, not fabric: [13] reaches 0.19 ns where a 200 MHz FPGA grid is 5 ns. ", False),
-          ("Review-III: ", True),
-          ("measure a hardware half-bridge at one corner — until then this is a simulation "
-           "study and is titled as one.", False)], level=0, sz=1450, spc=0, bullet=True),
+    para([("What the data supports", True)], level=0, sz=1700, spc=240, bullet=False),
+    para([("Choosing the word well: ", True), ("25.1 %.   ", False),
+          ("Adapting it per operating point: ", True), ("3.9 %.", False)],
+         level=0, sz=1600, spc=220, bullet=True),
+    para([("One comparator takes 72 % of that 3.9 %.", True)],
+         level=0, sz=1600, spc=220, bullet=True),
+    para([("The deliverable: ", True),
+          ("a fixed word plus a light-load comparator. The full sense + ADC + lookup table "
+           "is left justifying ", False), ("3.7 %", True), (".", False)],
+         level=0, sz=1600, spc=340, bullet=True),
+    para([("What is next", True)], level=0, sz=1700, spc=240, bullet=False),
+    para([("Review-II \u2014 ", True),
+          ("transistor-level output stage in Cadence; re-run the ceiling on real devices.",
+           False)], level=0, sz=1600, spc=220, bullet=True),
+    para([("Review-III \u2014 ", True),
+          ("measure a hardware half-bridge. Until then this is a simulation study, and is "
+           "titled as one.", False)], level=0, sz=1600, spc=220, bullet=True),
+    para([("Limits we state ourselves: ", True),
+          ("no silicon measured; one device model underlies everything.", False)],
+         level=0, sz=1450, spc=0, bullet=True),
 ])
 
 for n, sl in enumerate(S, start=1):
@@ -1150,20 +1130,37 @@ for sh in s_mat.shapes:
                 r._r.getparent().remove(r._r)
         break
 
-s_mat.shapes.add_picture(RES + "/pareto_matlab.png",
-                         Inches(0.60), Inches(1.30), height=Inches(3.65))
-s_mat.shapes.add_picture(RES + "/crosstalk_model_matlab.png",
-                         Inches(6.95), Inches(1.30), height=Inches(3.65))
+# MATLAB Online's own renders, from results/matlab_online/. They come out on a
+# dark theme; a dark backing panel behind each makes that read as deliberate
+# rather than as a figure that clashes with the slide.
+# Both figures are MATLAB Online's own renders (results/matlab_online/) and are
+# 4:3. The panel is sized to that aspect so the dark theme reads as deliberate
+# instead of leaving black margins. MATLAB's crosstalk_model render is NOT used:
+# it came out 219x605, a degenerate sliver, so the weight-sensitivity figure --
+# a result the deck did not previously show -- takes the right-hand slot.
+_FIGH = 3.60
+_FIGW = _FIGH * 4.0 / 3.0
+for _x, _png in ((0.70, "pareto_matlab.png"), (7.05, "fig_master_weight.png")):
+    _bg = s_mat.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                 Inches(_x - 0.10), Inches(1.20),
+                                 Inches(_FIGW + 0.20), Inches(_FIGH + 0.20))
+    _bg.fill.solid(); _bg.fill.fore_color.rgb = RGBColor(0x0B, 0x0B, 0x0B)
+    _bg.line.color.rgb = RGBColor(0x0B, 0x0B, 0x0B)
+    _bg.shadow.inherit = False
+    if _bg.has_text_frame:
+        _bg.text_frame.text = ""
+    s_mat.shapes.add_picture(RES + "/matlab_online/" + _png,
+                             Inches(_x), Inches(1.30), height=Inches(_FIGH))
 add_text(s_mat, 0.60, 5.10, 5.95, 1.05, [
     para([("720 words, 504 feasible (70 %).", True),
           (" A 7-word Pareto front; buying one point of overshoot back costs "
            "0.039 µJ. The green marker is the word the cost function picks.", False)],
          level=0, sz=1150, spc=0, bullet=False)])
 add_text(s_mat, 6.95, 5.10, 5.75, 1.05, [
-    para([("The two hand calculations disagree by 8.7×.", True),
-          (" The peak-C bound says 7.50 V, charge-averaging says 0.86 V, SPICE measures "
-           "1.65 V — inside the bracket. That gap is why this is simulated, not "
-           "hand-calculated.", False)], level=0, sz=1150, spc=0, bullet=False)])
+    para([("(A) stays above (B) at every weight tested.", True),
+          (" Choosing the word well is worth 22.5–29.0 % of baseline across the whole "
+           "range; adapting it per operating point 1.4–12.7 %. The ordering never "
+           "flips.", False)], level=0, sz=1150, spc=0, bullet=False)])
 add_text(s_mat, 0.60, 6.28, 12.10, 0.75, [
     para([("Dead-time margin saturates at about 15 ns", True),
           (": the marginal gain runs 269 → 31.5 → 1.8 → 0.0 mV/ns across 10/15/25/35 ns. "
@@ -1178,6 +1175,68 @@ set_note(s_mat, "[35 s]  CORE — this is the MATLAB evidence, and it answers 'd
                 "voltage disagree by 8.7x, and the SPICE number sits between them. That is "
                 "the argument for simulating. If you have time, add the dead-time "
                 "saturation at 15 ns from the caption.")
+
+# ---------------- TECH STACK: what each tool actually produced -------------
+# Asked for explicitly: show the software, and what each one contributed. The
+# point of the slide is that no single tool is load-bearing on its own -- every
+# headline number was produced in one and checked in another.
+_ts_idx = None
+for _i, _sl in enumerate(S):
+    for _sh in _sl.shapes:
+        if _sh.has_text_frame and _sh.text_frame.text.strip().startswith("Timeline, Milestones"):
+            _ts_idx = _i; break
+    if _ts_idx is not None:
+        break
+if _ts_idx is None:
+    raise SystemExit("timeline slide not found for tech-stack insertion")
+
+s_ts = clone_after(p, _ts_idx, _ts_idx + 1)
+set_title(s_ts, "Tools \u2014 and what each one produced")
+for _sh in list(s_ts.shapes):
+    if _sh.has_text_frame and _sh != find_shape(s_ts, "Timeline & milestones"):
+        pass
+# strip the cloned body, keep title/logo/page number
+for _sh in list(s_ts.shapes):
+    if _sh.has_text_frame:
+        _t = _sh.text_frame.text.strip()
+        if _t and not _t.isdigit() and not _t.startswith("Tools \u2014"):
+            _sh._element.getparent().remove(_sh._element)
+
+TECH = [
+    ("ngspice 42", "every transient in the study",
+     "34,622 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 5.2 % ceiling"),
+    ("LTspice 24", "independent re-run of the shipped netlists",
+     "1.6487 / 0.8282 / \u22121.1768 V \u2014 matches ngspice within 2 mV"),
+    ("MATLAB Online", "independent re-analysis of the same CSVs",
+     "504 of 720 feasible \u00b7 7-word Pareto front \u00b7 0.039 \u00b5J per point"),
+    ("GNU Octave 11.3", "second run of the same MATLAB scripts",
+     "agrees with MATLAB to the last printed digit"),
+    ("Icarus Verilog", "RTL verification and mutation testing",
+     "8 asserted properties pass \u00b7 injected shoot-through caught 221\u00d7"),
+    ("Xilinx Vivado 2024.1.2", "FPGA synthesis and timing on xc7a35t",
+     "20 LUTs, 20 flip-flops \u00b7 200 MHz met, 1.996 ns slack"),
+    ("Python \u00b7 NumPy", "sweep orchestration and the decomposition",
+     "720-word search \u00b7 (A) 25.1 % vs (B) 3.9 %"),
+]
+_y = 1.55
+for _name, _did, _got in TECH:
+    add_text(s_ts, 0.70, _y, 3.05, 0.42, [
+        para([(_name, True)], level=0, sz=1350, spc=0, bullet=False)])
+    add_text(s_ts, 3.85, _y, 3.55, 0.42, [
+        para([(_did, False)], level=0, sz=1200, spc=0, bullet=False)])
+    add_text(s_ts, 7.50, _y, 5.20, 0.42, [
+        para([(_got, True)], level=0, sz=1200, spc=0, bullet=False)])
+    _y += 0.62
+add_text(s_ts, 0.70, _y + 0.18, 12.00, 0.60, [
+    para([("No number rests on one tool. ", True),
+          ("Every headline figure was produced in one program and checked in another \u2014 "
+           "SPICE against SPICE, MATLAB against Octave, yosys against Vivado.", False)],
+         level=0, sz=1250, spc=0, bullet=False)])
+
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("tech-stack slide inserted; deck now %d slides" % len(S))
 
 for n, sl in enumerate(S, start=1):
     renumber(sl, n)

@@ -6,29 +6,24 @@ B = True   # bold
 
 SLIDE4 = [
     ([("Problem Statement:", B)], 0),
-    ([("In a GaN half-bridge the dV/dt of one device couples through C", False), ("GD", False),
-      (" into the gate of the device meant to be off. With a threshold near 1.4 V the spurious "
-       "pulse can exceed it and turn that device partially on — shoot-through, extra loss, and at "
-       "worst destruction.", False)], 1),
+    ([("One device's dV/dt couples through C", False), ("GD", False),
+      (" into the gate of the device that is supposed to be OFF. It reaches ", False),
+      ("1.65 V against a 1.4 V threshold", B),
+      (" \u2014 false turn-on, and a shoot-through path.", False)], 1),
     ([("Background & Significance:", B)], 0),
-    ([("GaN half-bridges are the switching core of EV and HEV traction inverters, on-board "
-       "chargers and high-density server supplies, where the whole reason to choose GaN is to "
-       "switch faster — which is exactly what makes this failure mode worse.", False)], 1),
-    ([("Negative off-bias is uniquely expensive on GaN: with no body diode the reverse drop is V",
-       False), ("th", False), (" + I·R + |V", False), ("GS,off", False),
-      ("|, so each volt of margin is paid for again across the dead time.", False)], 1),
+    ([("GaN half-bridges are the core of EV traction inverters and battery storage "
+       "converters. The whole reason to choose GaN is speed \u2014 which is exactly what "
+       "makes this failure worse.", False)], 1),
     ([("Existing Solutions:", B)], 0),
-    ([("Active gate drivers with segmented drive strength, Miller clamps, programmable dead time "
-       "and negative off-bias [1]–[4]. Closed-loop designs adapt to the operating point and report "
-       "large gains — 30.5 % less overshoot, 75 % less turn-off loss — against a conventional "
-       "driver [5]–[7].", False)], 1),
+    ([("Active gate drivers: segmented drive, Miller clamps, programmable dead time, "
+       "negative off-bias [1]\u2013[4]. Closed-loop designs report 30.5 % less overshoot "
+       "and 75 % less turn-off loss [5]\u2013[7].", False)], 1),
     ([("Limitations / Research Gap:", B)], 0),
-    ([("No published work has ever measured what the adaptation is worth.", B),
-      (" Those gains bundle ", False), ("choosing better fixed settings", B), (" with ", False),
-      ("adapting settings per operating point", B),
-      (". Only the second needs sensing, a lookup table and a controller — the cost that "
-       "justifies the architecture, and the one nobody has priced.", False)], 1),
+    ([("No published work has measured what the adaptation is worth.", B),
+      (" Those gains bundle a design-time choice with a runtime capability. Only the "
+       "second needs sensing, a lookup table and a controller.", False)], 1),
 ]
+
 
 SLIDE6 = [
     ([("Aim:", B)], 0),
@@ -56,29 +51,21 @@ SLIDE6 = [
 ]
 
 SLIDE7 = [
-    ([("Crosstalk reproduced, and fixed.", B)], 0),
-    ([("Fastest drive, no clamp: spurious gate peak ", False), ("1.65 V", B),
-      (" against a 1.4 V threshold — false turn-on, the failure this project exists to remove. "
-       "Miller clamp on with −2 V off-bias: ", False), ("−1.18 V", B),
-      (", a 2.58 V margin.", False)], 1),
-    ([("The full exhaustive search is done.", B)], 0),
-    ([("720 control words at each of four corners (50–200 V, 2–10 A, 25–125 °C) = 2,880 "
-       "transients, plus 1,511 over a 36-point operating grid. Every per-corner optimum is a "
-       "true optimum, not the best of a shortlist.", False)], 1),
-    ([("The result has been stress-tested.", B)], 0),
-    ([("21,600 further transients perturbing five device-model parameters; the ceiling holds "
-       "between 4.3 % and 7.7 % against every one of them.", False)], 1),
-    ([("Both objections to the result have been tested, not argued.", B)], 0),
-    ([("Loop inductance (7,192 transients, eight values): adaptive control pays below "
-       "~2.5 nH, peaking at 13.5 %. EMI (1,440 transients): pricing it makes scheduling "
-       "worth ", False), ("less", B), (", not more — 5.95 % → 0.15 %.", False)], 1),
-    ([("The LTspice port has been run in LTspice.", B)], 0),
-    ([("The three shipped .cir files give 1.6487 / 0.8282 / \u22121.1768 V in LTspice 24, "
-       "matching ngspice within 2 mV \u2014 the result is not an artefact of one simulator. "
-       "Spectre remains a port.", False)], 1),
-    ([("In total: ", B), ("nearly 35,000 transient simulations, a 34-section written record, "
-       "and a full manuscript draft with five tables and four figures.", False)], 1),
+    ([("The problem, reproduced and fixed.", B)], 0),
+    ([("1.65 V spurious against a 1.4 V threshold. Clamp on with \u22122 V off-bias: "
+       "2.58 V of margin.", False)], 1),
+    ([("The exhaustive search is complete.", B)], 0),
+    ([("720 words at each of four corners \u2014 2,880 transients \u2014 so every "
+       "per-corner optimum is a true optimum, not the best of a shortlist.", False)], 1),
+    ([("Stress-tested, not asserted.", B)], 0),
+    ([("21,600 further transients across five device parameters: the ceiling holds between "
+       "4.3 % and 7.7 %. Loop inductance and EMI were tested, not argued.", False)], 1),
+    ([("Cross-checked in four tools.", B)], 0),
+    ([("LTspice matches ngspice within 2 mV. MATLAB and Octave agree exactly. Vivado: "
+       "20 LUTs, 200 MHz met.", False)], 1),
+    ([("In total: ", B), ("nearly 35,000 transient simulations.", False)], 1),
 ]
+
 
 SLIDE7B = [
     ([("Timeline & milestones", B), ("  (dates follow the department calendar)", False)], 0),
