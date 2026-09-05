@@ -782,14 +782,15 @@ add_text(S[10], 3.00, 6.80, 7.30, 0.34, [
 # ================= slide 8 : architecture =================================
 s_arch = S[7]
 retitle(s_arch, "System Architecture")
-# 2640x1260 -> aspect 2.095. The band from 1.30 in to the caption at 6.55 in
-# is 5.25 in tall, so the width that fits is 5.25 * 2.095 = 11.0 in.
+# Size by HEIGHT, not width. Sizing by width hard-codes an assumption about
+# the figure's aspect, and when arch_diagram.py was redrawn (2.095 -> 1.969)
+# the picture silently grew to 5.59 in tall and sat on its own caption.
+# The band from 1.32 in to the caption at 6.66 in is 5.24 in.
 s_arch.shapes.add_picture(RES + "/fig_architecture.png",
-                          Inches(1.17), Inches(1.32), width=Inches(11.00))
-add_text(s_arch, 0.70, 6.66, 11.90, 0.38, [
-    para([("Solid blocks are configured once at power-up. The dashed block — sensing, ADC and "
-           "lookup table — is the adaptive machinery this project exists to price.", False)],
-         level=0, sz=1100, spc=0, bullet=False)])
+                          Inches(1.55), Inches(1.32), height=Inches(5.20))
+# No slide-level caption here: the figure carries its own footer saying the
+# same thing, and printing it twice is exactly the padding this deck is being
+# stripped of.
 
 # ================= slide 13 : the novelty =================================
 s_nov = S[13]
