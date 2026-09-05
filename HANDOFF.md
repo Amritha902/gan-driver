@@ -83,6 +83,11 @@ event in their own measurement window; their labels say so. Do not present them.
 
 **MATLAB** — `results/gan_master.m`, one entry point for the whole results
 section. Independent reimplementation that reproduces the Python exactly.
+**Run in MATLAB Online on 5 Sep 2026 and in GNU Octave 11.3 the same day:
+the two agree to the last printed digit** (`results/matlab_online/RUN-LOG.txt`).
+`gan_master.m` is a FUNCTION file, not a script — MATLAB needs local
+functions after all code, Octave does not hoist them, and only a function
+file satisfies both. Invoke it by typing `gan_master`.
 
 **Deck** — 27 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`.
 Rebuild `cd review && python3 build.py`; geometry check `python3 qa.py`

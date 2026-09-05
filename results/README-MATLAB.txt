@@ -72,3 +72,13 @@ gan_master.m IS A FUNCTION FILE, NOT A SCRIPT -- AND MUST STAY ONE
 
    gan_analysis.m is unaffected: it uses only anonymous functions, which are
    legal anywhere in both.
+
+VERIFIED IN REAL MATLAB -- 5 September 2026
+   Both scripts have now been run in MATLAB Online, not just Octave. MATLAB
+   and Octave agree EXACTLY -- every printed figure identical to the last
+   digit. The full output is in results/matlab_online/RUN-LOG.txt, with
+   MATLAB's own figures alongside it.
+
+   Those figures have black backgrounds because MATLAB Online runs a dark
+   theme. The deck uses the white-background versions in results/. Do not swap
+   them.

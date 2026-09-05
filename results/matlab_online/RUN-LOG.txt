@@ -1,0 +1,59 @@
+MATLAB ONLINE RUN -- 5 September 2026
+=====================================
+
+Run by Amritha in MATLAB Online (mathworks.com), not Octave. This is the
+authoritative check: gan_master.m and gan_analysis.m had never been executed
+in MATLAB itself until this run, only reasoned about and cross-checked in
+Python and GNU Octave 11.3.
+
+RESULT: MATLAB agrees with Octave EXACTLY. Every figure below is identical to
+the Octave run of the same day, to the last digit printed.
+
+  1. CROSSTALK
+       no clamp,  0 V off-bias   WORST-CASE margin  -4.519 V  spurious +5.919 V
+       clamp on,  0 V off-bias   WORST-CASE margin  +0.078 V  spurious +1.322 V
+       clamp on, -2 V off-bias   WORST-CASE margin  +1.773 V  spurious -0.373 V
+       feasible at nominal corner            504 of 720 (70 %)
+
+  2. THE SEARCH
+       switching-energy spread across feasible words   165 %
+       E_tot  min 3.685 uJ   max 9.772 uJ
+
+  3. PARETO FRONT            7 of 504 feasible
+
+  4. CEILING ON SCHEDULING   5.2 % at w_ov = 0.05
+       per-corner penalty of the best fixed word:
+         100V_10A_25C     1.1 %
+         200V_10A_125C    2.3 %
+         200V_2A_125C    12.7 %
+         50V_2A_25C       3.8 %
+
+  5. DECOMPOSITION
+       (A) choose a better FIXED word     25.1 % of baseline
+       (B) ADAPT it per operating point    3.9 % of baseline
+       adaptation is 13.4 % of the total gain; the other 86.6 % needs no
+       sensing, no ADC, no lookup table.
+
+  6. WEIGHT SENSITIVITY
+       over w_ov 0..1   (A) 25.1-29.0 %   (B) 1.4-6.4 %
+       over w_ov 0..5   (A) 22.5-29.0 %   (B) 1.4-12.7 %
+       (A) exceeds (B) at EVERY weight tested.
+
+  7. LOOP INDUCTANCE
+         L (nH)   feasible   median E_tot
+            1.0        600      7.294 uJ
+            2.0        753      6.998 uJ
+            2.5        888      7.426 uJ
+            3.5        986      7.374 uJ
+            6.0       1012      6.998 uJ
+
+ABOUT THE FIGURES IN THIS FOLDER
+   These are MATLAB Online's renders and they have BLACK backgrounds -- that
+   is MATLAB Online's dark theme, not a setting in the scripts. They are kept
+   here as evidence of the run. The deck uses the white-background versions in
+   results/, which the same scripts produce under a light theme. Do not swap
+   the dark ones into the slides; they would clash with a white deck.
+
+ONE GOTCHA, FOR NEXT TIME
+   gunzip('lloop_sweep.csv.gz') must be run from the folder the files were
+   extracted into. `cd mlab` first if you unzipped the bundle.
