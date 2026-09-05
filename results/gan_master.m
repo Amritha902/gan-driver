@@ -33,76 +33,6 @@ fprintf('\n=====================================================================
 fprintf('  GaN segmented gate driver -- full results regeneration\n');
 fprintf('=====================================================================\n');
 
-%% ------------------------------------------------------------------------
-%  0.  Loader.  readtable exists in both MATLAB and Octave >= 6, but its
-%      behaviour differs, so parse manually and keep one code path.
-%% ------------------------------------------------------------------------
-function [hdr, M] = readcsv(fname)
-    fid = fopen(fname, 'r');
-    if fid < 0, error('gan_master:missing', 'Cannot find %s', fname); end
-    line = fgetl(fid);
-    hdr  = strsplit(strtrim(line), ',');
-    M    = []; row = 0;
-    while true
-        line = fgetl(fid);
-        if ~ischar(line) || isempty(strtrim(line)), break; end
-        parts = strsplit(strtrim(line), ',');
-        v = zeros(1, numel(hdr));
-        for k = 1:numel(hdr)
-            if k <= numel(parts)
-                x = str2double(parts{k});
-                if isnan(x), x = NaN; end       % text column (corner, case)
-                v(k) = x;
-            else
-                v(k) = NaN;
-            end
-        end
-        row = row + 1; M(row,:) = v; %#ok<AGROW>
-    end
-    fclose(fid);
-end
-
-function [hdr, M, T] = readcsv_all(fname)
-    % returns numeric matrix M and the RAW text of every cell in T.
-    % DT is stored as '15n' etc, so it must be keyed as text, never str2double.
-    fid = fopen(fname, 'r');
-    if fid < 0, error('gan_master:missing', 'Cannot find %s', fname); end
-    hdr = strsplit(strtrim(fgetl(fid)), ',');
-    M = []; T = {}; row = 0;
-    while true
-        line = fgetl(fid);
-        if ~ischar(line) || isempty(strtrim(line)), break; end
-        parts = strsplit(strtrim(line), ',');
-        v = NaN(1, numel(hdr)); t = repmat({''}, 1, numel(hdr));
-        for k = 1:min(numel(hdr), numel(parts))
-            v(k) = str2double(parts{k});
-            t{k} = parts{k};
-        end
-        row = row + 1; M(row,:) = v; T(row,:) = t; %#ok<AGROW>
-    end
-    fclose(fid);
-end
-
-function [hdr, M, txt] = readcsv_txt(fname, txtcol)
-    % same, but also returns one named text column (e.g. 'corner')
-    fid = fopen(fname, 'r');
-    if fid < 0, error('gan_master:missing', 'Cannot find %s', fname); end
-    hdr = strsplit(strtrim(fgetl(fid)), ',');
-    ci  = find(strcmp(hdr, txtcol), 1);
-    M = []; txt = {}; row = 0;
-    while true
-        line = fgetl(fid);
-        if ~ischar(line) || isempty(strtrim(line)), break; end
-        parts = strsplit(strtrim(line), ',');
-        v = NaN(1, numel(hdr));
-        for k = 1:min(numel(hdr), numel(parts))
-            v(k) = str2double(parts{k});
-        end
-        row = row + 1; M(row,:) = v; %#ok<AGROW>
-        if ~isempty(ci) && ci <= numel(parts), txt{row,1} = parts{ci}; else txt{row,1} = ''; end
-    end
-    fclose(fid);
-end
 
 col = @(hdr, name) find(strcmp(hdr, name), 1);
 
@@ -371,3 +301,78 @@ fprintf('  (B) adaptation on top                %.1f %% of baseline\n', B);
 fprintf('  adaptation as share of total gain    %.1f %%\n', share);
 fprintf('  (A) > (B) at every weight tested     %d\n', all(As > Bs));
 fprintf('\n  figures written: fig_master_pareto.png, fig_master_weight.png\n\n');
+
+
+%% ------------------------------------------------------------------------
+%  LOCAL FUNCTIONS.  These MUST stay at the END of the file: MATLAB requires
+%  local functions in a script to come after all executable code, and errors
+%  with "Function definitions in a script must appear at the end of the file"
+%  otherwise. Octave is lenient about placement, so a mid-file definition runs
+%  there and fails in MATLAB -- which is where this script is actually used.
+%% ------------------------------------------------------------------------
+function [hdr, M] = readcsv(fname)
+    fid = fopen(fname, 'r');
+    if fid < 0, error('gan_master:missing', 'Cannot find %s', fname); end
+    line = fgetl(fid);
+    hdr  = strsplit(strtrim(line), ',');
+    M    = []; row = 0;
+    while true
+        line = fgetl(fid);
+        if ~ischar(line) || isempty(strtrim(line)), break; end
+        parts = strsplit(strtrim(line), ',');
+        v = zeros(1, numel(hdr));
+        for k = 1:numel(hdr)
+            if k <= numel(parts)
+                x = str2double(parts{k});
+                if isnan(x), x = NaN; end       % text column (corner, case)
+                v(k) = x;
+            else
+                v(k) = NaN;
+            end
+        end
+        row = row + 1; M(row,:) = v; %#ok<AGROW>
+    end
+    fclose(fid);
+end
+
+function [hdr, M, T] = readcsv_all(fname)
+    % returns numeric matrix M and the RAW text of every cell in T.
+    % DT is stored as '15n' etc, so it must be keyed as text, never str2double.
+    fid = fopen(fname, 'r');
+    if fid < 0, error('gan_master:missing', 'Cannot find %s', fname); end
+    hdr = strsplit(strtrim(fgetl(fid)), ',');
+    M = []; T = {}; row = 0;
+    while true
+        line = fgetl(fid);
+        if ~ischar(line) || isempty(strtrim(line)), break; end
+        parts = strsplit(strtrim(line), ',');
+        v = NaN(1, numel(hdr)); t = repmat({''}, 1, numel(hdr));
+        for k = 1:min(numel(hdr), numel(parts))
+            v(k) = str2double(parts{k});
+            t{k} = parts{k};
+        end
+        row = row + 1; M(row,:) = v; T(row,:) = t; %#ok<AGROW>
+    end
+    fclose(fid);
+end
+
+function [hdr, M, txt] = readcsv_txt(fname, txtcol)
+    % same, but also returns one named text column (e.g. 'corner')
+    fid = fopen(fname, 'r');
+    if fid < 0, error('gan_master:missing', 'Cannot find %s', fname); end
+    hdr = strsplit(strtrim(fgetl(fid)), ',');
+    ci  = find(strcmp(hdr, txtcol), 1);
+    M = []; txt = {}; row = 0;
+    while true
+        line = fgetl(fid);
+        if ~ischar(line) || isempty(strtrim(line)), break; end
+        parts = strsplit(strtrim(line), ',');
+        v = NaN(1, numel(hdr));
+        for k = 1:min(numel(hdr), numel(parts))
+            v(k) = str2double(parts{k});
+        end
+        row = row + 1; M(row,:) = v; %#ok<AGROW>
+        if ~isempty(ci) && ci <= numel(parts), txt{row,1} = parts{ci}; else txt{row,1} = ''; end
+    end
+    fclose(fid);
+end

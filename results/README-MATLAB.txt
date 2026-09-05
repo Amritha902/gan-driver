@@ -43,3 +43,19 @@ TESTED
    This script was run in GNU Octave before being sent, which catches
    syntax and logic errors. Octave is not identical to MATLAB; if anything
    errors, paste the message back and I will fix it.
+
+BEFORE RUNNING gan_master.m
+   Section 8 (loop inductance) reads lloop_sweep.csv, which ships GZIPPED to
+   keep the repo small. The script detects this and prints instructions rather
+   than failing, but the section is skipped until you run:
+
+       gunzip -k results/lloop_sweep.csv.gz
+
+   gan_analysis.m does not need it.
+
+WHY THE LOCAL FUNCTIONS SIT AT THE BOTTOM OF gan_master.m
+   MATLAB requires local functions in a script to appear AFTER all executable
+   code; it errors with "Function definitions in a script must appear at the
+   end of the file". Octave allows them anywhere, so a mid-file definition
+   runs in Octave and fails in MATLAB. They were mid-file until 5 Sep 2026.
+   Do not move them back up.
