@@ -97,33 +97,32 @@ Demo video `results/demo_crosstalk_explained.mp4`, embedded on slide 23.
 
 ## Open work, in priority order
 
-**1. Look at the slides.** Nobody has. Everything is verified by text
-extraction, XML validation and a height model — never by eye. Open slides
-**7, 13 and 23** first; those are the newest.
+Items 1-4 of the previous list are DONE (5 Sep 2026): every slide has been
+looked at, all 30 references are verified against the publisher record, Vivado
+has been run, and the LTspice port has been run in LTspice. What is left:
 
-**2. Finish the references.** 10 of 13 still read "authors: Xplore Cite This".
-The papers are real — titles and document IDs resolve — but author lists are
-behind Xplore. Base paper is done: H. Takayama, T. Okuda & T. Hikihara,
-Int. J. Circuit Theory Appl. 50(1):183–196, 2022 (volume 50 confirmed against
-a source that claimed 51). Xplore IDs to look up:
+**1. Guide's signature.** Print slide 2, get it signed and dated, scan it, and
+replace the slide-1 placeholder with the scan. Mandatory for every review, and
+the only item that cannot be done from this repository.
 
-    [4] 9573371  [5] 10553383  [6] 10964227  [7] 10813402
-    [10] 9170108 [11] 10286072 [12] 10591431 [13] 11146698
+**2. One more Vivado run, for the comparison.** Only the STRAPPED design has
+been synthesised in Vivado. The "cost of programmability" claim still rests on
+yosys estimates (53 LUTs programmable vs 27 strapped). One command gives it in
+vendor numbers:
 
-**3. Run Vivado synthesis.** `cd rtl/vivado && vivado -mode batch -source
-build.tcl`. Replaces the generic gate counts with real LUT/FF utilisation and
-timing. **The clock must be 200 MHz** — `dt_cycles` counts clock cycles and the
-dead-time grid starts at 5 ns, so 100 MHz cannot express it. Feed `clk_200`
-from a Clocking Wizard MMCM.
+    vivado -mode batch -source synth_only.tcl -tclargs xc7a35tcpg236-1 seg_gate_ctrl
 
-**4. Verify the LTspice files in real LTspice.** Open
-`ltspice/C_clamp_and_negative_bias.cir` (File → Open, filter "All Files"),
-probe `V(hsg,sw)`, confirm −1.176 V. If LTspice disagrees with ngspice, the
-port is wrong — say so rather than presenting it.
+**3. Place-and-route, if a board is chosen.** synth_only.tcl stops at
+synthesis. build.tcl runs the full flow but needs real package pins, and the
+XDC pins are placeholders. Doing this properly also means driving clk_200 from
+a Clocking Wizard MMCM rather than straight from a pin -- that alone removes
+2.917 ns of clock insertion delay from every output path and is why the 34
+clock-to-pin endpoints fail today.
 
-**5. Optional: draw the clamp into a .asc schematic.** Not done because symbol
-pin offsets cannot be checked without opening LTspice. Node names are `bus`,
-`sw`, `hsg`, `lsg`, `lss`, `0`.
+**4. Optional: draw the clamp into a .asc schematic.** The three .asc sheets
+are simplified teaching drawings and say so on their face; the real clamp lives
+in the .cir files, which have been run in both ngspice and LTspice. Node names
+are `bus`, `sw`, `hsg`, `lsg`, `lss`, `0`.
 
 ## Honest limits to keep saying out loud
 
