@@ -153,48 +153,55 @@ def table_of(slide):
 # The old deck spread eight papers over two identical 4-row tables and made the
 # reader do the clustering. Reviewers want the shape of the field on one slide
 # and the near neighbours on the next, so that is what these two now are.
-CLUSTERS = [
- ("A · Passive / analogue crosstalk fixes",
-  "[1] [2] [3] [4] [11] [12]\n[14]–[19] [21]",
-  "Negative off-bias, RC-diode rails, three-level drive, Miller clamps. Cheap and effective, "
-  "but the setting is chosen once by hand and never revisited."),
- ("B · Closed-loop analogue adaptation",
-  "[5] [6] [7]\n[20] [22] [23] [29] [30]",
-  "Sense the operating point, regulate drive strength or timing in the loop. Reports large "
-  "gains — 30.5 % less overshoot, 75 % less turn-off loss — against a conventional driver."),
- ("C · Adaptive dead-time control",
-  "[8] [13]\n[25] [26] [28]",
-  "Dead time driven to sub-nanosecond across load. The one field our own freeze test finds "
-  "actually carries the benefit — and only at light load."),
- ("D · DIGITAL / segmented drive  — where this project sits",
-  "[9] BASE   [10]\n[24] [27]",
-  "The gate waveform selected by a multibit CODE rather than a resistor network. [9] is the "
-  "BASE PAPER — doi.org/10.1002/cta.3136 — and [10] is the closest GaN implementation. "
-  "Digital means FPGA-implementable, and the code space can be searched exhaustively."),
-]
+# The four-cluster landscape was removed from the deck on request: the base
+# paper leads the literature section instead. The grouping still exists in
+# refs.py, which drives the reference list and the survey table on the next
+# slide, so nothing is lost by dropping the table data here.
 sc = S[4]
-set_title(sc, "Literature Landscape — four clusters, and where we sit")
+# Asked for directly: lead the literature with the BASE PAPER and nothing else.
+# The four-cluster landscape moved to a backup slide near the end -- it is a
+# good answer to "did you read the field?", but it is the wrong first thing to
+# put in front of someone who does not yet know what we build on.
+set_title(sc, "The base paper we build on")
 note = find_shape(sc, "Minimum 8")
-set_body(note, [para([("%d references, all publisher-verified, grouped by what the driver DOES. " % len(R.REFS) + 
-                       "Clusters A\u2013C set or regulate in analogue; only cluster D makes the "
-                       "setting a digital CODE \u2014 which is what makes an exhaustive search "
-                       "possible at all.",
-                       False)], level=0, sz=1150, spc=0, bullet=False)])
+set_body(note, [para([("H. Takayama, T. Okuda and T. Hikihara, ", False),
+                      ("\u201cDigital Active Gate Drive of SiC MOSFETs for Controlling "
+                       "Switching Behavior,\u201d", True),
+                      (" Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183\u2013196, 2022.  "
+                       "doi.org/10.1002/cta.3136", False)],
+                     level=0, sz=1150, spc=0, bullet=False)])
+
+BASE_ROWS = [
+    ("What it does",
+     "Drives the gate from a multibit CODE instead of a resistor \u2014 the driver is a DAC, and "
+     "the code changes DURING the switching edge."),
+    ("Why it matters to us",
+     "A digital code is finite. That is what makes the setting space searchable, and what makes "
+     "the driver implementable on an FPGA rather than as an analogue network."),
+    ("What it leaves open",
+     "It never asks whether the code has to CHANGE as load, voltage and temperature move. "
+     "That question is this project."),
+]
 tbl = table_of(sc)
-set_cell(tbl.cell(0, 0), "#");        set_cell(tbl.cell(0, 1), "Cluster")
-set_cell(tbl.cell(0, 2), "Refs");     set_cell(tbl.cell(0, 3), "What the cluster does")
+# The template's first column carried a row letter for the old cluster table.
+# There is nothing to put in it now, so collapse it rather than leave an empty
+# band down the left of every row.
+tbl.columns[0].width = Inches(0.12)
+set_cell(tbl.cell(0, 0), "")
+set_cell(tbl.cell(0, 1), [("Takayama, Okuda & Hikihara (2022)", True)])
+set_cell(tbl.cell(0, 2), "")
+set_cell(tbl.cell(0, 3), "")
 set_cell(tbl.cell(0, 4), "")
-tbl.cell(0, 3).merge(tbl.cell(0, 4))
-for row, (name, refs_, what) in enumerate(CLUSTERS, start=1):
-    set_cell(tbl.cell(row, 0), "ABCD"[row - 1])
-    set_cell(tbl.cell(row, 1), [(name, True)])
-    set_cell(tbl.cell(row, 2), refs_)
-    tbl.cell(row, 3).merge(tbl.cell(row, 4))
-    set_cell(tbl.cell(row, 3), what)
-for row in (6, 5):
+tbl.cell(0, 1).merge(tbl.cell(0, 4))
+for row, (label, what) in enumerate(BASE_ROWS, start=1):
+    set_cell(tbl.cell(row, 0), "")
+    set_cell(tbl.cell(row, 1), [(label, True)])
+    tbl.cell(row, 2).merge(tbl.cell(row, 4))
+    set_cell(tbl.cell(row, 2), what)
+for row in (6, 5, 4):
     tbl._tbl.remove(tbl.rows[row]._tr)
 for row in range(len(tbl.rows)):
-    tbl.rows[row].height = Inches(0.90 if row else 0.35)
+    tbl.rows[row].height = Inches(1.20 if row else 0.40)
 move_note(sc, 6.45)
 
 # ---- slide 6: the five closest papers, base paper first -----------------
