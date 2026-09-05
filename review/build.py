@@ -200,11 +200,13 @@ CLOSEST = [R.REFS[8]] + [r for r in R.REFS if r.closest][:4]
 sn = S[5]
 set_title(sn, "The Five Closest — and the base paper we replicate")
 note = find_shape(sn, "Minimum 8")
+# Was: "author lists and page ranges sit behind IEEE Xplore ... not invented".
+# No longer true -- every reference is resolved against the publisher record
+# via Crossref, so the caveat is gone and this fits on one line.
 set_body(note, [para([("[9] is the BASE PAPER: we reproduce its premise \u2014 a gate waveform "
-                       "chosen by a multibit code \u2014 on GaN, then extend it. Titles, venues, "
-                       "years and DOIs are confirmed; author lists and page ranges sit behind "
-                       "IEEE Xplore, which the build environment cannot reach, and are not "
-                       "invented.", False)], level=0, sz=1000, spc=0, bullet=False)])
+                       "chosen by a multibit code \u2014 on GaN, then extend it. All five are "
+                       "verified against the publisher record.", False)],
+                     level=0, sz=1000, spc=0, bullet=False)])
 tbl = table_of(sn)
 
 # Column headings in the form the review panel asks for:
@@ -245,7 +247,15 @@ for row, ref in enumerate(CLOSEST, start=1):
 tbl._tbl.remove(tbl.rows[6]._tr)
 for row in range(len(tbl.rows)):
     tbl.rows[row].height = Inches(0.88 if row else 0.35)
-move_note(sn, 6.62)
+# 6.62 was measured against the table's DECLARED height (6.25 in). Cells wrap,
+# so it actually renders to ~6.72 in and the footnote landed on the last row.
+move_note(sn, 6.88)
+# At 6.88 the full-width note runs under the page number in the bottom-right
+# corner, so trim its width to stop short of it.
+for _sh in sn.shapes:
+    if _sh.has_text_frame and _sh.text_frame.text.startswith("[9] is the BASE PAPER"):
+        _sh.width = Inches(11.30)
+        break
 
 # ---------------- slides 8 & 9 : results ----------------------------------
 # Both arrive empty from the template (title + logo only). Content area runs
@@ -360,10 +370,12 @@ else:
 paras.append(para(note, level=0, sz=850, spc=0, bullet=False))
 set_body(ref_shape, paras)
 
+# The template ships "Use IEEE format. Every reference listed must be cited in
+# the slides / report." That is an instruction to the student, not something a
+# panel should be shown, and cloning put it on both reference slides. Blank it.
 try:
     n2 = find_shape(S[19], "Use IEEE format")
-    set_body(n2, [para([("Use IEEE format. Every reference listed must be cited in the slides / "
-                         "report.", False)], level=0, sz=1200, spc=0, bullet=False)])
+    set_body(n2, [para([("", False)], level=0, sz=1200, spc=0, bullet=False)])
 except KeyError:
     pass
 
@@ -1335,7 +1347,12 @@ for sl in S:
                     dhits += 1
 print("review date set to %s in %d run(s)" % (REVIEW_DATE_NEW, dhits))
 
-for n, sl in enumerate(S, start=1):
+for n, sl in enumerate(list(p.slides), start=1):
     renumber(sl, n)
+    for _sh in sl.shapes:
+        if _sh.has_text_frame and "Use IEEE format" in _sh.text_frame.text:
+            for _pa in _sh.text_frame.paragraphs:
+                for _r in _pa.runs:
+                    _r.text = ""
 p.save(OUT)
-print("base-paper implementation slide inserted; deck now %d slides" % len(S))
+print("base-paper implementation slide inserted; deck now %d slides" % len(list(p.slides)))

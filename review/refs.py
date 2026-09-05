@@ -282,16 +282,16 @@ REFS = [
      "Trans. Power Electron., pp. 1–8, 2026."),
  Ref(21, "Chen, Wang, Bai & Tolbert (2026)",
      "A Simple Gate Driver Circuit for Turn-on Overvoltage Suppression of 10 kV SiC MOSFETs "
-     "With Temporarily Lowering Gate Voltage During <i>dv/dt</i>",
+     "With Temporarily Lowering Gate Voltage During dv/dt",
      "IEEE Trans. Ind. Electron., 1–6",
      "Survey breadth — a Simple Gate Driver Circuit for Turn-on Overvoltage Suppression of "
-     "10 kV SiC MOSFETs With Temporarily Lowering Gate Voltage During <i>dv/dt</i>.",
+     "10 kV SiC MOSFETs With Temporarily Lowering Gate Voltage During dv/dt.",
      "Cluster B. Closes a loop around the switching waveform so it adapts continuously, but "
      "never reports how much of the gain needed the loop rather than a better fixed setting.",
      doi="10.1109/tie.2026.3725291", year="2026", done=True,
      ieee="R. Chen, F. Wang, H. Bai and L.M. Tolbert, “A Simple Gate Driver Circuit for Turn-on "
      "Overvoltage Suppression of 10 kV SiC MOSFETs With Temporarily Lowering Gate Voltage "
-     "During <i>dv/dt</i>,” IEEE Trans. Ind. Electron., pp. 1–6, 2026."),
+     "During dv/dt,” IEEE Trans. Ind. Electron., pp. 1–6, 2026."),
  Ref(22, "Yu, Yang, Yin, Hu, Zhang & Fu (2026)",
      "A Dual-Loop Active Gate Driver With Independent Voltage Slew Rate and Overshoot "
      "Control for Switching Loss Optimization of SiC MOSFETs",
