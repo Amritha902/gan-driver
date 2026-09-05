@@ -60,9 +60,11 @@ the negative off-bias, 4.8x theirs. Report it that way.
 - 8 properties T1–T8 pass under Icarus; `mutate.sh` catches an injected
   shoot-through 221 times
 - Vivado export in `rtl/vivado/`: top level, XDC, `build.tcl`, own bench
-- Synthesis via `yowasp-yosys`: **371 cells → 129** (−65 %) when the word is
-  strapped instead of fully programmable (`scripts/synth_cost.sh`).
-  Generic gates, NOT Xilinx LUTs — ABC does not complete in the WASM build
+- Synthesis via native `yosys synth_xilinx -flatten`: **53 LUTs → 27** and
+  33 FFs → 25 when the word is strapped instead of fully programmable
+  (`scripts/synth_cost.sh`). These are real Artix-7 primitives, not generic
+  gates — ABC completes in the native build where it did not in WASM. Still
+  no place-and-route or timing; that needs Vivado on Windows/Linux
 
 **LTspice** — `ltspice/A_…`, `B_…`, `C_…cir` contain the real Miller clamp and
 were verified in ngspice on the shipped files: 1.6488 / 0.8304 / −1.1759 V.

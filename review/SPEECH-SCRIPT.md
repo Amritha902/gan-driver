@@ -185,17 +185,20 @@ price adaptation — which their paper can't do.
 > shoot-through bug and the bench catches it 221 times. A passing test doesn't
 > prove much; a test that can fail does."
 >
-> "Synthesised, strapping the word instead of leaving all six fields live
-> takes the controller from **371 cells to 129** — 65 % less logic for the
-> 3.9 % that adaptation buys."
+> "Synthesised to real Artix-7 primitives: strapping the word instead of
+> leaving all six fields live takes the controller from **53 LUTs to 27**, and
+> 33 flip-flops to 25. Half the fabric, for the 3.9 % that adaptation buys."
 >
 > "The Vivado export is written too — top level, timing constraints and a
 > build script, with its own bench passing under Icarus. Not yet run: Vivado
 > is Windows and Linux only, so that is a Review-II item."
 
-If asked *why not just run it*: the free WebPACK edition covers the Artix-7
-part, but there is no macOS build. The generic-gate count is honest about
-being generic — it is yosys, not Xilinx LUTs, and the slide says so.
+If asked *why not Vivado*: the free WebPACK edition covers the Artix-7 part
+but there is no macOS build. These ARE real Xilinx primitives — LUT2..LUT6,
+FDCE, CARRY4 — mapped by yosys `synth_xilinx`, not technology-independent
+gates. What is still missing is place-and-route and timing closure, which only
+Vivado gives, and the slide says exactly that. Reproduce with
+`sh scripts/synth_cost.sh`.
 
 ---
 
