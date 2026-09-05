@@ -1332,6 +1332,41 @@ add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
           ("  — four ngspice runs, prints this table.", False)],
          level=0, sz=1150, spc=0, bullet=False),
 ])
+# ---------------- VIVADO REPORT: the tool's own output ---------------------
+# The deck quoted Vivado's numbers but never showed the report. A number typed
+# on a slide and a number lifted from the tool are not the same evidence, and
+# the FPGA slide is where a panel wants the second one.
+_vv_idx = None
+for _i, _sl in enumerate(list(p.slides)):
+    for _sh in _sl.shapes:
+        if _sh.has_text_frame and _sh.text_frame.text.strip().startswith("FPGA Controller"):
+            _vv_idx = _i; break
+    if _vv_idx is not None:
+        break
+if _vv_idx is None:
+    raise SystemExit("FPGA slide not found for Vivado-report insertion")
+
+s_vv = clone_after(p, _vv_idx, _vv_idx + 1)
+set_title(s_vv, "Vivado \u2014 the synthesis report itself")
+for _sh in list(s_vv.shapes):
+    if _sh.has_text_frame:
+        _t = _sh.text_frame.text.strip()
+        if _t and not _t.isdigit() and not _t.startswith("Vivado \u2014"):
+            _sh._element.getparent().remove(_sh._element)
+    elif _sh.shape_type is not None and _sh.name != "Image 0":
+        _sh._element.getparent().remove(_sh._element)
+# 1.90:1 figure; size by height so the caption band stays clear
+s_vv.shapes.add_picture(RES + "/fig_vivado.png",
+                        Inches(0.75), Inches(1.45), height=Inches(4.85))
+add_text(s_vv, 0.75, 6.55, 11.80, 0.45, [
+    para([("Run by a colleague on Windows \u2014 Vivado has no macOS build. ", True),
+          ("Both reports are committed in rtl/vivado/build/.", False)],
+         level=0, sz=1200, spc=0, bullet=False)])
+for n, sl in enumerate(list(p.slides), start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("Vivado report slide inserted; deck now %d slides" % len(list(p.slides)))
+
 # ---------------- SECTION DIVIDERS ----------------------------------------
 # Thirty slides of white with navy headings reads as raw material rather than
 # a designed deck. Four dark dividers break it into acts and give the eye a

@@ -14,6 +14,11 @@
 # a pin assignment or a board.
 # ---------------------------------------------------------------------------
 set part [expr {$argc > 0 ? [lindex $argv 0] : "xc7a35tcpg236-1"}]
+# Second optional arg: the top module. Default is the STRAPPED design.
+# Pass seg_gate_ctrl to synthesise the fully-programmable one instead --
+# the two together give the fabric cost of programmability in Vivado
+# numbers rather than yosys estimates.
+set top  [expr {$argc > 1 ? [lindex $argv 1] : "seg_gate_ctrl_top"}]
 set here [file dirname [file normalize [info script]]]
 set out  [file join $here build]
 file mkdir $out
@@ -30,7 +35,7 @@ proc src {name} {
     error "cannot find $name next to $here or in its parent"
 }
 
-puts "== part: $part"
+puts "== part: $part   top: $top"
 read_verilog -sv [list \
     [src thermo_decode.v] \
     [src dead_time_gen.v] \
@@ -41,7 +46,7 @@ read_verilog -sv [list \
 # board-specific placeholders and are not needed for synthesis numbers.
 create_clock -period 5.000 -name clk_200 [get_ports clk_200]
 
-synth_design -top seg_gate_ctrl_top -part $part
+synth_design -top $top -part $part
 report_utilization    -file [file join $out utilization_synth.rpt]
 report_timing_summary -file [file join $out timing_synth.rpt]
 write_checkpoint -force [file join $out post_synth.dcp]
