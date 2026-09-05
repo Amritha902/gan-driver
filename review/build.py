@@ -1393,6 +1393,71 @@ add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
           ("  — four ngspice runs, prints this table.", False)],
          level=0, sz=1150, spc=0, bullet=False),
 ])
+# ---------------- SECTION DIVIDERS ----------------------------------------
+# Thirty slides of white with navy headings reads as raw material rather than
+# a designed deck. Four dark dividers break it into acts and give the eye a
+# rest; they cost two seconds each to present.
+#
+# Palette is deliberately not the default deck-builder blue-purple: VIT navy
+# for the ground, a warm off-white for type, a muted slate for the numerals,
+# and the same oxblood already used for "failing" in every figure. Nothing
+# gradient, nothing decorative -- the contrast does the work.
+NAVY   = RGBColor(0x14, 0x23, 0x3D)
+PAPER  = RGBColor(0xF4, 0xF2, 0xEE)
+SLATE  = RGBColor(0x6B, 0x7C, 0x93)
+OXBLD  = RGBColor(0xB0, 0x00, 0x00)
+
+DIVIDERS = [
+    ("Problem Statement & Background", "01", "The problem",
+     "A real failure, and the question nobody has answered"),
+    ("Proposed Solution & Methodology", "02", "What we built",
+     "A 720-point control word, and an exhaustive search"),
+    ("Result 1", "03", "What we found",
+     "Choosing well beats adapting \u2014 and by how much"),
+    ("Conclusion & next steps", "04", "Where this goes",
+     "The deliverable, the limits, and Review-II"),
+]
+
+def _divider_before(title_prefix, numeral, heading, standfirst):
+    idx = None
+    for i, sl in enumerate(S):
+        for sh in sl.shapes:
+            if sh.has_text_frame and sh.text_frame.text.strip().startswith(title_prefix):
+                idx = i; break
+        if idx is not None:
+            break
+    if idx is None:
+        return False
+    d = clone_after(p, idx, idx)
+    for sh in list(d.shapes):
+        sh._element.getparent().remove(sh._element)
+    bg = d.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0),
+                            Inches(13.333), Inches(7.5))
+    bg.fill.solid(); bg.fill.fore_color.rgb = NAVY
+    bg.line.fill.background(); bg.shadow.inherit = False
+    if bg.has_text_frame:
+        bg.text_frame.text = ""
+
+    def dtext(x, y, w, h, text, size, color, bold=False, italic=False):
+        tb = d.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+        tf = tb.text_frame; tf.word_wrap = True
+        pa = tf.paragraphs[0]; r = pa.add_run(); r.text = text
+        r.font.size = Pt(size); r.font.bold = bold; r.font.italic = italic
+        r.font.color.rgb = color; r.font.name = "Calibri"
+        return tb
+
+    dtext(1.30, 2.05, 3.0, 1.5, numeral, 66, SLATE, bold=True)
+    dtext(1.30, 3.35, 10.6, 1.1, heading, 44, PAPER, bold=True)
+    dtext(1.40, 4.55, 10.4, 0.8, standfirst, 17, SLATE)
+    return True
+
+for _pfx, _num, _head, _sf in DIVIDERS:
+    _divider_before(_pfx, _num, _head, _sf)
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("section dividers inserted; deck now %d slides" % len(S))
+
 # ---------------- references: split across two slides ---------------------
 # 30 citations need 9.6 in in a 4.75 in box. Splitting is the honest fix: a
 # smaller font would fit but nobody can read 7 pt from the back of a room.
