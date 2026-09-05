@@ -1446,7 +1446,9 @@ def _divider_before(title_prefix, numeral, heading, standfirst):
         r.font.color.rgb = color; r.font.name = "Calibri"
         return tb
 
-    dtext(1.30, 2.05, 3.0, 1.5, numeral, 66, SLATE, bold=True)
+    # 1.25 not 1.50: at 1.50 this box ran to 3.55 in and overlapped the
+    # heading box starting at 3.35 in.
+    dtext(1.30, 2.05, 3.0, 1.25, numeral, 66, SLATE, bold=True)
     dtext(1.30, 3.35, 10.6, 1.1, heading, 44, PAPER, bold=True)
     dtext(1.40, 4.55, 10.4, 0.8, standfirst, 17, SLATE)
     return True
