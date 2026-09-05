@@ -1427,8 +1427,10 @@ DIVIDERS = [
 ]
 
 def _divider_before(title_prefix, numeral, heading, standfirst):
+    # live list, not S: S predates every clone_after and does not track
+    # insertions, so a divider aimed at one slide landed several before it.
     idx = None
-    for i, sl in enumerate(S):
+    for i, sl in enumerate(list(p.slides)):
         for sh in sl.shapes:
             if sh.has_text_frame and sh.text_frame.text.strip().startswith(title_prefix):
                 idx = i; break
@@ -1468,11 +1470,35 @@ for n, sl in enumerate(S, start=1):
 p.save(OUT)
 print("section dividers inserted; deck now %d slides" % len(S))
 
+
+# ---------------- review date --------------------------------------------
+# template_ext.pptx carries 02.09.2026 on slides 2 and 3. The review moved to
+# the 9th. Both are Wednesdays, so the day name on slide 2 stays correct.
+REVIEW_DATE_OLD, REVIEW_DATE_NEW = "02.09.2026", "09.09.2026"
+dhits = 0
+for sl in S:
+    for sh in sl.shapes:
+        if not sh.has_text_frame:
+            continue
+        for pa in sh.text_frame.paragraphs:
+            for r in pa.runs:
+                if REVIEW_DATE_OLD in r.text:
+                    r.text = r.text.replace(REVIEW_DATE_OLD, REVIEW_DATE_NEW)
+                    dhits += 1
+print("review date set to %s in %d run(s)" % (REVIEW_DATE_NEW, dhits))
+
+# Split the references LAST. Run earlier, four further slides were inserted
+# between the two halves -- the deck shipped with References (16-30) at slide
+# 29 and References (1-15) at 33, with the demo and conclusion in between.
 # ---------------- references: split across two slides ---------------------
 # 30 citations need 9.6 in in a 4.75 in box. Splitting is the honest fix: a
 # smaller font would fit but nobody can read 7 pt from the back of a room.
+# list(p.slides), not S: S was captured before any clone_after call and does
+# not track insertions, so this search returned a stale index and the clone
+# landed four slides too early.
 ridx = None
-for i, sl in enumerate(S):
+_live = list(p.slides)
+for i, sl in enumerate(_live):
     for sh in sl.shapes:
         if sh.has_text_frame and sh.text_frame.text.strip().startswith("References"):
             ridx = i; break
@@ -1481,7 +1507,7 @@ if ridx is None:
     raise SystemExit("references slide not found")
 
 ref_body = None
-for sh in S[ridx].shapes:
+for sh in _live[ridx].shapes:
     if sh.has_text_frame and "[1]" in sh.text_frame.text:
         ref_body = sh; break
 
@@ -1504,7 +1530,7 @@ def ref_paras(items, with_note):
     return out
 
 S2 = clone_after(p, ridx, ridx + 1)
-set_title(S[ridx], "References  (1\u2013%d)" % first[-1].n)
+set_title(_live[ridx], "References  (1\u2013%d)" % first[-1].n)
 set_title(S2, "References  (%d\u2013%d)" % (second[0].n, second[-1].n))
 set_body(ref_body, ref_paras(first, False))
 for sh in S2.shapes:
@@ -1512,22 +1538,6 @@ for sh in S2.shapes:
         set_body(sh, ref_paras(second, True)); break
 p.save(OUT)
 print("references split: %d + %d across two slides" % (len(first), len(second)))
-
-# ---------------- review date --------------------------------------------
-# template_ext.pptx carries 02.09.2026 on slides 2 and 3. The review moved to
-# the 9th. Both are Wednesdays, so the day name on slide 2 stays correct.
-REVIEW_DATE_OLD, REVIEW_DATE_NEW = "02.09.2026", "09.09.2026"
-dhits = 0
-for sl in S:
-    for sh in sl.shapes:
-        if not sh.has_text_frame:
-            continue
-        for pa in sh.text_frame.paragraphs:
-            for r in pa.runs:
-                if REVIEW_DATE_OLD in r.text:
-                    r.text = r.text.replace(REVIEW_DATE_OLD, REVIEW_DATE_NEW)
-                    dhits += 1
-print("review date set to %s in %d run(s)" % (REVIEW_DATE_NEW, dhits))
 
 for n, sl in enumerate(list(p.slides), start=1):
     renumber(sl, n)
