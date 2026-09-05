@@ -1176,6 +1176,43 @@ set_note(s_mat, "[35 s]  CORE — this is the MATLAB evidence, and it answers 'd
                 "the argument for simulating. If you have time, add the dead-time "
                 "saturation at 15 ns from the caption.")
 
+# ---------------- FLOW CHART: one use case, start to finish ----------------
+# Asked for explicitly. The architecture diagram says what talks to what and
+# the circuit says what is wired to what; neither says what HAPPENS, in order,
+# on one switching edge. This slide is that, for a single named use case.
+_fl_idx = None
+for _i, _sl in enumerate(S):
+    for _sh in _sl.shapes:
+        if _sh.has_text_frame and _sh.text_frame.text.strip().startswith("System Architecture"):
+            _fl_idx = _i; break
+    if _fl_idx is not None:
+        break
+if _fl_idx is None:
+    raise SystemExit("architecture slide not found for flow-chart insertion")
+
+s_flow = clone_after(p, _fl_idx, _fl_idx)          # sits BEFORE the architecture
+set_title(s_flow, "How it works \u2014 one use case, start to finish")
+for _sh in list(s_flow.shapes):
+    if _sh.has_text_frame:
+        _t = _sh.text_frame.text.strip()
+        if _t and not _t.isdigit() and not _t.startswith("How it works"):
+            _sh._element.getparent().remove(_sh._element)
+    elif _sh.shape_type is not None and not _sh.has_text_frame and _sh.name != "Image 0":
+        _sh._element.getparent().remove(_sh._element)
+# Size by HEIGHT, not width: at 12.45 in wide this 1.90:1 figure is 6.3 in
+# tall and runs off the bottom of a 7.5 in slide, over the caption and the
+# page number.
+s_flow.shapes.add_picture(RES + "/fig_flow.png",
+                          Inches(1.86), Inches(1.30), height=Inches(5.05))
+add_text(s_flow, 0.70, 6.55, 11.20, 0.45, [
+    para([("Read the top row as the controller and the bottom row as the circuit. ", True),
+          ("The one shaded diamond is the entire adaptive machinery.", False)],
+         level=0, sz=1200, spc=0, bullet=False)])
+for n, sl in enumerate(S, start=1):
+    renumber(sl, n)
+p.save(OUT)
+print("flow-chart slide inserted; deck now %d slides" % len(S))
+
 # ---------------- TECH STACK: what each tool actually produced -------------
 # Asked for explicitly: show the software, and what each one contributed. The
 # point of the slide is that no single tool is load-bearing on its own -- every
