@@ -53,9 +53,22 @@ BEFORE RUNNING gan_master.m
 
    gan_analysis.m does not need it.
 
-WHY THE LOCAL FUNCTIONS SIT AT THE BOTTOM OF gan_master.m
-   MATLAB requires local functions in a script to appear AFTER all executable
-   code; it errors with "Function definitions in a script must appear at the
-   end of the file". Octave allows them anywhere, so a mid-file definition
-   runs in Octave and fails in MATLAB. They were mid-file until 5 Sep 2026.
-   Do not move them back up.
+gan_master.m IS A FUNCTION FILE, NOT A SCRIPT -- AND MUST STAY ONE
+   Run it by typing its name at the prompt:
+
+       gan_master
+
+   In MATLAB Online that is all. From the Octave command line use
+   `octave --eval gan_master`; plain `octave gan_master.m` only DEFINES it.
+
+   Why a function file. MATLAB requires a script's local functions to appear
+   AFTER all executable code ("Function definitions in a script must appear at
+   the end of the file"). Octave does not hoist them, so at the end they are
+   undefined when the body calls them. Both were verified on 5 Sep 2026:
+   functions mid-file fails in MATLAB, functions at the end fails in Octave.
+   The two rules cannot both be satisfied by a plain script. In a FUNCTION
+   file, subfunctions are visible regardless of order in both tools -- so that
+   is what this is. Do not convert it back to a script.
+
+   gan_analysis.m is unaffected: it uses only anonymous functions, which are
+   legal anywhere in both.
