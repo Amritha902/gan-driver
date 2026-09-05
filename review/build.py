@@ -1168,9 +1168,6 @@ if _ts_idx is None:
 
 s_ts = clone_after(p, _ts_idx, _ts_idx + 1)
 set_title(s_ts, "Tools \u2014 and what each one produced")
-for _sh in list(s_ts.shapes):
-    if _sh.has_text_frame and _sh != find_shape(s_ts, "Timeline & milestones"):
-        pass
 # strip the cloned body, keep title/logo/page number
 for _sh in list(s_ts.shapes):
     if _sh.has_text_frame:
@@ -1366,6 +1363,48 @@ for n, sl in enumerate(list(p.slides), start=1):
     renumber(sl, n)
 p.save(OUT)
 print("Vivado report slide inserted; deck now %d slides" % len(list(p.slides)))
+
+# ---------------- VIVADO SCREENS: the tool on screen ------------------------
+# Two captures from the machine that ran it: the behavioural simulation (all
+# checks passing, fails[31:0] = 0) and the Tcl console printing both LUT
+# counts. Screenshots are weaker evidence than the .rpt files, but they show
+# the tool actually ran, which a report file alone does not.
+_vs_idx = None
+for _i, _sl in enumerate(list(p.slides)):
+    for _sh in _sl.shapes:
+        if _sh.has_text_frame and _sh.text_frame.text.strip().startswith("Vivado \u2014"):
+            _vs_idx = _i; break
+    if _vs_idx is not None:
+        break
+if _vs_idx is not None:
+    s_vs = clone_after(p, _vs_idx, _vs_idx + 1)
+    set_title(s_vs, "Vivado \u2014 simulation and synthesis, on screen")
+    for _sh in list(s_vs.shapes):
+        if _sh.has_text_frame:
+            _t = _sh.text_frame.text.strip()
+            if _t and not _t.isdigit() and not _t.startswith("Vivado \u2014"):
+                _sh._element.getparent().remove(_sh._element)
+        elif _sh.shape_type is not None and _sh.name != "Image 0":
+            _sh._element.getparent().remove(_sh._element)
+    # both captures are 16:9; two side by side at 6.05 in wide = 3.40 in tall
+    s_vs.shapes.add_picture(RES + "/vivado_screens/vivado_simulation.jpeg",
+                            Inches(0.55), Inches(1.55), width=Inches(6.05))
+    s_vs.shapes.add_picture(RES + "/vivado_screens/vivado_console.jpeg",
+                            Inches(6.85), Inches(1.55), width=Inches(6.05))
+    add_text(s_vs, 0.55, 5.15, 6.05, 0.80, [
+        para([("Behavioural simulation. ", True),
+              ("fails[31:0] = 0 \u2014 every asserted property holds in Vivado's own "
+               "simulator, a third tool after Icarus and the mutation test.", False)],
+             level=0, sz=1150, spc=0, bullet=False)])
+    add_text(s_vs, 6.85, 5.15, 6.05, 0.80, [
+        para([("Synthesis console. ", True),
+              ("33 LUTs programmable against 20 strapped \u2014 the cost of "
+               "programmability, printed by the tool.", False)],
+             level=0, sz=1150, spc=0, bullet=False)])
+    for n, sl in enumerate(list(p.slides), start=1):
+        renumber(sl, n)
+    p.save(OUT)
+    print("Vivado screenshot slide inserted; deck now %d slides" % len(list(p.slides)))
 
 # ---------------- SECTION DIVIDERS ----------------------------------------
 # Thirty slides of white with navy headings reads as raw material rather than

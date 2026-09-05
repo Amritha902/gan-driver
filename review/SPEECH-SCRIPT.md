@@ -1,9 +1,9 @@
-# Review-I speech script — 33 slides, ~10 minutes
+# Review-I speech script — 35 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
-reads. **Slides 8, 15 and 24 are the ones that matter.** If you are running
-out of time, cut 17, 23 and 26, never those three.
+reads. **Slides 8, 15 and 26 are the ones that matter.** If you are running
+out of time, cut 17, 25 and 28, never those three.
 
 Numbers in **bold** were re-verified by running the script that produces them.
 
@@ -20,7 +20,7 @@ once, and move.
 
 ---
 
-## 4, 9, 20, 29 — Section dividers (2 s each)
+## 4, 9, 22, 31 — Section dividers (2 s each)
 
 Dark slides: **The problem · What we built · What we found · Where this goes.**
 Say the words on the slide and move on. They break thirty-four slides into four
@@ -181,7 +181,7 @@ price adaptation — which their paper can't do.
 
 ---
 
-## 17 — Timeline and tools (20 s) — *cut this first if short on time*
+## 17 — Where we are, and what is next (20 s) — *cut this first if short on time*
 
 > "ngspice for the simulation, LTspice for the portable schematic, Icarus for
 > the RTL, Yosys for synthesis, MATLAB for the analysis. Cadence is Review-II
@@ -256,7 +256,23 @@ same direction, but the honest reduction is 39 %, not 49 %.
 
 ---
 
-## 21 — Result 1, crosstalk (30 s)
+## 20–21 — Vivado, the report and the screen (30 s)
+
+Two slides, one point: the FPGA half is real, and here is the tool saying so.
+
+> "Twenty LUTs and twenty flip-flops on an Artix-7 — a tenth of a percent of
+> the part. Register-to-register timing closes at 200 megahertz with 1.996
+> nanoseconds spare. Synthesised again with every field left programmable it
+> is thirty-three LUTs, so strapping the word — which is this study's own
+> result built into the hardware — saves 39 % of the logic."
+
+**If asked about "Timing constraints are not met":** see the note under slide 19.
+Internal timing is met; the 34 failures are clock-to-pin against a placeholder
+I/O constraint.
+
+---
+
+## 23 — Result 1, crosstalk (30 s)
 
 > "Fastest drive, no clamp: **1.65 V** spurious against a 1.4 V threshold.
 > That's the failure. Clamp on with −2 V off-bias: **−1.18 V**, a **2.58 V**
@@ -264,7 +280,7 @@ same direction, but the honest reduction is 39 %, not 49 %.
 
 ---
 
-## 22 — Result 2, the ceiling (45 s)
+## 24 — Result 2, the ceiling (45 s)
 
 > "Full search at every corner. The ceiling on operating-point scheduling is
 > **5.2 %** against the best single fixed word. And it isn't spread out —
@@ -285,7 +301,7 @@ would be self-serving; quoting only the larger one hides that the effect is
 even weaker in practice.
 
 ---
-## 23 — MATLAB (25 s) — *cut second if short*
+## 25 — MATLAB (25 s) — *cut second if short*
 
 > "720 words, **504 feasible**, a seven-word Pareto front. The objectives
 > genuinely conflict — you cannot minimise loss, overshoot and crosstalk
@@ -294,7 +310,7 @@ even weaker in practice.
 ---
 
 
-## 24 — Result 3, the decomposition (45 s) — **core slide**
+## 26 — Result 3, the decomposition (45 s) — **core slide**
 
 > "Here's the split nobody separates. Choosing a better fixed word: **25.1 %**
 > of baseline. Adapting it per operating point on top of that: **3.9 %**. So
@@ -309,7 +325,7 @@ the contribution.
 
 ---
 
-## 25 — Result 4, loop inductance (25 s)
+## 27 — Result 4, loop inductance (25 s)
 
 > "Adaptive control pays only below about **2.5 nH** of loop inductance. Above
 > that a fixed word is nearly as good. And loop inductance is board layout,
@@ -317,14 +333,14 @@ the contribution.
 
 ---
 
-## 26 — Backup (skip unless asked)
+## 28 — Backup (skip unless asked)
 
 Only open this if challenged on robustness. Across 21,600 transients no device
 parameter moves the ceiling outside **4.3–7.7 %**.
 
 ---
 
-## 27 — DEMO (45 s)
+## 29 — DEMO (45 s)
 
 The clip runs **22 s**. Play it and stay quiet for the first five seconds —
 the switch node falling is the whole setup, and narrating over it just
@@ -339,14 +355,14 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 28 — Why the numbers hold (20 s)
+## 30 — Why the numbers hold (20 s)
 
 > "Every number survives a 25× timestep refinement. Ten wrong numbers were
 > caught by our own convergence checks before they reached the report."
 
 ---
 
-## 30 — Conclusion and next steps (40 s)
+## 32 — Conclusion and next steps (40 s)
 
 > "Choosing the control word well matters enormously — roughly fivefold in
 > switching energy. Adapting it does not: 3.9 %, and one comparator takes most
@@ -364,7 +380,7 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 31–33 — References, thanks (10 s)
+## 33–35 — References, thanks (10 s)
 
 > "Thirty references, against a minimum of eight to ten. All thirty are
 > verified against the publisher record — authors, volume, issue and pages
