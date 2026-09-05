@@ -71,10 +71,11 @@ the negative off-bias, 4.8x theirs. Report it that way.
   and 2.92 ns clock insertion (clock driven from a pin with no MMCM); the
   logic is 0.295 ns. Fix is in `rtl/vivado/VIVADO-TODO.md`: MMCM for the
   clock, real output constraint once the board is known.
-- Pre-Vivado estimate for comparison, `yosys synth_xilinx -flatten`: 53 LUTs
-  fully programmable vs 27 strapped (`scripts/synth_cost.sh`). Vivado gives 20
-  for the strapped design — vendor mapping beats yosys. Only the strapped
-  design was synthesised in Vivado
+- **Cost of programmability, in Vivado**: seg_gate_ctrl fully programmable
+  is **33 LUTs / 30 FFs**; seg_gate_ctrl_top strapped is **20 / 20**. Strapping
+  saves 13 LUTs, 39 % of the logic. This supersedes the yosys estimate
+  (53 -> 27) that scripts/synth_cost.sh still prints -- same direction, but
+  the honest figure is 39 %, not 49 %. Quote the Vivado pair.
 
 **LTspice** — `ltspice/A_…`, `B_…`, `C_…cir` contain the real Miller clamp and
 were verified in ngspice on the shipped files: 1.6488 / 0.8304 / −1.1759 V.
@@ -105,12 +106,8 @@ has been run, and the LTspice port has been run in LTspice. What is left:
 replace the slide-1 placeholder with the scan. Mandatory for every review, and
 the only item that cannot be done from this repository.
 
-**2. One more Vivado run, for the comparison.** Only the STRAPPED design has
-been synthesised in Vivado. The "cost of programmability" claim still rests on
-yosys estimates (53 LUTs programmable vs 27 strapped). One command gives it in
-vendor numbers:
-
-    vivado -mode batch -source synth_only.tcl -tclargs xc7a35tcpg236-1 seg_gate_ctrl
+**2. DONE (5 Sep).** Both designs are synthesised in Vivado: 33 LUTs
+programmable against 20 strapped. Reproduce with rtl/vivado/synth_both_STEVEN.tcl.
 
 **3. Place-and-route, if a board is chosen.** synth_only.tcl stops at
 synthesis. build.tcl runs the full flow but needs real package pins, and the

@@ -86,3 +86,17 @@ simulator also reports ALL CHECKS PASSED.
        LVCMOS33 OBUF that costs 3.5 ns by itself.
     3. If the outputs must be fast, use a faster I/O standard or ODDR.
     Both 1 and 2 were already written in VIVADO-TODO.md before this run.
+
+COST OF PROGRAMMABILITY -- Vivado, 5 Sep 2026
+=============================================
+Both designs synthesised on xc7a35tcpg236-1 in one run (synth_both_STEVEN.tcl):
+
+    seg_gate_ctrl       every field programmable    33 LUTs   30 FFs
+    seg_gate_ctrl_top   word strapped + comparator  20 LUTs   20 FFs
+
+Strapping saves 13 LUTs and 10 flip-flops -- 39 % of the logic -- for the
+3.9 % of baseline switching energy that adaptation buys.
+
+This SUPERSEDES the yosys estimate (53 -> 27 LUTs) that scripts/synth_cost.sh
+produces. Both show the same direction; the vendor mapper is simply better, and
+the honest reduction is 39 %, not 49 %. Quote the Vivado pair.

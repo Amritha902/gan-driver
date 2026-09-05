@@ -75,8 +75,11 @@ panel(50.0, 13.5, 49.5, 23.0, "report_timing_summary", TIMING)
 
 ax.text(1.8, 10.6, "20 LUTs and 20 flip-flops — a tenth of a percent of the part.",
         fontsize=9.4, fontweight="bold", color=INK)
-ax.text(1.8, 7.8, "The controller is small enough that fabric cost is not an argument\n"
-                  "against building it.", fontsize=8.4, color=MUTED, va="top")
+ax.text(1.8, 7.8,
+        "Synthesised again with every field left programmable: 33 LUTs, 30 FFs.\n"
+        "So strapping the word — the study's own result built into the hardware —\n"
+        "costs 13 LUTs, a 39 % saving, in Vivado's numbers rather than an estimate.",
+        fontsize=8.4, color=MUTED, va="top")
 
 ax.text(51.3, 10.6, "200 MHz is MET where it counts.", fontsize=9.4,
         fontweight="bold", color=GOOD)

@@ -248,10 +248,11 @@ met":** agree, then separate the two numbers before they do.
 Do not claim timing is met outright, and do not concede the design misses its
 clock. Both would be wrong.
 
-`yosys synth_xilinx` gave 53 LUTs vs 27 for the programmable and strapped
-designs; Vivado gives 20 for the strapped one, which is the number to quote.
-Vendor mapping is simply better than yosys, and only the strapped design was
-sent for synthesis.
+**Both designs are now in Vivado**, so the cost of programmability is vendor
+numbers, not an estimate: **33 LUTs fully programmable against 20 strapped** --
+strapping saves 13 LUTs and 10 flip-flops, 39 % of the logic, for the 3.9 % of
+baseline that adaptation buys. The older yosys pair (53 vs 27) is superseded;
+same direction, but the honest reduction is 39 %, not 49 %.
 
 ---
 
