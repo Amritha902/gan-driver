@@ -15,7 +15,7 @@ import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, Polygon
+from matplotlib.patches import FancyBboxPatch, Polygon, FancyArrowPatch
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT  = os.path.join(ROOT, "results", "fig_circuit.png")
@@ -137,6 +137,9 @@ wire([(XL - 11.4, 34.0), (XL + 4, 34.0), (XL + 4, 36.0)], color=HOT, ls="-")
 cap(XL - 14.0, 18.0, w=6.5, gap=2.2, horiz=False, color=HOT, label="C$_{GS}$", lab_dx=1.8)
 wire([(XL - 14.0, 26.0), (XL - 14.0, 19.0)], color=HOT)
 wire([(XL - 14.0, 17.0), (XL - 14.0, 14.0), (XL + 4, 14.0)], color=HOT)
+wire([(XL - 14.0, 62.0), (XL - 23.0, 62.0)])
+txt(XL - 24.0, 62.0, "identical driver", fs=7.4, color=MUTED, ha="right")
+txt(XL - 24.0, 59.0, "(not drawn)", fs=7.4, color=MUTED, ha="right")
 cap(XL - 12.5, 70.0, w=6.0, gap=2.0, horiz=True, label="")
 txt(XL - 20.0, 70.0, "C$_{GD}$", fs=8.0, ha="right")
 wire([(XL - 14.0, 62.0), (XL - 14.0, 70.0), (XL - 13.6, 70.0)])
@@ -145,7 +148,9 @@ wire([(XL - 11.4, 70.0), (XL + 4, 70.0)])
 # ====================== SEGMENTED GATE DRIVER (Q2) =======================
 txt(4, 85.5, "SEGMENTED  GATE  DRIVER   —   drawn for Q2; Q1 is identical",
     fs=9.2, b=True, color=MUTED)
-ax.add_patch(FancyBboxPatch((3, 12), 84, 62, boxstyle="round,pad=0.6,rounding_size=1.4",
+# y starts at 2, not 12: the off-bias mux sits below the V_off rail because it
+# GENERATES that rail, and the old boundary cut it out of its own driver.
+ax.add_patch(FancyBboxPatch((3, 2), 84, 72, boxstyle="round,pad=0.6,rounding_size=1.4",
              fc="#FCFCFC", ec=RULE, lw=1.2, ls=(0, (5, 3)), zorder=1))
 
 VDRV = 68.0
@@ -225,8 +230,15 @@ ax.add_patch(FancyBboxPatch((3.5, 76.0), 84, 8.0,
 txt(6, 80.0, "FPGA  seg_gate_ctrl.v   →   720-point control word:", fs=8.4, b=True)
 txt(53, 80.0, "N$_{PU}$ · N$_{PD,LS}$ · N$_{PD,HS}$ · t$_{dead}$ · CLK_EN · V$_{neg}$",
     fs=8.4, b=True, color=HOT)
-for x in (16, 26, 36, 56, 68):
-    wire([(x, 76.0), (x, 72.5)], ls=(0, (3, 2)), lw=1.1, color=MUTED)
+# One control line that actually lands, instead of five stubs ending in mid-air.
+# The word sets every switch in the driver; drawing five short dashes that stop
+# above the boundary asserted five connections and drew none of them.
+wire([(8.0, 76.0), (8.0, 71.0)], ls=(0, (3, 2)), lw=1.2, color=MUTED)
+ax.add_patch(FancyArrowPatch((8.0, 71.0), (8.0, 68.8), arrowstyle="-|>",
+             mutation_scale=10, lw=1.2, color=MUTED, shrinkA=0, shrinkB=0, zorder=6))
+# y=74.8 sits in the gap between the control box (bottom 76) and the driver
+# boundary (top 74). At 71.6 it ran straight through the PULL-UP header.
+txt(10.5, 75.4, "the word closes every switch below", fs=7.4, color=MUTED)
 
 fig.text(0.012, 0.018,
          "Every element here is in sim/dpt.cir. Q2 is the device under test; C$_{GD}$ on Q2 is the "
