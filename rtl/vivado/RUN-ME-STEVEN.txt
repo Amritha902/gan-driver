@@ -1,0 +1,58 @@
+GaN SEGMENTED GATE DRIVER — FPGA SYNTHESIS
+Two commands. Should take under ten minutes.
+
+WHAT THIS IS
+  A gate-driver controller in Verilog. It already simulates and passes its
+  testbench; what we cannot do is synthesise it, because Vivado has no macOS
+  build. We need Xilinx utilisation and timing numbers, nothing else.
+
+STEP 1 — sanity check the RTL (optional, ~5 seconds, no Vivado needed)
+  If you have Icarus Verilog:
+
+    iverilog -g2012 -o tb seg_gate_ctrl_top_tb.v seg_gate_ctrl_top.v \
+        seg_gate_ctrl.v dead_time_gen.v thermo_decode.v
+    vvp tb
+
+  Expected last line:  ALL CHECKS PASSED
+
+STEP 2 — synthesis (this is the one we need)
+
+    vivado -mode batch -source synth_only.tcl
+
+  To target a specific part instead of the default xc7a35tcpg236-1:
+
+    vivado -mode batch -source synth_only.tcl -tclargs xc7a100tcsg324-1
+
+  Any Artix-7 part is fine. We are not targeting a board.
+
+WHAT WE NEED BACK
+  1. The console block printed at the end, headed "NUMBERS WE NEED".
+     It has the LUT count, register count, and worst negative slack.
+  2. The two files written to  vivado/build/ :
+         utilization_synth.rpt
+         timing_synth.rpt
+
+  That is everything. If it errors, the error text is just as useful.
+
+ONE THING THAT MATTERS
+  The clock is constrained to 200 MHz (5 ns). That is a requirement, not a
+  preference: the design counts clock cycles to make dead-time, and the
+  shortest dead-time we use is 5 ns, which a 100 MHz clock cannot express.
+  If timing fails at 200 MHz we need to know — that is a real result, not a
+  problem with your setup.
+
+WHY NOT build.tcl
+  build.tcl is also in here. It runs place, route and bitstream generation,
+  which need real package pins for a specific board. The pin assignments in
+  the XDC are placeholders. Do not use build.tcl unless you want to target
+  your own board — synth_only.tcl gives us what we need without any of that.
+
+FILES
+  seg_gate_ctrl.v        top-level controller
+  dead_time_gen.v        complementary outputs, programmable dead time
+  thermo_decode.v        slice count -> thermometer enables
+  seg_gate_ctrl_top.v    synthesis wrapper
+  seg_gate_ctrl_top_tb.v self-checking testbench for the wrapper
+  seg_gate_ctrl.xdc      constraints (pin locations are placeholders)
+  synth_only.tcl         <- run this
+  build.tcl              full flow, needs your board's pins
