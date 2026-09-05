@@ -60,11 +60,21 @@ the negative off-bias, 4.8x theirs. Report it that way.
 - 8 properties T1–T8 pass under Icarus; `mutate.sh` catches an injected
   shoot-through 221 times
 - Vivado export in `rtl/vivado/`: top level, XDC, `build.tcl`, own bench
-- Synthesis via native `yosys synth_xilinx -flatten`: **53 LUTs → 27** and
-  33 FFs → 25 when the word is strapped instead of fully programmable
-  (`scripts/synth_cost.sh`). These are real Artix-7 primitives, not generic
-  gates — ABC completes in the native build where it did not in WASM. Still
-  no place-and-route or timing; that needs Vivado on Windows/Linux
+- **Vivado 2024.1.2, xc7a35tcpg236-1, run 5 Sep 2026** (reports committed in
+  `rtl/vivado/build/`): **20 LUTs, 20 flip-flops**, 0.10 % of the part; 40
+  bonded IOB (37.7 %); 1 BUFG; no BRAM, no DSP.
+  **Register-to-register timing at 200 MHz is MET, WNS 1.996 ns**, 0 of 25
+  endpoints failing; hold +0.134 ns, pulse width +2.000 ns.
+  The report's headline "Timing constraints are not met" refers to 34
+  clock-to-output-pin paths in group `**default**`, against the placeholder
+  `set_max_delay 4.000` in the XDC. Worst path: 3.49 ns in the LVCMOS33 OBUF
+  and 2.92 ns clock insertion (clock driven from a pin with no MMCM); the
+  logic is 0.295 ns. Fix is in `rtl/vivado/VIVADO-TODO.md`: MMCM for the
+  clock, real output constraint once the board is known.
+- Pre-Vivado estimate for comparison, `yosys synth_xilinx -flatten`: 53 LUTs
+  fully programmable vs 27 strapped (`scripts/synth_cost.sh`). Vivado gives 20
+  for the strapped design — vendor mapping beats yosys. Only the strapped
+  design was synthesised in Vivado
 
 **LTspice** — `ltspice/A_…`, `B_…`, `C_…cir` contain the real Miller clamp and
 were verified in ngspice on the shipped files: 1.6488 / 0.8304 / −1.1759 V.

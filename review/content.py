@@ -92,7 +92,7 @@ SLIDE7B = [
        "corner against the simulated 1.65 V · M6 submit the manuscript.", False)], 1),
     ([("Tools & technologies", B)], 0),
     ([("ngspice 42 (every sweep) · LTspice 24, in which the port was re-run · "
-       "Icarus Verilog (RTL, 8 asserted properties) · Xilinx Vivado (export written) · "
+       "Icarus Verilog (RTL, 8 asserted properties) · Xilinx Vivado 2024.1.2, synthesised · "
        "Cadence Spectre / OCEAN · SKY130 PDK (BSIM4) · Python / NumPy / Matplotlib · "
        "MATLAB Online, an independent cross-check of the Pareto analysis · Git", False)], 1),
     ([("How to check any of it", B)], 0),
@@ -139,16 +139,13 @@ SLIDE_RTL_SHORT = [
     ([("Three modules emitting exactly the 720-point control word the SPICE model consumes.",
        False)], 1),
     ([("Dead time gets a ", False), ("live register", B), ("; drive strength is ", False),
-      ("strapped", B), (" — the study's own result built into the hardware, since dead time is "
-       "worth 5.45 % to schedule (carried by the light-load corner alone) and pull-up 0.00 %.",
-       False)], 1),
-    ([("Reset lands on the safest word, not the fastest.", False)], 1),
-    ([("Eight asserted properties pass under Icarus; a shoot-through mutant is caught "
-       "221\u00d7 (sh rtl/mutate.sh).", False)], 1),
-    ([("Synthesised to Artix-7 primitives. ", B),
-      ("Strapping the word instead of leaving all six fields live takes the controller from ",
-       False), ("53 LUTs to 27", B),
-      (" (33 FFs to 25) \u2014 half the fabric for the 3.9 % adaptation buys. yosys "
-       "synth_xilinx; Vivado itself needs Windows/Linux, so no place-and-route or timing yet.",
-       False)], 1),
+      ("strapped", B), (" \u2014 5.45 % vs 0.00 % to schedule.", False)], 1),
+    ([("Eight asserted properties pass under Icarus, safe reset included; a shoot-through "
+       "mutant is caught 221\u00d7 (sh rtl/mutate.sh).", False)], 1),
+    ([("Implemented in Vivado 2024.1.2", B), (" on xc7a35t: ", False),
+      ("20 LUTs, 20 flip-flops", B), (" \u2014 0.10 % of the part. Register-to-register "
+       "timing at 200 MHz is ", False), ("MET, 1.996 ns slack", B), (".", False)], 1),
+    ([("The 34 failing paths are all clock-to-pin against a placeholder 4 ns I/O constraint "
+       "\u2014 the output buffer alone is 3.49 ns.", False)], 1),
 ]
+

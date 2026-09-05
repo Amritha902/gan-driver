@@ -607,6 +607,12 @@ set_body(con_shape, [
            "up to 2.27 % in a narrow transition band. No silicon has been measured, and one "
            "device model underlies everything.", False)],
          level=0, sz=1450, spc=180, bullet=True),
+    para([("The FPGA half is now real. ", True),
+          ("Vivado 2024.1.2 synthesises the controller to 20 LUTs and 20 flip-flops on an "
+           "xc7a35t \u2014 0.10 % of the part \u2014 and register-to-register timing closes at "
+           "200 MHz with 1.996 ns of slack. The only failing paths are clock-to-pin against a "
+           "placeholder I/O constraint, not logic.", False)],
+         level=0, sz=1450, spc=180, bullet=True),
     para([("Review-II: ", True), ("transistor-level output stage in Cadence on a 5 V-capable "
            "PDK; re-run the ceiling on real devices \u2014 sub-nanosecond dead-time control needs "
            "silicon, not fabric: [13] reaches 0.19 ns where a 200 MHz FPGA grid is 5 ns. ", False),
