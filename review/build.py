@@ -596,6 +596,9 @@ set_body(con_shape, [
           ("a fixed word plus a light-load comparator. The full sense + ADC + lookup table "
            "is left justifying ", False), ("3.7 %", True), (".", False)],
          level=0, sz=1600, spc=340, bullet=True),
+    para([("The FPGA half is real: ", True),
+          ("20 LUTs and 20 flip-flops on an xc7a35t, 200 MHz met with 1.996 ns of slack.",
+           False)], level=0, sz=1600, spc=340, bullet=True),
     para([("What is next", True)], level=0, sz=1700, spc=240, bullet=False),
     para([("Review-II \u2014 ", True),
           ("transistor-level output stage in Cadence; re-run the ceiling on real devices.",
@@ -1095,7 +1098,7 @@ add_text(s_mat, 0.60, 5.10, 5.95, 1.05, [
 add_text(s_mat, 6.95, 5.10, 5.75, 1.05, [
     para([("(A) stays above (B) at every weight tested.", True),
           (" Choosing the word well is worth 22.5–29.0 % of baseline across the whole "
-           "range; adapting it per operating point 1.4–12.7 %. The ordering never "
+           "range; adapting it per operating point 1.3–12.7 %. The ordering never "
            "flips.", False)], level=0, sz=1150, spc=0, bullet=False)])
 add_text(s_mat, 0.60, 6.28, 12.10, 0.75, [
     para([("Dead-time margin saturates at about 15 ns", True),
@@ -1300,7 +1303,7 @@ add_text(s_bp, 0.70, 1.32, 12.10, 0.95, [
            "inside sim/dpt.cir, byte-identical otherwise, so only the driver differs.",
            False)], level=0, sz=1250, spc=0, bullet=False)])
 BPC = [
- ("Base paper, as we built it", "+0.533 V", False,
+ ("Base paper, as we built it", "+0.534 V", False,
   "Their time-sequenced multibit code alone already clears the 1.4 V threshold."),
  ("Ours, constant code, no clamp", "−0.249 V", False,
   "FALSE TURN-ON. A fast FIXED code is worse than their sequenced one — their "

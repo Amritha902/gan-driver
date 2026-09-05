@@ -160,7 +160,7 @@ them; the comparison is stronger when you are.
 > waveform. No Miller clamp, no negative rail, because those are ours. We ran
 > it inside our own testbench, byte-identical except for the driver."
 >
-> "Their approach works. **Plus 0.533 volts** of margin — their sequenced code
+> "Their approach works. **Plus 0.534 volts** of margin — their sequenced code
 > alone clears the threshold. And it beats our own fast fixed code, which
 > false-turns-on at **minus 0.249**. So their contribution is real and we
 > reproduce it."
@@ -386,7 +386,7 @@ open the .asc sheets for this; they're teaching drawings and don't have it.
 
 **"Did you actually implement the base paper or just cite it?"**
 Implemented. models/basedrv.lib, run in our own testbench. Slide 13 is the
-result. Their approach works — +0.533 V — and beats our fast fixed code.
+result. Their approach works — +0.534 V — and beats our fast fixed code.
 
 **"Isn't 13.4 % an artefact of your cost function?"**
 Partly, and we quantified it rather than defending it. Over 106 overshoot

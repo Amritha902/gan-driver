@@ -48,7 +48,7 @@ driver (multibit code changing during the edge; no clamp, no negative rail).
 `scripts/basepaper_compare.py` runs it inside `sim/dpt.cir` verbatim, swapping
 only the driver:
 
-    base paper, as implemented    +0.533 V   safe
+    base paper, as implemented    +0.534 V   safe
     ours, constant code, no clamp -0.249 V   FALSE TURN-ON
     ours, clamp on                +0.570 V   safe
     ours, clamp + -2 V            +2.576 V   safe
