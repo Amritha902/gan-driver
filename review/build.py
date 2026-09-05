@@ -987,84 +987,12 @@ for n, sl in enumerate(S, start=1):
 p.save(OUT)
 print("slide 9 (control-word definition) inserted; deck now %d slides" % len(S))
 
-# ============ slide 10 : base paper vs this work ==========================
-# A review wants the delta stated, not inferred. Every row is either a fact
-# about the two designs or a number this project measured; nothing here
-# claims we beat the base paper on ITS metric, because we have not run it.
-s_cmp = clone_after(p, 11, 9)
-for sh in list(s_cmp.shapes):
-    if sh.has_text_frame and sh.text_frame.text.strip() and not sh.has_table:
-        if sh.width > Inches(4) and sh.top > Inches(1.0):
-            sh._element.getparent().remove(sh._element)
-    elif sh.shape_type == 13 and sh.left < Inches(11):
-        sh._element.getparent().remove(sh._element)
-for sh in s_cmp.shapes:
-    if sh.has_text_frame and sh.top is not None and sh.top < Inches(1.0) \
-       and sh.left is not None and sh.left < Inches(1.0):
-        tf = sh.text_frame
-        for extra in list(tf.paragraphs)[1:]:
-            extra._p.getparent().remove(extra._p)
-        runs = list(tf.paragraphs[0].runs)
-        if runs:
-            runs[0].text = "Base paper vs this work — what we improve"
-            for r in runs[1:]:
-                r._r.getparent().remove(r._r)
-        break
-
-add_text(s_cmp, 0.70, 1.22, 12.0, 0.28, [
-    para([("Base paper [9]: Takayama & Hikihara, Int. J. Circuit Theory Appl., 50(1):183–196, "
-           "2022 — a gate waveform chosen by a multibit digital code.", False)],
-         level=0, sz=1150, spc=0, bullet=False)])
-
-CMP = [
- ("Device",            "SiC MOSFET",                     "GaN HEMT (e-mode)  —  no body diode, so off-bias costs third-quadrant drop"),
- ("Control handle",    "multibit gate code, one field",  "6-field, 720-point control word  —  strength, dead time, clamp, off-bias"),
- ("Implementation",    "digital driver",                 "FPGA RTL in Verilog  ·  8 asserted properties, mutation-tested"),
- ("How codes chosen",  "selected codes, measured",       "EXHAUSTIVE  —  all 720 words at every corner, 34,622 transients"),
- ("Crosstalk",         "not addressed",                  "1.65 V spurious gate  →  −1.18 V  (2.58 V margin), clamp + off-bias"),
- ("What is reported",  "one number vs a conventional driver",
-                       "the number SPLIT: fixed word 25.1 %, adapting it 3.9 %, one comparator takes 72 % of that"),
- ("Design rule",       "none",                           "adaptive control pays only below ~2.5 nH loop inductance"),
-]
-X0, X1, X2 = 0.70, 3.45, 7.05
-YT, DY = 1.95, 0.60
-for lbl, xs, ys in ((("Parameter", True), X0, YT - 0.42),):
-    pass
-add_text(s_cmp, X0, YT - 0.46, 2.60, 0.30,
-         [para([("Parameter", True)], level=0, sz=1150, spc=0, bullet=False)])
-add_text(s_cmp, X1, YT - 0.46, 3.45, 0.30,
-         [para([("Base paper [9]", True)], level=0, sz=1150, spc=0, bullet=False)])
-add_text(s_cmp, X2, YT - 0.46, 5.55, 0.30,
-         [para([("This work", True)], level=0, sz=1150, spc=0, bullet=False)])
-for i, (par, base, ours) in enumerate(CMP):
-    y = YT + i * DY
-    add_text(s_cmp, X0, y, 2.65, 0.50,
-             [para([(par, True)], level=0, sz=1050, spc=0, bullet=False)])
-    add_text(s_cmp, X1, y, 3.50, 0.50,
-             [para([(base, False)], level=0, sz=1050, spc=0, bullet=False)])
-    add_text(s_cmp, X2, y, 5.60, 0.50,
-             [para([(ours, False)], level=0, sz=1050, spc=0, bullet=False)])
-
-add_text(s_cmp, 0.70, 6.28, 12.0, 0.75, [
-    para([("The parameter we improve is not a volt or a nanosecond — it is ", False),
-          ("what the designer knows before committing silicon", True),
-          (". [9] shows a digital code works. We measure what the code is worth, and how much "
-           "of that worth needs sensing at all: 3.7 % of the achievable gain, which is what the "
-           "sense + ADC + lookup table has to justify.", False)],
-         level=0, sz=1200, spc=0, bullet=False)])
-
-set_note(s_cmp, (
-    "[35 s]  CORE — the comparison the panel will ask for. Land three rows and move on: "
-    "we go from ONE field to six (720 words); from selected codes to an EXHAUSTIVE search; "
-    "and from one bundled number to the number SPLIT into fixed versus adaptive. Be honest "
-    "if pushed: we have NOT re-run [9]'s SiC experiment, so this is a comparison of method "
-    "and scope, not a claim that we beat their result on their metric. That replication is "
-    "the next step."))
-
-for n, sl in enumerate(S, start=1):
-    renumber(sl, n)
-p.save(OUT)
-print("slide 10 (base paper vs this work) inserted; deck now %d slides" % len(S))
+# The "base paper vs this work" parameter table was CUT. Every row of it is
+# stated elsewhere -- the 25.1/3.9 split on the gap slide, the crosstalk
+# numbers on Result 1, the 2.5 nH rule on Result 4, the RTL on the FPGA
+# slide, the control word on its own slide. The head-to-head that follows
+# it is the one that carries real measured evidence, so that is the one
+# that stays.
 
 
 # ============ slide 9 : the circuit itself =================================

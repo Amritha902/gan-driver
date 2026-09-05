@@ -1,9 +1,9 @@
-# Review-I speech script — 34 slides, ~10 minutes
+# Review-I speech script — 33 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
-reads. **Slides 8, 15 and 25 are the ones that matter.** If you are running
-out of time, cut 18, 23 and 27, never those three.
+reads. **Slides 8, 15 and 24 are the ones that matter.** If you are running
+out of time, cut 17, 23 and 26, never those three.
 
 Numbers in **bold** were re-verified by running the script that produces them.
 
@@ -20,7 +20,7 @@ once, and move.
 
 ---
 
-## 4, 9, 21, 30 — Section dividers (2 s each)
+## 4, 9, 20, 29 — Section dividers (2 s each)
 
 Dark slides: **The problem · What we built · What we found · Where this goes.**
 Say the words on the slide and move on. They break thirty-four slides into four
@@ -174,23 +174,14 @@ the two actuators they don't have, and the exhaustive search that lets us
 price adaptation — which their paper can't do.
 
 ---
-## 16 — Base paper vs this work (30 s)
-
-> "The base paper shows a gate waveform can be chosen by a digital code. It,
-> and every active gate driver paper after it, reports one number against a
-> conventional driver."
-
----
-
-
-## 17 — Work completed, 50 % (30 s)
+## 16 — Work completed, 50 % (30 s)
 
 > "The problem is reproduced and fixed. The full search is done: 720 words at
 > four corners, about 34,600 transients across every study."
 
 ---
 
-## 18 — Timeline and tools (20 s) — *cut this first if short on time*
+## 17 — Timeline and tools (20 s) — *cut this first if short on time*
 
 > "ngspice for the simulation, LTspice for the portable schematic, Icarus for
 > the RTL, Yosys for synthesis, MATLAB for the analysis. Cadence is Review-II
@@ -198,7 +189,7 @@ price adaptation — which their paper can't do.
 
 ---
 
-## 19 — Tools, and what each produced (25 s)
+## 18 — Tools, and what each produced (25 s)
 
 Do not read the table. Say the one line under it and move.
 
@@ -212,7 +203,7 @@ implements it.
 
 ---
 
-## 20 — FPGA controller (35 s)
+## 19 — FPGA controller (35 s)
 
 > "Three modules emitting exactly the control word the SPICE model consumes.
 > Dead time gets a live register; drive strength is strapped — that's the
@@ -264,7 +255,7 @@ sent for synthesis.
 
 ---
 
-## 22 — Result 1, crosstalk (30 s)
+## 21 — Result 1, crosstalk (30 s)
 
 > "Fastest drive, no clamp: **1.65 V** spurious against a 1.4 V threshold.
 > That's the failure. Clamp on with −2 V off-bias: **−1.18 V**, a **2.58 V**
@@ -272,15 +263,7 @@ sent for synthesis.
 
 ---
 
-## 23 — MATLAB (25 s) — *cut second if short*
-
-> "720 words, **504 feasible**, a seven-word Pareto front. The objectives
-> genuinely conflict — you cannot minimise loss, overshoot and crosstalk
-> margin together."
-
----
-
-## 24 — Result 2, the ceiling (45 s)
+## 22 — Result 2, the ceiling (45 s)
 
 > "Full search at every corner. The ceiling on operating-point scheduling is
 > **5.2 %** against the best single fixed word. And it isn't spread out —
@@ -301,8 +284,16 @@ would be self-serving; quoting only the larger one hides that the effect is
 even weaker in practice.
 
 ---
+## 23 — MATLAB (25 s) — *cut second if short*
 
-## 25 — Result 3, the decomposition (45 s) — **core slide**
+> "720 words, **504 feasible**, a seven-word Pareto front. The objectives
+> genuinely conflict — you cannot minimise loss, overshoot and crosstalk
+> margin together."
+
+---
+
+
+## 24 — Result 3, the decomposition (45 s) — **core slide**
 
 > "Here's the split nobody separates. Choosing a better fixed word: **25.1 %**
 > of baseline. Adapting it per operating point on top of that: **3.9 %**. So
@@ -317,7 +308,7 @@ the contribution.
 
 ---
 
-## 26 — Result 4, loop inductance (25 s)
+## 25 — Result 4, loop inductance (25 s)
 
 > "Adaptive control pays only below about **2.5 nH** of loop inductance. Above
 > that a fixed word is nearly as good. And loop inductance is board layout,
@@ -325,14 +316,14 @@ the contribution.
 
 ---
 
-## 27 — Backup (skip unless asked)
+## 26 — Backup (skip unless asked)
 
 Only open this if challenged on robustness. Across 21,600 transients no device
 parameter moves the ceiling outside **4.3–7.7 %**.
 
 ---
 
-## 28 — DEMO (45 s)
+## 27 — DEMO (45 s)
 
 The clip runs **22 s**. Play it and stay quiet for the first five seconds —
 the switch node falling is the whole setup, and narrating over it just
@@ -347,14 +338,14 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 29 — Why the numbers hold (20 s)
+## 28 — Why the numbers hold (20 s)
 
 > "Every number survives a 25× timestep refinement. Ten wrong numbers were
 > caught by our own convergence checks before they reached the report."
 
 ---
 
-## 31 — Conclusion and next steps (40 s)
+## 30 — Conclusion and next steps (40 s)
 
 > "Choosing the control word well matters enormously — roughly fivefold in
 > switching energy. Adapting it does not: 3.9 %, and one comparator takes most
@@ -372,7 +363,7 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 32–34 — References, thanks (10 s)
+## 31–33 — References, thanks (10 s)
 
 > "Thirty references, against a minimum of eight to ten. All thirty are
 > verified against the publisher record — authors, volume, issue and pages
