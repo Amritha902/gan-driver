@@ -153,19 +153,19 @@ def table_of(slide):
 # and the near neighbours on the next, so that is what these two now are.
 CLUSTERS = [
  ("A · Passive / analogue crosstalk fixes",
-  "[1] [3] [4] [11] [12]\n[14]–[19]",
+  "[1] [2] [3] [4] [11] [12]\n[14]–[19] [21]",
   "Negative off-bias, RC-diode rails, three-level drive, Miller clamps. Cheap and effective, "
   "but the setting is chosen once by hand and never revisited."),
  ("B · Closed-loop analogue adaptation",
-  "[5] [6] [7]\n[20]–[24]",
+  "[5] [6] [7]\n[20] [22] [23] [29] [30]",
   "Sense the operating point, regulate drive strength or timing in the loop. Reports large "
   "gains — 30.5 % less overshoot, 75 % less turn-off loss — against a conventional driver."),
  ("C · Adaptive dead-time control",
-  "[8] [13]\n[25] [26]",
+  "[8] [13]\n[25] [26] [28]",
   "Dead time driven to sub-nanosecond across load. The one field our own freeze test finds "
   "actually carries the benefit — and only at light load."),
  ("D · DIGITAL / segmented drive  — where this project sits",
-  "[9] BASE   [10]\n[27]–[30]",
+  "[9] BASE   [10]\n[24] [27]",
   "The gate waveform selected by a multibit CODE rather than a resistor network. [9] is the "
   "BASE PAPER — doi.org/10.1002/cta.3136 — and [10] is the closest GaN implementation. "
   "Digital means FPGA-implementable, and the code space can be searched exhaustively."),
@@ -323,10 +323,15 @@ add_text(s9, 7.65, 1.45, 4.95, 0.45, [
     para([("What adaptation is actually worth", True)], level=0, sz=1500, spc=0, bullet=False)])
 stat(s9, 7.65, 2.00, 4.95, "5.2 %", "ceiling on operating-point scheduling",
      "vs the best single fixed word (= 3.9 % of baseline). A fixed word is nearly as good.")
-add_text(s9, 7.65, 3.45, 4.95, 3.40, [
+# Grown from 3.40 to 3.90 in and narrowed 4.95 -> 4.80 to make room for the
+# 36-point-grid disclosure; 4.80 keeps the right edge clear of the page number.
+add_text(s9, 7.65, 3.32, 4.95, 3.72, [
     para([("The benefit is not spread out. ", True),
           ("Three corners lose 1–4 % from a fixed word; one loses 12.7 %.", False)],
          level=0, sz=1300, spc=180, bullet=False),
+    para([("5.2 % is the generous figure: ", True),
+          ("the denser 36-point grid gives ", False), ("2.0 %", True), (".", False)],
+         level=0, sz=1200, spc=180, bullet=False),
     para([("It is carried by the dead time — and the dead time by one corner. ", True),
           ("Freezing dead time costs 5.45 % across four corners. Drop the light-load "
            "50 V / 2 A corner and it costs ", False), ("0.00 %", True),

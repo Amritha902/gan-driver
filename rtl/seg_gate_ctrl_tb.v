@@ -53,7 +53,10 @@ module seg_gate_ctrl_tb;
         .vneg_sel(vneg_sel), .dead_time_active(in_dt)
     );
 
-    task check(input cond, input [255:0] name);
+    // [511:0], not [255:0]: names are up to ~44 chars and a 32-byte field
+    // silently drops the leading characters, so a failing check printed
+    // "time length must equal dt_cycles" with its T2 prefix cut off.
+    task check(input cond, input [511:0] name);
         begin
             if (!cond) begin
                 errors = errors + 1;

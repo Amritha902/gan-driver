@@ -226,6 +226,17 @@ Vivado gives, and the slide says exactly that. Reproduce with
 > the dead time, and the dead time by one light-load corner. Freeze pull-up
 > drive strength and it costs **zero** — and drive strength is what the
 > literature actually schedules."
+>
+> "And 5.2 % is the generous figure. On the denser 36-point operating grid a
+> fixed word loses only **2.0 %**. We quote the larger one because it is the
+> number that argues against our own conclusion."
+
+**If asked which number is right:** both, for different questions. 5.2 % is the
+ceiling over four deliberately spread corners — the widest spacing we test.
+2.0 % is what a real converter sees sweeping a dense grid. Reproduce either
+with `scripts/ceiling.py` and `scripts/lut.py`. Quoting only the smaller one
+would be self-serving; quoting only the larger one hides that the effect is
+even weaker in practice.
 
 ---
 
