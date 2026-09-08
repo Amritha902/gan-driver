@@ -287,6 +287,11 @@ EDITS = [
  ]),
 
  # ---- demo ----------------------------------------------------------------
+ (u"Demo", "TextBox 5", [
+   [(u"Click to play (22 s). ", Y),
+    (u"ngspice waveforms from sim/dpt.cir " + EM + u" the same file every number "
+     u"in this deck comes from.", N)],
+ ]),
  (u"Demo", "TextBox 6", [
    [(u"What it shows", Y)],
    [(u"TOP row: the switch node. ", Y), (u"The low-side device turns on and the "

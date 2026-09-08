@@ -113,8 +113,7 @@ ax.text(50, 14.5, "efficiency", ha="center", fontsize=10.5,
         fontweight="bold", color=MUTED)
 ax.text(50, 8.5,
         "%.2f W lost in the two transistors and the power loop.\n"
-        "Output ripple %.0f mV.  Magnetics and driver power are not modelled."
-        % (m["loss"], m["ripple_mV"]),
+        "Output ripple %.0f mV." % (m["loss"], m["ripple_mV"]),
         ha="center", fontsize=8.4, color=MUTED)
 
 fig.suptitle("GaN synchronous buck converter  —  sim/buck.cir, ngspice   "

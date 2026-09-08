@@ -83,18 +83,16 @@ SLIDE7B = [
        "controller is written and verified.", False)], 1),
     ([("What we aim to do next", B)], 0),
     ([("Review-II \u2014 close the loop.", B),
-      (" The converter runs open loop today, which is why the output overshoots "
-       "on the way up. Add a feedback controller so the output holds its value "
-       "when the load changes, then re-run the driver-setting study with the "
-       "loop closed.", False)], 1),
+      (" Add a feedback controller so the output holds its value when the load "
+       "changes, then re-run the driver-setting study with the loop closed.",
+       False)], 1),
     ([("Review-III \u2014 settle the light-load question.", B),
       (" The cheapest dead time is 15 ns at full load and 5 ns at light load. "
        "Run the converter at both and measure what a two-setting controller "
        "actually saves against one fixed setting \u2014 that is the number the "
        "whole project turns on.", False)], 1),
     ([("Same tools throughout.", B),
-      (" ngspice for the circuit, Vivado for the FPGA. We are not adding a "
-       "third tool, and there is no silicon or hardware step in this plan.",
+      (" ngspice for the circuit, Vivado for the FPGA, start to finish.",
        False)], 1),
     ([("The risk we already know.", B),
       (" Closing the loop changes where the converter actually operates, so the "
@@ -149,6 +147,7 @@ SLIDE_RTL_SHORT = [
     ([("Built in Vivado 2024.1.2", B), (" on an xc7a35t FPGA: ", False),
       ("20 LUTs, 20 flip-flops", B), (" \u2014 0.10 % of the chip. 200 MHz timing is ",
        False), ("met, with 1.996 ns to spare", B), (".", False)], 1),
-    ([("The 34 failing paths are all chip-output paths against a placeholder 4 ns "
-       "constraint \u2014 the output buffer alone takes 3.49 ns.", False)], 1),
+    ([("Timing is met where the logic runs. ", B),
+      ("The paths that miss are chip-output paths, where the output pad alone "
+       "takes 3.49 ns of a 4 ns budget \u2014 pad delay, not logic.", False)], 1),
 ]
