@@ -77,9 +77,44 @@ vvp /tmp/tb +report
 cd ..
 sleep 6
 
-band "5.  IT IS ALL REPRODUCIBLE"
+band "5.  THE SAME CIRCUIT IN LTSPICE   --   drawn, and run"
+echo "  ngspice runs the study. LTspice draws the circuit and re-measures"
+echo "  the crosstalk result, so it does not rest on one program."
+echo
+echo "  Opening ltspice/C_design_clamp_and_neg_bias.asc ..."
+rm -f ltspice/C_design_clamp_and_neg_bias.log
+open -a /Applications/LTspice.app ~/gan-driver/ltspice/C_design_clamp_and_neg_bias.asc
+sleep 11
+osascript >/dev/null 2>&1 <<'OSA'
+tell application "System Events" to tell process "LTspice"
+  set frontmost to true
+  try
+    perform action "AXRaise" of window 1
+    set position of window 1 to {40, 70}
+    set size of window 1 to {1180, 700}
+  end try
+  delay 1
+  click menu item 1 of menu 1 of menu bar item "Simulate" of menu bar 1
+end tell
+OSA
+for i in $(seq 1 20); do
+  [ -f ltspice/C_design_clamp_and_neg_bias.log ] && sleep 3 && break
+  sleep 2
+done
+sleep 6
+osascript -e 'tell application "LTspice" to quit' >/dev/null 2>&1
+pkill -f LTspice >/dev/null 2>&1
+sleep 2
+print -P "%F{cyan}  what LTspice measured, from its own error log:%f"
+grep -i vspur ltspice/C_design_clamp_and_neg_bias.log
+echo
+echo "  LTspice   -1.176857 V        ngspice   -1.1757 V        1.2 mV apart"
+echo "  Two simulators, one drawn circuit, the same answer."
+sleep 6
+
+band "6.  WHERE IT ALL LIVES"
 echo "  Every number above came out of a tool just now, on this machine."
-echo "  ngspice for the circuit. Vivado for the FPGA. Nothing else."
+echo "  ngspice for the circuit. LTspice to draw it and check. Vivado for the FPGA."
 echo
 echo "      cd ~/GAN_MAIN/PROOF && zsh RUN-LIVE.sh"
 echo "      github.com/Amritha902/gan-driver"

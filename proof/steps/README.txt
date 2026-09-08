@@ -17,3 +17,5 @@ or all in order, with a pause between each:
 09  the waveforms, plotted on screen from a live ngspice run       ~3 s
 10  the converter: 100 V DC in, 48.6 V DC out, 97.6 %% efficient    ~5 s
 11  named cases, one ngspice run each, with what came out          ~10 s
+12  the same circuit drawn in LTspice (see 12-ltspice-schematic.txt)
+13  ngspice on screen: what it solved, and what the answer means    ~5 s

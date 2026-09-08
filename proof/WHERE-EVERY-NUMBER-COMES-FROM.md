@@ -140,12 +140,33 @@ produced them.
 Not for the sake of it. One tool per job, and each headline number checked in a
 second, independent one:
 
-**Two tools, and that is the whole list.**
+**Two tools for the circuit, and that is the whole list.**
 
 | Tool | Job |
 |---|---|
 | ngspice | every circuit simulation — the converter, the test bench, every sweep |
+| LTspice | the circuit drawn as a schematic, and one independent re-measurement |
 | Vivado | the FPGA controller: synthesis and timing |
+
+### What LTspice was used for, exactly
+
+`ltspice/A_design_no_clamp_FAILS.asc`, `B_design_clamp_on.asc` and
+`C_design_clamp_and_neg_bias.asc` are drawn schematics carrying the same
+`egan.lib` devices and `segdrv.lib` gate drivers that `sim/dpt.cir` uses.
+Open one, press Simulate ▸ Run, read View ▸ SPICE Error Log:
+
+| case | LTspice | ngspice | apart |
+|---|---|---|---|
+| A — no clamp, 0 V | +1.647556 V | +1.6486 V | 1.0 mV |
+| B — clamp on, 0 V | +0.828274 V | +0.8302 V | 1.9 mV |
+| C — clamp on, −2 V | −1.176857 V | −1.1757 V | 1.2 mV |
+
+`results/fig_ltspice_annotated.png` plots those runs with the meaning marked
+on them. It is **not a screenshot** — it is LTspice's data read out of the
+`.raw` file it wrote and replotted so it can be labelled, and the figure says
+so on its face, quoting the file's own header. The screenshots of LTspice
+itself are `19-ltspice-A-false-turn-on.png`, `20-ltspice-C-clamp-safe.png` and
+`21-ltspice-schematic.png`.
 
 Icarus Verilog compiles and runs the Verilog during development; Vivado
 simulates and synthesises the same files, so it is a checker, not a third
