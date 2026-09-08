@@ -1,0 +1,25 @@
+[36m================================================================[39m
+[36m STEP 8  RESULT 4 -- board inductance decides it[39m
+[36m================================================================[39m
+script : scripts/lloop_analyse.py    input: results/lloop_sweep.csv
+
+       2.0      9.83%        246   8/8/1/5n/1/-2
+       2.5     10.22%        384   8/8/1/25n/1/+0
+       3.0      5.95%        474   8/8/8/5n/1/+0
+       3.5      4.87%        474   8/8/1/25n/1/+0
+       4.5      0.55%        484   8/8/1/25n/1/+0
+       6.0      0.97%        484   8/8/1/25n/1/+0
+
+  Crossover — the loop inductance below which scheduling returns
+  more than the stated threshold:
+
+    threshold    crossover
+    5.0 %        3.44 nH
+    7.5 %        2.82 nH
+    10.0 %       1.17 nH
+    12.5 %       1.40 nH
+
+  Over 1.0-6.0 nH the ceiling moves 8.11% -> 0.97%.
+  Loop inductance is board layout, not the transistor, so this is a
+  LAYOUT decision that determines whether adaptive gate control is
+  worth building — which is not a trade-off the literature states.

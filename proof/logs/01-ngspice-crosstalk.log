@@ -1,0 +1,22 @@
+[36m================================================================[39m
+[36m STEP 1  The crosstalk fault, simulated live in ngspice[39m
+[36m================================================================[39m
+machine : amrithas-MacBook-Air.local   2026-09-08 15:32:16
+spice   : ngspice-47
+circuit : sim/dpt.cir    device model: models/egan.lib
+
+Running TWO simulations of the same half-bridge:
+  (a) fastest drive, NO Miller clamp, 0 V off-bias
+  (b) same circuit, Miller clamp ON, -2 V off-bias
+
+  threshold of this GaN device (V_th)      : 1.400 V
+
+  (a) no clamp, 0 V   -> gate of OFF device : +1.6486 V
+      margin to threshold                  : -0.2486 V   false_turn_on = 1
+
+  (b) clamp on, -2 V  -> gate of OFF device : -1.1757 V
+      margin to threshold                  : +2.5757 V   false_turn_on = 0
+
+  SLIDE SAYS : 1.65 V on the OFF gate, 2.58 V margin.
+  THIS RUN   : 1.65 V on the OFF gate, 2.58 V margin.
+  ngspice wall time for both runs: 1.6 s

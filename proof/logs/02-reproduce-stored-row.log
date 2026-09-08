@@ -1,0 +1,19 @@
+[36m================================================================[39m
+[36m STEP 2  Re-simulating a stored data row, live[39m
+[36m================================================================[39m
+This answers: 'are the CSV files real, or typed in?'
+We take row 1 of results/corners.csv -- written months ago --
+feed its settings back into ngspice now, and compare.
+
+  settings from the stored file:
+    VBUS=50, ILOAD=2, VDRV=5, VNEG=-2, NPU_LS=8, NPD_LS=2, NPU_HS=8, NPD_HS=8, DT=10n, CLKEN=0, CLKDEL=4n, RUNIT=8, TJ=25
+
+  quantity     STORED (in the CSV)      LIVE (just now)          difference
+  ------------------------------------------------------------------------------------
+  Vgs_spur     -0.821308                -0.821275                0.004 %
+  margin       2.22131                  2.22127                  0.002 %
+  E_tot        7.22633e-07              7.22332e-07              0.042 %
+  ov_pct       30.7342                  30.7021                  0.104 %
+
+  Stored data was produced with ngspice 42; this machine runs ngspice 47.
+  The last-digit differences are the solver version, not the physics.

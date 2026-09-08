@@ -1,0 +1,13 @@
+[36m================================================================[39m
+[36m STEP 9  The waveforms, straight out of ngspice, on screen[39m
+[36m================================================================[39m
+No saved picture. ngspice runs now, and the plot window that opens
+is drawn from the numbers it just produced.
+
+  running ngspice: case (a) fastest drive, no clamp, 0 V off-bias ...
+  running ngspice: case (b) same circuit, clamp on, -2 V off-bias ...
+  ngspice finished in 1.6 s -- 60073 and 60073 time points
+  peak on the OFF gate: (a) +1.6486 V   (b) -1.1757 V   threshold 1.400 V
+  saved a copy to PROOF/screenshots/15-live-waveforms.png
+
+  Close the plot window to finish this step.

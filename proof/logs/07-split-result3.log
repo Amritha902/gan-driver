@@ -1,0 +1,28 @@
+[36m================================================================[39m
+[36m STEP 7  RESULT 3 -- the 25.1 % / 3.9 % split[39m
+[36m================================================================[39m
+script : scripts/novelty.py     input: results/full_corners.csv
+(A) picking one good fixed setting   vs   (B) re-tuning it live.
+
+  (B) ADAPTING it per operating point               0.347      3.9%
+  total available                                   2.591     28.9%
+
+  -> adaptation is 13.4 % of the total gain.
+     The other 86.6 % needs no sensing, no lookup table, no controller.
+
+  With only TWO words, chosen by a single comparator:
+    mean cost 6.462  -> closes 72 % of the adaptive gap
+    split: {200V_2A_125C} vs the rest
+
+  So a full sense + ADC + lookup table delivers 13.4 % x 27.8 % =
+  3.7 % of the total achievable gain over a fixed word plus one
+  comparator. That is the number the adaptive hardware has to justify.
+
+  Robustness of the split to the overshoot weight:
+      w_ov        (A)        (B)   B share
+      0.00      29.0%       2.6%      8.3%
+      0.05      25.1%       3.9%     13.4%
+      0.10      26.3%       1.9%      6.6%
+      0.20      26.5%       1.5%      5.5%
+      0.50      26.0%       3.2%     11.0%
+      1.00      25.2%       6.4%     20.1%

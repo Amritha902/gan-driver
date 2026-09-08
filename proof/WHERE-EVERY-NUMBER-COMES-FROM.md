@@ -1,0 +1,109 @@
+# Where every number comes from
+
+One line per number on the slides: the command that produces it, and where it
+appears. Every command below runs on this laptop in under two minutes. None of
+them reads a number from the presentation; the presentation reads from them.
+
+Run them all in order with:
+
+    cd ~/GAN_MAIN/PROOF
+    zsh RUN-LIVE.sh
+
+Saved output of each is in `PROOF/logs/`, and a screenshot of each in
+`PROOF/screenshots/`.
+
+---
+
+## The fault, and the fix
+
+| Number | Where it is | Command |
+|---|---|---|
+| Gate of the OFF device reaches **+1.65 V** | Result 1 slide, demo | `zsh steps/01-ngspice-crosstalk.sh` |
+| Threshold is **1.4 V**, so it turns on | Result 1 slide | same run, printed |
+| With clamp and −2 V rail: **−1.18 V**, margin **2.58 V** | Result 1 slide | same run |
+
+Two ngspice runs of `sim/dpt.cir`, about 1.6 seconds. The only difference
+between them is the clamp enable and the off-bias rail.
+
+**Screenshot:** `01-ngspice-crosstalk.png`
+**Waveforms on screen:** `zsh steps/09-show-waveforms.sh` opens a plot window
+drawn from the run that just happened — `15-live-waveforms.png`,
+`16-ngspice-plot-on-screen.png`.
+
+---
+
+## Are the stored data files real?
+
+| Check | Command |
+|---|---|
+| Take row 1 of `results/corners.csv`, re-simulate its settings now, compare | `zsh steps/02-reproduce-stored-row.sh` |
+
+Result: every quantity agrees to within **0.1 %**. The stored sweeps were run
+on ngspice 42; this laptop has ngspice 47, and that version difference is the
+whole of the disagreement.
+
+**Screenshot:** `02-reproduce-stored-row.png`
+
+---
+
+## The FPGA controller
+
+| Number | Where it is | Command |
+|---|---|---|
+| **8 properties**, 591 individual assertions, 0 failures | FPGA slide | `zsh steps/03-verilog-testbench.sh` |
+| A deliberately broken version is caught **221 times** | FPGA slide | `zsh steps/04-verilog-mutation.sh` |
+| **20 LUTs, 20 flip-flops**, 0.10 % of the chip | FPGA slide | `3-FPGA-vivado/build/utilization_synth.rpt` |
+| **200 MHz met, 1.996 ns spare** | FPGA slide | `3-FPGA-vivado/build/timing_synth.rpt` |
+| **33 LUTs** when every field is left adjustable | Vivado slide | `11-vivado-synthesis-console.png` |
+
+The Verilog is in `2-RTL-verilog/`. Step 3 compiles it and runs it in front of
+you; step 4 breaks it on purpose and shows the same test failing, which is the
+only way to know the test was doing anything.
+
+Vivado has no macOS build, so synthesis was run on a Windows machine by a
+project member. The two report files it wrote are in
+`3-FPGA-vivado/build/`, unedited, and the two screenshots show the tool that
+produced them.
+
+**Screenshots:** `03-verilog-8-properties.png`, `04-verilog-mutation-test.png`,
+`10-vivado-simulation.png`, `11-vivado-synthesis-console.png`
+**Source code:** `06-code-seg_gate_ctrl-1.png` … `09-code-thermo_decode.png`
+
+---
+
+## The three results
+
+| Number | Where it is | Command |
+|---|---|---|
+| Re-tuning is worth at most **5.2 %** | Result 2 slide | `zsh steps/06-ceiling-result2.sh` |
+| Per operating point: **1.1 / 2.3 / 12.7 / 3.8 %** — the bar chart | Result 2 chart | same run |
+| Only **474 of 720** settings are safe at all four points | Result 2 slide | same run |
+| Picking a fixed setting well: **25.1 %** | Result 3 slide | `zsh steps/07-split-result3.sh` |
+| Re-tuning it live, on top: **3.9 %** | Result 3 slide | same run |
+| Re-tuning is **13.4 %** of the total gain; full hardware justifies **3.7 %** | Result 3 slide | same run |
+| Holds across 106 weightings: (A) 23.4–29.0 %, (B) 1.3–6.4 % | Result 3 slide | same run |
+| Re-tuning pays below about **2.5 nH**; **13.5 %** at 1.5 nH; **0.97 %** at 6 nH | Result 4 slide | `zsh steps/08-loop-inductance-result4.sh` |
+| **504 of 720** safe; trade-off curve; the same split in MATLAB | MATLAB slide | `zsh steps/05-octave-analysis.sh` |
+
+**Screenshots:** `12-result2-ceiling.png`, `13-result3-split.png`,
+`14-result4-inductance.png`, `05-octave-analysis.png`
+
+---
+
+## Why more than one tool
+
+Not for the sake of it. One tool per job, and each headline number checked in a
+second, independent one:
+
+| Tool | Job | Checked against |
+|---|---|---|
+| ngspice | every circuit simulation | LTspice re-runs the same netlists |
+| LTspice | independent re-run | agrees with ngspice within 2 mV |
+| MATLAB | analysis of the sweep data | GNU Octave runs the same `.m` files |
+| GNU Octave | second run of the same analysis | agrees with MATLAB to the last digit |
+| Icarus Verilog | controller simulation and testing | Vivado simulates the same RTL |
+| Vivado | FPGA synthesis and timing | the numbers it prints are its own |
+| Python | running the sweeps, the decomposition | MATLAB re-derives the same split |
+
+If a number only ever came out of one program, it would be worth doubting. That
+is the reason for the list, and it is the only reason.

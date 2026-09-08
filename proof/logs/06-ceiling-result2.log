@@ -1,0 +1,20 @@
+[36m================================================================[39m
+[36m STEP 6  RESULT 2 -- what re-tuning is worth (the 5.2 %)[39m
+[36m================================================================[39m
+script : scripts/ceiling.py     input: results/full_corners.csv
+This is the number on the Result 2 slide and the bar chart.
+
+  200V_2A_125C     8/2/1/5n/1/-2              cost   6.858  margin +1.58
+  50V_2A_25C       8/2/8/15n/1/+0             cost   0.858  margin +0.85
+
+Words feasible at ALL 4 corners: 474 of 720
+Best fixed word  : 8/8/1/25n/1/+0             mean cost   6.712
+Per-corner optimum:                            mean cost   6.365
+
+CEILING on scheduling at w_ov=0.05 : 5.2%
+
+Per-corner breakdown (how much the fixed word loses at each):
+  100V_10A_25C     fixed   5.102   optimum   5.047   penalty   1.1%
+  200V_10A_125C    fixed  12.996   optimum  12.699   penalty   2.3%
+  200V_2A_125C     fixed   7.860   optimum   6.858   penalty  12.7%
+  50V_2A_25C       fixed   0.892   optimum   0.858   penalty   3.8%

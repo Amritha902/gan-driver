@@ -1,0 +1,28 @@
+[36m================================================================[39m
+[36m STEP 3  The Verilog controller, compiled and run live[39m
+[36m================================================================[39m
+files : seg_gate_ctrl.v  thermo_decode.v  dead_time_gen.v
+test  : seg_gate_ctrl_tb.v   (self-checking, 8 asserted properties)
+tool  : Icarus Verilog version 13.0 (stable) (v13_0)
+
+$ iverilog -g2012 -o /tmp/tb seg_gate_ctrl_tb.v seg_gate_ctrl.v thermo_decode.v dead_time_gen.v
+$ vvp /tmp/tb +report
+VCD info: dumpfile seg_gate_ctrl.vcd opened for output.
+seg_gate_ctrl self-check
+
+  property                                                      checks  result
+  --------------------------------------------------------------------------
+  T1  no shoot-through: hs_pu and ls_pu never overlap               294  PASS
+  T2  dead time is exactly dt_cycles long (5, 10, 25)                 3  PASS
+  T3  during a dead time all slices off, both clamps on             140  PASS
+  T4  thermometer code correct and monotonic, 0..8                    9  PASS
+  T5  reset lands on the SAFE word, not the fast one                  4  PASS
+  T6  a late dt change cannot shorten a dead time in progress         1  PASS
+  T7  dead_time_gen holds BOTH sides low for the whole dead time     70  PASS
+  T8  no pull-up bank is ever driven during a dead time              70  PASS
+  --------------------------------------------------------------------------
+  8 properties, 591 individual assertions, 0 failures
+
+  ALL CHECKS PASSED
+
+seg_gate_ctrl_tb.v:222: $finish called at 2970000 (1ps)

@@ -1,0 +1,15 @@
+[36m================================================================[39m
+[36m STEP 4  Mutation test: break it on purpose, watch it fail[39m
+[36m================================================================[39m
+A test that never fails proves nothing. So we inject a real bug --
+the low-side pull-up driven unconditionally, i.e. shoot-through --
+and check the SAME testbench catches it.
+
+--- unmutated ---
+  ALL CHECKS PASSED
+--- with the shoot-through mutant ---
+  221 CHECK(S) FAILED
+properties that fired:
+  83 T1
+  69 T3
+   6 T8

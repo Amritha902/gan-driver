@@ -39,6 +39,13 @@ module seg_gate_ctrl_tb;
 
     integer errors = 0;
     integer dt_len = 0, i;
+
+    // Per-property tallies, so a passing run can NAME what it checked instead
+    // of only saying nothing broke. Printed with  vvp tb.vvp +report .
+    integer nchk [1:8];
+    integer echk [1:8];
+    integer k;
+    initial for (k = 1; k <= 8; k = k + 1) begin nchk[k] = 0; echk[k] = 0; end
     reg     counting = 0;
 
     always #5 clk = ~clk;                       // 100 MHz
@@ -56,31 +63,39 @@ module seg_gate_ctrl_tb;
     // [511:0], not [255:0]: names are up to ~44 chars and a 32-byte field
     // silently drops the leading characters, so a failing check printed
     // "time length must equal dt_cycles" with its T2 prefix cut off.
-    task check(input cond, input [511:0] name);
+    task check(input [3:0] tid, input cond, input [511:0] name);
         begin
+            nchk[tid] = nchk[tid] + 1;
             if (!cond) begin
-                errors = errors + 1;
+                errors    = errors + 1;
+                echk[tid] = echk[tid] + 1;
                 $display("  FAIL  %0s   (t=%0t)", name, $time);
             end
         end
     endtask
 
     // ---- T1: shoot-through is checked continuously, not sampled ----------
-    always @(posedge clk) if (rst_n)
+    always @(posedge clk) if (rst_n) begin
+        nchk[1] = nchk[1] + 1;
         if ((|hs_pu) && (|ls_pu)) begin
-            errors = errors + 1;
+            errors  = errors + 1;
+            echk[1] = echk[1] + 1;
             $display("  FAIL  T1 shoot-through: hs_pu=%b ls_pu=%b (t=%0t)",
                      hs_pu, ls_pu, $time);
         end
+    end
 
     // ---- T3: dead-time invariants, also continuous -----------------------
     always @(posedge clk) if (rst_n && in_dt) begin
+        nchk[3] = nchk[3] + 2;
         if (|hs_pu || |ls_pu) begin
-            errors = errors + 1;
+            errors  = errors + 1;
+            echk[3] = echk[3] + 1;
             $display("  FAIL  T3 slice driven during dead time (t=%0t)", $time);
         end
         if (clken && !(ls_clamp && hs_clamp)) begin
-            errors = errors + 1;
+            errors  = errors + 1;
+            echk[3] = echk[3] + 1;
             $display("  FAIL  T3 clamp released during dead time (t=%0t)", $time);
         end
     end
@@ -98,10 +113,14 @@ module seg_gate_ctrl_tb;
     wire hs_on_probe = dut.hs_on;
     wire ls_on_probe = dut.ls_on;
 
-    always @(posedge clk) if (rst_n && in_dt && (hs_on_probe || ls_on_probe)) begin
-        errors = errors + 1;
-        $display("  FAIL  T7 dead_time_gen held a side on during dead time (t=%0t)",
-                 $time);
+    always @(posedge clk) if (rst_n && in_dt) begin
+        nchk[7] = nchk[7] + 1;
+        if (hs_on_probe || ls_on_probe) begin
+            errors  = errors + 1;
+            echk[7] = echk[7] + 1;
+            $display("  FAIL  T7 dead_time_gen held a side on during dead time (t=%0t)",
+                     $time);
+        end
     end
 
     // T8 -- the property that was MISSING. T7 checks the generator's internal
@@ -109,11 +128,15 @@ module seg_gate_ctrl_tb;
     // gate: the pull-up banks. Deleting the "&& !in_dt" term from ls_pu or
     // hs_pu in seg_gate_ctrl.v is a real shoot-through bug, and the bench
     // passed it with ALL CHECKS PASSED. It does not any more.
-    always @(posedge clk) if (rst_n && in_dt && ((|ls_pu) || (|hs_pu))) begin
-        errors = errors + 1;
-        if (errors < 40)
-            $display("  FAIL  T8 a pull-up bank was driven during dead time (t=%0t)",
-                     $time);
+    always @(posedge clk) if (rst_n && in_dt) begin
+        nchk[8] = nchk[8] + 1;
+        if ((|ls_pu) || (|hs_pu)) begin
+            errors  = errors + 1;
+            echk[8] = echk[8] + 1;
+            if (errors < 40)
+                $display("  FAIL  T8 a pull-up bank was driven during dead time (t=%0t)",
+                         $time);
+        end
     end
 
     // ---- measure dead-time length ----------------------------------------
@@ -129,10 +152,10 @@ module seg_gate_ctrl_tb;
 
         // ---- T5: reset state -------------------------------------------
         @(negedge clk); rst_n = 0; @(negedge clk); @(negedge clk);
-        check(dut.npu_ls == 4'd0 && dut.npu_hs == 4'd0, "T5 reset pull-up must be 0 (safe)");
-        check(dut.npd_ls == 4'd8 && dut.npd_hs == 4'd8, "T5 reset pull-down must be 8");
-        check(dut.clken  == 1'b1, "T5 reset clamp must be on");
-        check(dut.vneg   == 1'b1, "T5 reset must select the negative rail");
+        check(5, dut.npu_ls == 4'd0 && dut.npu_hs == 4'd0, "T5 reset pull-up must be 0 (safe)");
+        check(5, dut.npd_ls == 4'd8 && dut.npd_hs == 4'd8, "T5 reset pull-down must be 8");
+        check(5, dut.clken  == 1'b1, "T5 reset clamp must be on");
+        check(5, dut.vneg   == 1'b1, "T5 reset must select the negative rail");
         rst_n = 1;
 
         // load a working word
@@ -146,7 +169,7 @@ module seg_gate_ctrl_tb;
             pwm = ~pwm;                                  // command an edge
             wait (in_dt); wait (!in_dt);
             @(negedge clk);
-            check(dt_len == dt + 1,
+            check(2, dt_len == dt + 1,
                   "T2 dead-time length must equal dt_cycles");
             if (dt_len != dt + 1)
                 $display("        measured %0d cycles, expected %0d", dt_len, dt + 1);
@@ -158,7 +181,7 @@ module seg_gate_ctrl_tb;
         wait (in_dt);
         repeat (3) @(negedge clk); dt = 8'd2;            // shrink mid-flight
         wait (!in_dt); @(negedge clk);
-        check(dt_len == 26, "T6 mid-flight dt change must not truncate");
+        check(6, dt_len == 26, "T6 mid-flight dt change must not truncate");
         if (dt_len != 26) $display("        measured %0d, expected 26", dt_len);
         dt = 8'd10;
 
@@ -167,7 +190,7 @@ module seg_gate_ctrl_tb;
             @(negedge clk); npu_ls = i[3:0]; cfg_we = 1;
             @(negedge clk); cfg_we = 0;
             repeat (2) @(negedge clk);
-            check(dut.pu_ls_v == ((1 << i) - 1),
+            check(4, dut.pu_ls_v == ((1 << i) - 1),
                   "T4 thermometer code must be monotonic and correct");
             if (dut.pu_ls_v !== ((1 << i) - 1))
                 $display("        code %0d -> %b, expected %b",
@@ -176,6 +199,23 @@ module seg_gate_ctrl_tb;
 
         repeat (20) @(negedge clk);
         $display("");
+        // Named report, opt-in so scripts that grep this output are unaffected.
+        if ($test$plusargs("report")) begin
+            $display("  property                                                      checks  result");
+            $display("  --------------------------------------------------------------------------");
+            $display("  T1  no shoot-through: hs_pu and ls_pu never overlap            %6d  %0s", nchk[1], echk[1] == 0 ? "PASS" : "FAIL");
+            $display("  T2  dead time is exactly dt_cycles long (5, 10, 25)            %6d  %0s", nchk[2], echk[2] == 0 ? "PASS" : "FAIL");
+            $display("  T3  during a dead time all slices off, both clamps on          %6d  %0s", nchk[3], echk[3] == 0 ? "PASS" : "FAIL");
+            $display("  T4  thermometer code correct and monotonic, 0..8               %6d  %0s", nchk[4], echk[4] == 0 ? "PASS" : "FAIL");
+            $display("  T5  reset lands on the SAFE word, not the fast one             %6d  %0s", nchk[5], echk[5] == 0 ? "PASS" : "FAIL");
+            $display("  T6  a late dt change cannot shorten a dead time in progress    %6d  %0s", nchk[6], echk[6] == 0 ? "PASS" : "FAIL");
+            $display("  T7  dead_time_gen holds BOTH sides low for the whole dead time %6d  %0s", nchk[7], echk[7] == 0 ? "PASS" : "FAIL");
+            $display("  T8  no pull-up bank is ever driven during a dead time          %6d  %0s", nchk[8], echk[8] == 0 ? "PASS" : "FAIL");
+            $display("  --------------------------------------------------------------------------");
+            $display("  8 properties, %0d individual assertions, %0d failures",
+                     nchk[1]+nchk[2]+nchk[3]+nchk[4]+nchk[5]+nchk[6]+nchk[7]+nchk[8], errors);
+            $display("");
+        end
         if (errors == 0) $display("  ALL CHECKS PASSED");
         else             $display("  %0d CHECK(S) FAILED", errors);
         $display("");
