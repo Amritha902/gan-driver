@@ -1387,9 +1387,9 @@ if _vs_idx is not None:
         elif _sh.shape_type is not None and _sh.name != "Image 0":
             _sh._element.getparent().remove(_sh._element)
     # both captures are 16:9; two side by side at 6.05 in wide = 3.40 in tall
-    s_vs.shapes.add_picture(RES + "/vivado_screens/vivado_simulation.jpeg",
+    s_vs.shapes.add_picture(RES + "/vivado_screens/vivado_simulation.png",
                             Inches(0.55), Inches(1.55), width=Inches(6.05))
-    s_vs.shapes.add_picture(RES + "/vivado_screens/vivado_console.jpeg",
+    s_vs.shapes.add_picture(RES + "/vivado_screens/vivado_console.png",
                             Inches(6.85), Inches(1.55), width=Inches(6.05))
     add_text(s_vs, 0.55, 5.15, 6.05, 0.80, [
         para([("Behavioural simulation. ", True),

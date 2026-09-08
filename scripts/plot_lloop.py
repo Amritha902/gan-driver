@@ -60,11 +60,11 @@ blend = mtransforms.blended_transform_factory(ax.transData, ax.transAxes)
 if band_hi:
     ax.axvspan(min(xs), band_hi, color=SHADE, zorder=0)
     ax.text((min(xs) + band_hi) / 2, 0.955,
-            "adaptive control earns its hardware", transform=blend,
+            "re-tuning earns its hardware", transform=blend,
             fontsize=9.2, fontweight="bold", color=INK, ha="center", va="top",
             family="DejaVu Sans")
     ax.text(band_hi + (max(xs) - band_hi) / 2, 0.955,
-            "one fixed word is as good", transform=blend, fontsize=9.2,
+            "one fixed setting is as good", transform=blend, fontsize=9.2,
             color=MUTED, ha="center", va="top", family="DejaVu Sans")
     ax.axvline(band_hi, color=INK, lw=1.3, ls=(0, (5, 3)), zorder=3)
     ax.text(band_hi + 0.05, 0.015, "%.1f nH" % band_hi, transform=blend,
@@ -89,14 +89,14 @@ ax.annotate("peak %.1f %%" % pk[1], (pk[0], pk[1]),
             textcoords="offset points", xytext=(22, 20), fontsize=8.8,
             fontweight="bold", color=INK, family="DejaVu Sans",
             arrowprops=dict(arrowstyle="-", color=INK, lw=0.9))
-ax.annotate("falls back: only %d of 720\nwords still feasible here" % ns[0],
+ax.annotate("falls back: only %d of 720\nsettings still safe here" % ns[0],
             (xs[0], ys[0]), textcoords="offset points", xytext=(30, -46),
             fontsize=8.2, color=MUTED, family="DejaVu Sans",
             arrowprops=dict(arrowstyle="-", color=ACC, lw=0.9))
 
-ax.set_ylabel("Ceiling on per-corner scheduling  (%)", fontsize=9.6, color=INK,
+ax.set_ylabel("Most that re-tuning can gain  (%)", fontsize=9.6, color=INK,
               family="DejaVu Sans")
-ax.set_title("When is adaptive gate-driver control worth building?",
+ax.set_title("When is re-tuning the gate driver worth the hardware?",
              fontsize=12.5, fontweight="bold", color=INK, pad=12,
              family="DejaVu Sans")
 ax.set_ylim(0, max(ys) * 1.34)
@@ -108,7 +108,7 @@ ax.grid(axis="y", color="#F0F0F0", lw=0.8, zorder=0)
 # the second panel explains the shape rather than decorating it
 ax2.plot(xs, ns, "-s", color=ACC, lw=1.6, ms=5.0,
          markerfacecolor="#FFFFFF", markeredgewidth=1.4)
-ax2.set_ylabel("words safe at\nboth corners", fontsize=8.8, color=MUTED,
+ax2.set_ylabel("settings safe at\nboth points", fontsize=8.8, color=MUTED,
                family="DejaVu Sans")
 ax2.set_xlabel("Power-loop inductance  (nH)   —   set by board layout, not by the device",
                fontsize=9.6, color=INK, family="DejaVu Sans")
@@ -121,8 +121,8 @@ ax2.text(xs[0], 495, "below ~2 nH feasibility, not optimisation, is what binds",
          fontsize=8, color=MUTED, family="DejaVu Sans")
 
 fig.text(0.012, 0.012,
-         "Full 720-word search at two corners for every point, 7,200 transients. "
-         "Excluding clamp-chatter points changes no ceiling. "
+         "All 720 settings at two operating points for every value, 7,200 runs. "
+         "Excluding clamp-chatter points changes nothing. "
          "scripts/lloop_sweep.py, lloop_analyse.py.",
          fontsize=7.6, color=MUTED, family="DejaVu Sans")
 fig.tight_layout(rect=(0, 0.03, 1, 1))

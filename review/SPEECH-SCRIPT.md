@@ -1,9 +1,9 @@
-# Review-I speech script — 35 slides, ~10 minutes
+# Review-I speech script — 29 slides, ~10 minutes
 
-Timings are the budget, not a target to hit exactly. Total ≈ 10 min 35 s,
+Timings are the budget, not a target to hit exactly. Total ≈ 9 min 30 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
-reads. **Slides 8, 15 and 26 are the ones that matter.** If you are running
-out of time, cut 17, 25 and 28, never those three.
+reads. **Slides 8, 14 and 23 are the ones that matter.** If you are running
+out of time, cut 16 and 22, never those three.
 
 Numbers in **bold** were re-verified by running the script that produces them.
 
@@ -20,10 +20,10 @@ once, and move.
 
 ---
 
-## 4, 9, 22, 31 — Section dividers (2 s each)
+## 4, 9, 19 — Section dividers (2 s each)
 
-Dark slides: **The problem · What we built · What we found · Where this goes.**
-Say the words on the slide and move on. They break thirty-four slides into four
+Dark slides: **The problem · What we built · What we found.**
+Say the settings on the slide and move on. They break the deck into three
 acts; they are not content.
 
 ---
@@ -88,8 +88,8 @@ GaN, where the device has no body diode and the trade changes.
 > architecture is sold on."
 >
 > "Nobody separates them. Not because it isn't interesting, but because
-> separating them needs an exhaustive search of the control word at every
-> corner, and nobody has run one. That's the gap. And it matters because only
+> separating them needs an exhaustive search of the setting at every
+> operating point, and nobody has run one. That's the gap. And it matters because only
 > effect two justifies the hardware — so if it's small, the field is paying
 > for something a design-time choice already gives you."
 
@@ -104,8 +104,8 @@ Open with the aim. The examiner is listening for it.
 > choosing a better fixed setting."
 >
 > "The driver has six things you can set. We make all six a digital word —
-> 720 of them — and we search every one at every corner. Not a shortlist.
-> That's what makes each per-corner optimum a true optimum."
+> 720 of them — and we search every one at every operating point. Not a shortlist.
+> That's what makes each per-operating-point optimum a true optimum."
 
 ---
 
@@ -117,7 +117,7 @@ top row, then the bottom row. Do not read the boxes.
 > "One case: a storage converter, load falling from ten amps to two as the
 > pack fills. The top row is what the controller decides — and the only live
 > decision is that shaded diamond, one comparator picking between two dead
-> times. Everything else is strapped at power-up. The bottom row is what the
+> times. Everything else is fixed at power-up at power-up. The bottom row is what the
 > circuit then does: the switch node falls, that dV/dt pushes charge into the
 > off device's gate, and either it crosses 1.4 volts or it does not. Ours does
 > not, by 2.58 volts."
@@ -128,7 +128,7 @@ top row, then the bottom row. Do not read the boxes.
 
 Slide 9 left to right in one sentence, then stop on the dashed block.
 
-> "PWM in, the FPGA holds the control word, the word sets the segmented output
+> "PWM in, the FPGA holds the setting, the setting sets the segmented output
 > stage, that drives the half-bridge. Everything solid is configured once at
 > power-up. The dashed block — sensing, ADC, lookup table — is the adaptive
 > machinery, and this whole project is a measurement of what that one block
@@ -142,15 +142,7 @@ Slide 10 is the real circuit.
 
 ---
 
-## 14 — What a control word is (25 s)
-
-> "Six fields: pull-up strength, two pull-down strengths, dead time, clamp
-> enable, and the off-bias rail. 720 combinations. Everything in the rest of
-> this deck is measured over these."
-
----
-
-## 15 — WE IMPLEMENTED THE BASE PAPER (60 s) — **core slide**
+## 14 — WE IMPLEMENTED THE BASE PAPER (60 s) — **core slide**
 
 This is the slide that separates you from a literature review. Be fair to
 them; the comparison is stronger when you are.
@@ -174,14 +166,14 @@ the two actuators they don't have, and the exhaustive search that lets us
 price adaptation — which their paper can't do.
 
 ---
-## 16 — Work completed, 50 % (30 s)
+## 15 — Work completed, 50 % (30 s)
 
-> "The problem is reproduced and fixed. The full search is done: 720 words at
-> four corners, about 34,600 transients across every study."
+> "The problem is reproduced and fixed. The full search is done: 720 settings at
+> four operating points, about 34,600 simulation runs across every study."
 
 ---
 
-## 17 — Where we are, and what is next (20 s) — *cut this first if short on time*
+## 16 — Where we are, and what is next (20 s) — *cut this first if short on time*
 
 > "ngspice for the simulation, LTspice for the portable schematic, Icarus for
 > the RTL, Yosys for synthesis, MATLAB for the analysis. Cadence is Review-II
@@ -189,24 +181,10 @@ price adaptation — which their paper can't do.
 
 ---
 
-## 18 — Tools, and what each produced (25 s)
+## 17 — FPGA controller (35 s)
 
-Do not read the table. Say the one line under it and move.
-
-> "Seven tools, and the point of the slide is the last line: no number rests on
-> one of them. Every headline figure was produced in one program and checked in
-> another — ngspice against LTspice, MATLAB against Octave, yosys against
-> Vivado."
-
-If asked which is the primary: ngspice. Everything else either checks it or
-implements it.
-
----
-
-## 19 — FPGA controller (35 s)
-
-> "Three modules emitting exactly the control word the SPICE model consumes.
-> Dead time gets a live register; drive strength is strapped — that's the
+> "Three modules emitting exactly the setting the SPICE model consumes.
+> Dead time gets a live register; drive strength is fixed at power-up — that's the
 > study's own result built into the hardware."
 >
 > "Eight properties, all passing. And we mutation-tested it: inject a real
@@ -249,21 +227,21 @@ Do not claim timing is met outright, and do not concede the design misses its
 clock. Both would be wrong.
 
 **Both designs are now in Vivado**, so the cost of programmability is vendor
-numbers, not an estimate: **33 LUTs fully programmable against 20 strapped** --
+numbers, not an estimate: **33 LUTs fully programmable against 20 fixed at power-up** --
 strapping saves 13 LUTs and 10 flip-flops, 39 % of the logic, for the 3.9 % of
 baseline that adaptation buys. The older yosys pair (53 vs 27) is superseded;
 same direction, but the honest reduction is 39 %, not 49 %.
 
 ---
 
-## 20–21 — Vivado, the report and the screen (30 s)
+## 18 — Vivado on screen (30 s)
 
 Two slides, one point: the FPGA half is real, and here is the tool saying so.
 
 > "Twenty LUTs and twenty flip-flops on an Artix-7 — a tenth of a percent of
 > the part. Register-to-register timing closes at 200 megahertz with 1.996
 > nanoseconds spare. Synthesised again with every field left programmable it
-> is thirty-three LUTs, so strapping the word — which is this study's own
+> is thirty-three LUTs, so fixing the setting at power-up — which is this study's own
 > result built into the hardware — saves 39 % of the logic."
 
 **If asked about "Timing constraints are not met":** see the note under slide 19.
@@ -272,47 +250,47 @@ I/O constraint.
 
 ---
 
-## 23 — Result 1, crosstalk (30 s)
+## 20 — Result 1, crosstalk (30 s)
 
-> "Fastest drive, no clamp: **1.65 V** spurious against a 1.4 V threshold.
+> "Fastest drive, no clamp: the gate that should be OFF reaches **1.65 V** against a 1.4 V threshold.
 > That's the failure. Clamp on with −2 V off-bias: **−1.18 V**, a **2.58 V**
 > margin."
 
 ---
 
-## 24 — Result 2, the ceiling (45 s)
+## 21 — Result 2, what re-tuning is worth (45 s)
 
-> "Full search at every corner. The ceiling on operating-point scheduling is
-> **5.2 %** against the best single fixed word. And it isn't spread out —
-> three corners lose one to four percent, one loses **12.7**. It's carried by
-> the dead time, and the dead time by one light-load corner. Freeze pull-up
+> "Full search at every operating point. The most that re-tuning per operating point can gain is
+> **5.2 %** against the best single fixed setting. And it isn't spread out —
+> three operating points lose one to four percent, one loses **12.7**. It's carried by
+> the dead time, and the dead time by one light-load operating point. Freeze pull-up
 > drive strength and it costs **zero** — and drive strength is what the
-> literature actually schedules."
+> published papers actually re-tune."
 >
 > "And 5.2 % is the generous figure. On the denser 36-point operating grid a
-> fixed word loses only **2.0 %**. We quote the larger one because it is the
+> fixed setting loses only **2.0 %**. We quote the larger one because it is the
 > number that argues against our own conclusion."
 
-**If asked which number is right:** both, for different questions. 5.2 % is the
-ceiling over four deliberately spread corners — the widest spacing we test.
+**If asked which number is right:** both, for different questions. 5.2 % is the most
+that can be gained across four deliberately spread operating points — the widest spacing we test.
 2.0 % is what a real converter sees sweeping a dense grid. Reproduce either
 with `scripts/ceiling.py` and `scripts/lut.py`. Quoting only the smaller one
 would be self-serving; quoting only the larger one hides that the effect is
 even weaker in practice.
 
 ---
-## 25 — MATLAB (25 s) — *cut second if short*
+## 22 — MATLAB (25 s) — *cut second if short*
 
-> "720 words, **504 feasible**, a seven-word Pareto front. The objectives
+> "720 settings, **504 of them safe**, seven settings on the trade-off curve. The objectives
 > genuinely conflict — you cannot minimise loss, overshoot and crosstalk
 > margin together."
 
 ---
 
 
-## 26 — Result 3, the decomposition (45 s) — **core slide**
+## 23 — Result 3, the split (45 s) — **core slide**
 
-> "Here's the split nobody separates. Choosing a better fixed word: **25.1 %**
+> "Here's the split nobody separates. Choosing a better fixed setting: **25.1 %**
 > of baseline. Adapting it per operating point on top of that: **3.9 %**. So
 > adaptation is **13.4 %** of the total gain — the other 86.6 % needs no
 > sensing, no ADC, no lookup table."
@@ -325,22 +303,15 @@ the contribution.
 
 ---
 
-## 27 — Result 4, loop inductance (25 s)
+## 24 — Result 4, loop inductance (25 s)
 
 > "Adaptive control pays only below about **2.5 nH** of loop inductance. Above
-> that a fixed word is nearly as good. And loop inductance is board layout,
+> that a fixed setting is nearly as good. And loop inductance is board layout,
 > not the transistor."
 
 ---
 
-## 28 — Backup (skip unless asked)
-
-Only open this if challenged on robustness. Across 21,600 transients no device
-parameter moves the ceiling outside **4.3–7.7 %**.
-
----
-
-## 29 — DEMO (45 s)
+## 25 — DEMO (45 s)
 
 The clip runs **22 s**. Play it and stay quiet for the first five seconds —
 the switch node falling is the whole setup, and narrating over it just
@@ -355,16 +326,9 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 30 — Why the numbers hold (20 s)
+## 26 — Conclusion and next steps (40 s)
 
-> "Every number survives a 25× timestep refinement. Ten wrong numbers were
-> caught by our own convergence checks before they reached the report."
-
----
-
-## 32 — Conclusion and next steps (40 s)
-
-> "Choosing the control word well matters enormously — roughly fivefold in
+> "Choosing the setting well matters enormously — roughly fivefold in
 > switching energy. Adapting it does not: 3.9 %, and one comparator takes most
 > of that."
 >
@@ -380,7 +344,7 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 
 ---
 
-## 33–35 — References, thanks (10 s)
+## 27–29 — References, thanks (10 s)
 
 > "Thirty references, against a minimum of eight to ten. All thirty are
 > verified against the publisher record — authors, volume, issue and pages
@@ -407,15 +371,15 @@ result. Their approach works — +0.534 V — and beats our fast fixed code.
 
 **"Isn't 13.4 % an artefact of your cost function?"**
 Partly, and we quantified it rather than defending it. Over 106 overshoot
-weights the fixed word is worth 23 to 29 per cent and adaptation 1.3 to 6.4.
-The number moves; the ordering doesn't. The fixed word wins at every weight
+weights the fixed setting is worth 23 to 29 per cent and adaptation 1.3 to 6.4.
+The number moves; the ordering doesn't. The fixed setting wins at every weight
 we tested, out to five, which is already an extreme price on overshoot.
 
 **"Slide 19 says 5.2 %, slide 22 says nominal 5.95. Which is it?"**
-Both, for different searches. 5.2 is the four-corner search — that's the
-headline. 5.95 is the nominal of the perturbation study, a two-corner search
+Both, for different searches. 5.2 is the four-operating point search — that's the
+headline. 5.95 is the nominal of the perturbation study, a two-operating point search
 on its own sweep, so its absolute value isn't comparable; its "vs nom." column
-is. Same cost weight in both. And 5.2 % against the best fixed word is the
+is. Same cost weight in both. And 5.2 % against the best fixed setting is the
 same thing as 3.9 % of baseline: 3.9 divided by 74.9.
 
 **"Is this simulated or measured?"**
@@ -425,15 +389,15 @@ is the next phase. Say it plainly; it's a Review-I project.
 
 **"Why not just slow it down?"**
 That's the trivial fix and it discards the switching-loss benefit of GaN. The
-Pareto front on slide 18 shows loss, overshoot and crosstalk margin cannot be
+trade-off curve on slide 18 shows loss, overshoot and crosstalk margin cannot be
 minimised together.
 
 **"Did Cadence actually run?"**
 No, and the deck says so. Everything is ngspice. For LTspice open
 sim/dpt.cir — that's the complete model and it carries the clamp.
 
-**"Your dead-time number depends on which corners you pick."**
-Yes, and we found that ourselves. It's one light-load corner: drop
+**"Your dead-time number depends on which operating points you pick."**
+Yes, and we found that ourselves. It's one light-load operating point: drop
 50 V / 2 A / 25 °C and freezing dead time costs 0.00 per cent instead of 5.45.
 The leave-one-out table is in FINDINGS.md section 32.
 

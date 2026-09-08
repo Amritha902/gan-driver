@@ -104,10 +104,10 @@ def fig2():
         ax.text(p + .25, i, "%.1f %%" % p, va="center", fontsize=8,
                 color=cols[i], fontweight="bold" if p == max(pen) else "normal")
     ax.axvline(np.mean(pen), color=INK, lw=1.1, ls="--")
-    ax.text(np.mean(pen) + .25, -.72, "mean of corners, %.1f %%" % np.mean(pen),
+    ax.text(np.mean(pen) + .25, -.45, "average, %.1f %%" % np.mean(pen),
             fontsize=7.5, color=INK)
-    ax.set_xlabel("Cost penalty for using one fixed control word (%)")
-    ax.set_title("Scheduling pays at one corner type, not generally", fontsize=9)
+    ax.set_xlabel("Extra cost of using one fixed setting (%)")
+    ax.set_title("Re-tuning pays at one operating point, not generally", fontsize=9)
     ax.set_xlim(0, max(pen) * 1.25); ax.grid(axis="y", visible=False)
     fig.tight_layout(); fig.savefig(os.path.join(RES, "paper_fig2_ceiling.png"))
     plt.close(fig); print("paper_fig2_ceiling.png")
