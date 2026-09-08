@@ -11,3 +11,4 @@ rtl/*.vcd
 # gunzipped copies of the committed .csv.gz sweeps
 results/lloop_sweep.csv
 results/emi_sweep.csv
+sim/buck.dat

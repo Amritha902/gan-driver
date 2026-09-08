@@ -1,0 +1,21 @@
+[36m================================================================[39m
+[36m STEP 10  The converter running: 100 V DC in, 48.6 V DC out[39m
+[36m================================================================[39m
+circuit : sim/buck.cir   GaN synchronous buck, 500 kHz, 10 ohm load
+This is the machine. Everything else in the project is about the two
+transistors inside it and how they are switched.
+
+  running ngspice ...
+  done in 4.6 s
+
+            IN             OUT           
+  voltage   100.0 V        48.56 V       
+  current   2.426 A        4.875 A       
+  power     242.63 W       236.85 W      
+
+  efficiency        97.62 %
+  power lost        5.77 W   (transistors + power loop)
+  output ripple     729 mV
+
+  SLIDE SAYS : 100 V in, 48.6 V out, 236.9 W, 97.6 %
+  THIS RUN   : 100 V in, 48.6 V out, 236.9 W, 97.6 %

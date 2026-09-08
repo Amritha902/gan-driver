@@ -1,0 +1,118 @@
+GaN synchronous buck converter: 100 V DC in, 50 V DC out, 250 W
+* ===================================================================
+* buck.cir -- the CONVERTER, running.
+*
+* The double-pulse test (dpt.cir) characterises one switching edge. It is
+* the right instrument for measuring crosstalk and switching loss, but it
+* is a test bench, not a converter: it never delivers power to a load.
+*
+* This file is the converter that test bench is a measurement of. Same GaN
+* devices, same segmented gate drivers, same dead time -- now switching
+* continuously into an output filter and a load, converting 100 V DC into
+* 50 V DC at 5 A.
+*
+*      100 V DC  ->  half-bridge chops it at 500 kHz  ->  L-C filter
+*                ->  50 V DC into a 10 ohm load
+*
+* Q1 (high side) is the control switch; Q2 (low side) is the synchronous
+* rectifier. Duty ratio D sets the output: Vout = D * Vin.
+* ===================================================================
+
+.include ../models/egan.lib
+.include ../models/segdrv.lib
+
+* ==================== PARAM BLOCK ==================================
+.param VIN=100
+.param D=0.5
+.param FSW=500k
+.param LOUT=22u
+.param COUT=4.7u
+.param RLOAD=10
+.param VDRV=5
+.param VNEG=0
+.param NPU_LS=8
+.param NPD_LS=8
+.param NPU_HS=8
+.param NPD_HS=8
+.param DT=15n
+.param CLKEN=1
+.param RUNIT=8
+.param TJ=25
+* ==================== END PARAM BLOCK ==============================
+
+.param KT    = {1 + 0.009*(TJ-25)}
+.param BH_T  = {5.55/KT}
+.param VTH_T = {1.4 - 0.0015*(TJ-25)}
+
+.param TSW   = {1/FSW}
+.param TON   = {D*TSW - DT}
+.param TLS   = {(1-D)*TSW - 2*DT}
+.param TLSD  = {D*TSW + DT}
+.param TR    = 0.5n
+.param LLOOP = 3n
+
+.param VO    = {D*VIN}
+.param IO    = {VO/RLOAD}
+.param NCYC  = 150
+.param TSTOP = {NCYC*TSW}
+
+* ---------------- input source and its current sense ---------------
+Vin    vin 0 DC {VIN}
+Vsin   vin bus DC 0                   $ measures the current drawn from the supply
+
+* ---------------- power stage --------------------------------------
+Rloop  bus n1  0.3                    $ power-loop parasitic resistance
+*                                     $ same value as the double-pulse bench:
+*                                     $ 0.05 gives Q~600 and 30 ringing cycles,
+*                                     $ which no real GaN half-bridge does.
+Lloop  n1  hstop {LLOOP}              $ power-loop parasitic inductance
+Vshs   hstop hsd DC 0
+Xhs    hsd hsg sw EGAN params: vth={VTH_T} bh={BH_T}
+Vsls   sw  lsd DC 0
+Xls    lsd lsg 0  EGAN params: vth={VTH_T} bh={BH_T}
+
+* ---------------- output filter and load ---------------------------
+Lo     sw  nlo {LOUT} IC=0
+Vsout  nlo out DC 0                   $ measures the current into the load
+Resr   out nc  0.3                    $ output capacitor ESR
+Co     nc  0   {COUT} IC=0
+Rload  out 0   {RLOAD}
+
+* ---------------- gate timing (what the FPGA emits) ----------------
+* High side conducts for D*Tsw, minus the dead time at its trailing edge.
+* Low side conducts for the rest, minus a dead time at each end.
+Vpwmhs pwmhs 0 PULSE(0 1 0 {TR} {TR} {TON} {TSW})
+Vpwmls pwmls 0 PULSE(0 1 {TLSD} {TR} {TR} {TLS} {TSW})
+
+* ---------------- low-side driver (ground referenced) --------------
+Vlsvp  lsvp 0 DC {VDRV}
+Vlsvn  lsvn 0 DC {VNEG}
+Blspu  lspu 0 V = {v(pwmls)}
+Blspd  lspd 0 V = {1-v(pwmls)}
+Blsclk lsclk 0 V = {CLKEN*(1-v(pwmls))}      $ clamp holds the gate down when off
+Xdrvls lspu lspd lsclk lsg lsvp lsvn 0 SEGDRV
++      params: npu={NPU_LS} npd={NPD_LS} runit={RUNIT} rclamp=0.5
+
+* ---------------- high-side driver (floating on SW) ----------------
+Vhsvp  hsvp sw DC {VDRV}
+Vhsvn  hsvn sw DC {VNEG}
+Bhspu  hspu sw V = {v(pwmhs)}
+Bhspd  hspd sw V = {1-v(pwmhs)}
+Bhsclk hsclkl sw V = {CLKEN*(1-v(pwmhs))}
+Xdrvhs hspu hspd hsclkl hsg hsvp hsvn sw SEGDRV
++      params: npu={NPU_HS} npd={NPD_HS} runit={RUNIT} rclamp=0.5
+
+* ---------------- analysis -----------------------------------------
+.options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
+* Output starts at zero: the run shows the converter charging its own
+* output up and settling, which is the thing being claimed.
+.ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)=0
+
+.tran 0.2n {TSTOP} 0 2n uic
+
+.control
+run
+wrdata buck.dat v(vin) i(vsin) v(sw) v(out) i(vsout) v(lsg) v(hsg)
+quit
+.endc
+.end

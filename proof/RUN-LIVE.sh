@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------
 # RUN-LIVE.sh -- run the whole project in front of someone, live.
 #
-# Nine steps. Each one starts a real tool on this machine and prints the
+# Ten steps. Each one starts a real tool on this machine and prints the
 # number that is on the slide. Nothing is read from a saved file except the
 # sweep data, and step 2 re-simulates a row of that data to show it is real.
 #
@@ -23,11 +23,12 @@ STEPS=(
   "steps/07-split-result3.sh"
   "steps/08-loop-inductance-result4.sh"
   "steps/09-show-waveforms.sh"
+  "steps/10-converter-power.sh"
 )
 
 print -P "\n%F{yellow}GaN segmented gate driver -- live verification%f"
 print -P "%F{yellow}$(date '+%Y-%m-%d %H:%M')   $(hostname)%f\n"
-echo "Nine steps. Every number on the slides is produced here, now."
+echo "Ten steps. Every number on the slides is produced here, now."
 echo "Press RETURN to start each one, Ctrl-C to stop."
 read
 
@@ -39,4 +40,4 @@ for s in $STEPS; do
 done
 
 clear
-print -P "%F{green}All nine steps done. Logs are in PROOF/logs/.%f"
+print -P "%F{green}All ten steps done. Logs are in PROOF/logs/.%f"

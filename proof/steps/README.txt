@@ -15,3 +15,4 @@ or all in order, with a pause between each:
 07  Result 3 -- the 25.1 % / 3.9 % split                           ~5 s
 08  Result 4 -- board inductance decides it                        ~3 s
 09  the waveforms, plotted on screen from a live ngspice run       ~3 s
+10  the converter: 100 V DC in, 48.6 V DC out, 97.6 %% efficient    ~5 s

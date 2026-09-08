@@ -14,6 +14,27 @@ Saved output of each is in `PROOF/logs/`, and a screenshot of each in
 
 ---
 
+## The converter
+
+| Number | Where it is | Command |
+|---|---|---|
+| **100 V DC in, 48.6 V DC out** at 4.88 A | "What we are building" slide | `zsh steps/10-converter-power.sh` |
+| **242.6 W** drawn, **236.9 W** delivered | same slide | same run |
+| **97.6 %** efficiency, 5.8 W lost | same slide | same run |
+| Driver setting moves loss **4.5 %** and device stress **50 %** | Result 2 | `python3 scripts/buck_sweep.py` |
+| Lowest loss is **4 slices**, not the fastest | Result 2 | same run |
+| Crosstalk safety costs **0.53 W** = 0.22 points of efficiency | Result 2 | same run |
+
+`sim/buck.cir` is the converter: the same two GaN devices and the same
+segmented gate drivers as the double-pulse bench, now switching continuously
+at 500 kHz into an output filter and a 10 Ω load. The double-pulse bench
+measures one edge of it precisely; this measures the whole machine.
+
+**Screenshot:** `17-converter-power.png`
+**Figures:** `results/fig_converter.png`, `results/fig_buck_tradeoff.png`
+
+---
+
 ## The fault, and the fix
 
 | Number | Where it is | Command |

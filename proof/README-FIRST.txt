@@ -1,18 +1,21 @@
 ================================================================================
-  GaN SEGMENTED GATE DRIVER  --  Project-I, Review-I
+  GaN-BASED POWER CONVERTER  --  Project-I, Review-I
   Amritha S (23BEC1368) . Sanjay Kumar (23BEC1447) . Aamir Abdullah (23BPS1197)
   Guide: Dr. Bindu, SENSE, VIT Chennai
 ================================================================================
 
-WHAT THE PROJECT IS, IN FOUR SENTENCES
+WHAT THE PROJECT IS
 
-  A GaN half-bridge has two transistors. When one switches, its fast voltage
-  swing pushes charge into the gate of the other one -- the one that is
-  supposed to be OFF -- and can switch it on by accident, shorting the supply.
-  Gate drivers fix this, and the published ones also re-tune themselves while
-  running, which needs a sensor, an ADC and a lookup table.
-  We measured how much of the benefit actually needs that re-tuning. Most of it
-  does not.
+  The project is a GaN-based power converter: 100 V DC in, 48.6 V DC out at
+  4.88 A -- 236.9 W into the load from 242.6 W drawn, so 97.6 % efficient.
+  Inside it is a GaN half-bridge, two transistors switching 500,000 times a
+  second, and the circuit that switches them is the gate driver.
+  When one transistor switches, its fast voltage swing pushes charge into the
+  gate of the other one -- the one that is supposed to be OFF -- and can turn
+  it on by accident, shorting the supply. Gate drivers fix that, and the
+  published ones also re-tune themselves while running, which needs a sensor,
+  an ADC and a lookup table. We measured how much of the benefit actually
+  needs that re-tuning. Most of it does not.
 
 --------------------------------------------------------------------------------
 IF YOU ONLY DO ONE THING
@@ -22,9 +25,10 @@ IF YOU ONLY DO ONE THING
       cd ~/GAN_MAIN/PROOF
       zsh RUN-LIVE.sh
 
-  Nine steps, about two minutes. Each one starts a real tool on this laptop --
-  ngspice, Icarus Verilog, GNU Octave -- and prints the number that is on the
-  slide. Step 9 opens a window with the waveforms ngspice has just produced.
+  Ten steps, about two and a half minutes. Each one starts a real tool on this
+  laptop -- ngspice, Icarus Verilog, GNU Octave -- and prints the number that
+  is on the slide. Step 9 opens a window with the waveforms ngspice has just
+  produced; step 10 runs the converter and prints power in and power out.
 
   Nothing in that run is read from the presentation. If a number on a slide is
   wrong, this is where it shows.
@@ -39,7 +43,7 @@ IF YOU WANT TO CHECK ONE SPECIFIC NUMBER
 --------------------------------------------------------------------------------
 IF YOU JUST WANT TO LOOK
 
-  PROOF/screenshots/     16 screenshots. Terminal output as it happened, with
+  PROOF/screenshots/     17 screenshots. Terminal output as it happened, with
                          the machine name and time on screen; the Verilog
                          source; the Vivado windows; the waveforms.
   PROOF/logs/            the raw text of each of those runs.
@@ -49,9 +53,10 @@ WHAT IS IN EACH FOLDER
 
   PROOF/                 the live demo, the screenshots, the logs,
                          and the number-by-number map
-  1-CIRCUIT-ngspice/     the GaN device model, the gate driver, the
-                         double-pulse test circuit. This is where the
-                         1.65 V and 2.58 V come from.
+  1-CIRCUIT-ngspice/     the GaN device model, the gate driver, the converter
+                         (sim/buck.cir) and the double-pulse test bench.
+                         The converter is where 100 V -> 48.6 V and 97.6 %
+                         come from; the bench is where 1.65 V and 2.58 V do.
   2-RTL-verilog/         the FPGA controller: three modules and a
                          self-checking testbench with 8 properties
   3-FPGA-vivado/         the Vivado scripts and the two report files it
