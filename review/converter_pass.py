@@ -204,7 +204,7 @@ add_text(s_cv, 0.55, 6.15, 12.25, 0.95, [
            u"gets through. 5.8 W is lost in the transistors and the power loop.",
            N)], level=0, sz=1250, spc=120, bullet=False),
     para([(u"The duty ratio is fixed at 0.5, which is what puts the output at half "
-           u"the input. Reproduce: ", N),
+           u"the input. Command: ", N),
           (u"ngspice -b sim/buck.cir", B),
           (u", then python3 scripts/buck_figure.py", N)],
          level=0, sz=1100, spc=0, bullet=False)])
@@ -228,7 +228,7 @@ add_text(s_tr, 0.55, 6.20, 12.25, 0.95, [
            u"and the −2 V rail on costs 0.53 W, which is 0.22 points of "
            u"efficiency, and that is the price of crosstalk immunity.", N)],
          level=0, sz=1250, spc=120, bullet=False),
-    para([(u"Eight converter runs. Reproduce: ", N),
+    para([(u"Eight converter runs. Command: ", N),
           (u"python3 scripts/buck_sweep.py", B)],
          level=0, sz=1100, spc=0, bullet=False)])
 print("converter trade-off slide inserted before Result 2")
@@ -251,7 +251,7 @@ add_text(s_ca, 0.55, 6.20, 12.25, 0.95, [
            u"at full load and 5 ns at light load \u2014 two different numbers, "
            u"and that gap is the only thing worth adapting.", N)],
          level=0, sz=1250, spc=120, bullet=False),
-    para([(u"13 runs, 10 seconds. Reproduce: ", N),
+    para([(u"13 runs, 10 seconds. Command: ", N),
           (u"python3 scripts/cases.py", B)],
          level=0, sz=1100, spc=0, bullet=False)])
 print("named-cases slide inserted before Result 1")

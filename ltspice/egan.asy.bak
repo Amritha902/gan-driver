@@ -1,0 +1,20 @@
+Version 4
+SymbolType CELL
+LINE Normal 48 -32 48 0
+LINE Normal -32 48 0 48
+LINE Normal 48 96 48 128
+RECTANGLE Normal 0 0 96 96
+WINDOW 0 0 -8 Left 2
+WINDOW 3 0 104 Left 2
+SYMATTR Value EGAN
+SYMATTR Prefix X
+SYMATTR Description EGAN
+PIN 48 -32 NONE 8
+PINATTR PinName d
+PINATTR SpiceOrder 1
+PIN -32 48 NONE 8
+PINATTR PinName g
+PINATTR SpiceOrder 2
+PIN 48 128 NONE 8
+PINATTR PinName s
+PINATTR SpiceOrder 3

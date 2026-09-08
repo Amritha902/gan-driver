@@ -214,7 +214,7 @@ EDITS = [
      u"things they do not have. Both clear the threshold " + EM + u" theirs works " +
      EM + u" but ours clears it by 4.8" + TIMES + u" more, and ours is the one whose "
      u"settings can then be searched in full.", N)],
-   [(u"Reproduce: python3 scripts/basepaper_compare.py " + EM + u" four ngspice runs, "
+   [(u"Command: python3 scripts/basepaper_compare.py " + EM + u" four ngspice runs, "
      u"prints this table.", N)],
  ]),
 

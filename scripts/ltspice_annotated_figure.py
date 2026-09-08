@@ -17,6 +17,21 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import ltspice_raw
 
+def provenance(path):
+    """Read the .raw header back so the figure can state, on its face, which
+    program wrote the data and when. A redrawn plot that merely CLAIMS a
+    source is worth nothing; this quotes the file."""
+    blob = open(path, "rb").read(4096)
+    i = blob.find(u"Binary:\n".encode("utf-16-le"))
+    head = blob[:i if i != -1 else 3700].decode("utf-16-le", errors="ignore")
+    got = {}
+    for line in head.splitlines():
+        for key in ("Title:", "Date:", "Command:"):
+            if line.startswith(key):
+                got[key.rstrip(":")] = line[len(key):].strip()
+    return got
+
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LT   = os.path.join(ROOT, "ltspice")
 OUT  = os.path.join(ROOT, "results", "fig_ltspice_annotated.png")
@@ -40,7 +55,7 @@ CASES = [
 ]
 
 fig, ax = plt.subplots(2, 2, figsize=(13.2, 7.0), dpi=170, sharex="col")
-fig.subplots_adjust(left=0.062, right=0.985, top=0.80, bottom=0.085,
+fig.subplots_adjust(left=0.062, right=0.985, top=0.80, bottom=0.115,
                     hspace=0.16, wspace=0.17)
 
 for col, (fname, title, colour, safe) in enumerate(CASES):
@@ -111,14 +126,24 @@ for col, (fname, title, colour, safe) in enumerate(CASES):
     b.text(1.5, 2.15, "THIS IS THE EFFECT", fontsize=8.6, fontweight="bold",
            color=MUTED)
 
-fig.suptitle("Simulated in LTspice, from the drawn schematic  —  "
-             "ltspice/*_design_*.asc", fontsize=13, fontweight="bold", y=0.975)
-fig.text(0.5, 0.905,
-         "Same circuit both sides. The only difference is the Miller clamp and "
-         "the off-bias rail — two things the gate driver controls.\n"
-         "LTspice measures +1.647556 V and −1.176857 V; ngspice measures "
-         "+1.6486 V and −1.1757 V on the same netlist. Two simulators, "
-         "about a millivolt apart.",
-         ha="center", fontsize=9.5, color=MUTED)
+pv = provenance(os.path.join(LT, CASES[0][0]))
+fig.suptitle("LTspice output — redrawn from its own .raw file so it can be "
+             "labelled", fontsize=13, fontweight="bold", y=0.978)
+fig.text(0.5, 0.925,
+         "This is not a screenshot. The traces are LTspice's data, read out of "
+         "the file it wrote, and replotted so the meaning can be marked on it. "
+         "The screenshots of LTspice itself are alongside.",
+         ha="center", fontsize=9.6, color=MUTED)
+fig.text(0.5, 0.885,
+         "Same circuit both sides; the only difference is the Miller clamp and "
+         "the off-bias rail. LTspice measures +1.647556 V and −1.176857 V — "
+         "ngspice measures +1.6486 V and −1.1757 V on the same netlist.",
+         ha="center", fontsize=9.4, color=MUTED)
+fig.text(0.012, 0.012,
+         "Source:  %s\nWritten by:  %s        %s"
+         % (os.path.basename(pv.get("Title", "?")),
+            pv.get("Command", "?"), pv.get("Date", "?")),
+         ha="left", va="bottom", fontsize=8.0, color=MUTED,
+         family="DejaVu Sans Mono")
 fig.savefig(OUT, dpi=170, facecolor="white")
 print("wrote", OUT)
