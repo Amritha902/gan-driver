@@ -175,15 +175,6 @@ NEW = [
   u"Positive is safe, negative is a fault. Without the fix it is "
   + MINUS + u"0.249 V; with the clamp and the " + MINUS + u"2 V rail it is "
   u"+2.576 V."),
- ("fig_method.png", u"How the work was run",
-  u"The six steps, in the order they were done.",
-  u"Each step had to hold before the next was worth doing. The fault is "
-  u"recreated before anything is claimed to fix it."),
- ("fig_python.png", u"What Python does",
-  u"The three jobs Python has: driving ngspice, doing the arithmetic on what "
-  u"comes back, and drawing the figures.",
-  u"No circuit maths is done in Python. A bug there could change which setting "
-  u"we call best, but not the voltages ngspice reports."),
 ]
 for fname, title, figtxt, meaning in NEW:
     s = clone_after(p, SRC, len(p.slides._sldIdLst))
@@ -248,6 +239,10 @@ print("added: Thank you")
 
 
 # --------------------------------------------------------------- ordering --
+# "How the work was run" and "What Python does" are cut: the demo video shows
+# both of them happening, and 36 slides does not fit a 10-minute slot. The
+# figures are still built and live in results/, so either can be put back by
+# naming it here again.
 ORDER = [
     u"Slide 1", u"School of", u"Review-I",
     u"Problem Statement",
@@ -264,9 +259,7 @@ ORDER = [
     u"What “margin” means",
     u"How it works — one use case",
     u"The circuit, drawn and simulated",
-    u"How the work was run",
     u"Which tool did what",
-    u"What Python does",
     u"Demo — ngspice and LTspice",
     u"What we are building — the converter",
     u"The cases we ran",
