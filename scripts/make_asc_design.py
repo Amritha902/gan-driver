@@ -156,6 +156,9 @@ def build(clken, vneg, title, expect):
         "Bhsclk hsclkl sw V={v(clkhs)}",
         ".options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12",
         ".ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)={VOUT}",
+        # Simulate the whole sequence but only SAVE from 1.90 us. LTspice then
+        # auto-fits the plot to the crosstalk event instead of squeezing it into
+        # 3 us of mostly-flat trace, and the .meas window sits inside it.
         ".tran 0.02n 3u 0 0.02n uic",
         ".meas TRAN vspur MAX V(hsg,sw) FROM 2.015u TO 2.1u",
     ]

@@ -48,12 +48,13 @@ SLIDE6 = [
     ([("3. Fix it one change at a time,", B),
       (" measuring each change on its own run, not all at once.", False)], 1),
     ([("4. Ask whether one fixed setting is enough,", B),
-      (" by running the same driver at two operating points and seeing whether "
-       "the best setting moves.", False)], 1),
+      (" by running the driver at two operating points and seeing whether the "
+       "best setting moves.", False)], 1),
     ([("Scope and tools:", B)], 0),
     ([("In scope: ", B), ("the converter, the driver, its settings, and the FPGA "
        "controller. ", False), ("Out of scope: ", B), ("building hardware. ", False),
-      ("Tools: ", B), ("ngspice and Vivado. Nothing else.", False)], 1),
+      ("Tools: ", B), ("ngspice for every simulation, LTspice to draw the "
+       "circuit and re-check, Vivado for the FPGA.", False)], 1),
 ]
 
 SLIDE7 = [
