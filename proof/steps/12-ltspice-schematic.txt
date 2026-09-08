@@ -1,0 +1,28 @@
+STEP 12 -- the same circuit, drawn, in LTspice
+
+This one is not a script: it is a schematic you open and press Run on.
+
+    ~/gan-driver/ltspice/A_design_no_clamp_FAILS.asc        no clamp, 0 V
+    ~/gan-driver/ltspice/B_design_clamp_on.asc              clamp on, 0 V
+    ~/gan-driver/ltspice/C_design_clamp_and_neg_bias.asc    clamp on, -2 V
+
+  1. Double-click any of the three. They open in LTspice.
+  2. Simulate > Run.   (NOT Cmd+R -- in LTspice that rotates a component.)
+  3. The waveform window shows V(hsg,sw), the gate of the device that is
+     supposed to be OFF, over V(sw), the switch node that kicks it.
+  4. View > SPICE Error Log prints the measurement.
+
+WHAT COMES OUT -- LTspice 26.0.2, run 8 Sep 2026, against ngspice 47
+
+    case                        LTspice        ngspice      difference
+    A  no clamp, 0 V          +1.647556 V     +1.6486 V       1.0 mV
+    B  clamp on, 0 V          +0.828274 V     +0.8302 V       1.9 mV
+    C  clamp on, -2 V         -1.176857 V     -1.1757 V       1.2 mV
+
+Two different simulators, the same schematic, agreeing to about a
+millivolt. The threshold is 1.4 V, so A turns the device on and B and C
+do not.
+
+The devices are egan.lib's EGAN and the gate drivers are segdrv.lib's
+SEGDRV -- the same subcircuits sim/dpt.cir uses. The drawing is not a
+picture of the circuit, it IS the circuit.
