@@ -53,6 +53,30 @@ drawn from the run that just happened — `15-live-waveforms.png`,
 
 ---
 
+## The named cases
+
+| Case (full load, 100 V / 10 A) | Peak on the OFF gate | Verdict |
+|---|---|---|
+| 1. Fastest drive, nothing else | **+1.649 V** | false turn-on |
+| 2. Turn the Miller clamp on | +0.830 V | safe, +0.570 V margin |
+| 3. Add the −2 V off-bias rail | −1.176 V | safe, **+2.576 V** margin |
+| 4. Slow the drive right down | −1.674 V | safe, but 7.91 µJ — 2× the loss |
+| 5. The setting the search chose | +1.059 V | safe, cheapest at 3.99 µJ |
+
+| Dead-time sweep, same driver | Cheapest dead time |
+|---|---|
+| full load, 100 V / 10 A | **15 ns** |
+| light load, 50 V / 2 A | **5 ns** |
+
+Two different numbers. That gap is the whole case for adapting anything, and
+it is why the project exists. 13 ngspice runs, 10 seconds:
+
+    zsh steps/11-named-cases.sh
+
+**Screenshot:** `18-named-cases.png`  ·  **Figure:** `results/fig_cases.png`
+
+---
+
 ## Are the stored data files real?
 
 | Check | Command |
@@ -116,15 +140,19 @@ produced them.
 Not for the sake of it. One tool per job, and each headline number checked in a
 second, independent one:
 
-| Tool | Job | Checked against |
-|---|---|---|
-| ngspice | every circuit simulation | LTspice re-runs the same netlists |
-| LTspice | independent re-run | agrees with ngspice within 2 mV |
-| MATLAB | analysis of the sweep data | GNU Octave runs the same `.m` files |
-| GNU Octave | second run of the same analysis | agrees with MATLAB to the last digit |
-| Icarus Verilog | controller simulation and testing | Vivado simulates the same RTL |
-| Vivado | FPGA synthesis and timing | the numbers it prints are its own |
-| Python | running the sweeps, the decomposition | MATLAB re-derives the same split |
+**Two tools, and that is the whole list.**
 
-If a number only ever came out of one program, it would be worth doubting. That
-is the reason for the list, and it is the only reason.
+| Tool | Job |
+|---|---|
+| ngspice | every circuit simulation — the converter, the test bench, every sweep |
+| Vivado | the FPGA controller: synthesis and timing |
+
+Icarus Verilog compiles and runs the Verilog during development; Vivado
+simulates and synthesises the same files, so it is a checker, not a third
+track. Python drives ngspice and plots what comes back — it does no circuit
+maths of its own.
+
+Earlier versions of this project also cross-checked in LTspice, MATLAB and
+GNU Octave. Those runs agreed, but carrying four tools made the work look
+scattered across a toolchain rather than done in one. The circuit work is
+ngspice. The FPGA work is Vivado.

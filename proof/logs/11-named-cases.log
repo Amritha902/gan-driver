@@ -1,0 +1,46 @@
+[36m================================================================[39m
+[36m STEP 11  Specific cases, run one at a time[39m
+[36m================================================================[39m
+Not 'we searched 720 settings' -- named cases, each its own run,
+each printing its own result, so any single line can be checked.
+
+
+  PART 1  --  building the fix, one change at a time
+  Full load, 100 V and 10 A. The device switches on at 1.4 V, so the
+  gate of the device that is meant to be OFF has to stay under that.
+
+  case                               peak gate     margin       loss   verdict
+  ------------------------------------------------------------------------------------
+  1. Fastest drive, nothing else       +1.649 V    -0.249 V    4.018 uJ   FALSE TURN-ON
+      8 pull-up slices, no clamp, off gate at 0 V
+  2. Turn the Miller clamp on          +0.830 V    +0.570 V    4.052 uJ   safe
+      same drive; the clamp shorts the off gate down
+  3. Add the -2 V off-bias rail        -1.176 V    +2.576 V    5.230 uJ   safe
+      same again; the off gate now sits at -2 V, not 0 V
+  4. Slow the drive right down         -1.674 V    +3.074 V    7.908 uJ   safe
+      1 pull-up slice instead of 8 -- the safe-but-wasteful extreme
+  5. The setting the search chose      +1.059 V    +0.341 V    3.992 uJ   safe
+      8/8/1 slices, 25 ns dead time, clamp on, 0 V rail
+
+  PART 2  --  does one fixed setting fit every operating point?
+  Case 5's driver, unchanged, at two operating points, sweeping only
+  the dead time. If the cheapest dead time were the same number at
+  both, there would be nothing to adapt.
+
+  full load   100 V, 10 A
+      dead time 5n     loss   4.384 uJ   margin  +0.078 V   <-- thin margin
+      dead time 10n    loss   4.102 uJ   margin  +0.465 V
+      dead time 15n    loss   3.942 uJ   margin  +0.273 V
+      dead time 25n    loss   3.992 uJ   margin  +0.341 V
+      cheapest: 15n
+
+  light load   50 V,  2 A
+      dead time 5n     loss   0.448 uJ   margin  +0.052 V   <-- thin margin
+      dead time 10n    loss   0.571 uJ   margin  +0.715 V
+      dead time 15n    loss   0.609 uJ   margin  +0.658 V
+      dead time 25n    loss   0.596 uJ   margin  +0.652 V
+      cheapest: 5n
+
+  ------------------------------------------------------------------------------------
+  13 ngspice runs, 10 s. Written to results/cases.csv
+

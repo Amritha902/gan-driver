@@ -1,0 +1,14 @@
+part,case,detail,VBUS,ILOAD,dead_time,peak_V,margin_V,loss_uJ,safe
+1,"1. Fastest drive, nothing else","8 pull-up slices, no clamp, off gate at 0 V",100,10,,1.6486,-0.2486,4.0181,0
+1,2. Turn the Miller clamp on,same drive; the clamp shorts the off gate down,100,10,,0.8305,0.5695,4.0521,1
+1,3. Add the -2 V off-bias rail,"same again; the off gate now sits at -2 V, not 0 V",100,10,,-1.1757,2.5757,5.2301,1
+1,4. Slow the drive right down,1 pull-up slice instead of 8 -- the safe-but-wasteful extreme,100,10,,-1.6745,3.0745,7.9079,1
+1,5. The setting the search chose,"8/8/1 slices, 25 ns dead time, clamp on, 0 V rail",100,10,,1.0592,0.3408,3.9923,1
+2,"full load   100 V, 10 A",dead-time sweep,100,10,5n,1.3221,0.0779,4.384,1
+2,"full load   100 V, 10 A",dead-time sweep,100,10,10n,0.9354,0.4646,4.1015,1
+2,"full load   100 V, 10 A",dead-time sweep,100,10,15n,1.1271,0.2729,3.9421,1
+2,"full load   100 V, 10 A",dead-time sweep,100,10,25n,1.0592,0.3408,3.9923,1
+2,"light load   50 V,  2 A",dead-time sweep,50,2,5n,1.3475,0.0525,0.4478,1
+2,"light load   50 V,  2 A",dead-time sweep,50,2,10n,0.6853,0.7147,0.5707,1
+2,"light load   50 V,  2 A",dead-time sweep,50,2,15n,0.7418,0.6582,0.6094,1
+2,"light load   50 V,  2 A",dead-time sweep,50,2,25n,0.7481,0.6519,0.5962,1

@@ -50,7 +50,14 @@ DROP = [
     u"Vivado — the synthesis report itself",
     u"Backup — the device doesn’t move it; layout does",
     u"Why the numbers hold",
+    # One tool for the circuit work. This slide re-plotted the same ngspice
+    # sweep in a second program as a cross-check; keeping it made the project
+    # look like it was spread across four tools when it is not.
 ]
+# Matched on prefix: build.py titles this slide "MATLAB \u2014 the Pareto front
+# and the model check" and it is renamed later in this same file, so an exact
+# match against either spelling is fragile.
+DROP_PREFIX = [u"MATLAB \u2014"]
 DROP_DIVIDER = u"Where this goes"
 
 
@@ -67,7 +74,8 @@ while True:
     hit = None
     for i, s in enumerate(p.slides):
         t = title_of(s)
-        if t in DROP or (DROP_DIVIDER in all_text(s) and len(all_text(s).split()) < 25):
+        if t in DROP or any(t.startswith(x) for x in DROP_PREFIX) \
+           or (DROP_DIVIDER in all_text(s) and len(all_text(s).split()) < 25):
             hit = (i, t or DROP_DIVIDER)
             break
     if hit is None:
@@ -171,9 +179,8 @@ EDITS = [
 
  # ---- circuit -------------------------------------------------------------
  (u"The circuit that is simulated", "TextBox 5", [
-   [(u"Everything shown is in sim/dpt.cir " + EM + u" that is the file to open in "
-     u"LTspice, and it contains the gate clamp. The three ltspice/*.asc sheets only "
-     u"show how the crosstalk happens and do not draw the clamp. The red C", N),
+   [(u"Everything shown is in sim/dpt.cir " + EM + u" the file ngspice runs, and it "
+     u"contains the gate clamp. The red C", N),
     (u"GD", N),
     (u" on Q2 is the path the charge takes. GaN has no body diode, so the gate has to "
      u"be held down for the whole dead time.", N)],
@@ -343,31 +350,11 @@ EDITS = [
      u"is nearly as good.", N)],
  ]),
 
- # ---- MATLAB slide --------------------------------------------------------
- (u"MATLAB", "TextBox 8", [
-   [(u"720 settings, 504 of them safe (70 %). The blue line is the best-possible "
-     u"trade-off: buying back one point of overshoot costs 0.039 " + MU + u"J of energy. "
-     u"The green marker is the setting our cost function picks.", N)],
- ]),
- (u"MATLAB", "TextBox 9", [
-   [(u"(A) stays above (B) however the two goals are weighted. Picking the setting "
-     u"well is worth 22.5" + u"–" + u"29.0 % of baseline across the whole range; "
-     u"re-tuning it per operating point 1.3" + u"–" + u"12.7 %. The order never "
-     u"flips.", N)],
- ]),
- (u"MATLAB", "TextBox 10", [
-   [(u"Dead time stops helping at about 15 ns: the gain per extra nanosecond runs "
-     u"269 " + u"→" + u" 31.5 " + u"→" + u" 1.8 " + u"→" + u" 0.0 mV/ns across "
-     u"10/15/25/35 ns. Past 15 ns it only costs conduction loss. "
-     u"results/gan_analysis.m, results/gan_master.m " + EM + u" both run in MATLAB or "
-     u"Octave.", N)],
- ]),
 ]
 
 RETITLE = [
  (u"Result 2 — scheduling", u"Result 2 " + EM + u" re-tuning is worth only 5.2 %"),
  (u"Result 4 — adaptive pays", u"Result 4 " + EM + u" re-tuning only pays below ~2.5 nH"),
- (u"MATLAB — the Pareto front", u"MATLAB " + EM + u" the trade-off curve and the model check"),
 ]
 
 for prefix, newtitle in RETITLE:
@@ -383,7 +370,14 @@ for prefix, newtitle in RETITLE:
             break
 
 for prefix, name, blocks in EDITS:
-    s = slide_titled(prefix)
+    try:
+        s = slide_titled(prefix)
+    except KeyError:
+        # The slide was dropped above. Not an error: the drop list is the
+        # authority on what survives, and a stale edit must not take the whole
+        # build down with it after the drops have already been applied.
+        print("skipped: %-34s (slide not in deck)" % prefix[:34])
+        continue
     restyle(find_by_name(s, name), blocks)
     print("rewrote: %-34s %s" % (prefix[:34], name))
 

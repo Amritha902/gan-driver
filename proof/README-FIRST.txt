@@ -25,7 +25,7 @@ IF YOU ONLY DO ONE THING
       cd ~/GAN_MAIN/PROOF
       zsh RUN-LIVE.sh
 
-  Ten steps, about two and a half minutes. Each one starts a real tool on this
+  Eleven steps, about three minutes. Each one starts a real tool on this
   laptop -- ngspice, Icarus Verilog, GNU Octave -- and prints the number that
   is on the slide. Step 9 opens a window with the waveforms ngspice has just
   produced; step 10 runs the converter and prints power in and power out.
@@ -43,7 +43,7 @@ IF YOU WANT TO CHECK ONE SPECIFIC NUMBER
 --------------------------------------------------------------------------------
 IF YOU JUST WANT TO LOOK
 
-  PROOF/screenshots/     17 screenshots. Terminal output as it happened, with
+  PROOF/screenshots/     18 screenshots. Terminal output as it happened, with
                          the machine name and time on screen; the Verilog
                          source; the Vivado windows; the waveforms.
   PROOF/logs/            the raw text of each of those runs.

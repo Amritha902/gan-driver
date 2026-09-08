@@ -30,71 +30,78 @@ SLIDE4 = [
 
 SLIDE6 = [
     ([("Aim:", B)], 0),
-    ([("To measure how much of a gate driver\u2019s benefit comes from ", False),
-      ("changing its settings while running", B),
-      (", and how much comes from simply ", False),
-      ("picking one good setting and leaving it", B),
-      (". We test every setting instead of arguing the case.", False)], 1),
+    ([("To find out how much of a gate driver\u2019s benefit needs the driver to "
+       "re-tune itself while the converter is running, and how much comes from "
+       "choosing one good setting and leaving it fixed.", False)], 1),
     ([("Proposed Solution:", B)], 0),
-    ([("A GaN gate driver with 720 possible settings: 8 pull-up steps, 8 pull-down "
-       "steps, dead time 5\u201335 ns, a gate clamp, and a \u22122 V off rail.",
-       False)], 1),
-    ([("Method: ", B), ("run all 720 settings at all four operating points, then compare "
-       "the best-at-each-point against the best single setting. That difference is what "
-       "re-tuning is worth, and nothing else.", False)], 1),
-    ([("Methodology / Approach:", B)], 0),
-    ([("Double-pulse test in ngspice, using a GaN model built from datasheet numbers.",
-       False)], 1),
-    ([("Eight measurements per run, taken by one script fixed early. Every number must "
-       "stay the same when the timestep changes by 5\u00d7 \u2014 checked, not assumed.",
-       False)], 1),
-    ([("Project Scope:", B)], 0),
-    ([("In scope: ", B), ("driver design, the setting search, transistor-level output "
-       "stage in SKY130. ", False), ("Out of scope: ", B),
-      ("making the GaN device, sensor hardware, PCB build.", False)], 1),
+    ([("A GaN buck converter driven by a ", False), ("segmented gate driver", B),
+       (": 8 pull-up steps, 8 pull-down steps, an adjustable dead time, a Miller "
+        "clamp and a \u22122 V off rail \u2014 every one of them a setting we can "
+        "change and measure.", False)], 1),
+    ([("How we approached it:", B)], 0),
+    ([("1. Build the converter and check it converts.", B),
+      (" 100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W delivered, 97.6 % "
+       "efficient.", False)], 1),
+    ([("2. Reproduce the fault.", B),
+      (" At the fastest setting the gate that should be OFF reaches 1.65 V, "
+       "against a 1.4 V turn-on threshold.", False)], 1),
+    ([("3. Fix it one change at a time,", B),
+      (" measuring each change on its own run, not all at once.", False)], 1),
+    ([("4. Ask whether one fixed setting is enough,", B),
+      (" by running the same driver at two operating points and seeing whether "
+       "the best setting moves.", False)], 1),
+    ([("Scope and tools:", B)], 0),
+    ([("In scope: ", B), ("the converter, the driver, its settings, and the FPGA "
+       "controller. ", False), ("Out of scope: ", B), ("building hardware. ", False),
+      ("Tools: ", B), ("ngspice and Vivado. Nothing else.", False)], 1),
 ]
 
 SLIDE7 = [
+    ([("The converter is built and it runs.", B)], 0),
+    ([("100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W into the load from "
+       "242.6 W drawn, 97.6 % efficient.", False)], 1),
     ([("The fault is reproduced, and fixed.", B)], 0),
-    ([("The off gate reaches 1.65 V against a 1.4 V threshold. With the clamp and the "
-       "\u22122 V rail: 2.58 V of margin.", False)], 1),
-    ([("Every setting has been tested.", B)], 0),
-    ([("720 settings at each of four operating points \u2014 2,880 runs \u2014 so the "
-       "best at each point is the true best, not the best of a short list.", False)], 1),
-    ([("Stress-tested, not claimed.", B)], 0),
-    ([("21,600 more runs across five device parameters: the answer stays between 4.3 % "
-       "and 7.7 %. Board inductance and EMI were tested too.", False)], 1),
-    ([("Checked in four tools.", B)], 0),
-    ([("LTspice matches ngspice within 2 mV. MATLAB and Octave agree exactly. Vivado: "
-       "20 LUTs, 200 MHz met.", False)], 1),
-    ([("In total: ", B), ("34,622 simulation runs.", False)], 1),
+    ([("The off gate reaches 1.65 V against a 1.4 V threshold. With the clamp "
+       "and the \u22122 V rail: 2.58 V of margin.", False)], 1),
+    ([("Specific cases run and measured, one at a time.", B)], 0),
+    ([("Five settings at full load, then the same driver swept at two operating "
+       "points \u2014 every number below came off its own ngspice run.", False)], 1),
+    ([("The setting measured on the converter itself.", B)], 0),
+    ([("Across the same knob, power lost moves 4.5 % and peak device voltage "
+       "moves 50 %, in opposite directions.", False)], 1),
+    ([("The FPGA controller is written and verified.", B)], 0),
+    ([("Eight checks pass in Icarus Verilog; 20 LUTs and 20 flip-flops in "
+       "Vivado, 200 MHz met with 1.996 ns to spare.", False)], 1),
 ]
 
 
 SLIDE7B = [
     ([("Where we are", B)], 0),
     ([("Review-I is done. ", B),
-      ("The fault is reproduced and fixed, all 720 settings have been tested at every "
-       "operating point, and the answer has been stress-tested against the device model, "
-       "the board layout and EMI.", False)], 1),
+      ("The converter is built and converting, the crosstalk fault is "
+       "reproduced and fixed, the named cases have been run, and the FPGA "
+       "controller is written and verified.", False)], 1),
     ([("What we aim to do next", B)], 0),
-    ([("Review-II \u2014 build it in silicon, not on an FPGA.", B),
-      (" A 200 MHz FPGA can only move the dead time in 5 ns steps. Light load wants "
-       "15 ns and everything else wants 5 ns, so the steps are too coarse exactly where "
-       "the benefit is. Drawing the output stage transistor by transistor in SKY130 "
-       "removes that limit.", False)], 1),
-    ([("Review-III \u2014 measure one operating point on real hardware.", B),
-      (" Build the half-bridge and measure the off-gate voltage against the simulated "
-       "1.65 V. Until that exists this is a simulation study, and the title says so.",
+    ([("Review-II \u2014 close the loop.", B),
+      (" The converter runs open loop today, which is why the output overshoots "
+       "on the way up. Add a feedback controller so the output holds its value "
+       "when the load changes, then re-run the driver-setting study with the "
+       "loop closed.", False)], 1),
+    ([("Review-III \u2014 settle the light-load question.", B),
+      (" The cheapest dead time is 15 ns at full load and 5 ns at light load. "
+       "Run the converter at both and measure what a two-setting controller "
+       "actually saves against one fixed setting \u2014 that is the number the "
+       "whole project turns on.", False)], 1),
+    ([("Same tools throughout.", B),
+      (" ngspice for the circuit, Vivado for the FPGA. We are not adding a "
+       "third tool, and there is no silicon or hardware step in this plan.",
        False)], 1),
     ([("The risk we already know.", B),
-      (" A 1.8 V / 3.3 V teaching PDK cannot take a 5 V gate supply. Getting a "
-       "5 V-capable PDK is the first milestone, and the one that can hold up the rest.",
-       False)], 1),
-    ([("Tools, and how to check any of it", B)], 0),
-    ([("ngspice 42 \u00b7 LTspice 24 \u00b7 Icarus Verilog \u00b7 Xilinx Vivado 2024.1.2 "
-       "\u00b7 Cadence \u00b7 SKY130 \u00b7 Python \u00b7 MATLAB and Octave. Every "
-       "number can be regenerated by a named script at ", False),
+      (" Closing the loop changes where the converter actually operates, so the "
+       "setting study has to be redone afterwards, not before. That ordering is "
+       "the schedule risk.", False)], 1),
+    ([("Everything is reproducible", B)], 0),
+    ([("Every number in this deck is regenerated by a named script in ", False),
       ("github.com/Amritha902/gan-driver", B), (".", False)], 1),
 ]
 

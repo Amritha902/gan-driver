@@ -34,8 +34,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
 DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
 
-TITLE = u"GaN-Based Power Converter"
-SUB   = u"A segmented gate driver for the GaN half-bridge inside it"
+TITLE = u"GaN Based Power Converter"
+SUB   = None      # a title should be a name, not a name plus an explanation
 
 p = Presentation(DECK)
 
@@ -171,7 +171,7 @@ for s in p.slides:
             rPr = first.find(q("r")).find(q("rPr")) if first.find(q("r")) is not None else None
             for old in body.findall(q("p")):
                 body.remove(old)
-            for text, small in ((TITLE, False), (SUB, True)):
+            for text, small in [(TITLE, False)] + ([(SUB, True)] if SUB else []):
                 np = etree.SubElement(body, q("p"))
                 if pPr is not None:
                     np.append(_copy.deepcopy(pPr))
@@ -232,6 +232,116 @@ add_text(s_tr, 0.55, 6.20, 12.25, 0.95, [
           (u"python3 scripts/buck_sweep.py", B)],
          level=0, sz=1100, spc=0, bullet=False)])
 print("converter trade-off slide inserted before Result 2")
+
+
+# ------------------------------- 3b. the named cases, run one at a time ----
+# "720 settings were searched" is a claim about a procedure. These are the
+# specific runs, each one on its own line, which is what can actually be
+# checked. The slide goes immediately before the aggregate results.
+r1 = index_of(u"Result 1")
+s_ca = clone_after(p, r1, r1)
+strip(s_ca)
+set_title(s_ca, u"The cases we ran, one at a time")
+place(s_ca, "fig_cases.png", top=1.28, height=4.80)
+add_text(s_ca, 0.55, 6.20, 12.25, 0.95, [
+    para([(u"Each bar and each point is its own ngspice run. ", B),
+          (u"Left: the fault is there at the fastest setting, the clamp removes "
+           u"it, the \u22122 V rail buys margin, and slowing the drive is safest "
+           u"but wastes twice the energy. Right: the cheapest dead time is 15 ns "
+           u"at full load and 5 ns at light load \u2014 two different numbers, "
+           u"and that gap is the only thing worth adapting.", N)],
+         level=0, sz=1250, spc=120, bullet=False),
+    para([(u"13 runs, 10 seconds. Reproduce: ", N),
+          (u"python3 scripts/cases.py", B)],
+         level=0, sz=1100, spc=0, bullet=False)])
+print("named-cases slide inserted before Result 1")
+
+for _s in p.slides:
+    if title_of(_s).startswith(u"Proposed Solution"):
+        set_title(_s, u"Aim, and how we approached it")
+        print("retitled: Proposed Solution -> Aim, and how we approached it")
+    if title_of(_s).startswith(u"Timeline"):
+        set_title(_s, u"Where we are, and what is next")
+        print("retitled: Timeline -> Where we are, and what is next")
+
+
+# ------------------------------------- 3c. the conclusion's plan, rewritten -
+# The old plan promised a transistor-level stage in Cadence and a measured
+# hardware half-bridge. Both are out: the project runs on ngspice and Vivado,
+# and the next steps have to be things those two tools can actually deliver.
+for _s in p.slides:
+    if title_of(_s).startswith(u"Conclusion"):
+        for sh in _s.shapes:
+            if sh.has_text_frame and u"What the data supports" in sh.text_frame.text:
+                blocks = [
+                    [(u"What the data supports", B)],
+                    [(u"The converter works: 100 V DC in, 48.6 V DC out at 4.88 A "
+                      u"\u2014 236.9 W, 97.6 % efficient.", N)],
+                    [(u"Picking the setting well: 25.1 %.   Changing it per "
+                      u"operating point: 3.9 %.", N)],
+                    [(u"One comparator gets 72 % of that 3.9 %.", N)],
+                    [(u"What to build: ", B),
+                     (u"one fixed setting plus a light-load comparator \u2014 not a "
+                      u"sensor, an ADC and a lookup table.", N)],
+                    [(u"The FPGA half is real: 20 LUTs and 20 flip-flops, 200 MHz "
+                      u"met with 1.996 ns to spare.", N)],
+                    [(u"What is next", B)],
+                    [(u"Review-II \u2014 close the loop on the converter, then re-run "
+                      u"the setting study with it closed.", N)],
+                    [(u"Review-III \u2014 measure what a two-setting controller saves "
+                      u"at the light-load point, where the best dead time differs.", N)],
+                    [(u"Limits we state ourselves: this is a simulation study; one "
+                      u"device model underlies everything; the converter is open "
+                      u"loop today.", N)],
+                ]
+                tx = sh.text_frame._txBody
+                olds = tx.findall(q("p"))
+                styles = []
+                for op in olds:
+                    r = op.find(q("r"))
+                    styles.append((op.find(q("pPr")),
+                                   r.find(q("rPr")) if r is not None else None))
+                for op in olds:
+                    tx.remove(op)
+                for i, runs in enumerate(blocks):
+                    pPr, rPr = styles[i] if i < len(styles) else styles[-1]
+                    np_ = etree.SubElement(tx, q("p"))
+                    if pPr is not None:
+                        np_.append(_copy.deepcopy(pPr))
+                    for text, bold in runs:
+                        nr = etree.SubElement(np_, q("r"))
+                        if rPr is not None:
+                            nrp = _copy.deepcopy(rPr)
+                            if bold:
+                                nrp.set("b", "1")
+                            else:
+                                nrp.attrib.pop("b", None)
+                            nr.append(nrp)
+                        etree.SubElement(nr, q("t")).text = text
+                print("conclusion plan rewritten (no Cadence, no hardware step)")
+                break
+
+
+# ------------------------------------------- 3d. the section dividers ------
+# "A 720-point control word, and an exhaustive search" leads with the size of
+# the search, which is the least interesting true thing about it. What was
+# built is a converter and the driver inside it.
+DIVIDERS = {
+    u"What we built": u"A converter, and the driver that switches it",
+    u"What we found": u"Choosing the setting well beats re-tuning it \u2014 and by how much",
+}
+for _s in p.slides:
+    txts = [sh for sh in _s.shapes if sh.has_text_frame and sh.text_frame.text.strip()]
+    heads = [sh.text_frame.text.strip() for sh in txts]
+    for head, newsub in DIVIDERS.items():
+        if head in heads and len(txts) == 3:
+            sub = txts[heads.index(head) + 1]
+            for pa in sub.text_frame.paragraphs:
+                for r in pa.runs:
+                    r.text = newsub
+                    break
+                break
+            print("divider subtitle set: %s" % head)
 
 
 # ----------------------------------------------- 4. renumber the results ---
