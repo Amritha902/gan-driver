@@ -191,15 +191,15 @@ for fname, title, figtxt in NEW:
 # the tool's name, the machine's name and the number in it is a different
 # kind of claim. These slides carry the output as it was printed.
 TOOLOUT = [
- ("toolout/17-converter-power.png", u"ngspice output \u2014 the converter",
+ ("toolout/17-converter-power.png", u"Circuit simulation \u2014 the converter",
   u"scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A "
   u"in, 48.56 V and 4.875 A out: 242.63 W drawn, 236.85 W delivered, "
   u"97.62 % efficient."),
- ("toolout/01-ngspice-crosstalk.png", u"ngspice output \u2014 the fault, and the fix",
+ ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
   u"Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches "
   u"+1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with "
   u"\u22122 V rail: \u22121.1757 V, margin +2.5757 V, false_turn_on = 0."),
- ("toolout/18-named-cases.png", u"ngspice output \u2014 the named cases",
+ ("toolout/18-named-cases.png", u"Driver simulation \u2014 the segmented driver, case by case",
   u"scripts/cases.py, 13 runs. Part 1: the fix built one change at a time at "
   u"100 V / 10 A. Part 2: dead-time sweep at two operating points \u2014 "
   u"cheapest is 15 ns at full load, 5 ns at light load."),
@@ -241,9 +241,11 @@ if ci is not None:
     add_text(s, 0.55, 6.58, 12.25, 0.60, [
         para([(u"@FIG@ ", B),
               (u"GaN synchronous buck converter, ltspice/BUCK_converter.asc. "
-               u"100 V supply with power-loop parasitics, two GaN HEMTs, a "
-               u"segmented gate driver on each gate, output filter, 10 \u03a9 "
-               u"load.", N)],
+               u"\u201cBuck\u201d means step-down: 100 V in, 48.6 V out. The two "
+               u"yellow blocks are the segmented gate drivers \u2014 the part "
+               u"this project designs. Around them: the 100 V supply with its "
+               u"power-loop parasitics, the two GaN HEMTs, the output filter "
+               u"and a 10 \u03a9 load.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("circuit slide replaced with the drawn LTspice schematic")
 
@@ -351,13 +353,15 @@ SHORT = [
     u"The Five Closest",
     u"The gap this project fills",
     u"Aim, and how we approached it",
+    u"System Architecture",
     u"How it works — one use case",
     u"The circuit we simulate",
     u"How we run ngspice",
     u"Demo — ngspice and LTspice",
-    u"ngspice output — the converter",
-    u"ngspice output — the fault, and the fix",
-    u"ngspice output — the named cases",
+    u"Circuit simulation",
+    u"Crosstalk simulation",
+    u"The same result in LTspice",
+    u"Driver simulation",
     u"ngspice output — what re-tuning is worth",
     u"ngspice output — the split",
     u"Vivado output — synthesis",

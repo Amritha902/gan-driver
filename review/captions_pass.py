@@ -234,8 +234,10 @@ try:
     set_body(tb, [
         para([(u"@FIG@ ", B),
               (u"System architecture, left to right: PWM command, FPGA "
-               u"controller, segmented driver, power stage. Only the dashed "
-               u"block requires sensing.", N)],
+               u"controller, segmented gate driver, power stage. The four "
+               u"driver blocks are what this project designs. Only the dashed "
+               u"block needs sensing \u2014 and measuring what it is worth is "
+               u"the project's question.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("caption added: System Architecture")
 except KeyError as e:

@@ -4,11 +4,12 @@
 Amritha S (23BEC1368) · Sanjay Kumar (23BEC1447) · Aamir Abdullah (23BPS1197)
 Guide: Dr. Bindu, SENSE, VIT Chennai
 
-17 slides. Bracketed times are cumulative — if you are past one, move on.
-Total about 9:20, leaving forty seconds.
+21 slides. Bracketed times are cumulative — if you are past one, move on.
+Total about 9:30. The video on slide 10 is two minutes long — scrub it or
+play twenty seconds, do not run it through unless she asks.
 
-Every technical slide from 7 onward is a screenshot of a tool printing its own
-output. Say the number on the screen, not a number from memory.
+Slides 11 to 17 are screenshots of a tool printing its own output. Say the
+number on the screen, not one from memory.
 
 ---
 
@@ -88,7 +89,30 @@ ngspice for the circuit, Vivado for the FPGA.
 
 ---
 
-## 6 · The circuit we simulate — 40 s  *(4:35)*
+## 6 · System architecture — 35 s  *(4:30)*
+
+Block level, left to right. The PWM command comes in, the FPGA controller
+decides the settings, the segmented driver drives the gates, and the power
+stage is the GaN half-bridge and the load.
+
+The four blocks in the middle are what we design. The dashed one is the only
+part that needs sensing — and measuring what that part is worth is the whole
+question.
+
+---
+
+## 7 · How it works — one edge, start to finish — 40 s  *(5:10)*
+
+One switching edge followed through, for a real case: a battery-storage
+converter as the load falls from 10 amps to 2.
+
+Top row is what the controller decides. Bottom row is what the circuit then
+does. Everything shaded is the only thing decided while running; the rest is
+set once at power-up.
+
+---
+
+## 8 · The circuit we simulate — 40 s  *(4:35)*
 
 This is the circuit. 100 volt supply on the left with the stray resistance and
 inductance of the power loop, the two GaN transistors in the middle with a
@@ -99,7 +123,7 @@ laptop if you would like to see that.
 
 ---
 
-## 7 · How we run ngspice — 55 s  *(5:30)*
+## 9 · How we run ngspice — 55 s  *(5:30)*
 
 This is one run, end to end.
 
@@ -121,7 +145,18 @@ Those four steps run 2,880 times for the search, about 35,000 times in total.
 
 ---
 
-## 8 · ngspice output — the converter — 45 s  *(6:15)*
+## 10 · Demo — the tools running — 30 s  *(6:00)*
+
+This was recorded on the project laptop. It runs the converter in ngspice, the
+crosstalk fault and its fix, the cases, the Verilog controller, and then
+LTspice opening the schematic and running it.
+
+*(Scrub through it. Do not play all two minutes unless she asks for it — and
+if she does, everything in it is also on the next six slides.)*
+
+---
+
+## 11 · Circuit simulation — the converter — 45 s  *(6:15)*
 
 This is the terminal. 100 volts and 2.426 amps in; **48.56 volts and 4.875 amps
 out**. 242.63 watts drawn, 236.85 delivered — **97.62 per cent efficient**.
@@ -131,7 +166,7 @@ transistors inside it.
 
 ---
 
-## 9 · ngspice output — the fault and the fix — 50 s  *(7:05)*
+## 12 · Crosstalk simulation — the fault and the fix — 50 s  *(7:05)*
 
 Two runs of the same circuit.
 
@@ -146,7 +181,18 @@ controls.
 
 ---
 
-## 10 · ngspice output — the named cases — 45 s  *(7:50)*
+## 13 · The same result in LTspice — 30 s
+
+The same circuit drawn as a schematic and run in a second simulator. LTspice
+gets **+1.647556** and **−1.176857 volts**; ngspice got **+1.6486** and
+**−1.1757** on the same netlist.
+
+About a millivolt apart. So the result belongs to the circuit, not to the
+simulator.
+
+---
+
+## 14 · Driver simulation — case by case — 45 s  *(7:50)*
 
 Thirteen runs. The top half builds the fix one change at a time, so each change
 owns a line — the clamp, then the negative rail, then slowing the drive.
@@ -158,7 +204,7 @@ thing there is to adapt to.
 
 ---
 
-## 11 · ngspice output — what re-tuning is worth — 40 s  *(8:30)*
+## 15 · What re-tuning is worth — 40 s  *(8:30)*
 
 Of 720 settings, **474 are safe at all four operating points**.
 
@@ -168,7 +214,7 @@ One loses 12.7.
 
 ---
 
-## 12 · ngspice output — the split — 45 s  *(9:15)*
+## 16 · The split — the finding — 45 s  *(9:15)*
 
 And this is the answer.
 
@@ -182,7 +228,7 @@ really a design-time choice.
 
 ---
 
-## 13 · Vivado output — synthesis — 35 s  *(9:50)*  ⟵ *compress if behind*
+## 17 · Vivado output — synthesis — 35 s  *(9:50)*  ⟵ *compress if behind*
 
 The controller in hardware. **20 LUTs and 20 flip-flops** strapped, 33 fully
 programmable — so programmability costs thirteen LUTs. **200 megahertz is met**
@@ -190,7 +236,7 @@ with 1.996 nanoseconds of slack.
 
 ---
 
-## 14 · Work completed — 50 % — 30 s
+## 18 · Work completed — 50 % — 30 s
 
 The converter is built and converting. The fault is reproduced and fixed. The
 named cases have been run. The setting has been measured on the running
@@ -198,7 +244,7 @@ converter. The FPGA controller is written, verified and synthesised.
 
 ---
 
-## 15 · What is next — 30 s
+## 19 · What is next — 30 s
 
 Review-II: close the loop — add feedback so the output holds when the load
 changes, then re-run the setting study with it closed.
@@ -208,14 +254,14 @@ actually saves. Same tools.
 
 ---
 
-## 16 · References — 10 s
+## 20 · References — 10 s
 
 Thirty references, publisher-verified. Fifteen here, the rest in the backup
 deck.
 
 ---
 
-## 17 · Thank you — 10 s
+## 21 · Thank you — 10 s
 
 Thank you. I have the files on the laptop and can run any of this now.
 
