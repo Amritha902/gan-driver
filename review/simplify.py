@@ -252,12 +252,11 @@ EDITS = [
 
  # ---- result 3 ------------------------------------------------------------
  (u"Result 3", "TextBox 4", [
-   [(u"The base paper [9] (doi.org/10.1002/cta.3136) shows that a gate waveform can be "
-     u"chosen by a digital code. It, and every paper after it, then reports one number " +
-     EM + u" how much better than a plain driver. That number adds together two "
-     u"separate effects, and only the second needs a sensor, an ADC and a lookup "
-     u"table. Separating them means running every setting at every operating point, "
-     u"which is why nobody has.", N)],
+   [(u"Segmented gate drivers set drive strength by a pattern fixed at design time "
+     u"[10]. Papers on active gate drivers report one number " + EM + u" the "
+     u"improvement over a conventional driver " + EM + u" and that number adds two "
+     u"separate effects together. Only the second needs a sensor, an ADC and a lookup "
+     u"table. Separating them means running every setting at every operating point.", N)],
  ]),
  (u"Result 3", "TextBox 5",
   [[(u"(A)   Pick a better FIXED setting", Y)]]),

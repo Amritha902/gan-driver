@@ -1,71 +1,66 @@
 BASE PAPER
 ================================================================================
 
-H. Takayama, T. Okuda and T. Hikihara,
-"Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior
- — Preparation Toward Universal Digitization of Power Switching,"
-International Journal of Circuit Theory and Applications,
-vol. 50, no. 1, pp. 183–196, 2022.   DOI: 10.1002/cta.3136
-
-Department of Electrical Engineering, Kyoto University.
-
-  PDF: Takayama_Okuda_Hikihara_2022_Digital_Active_Gate_Drive.pdf  (12 pages)
+  W. J. Zhang, J. Yu, Y. Leng, W. T. Cui, G. Q. Deng and W. T. Ng,
+  "A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength
+   Pattern Control,"
+  in Proc. IEEE 32nd International Symposium on Power Semiconductor Devices
+  and ICs (ISPSD), 2020, pp. 102-105.
+  DOI: 10.1109/ISPSD46842.2020.9170108
+  https://ieeexplore.ieee.org/document/9170108
 
 --------------------------------------------------------------------------------
-WHAT THEY DID
+GET THE PDF
 --------------------------------------------------------------------------------
 
-A gate driver built like a digital-to-analogue converter. The gate-source
-waveform is produced by a multibit gate signal SEQUENCE rather than fixed by a
-resistor, so switching behaviour is chosen by a code. They investigate which
-sequences work by looking at the switching trajectory in the device's state
-space, and they show experimentally that it suppresses turn-off surge voltage
-and ringing.
+IEEE Xplore, subscription. VIT has IEEE Xplore through the library consortium,
+so from the campus network or the library's remote-access portal the PDF
+button on the link above will work. That is the whole procedure.
+
+I could not download it from here: Xplore requires the institutional login.
 
 --------------------------------------------------------------------------------
-WHAT WE TOOK, AND WHERE WE DIFFER
+WHY THIS ONE
 --------------------------------------------------------------------------------
 
-Taken: the multibit gate code. It is the direct ancestor of our 720-point
-control word.
+Same device and same architecture as ours:
 
-Differences, all three checked against the paper itself:
+  - E-mode GaN HEMTs, not SiC
+  - a SEGMENTED output stage - the driver is split into slices
+  - drive strength selected by a PATTERN, not set by a resistor
 
-  1.  THEIR DEVICE IS SiC, OURS IS GaN.
-      Their paper is about SiC MOSFETs. We carry the architecture to GaN
-      HEMTs, where the same idea has more to do: a GaN gate turns on at
-      1.4 V against roughly 2-4 V for SiC, so there is far less margin, and
-      GaN has no body diode, so the off-state gate has to be held down across
-      the whole dead time. The mechanism is device-independent; the problem it
-      has to solve is worse in GaN.
-
-  2.  THEY HAVE NO MILLER CLAMP.
-      The word "clamp" does not appear anywhere in the paper. Ours is a
-      separately-timed active clamp.
-
-  3.  THEY HAVE NO NEGATIVE OFF-BIAS RAIL.
-      No negative gate bias is discussed. Ours selects 0 V or -2 V.
-
-They are aware of the fault: the introduction names "self turn-on phenomenon"
-as a drawback of fast switching, and cites Zhang et al. on crosstalk
-suppression. They do not address it with a clamp or a negative rail.
+That is the structure this project starts from.
 
 --------------------------------------------------------------------------------
-MEASURED COMPARISON — same testbench, only the driver differs
+HOW WE EXTEND IT
 --------------------------------------------------------------------------------
 
-We implemented their driver as models/basedrv.lib and ran it in our own
-sim/dpt.cir, so the comparison is like for like.
+  Theirs                                  Ours
+  ------------------------------------    ------------------------------------
+  ASIC, fixed pattern set                 every field programmable from an
+                                          FPGA: slices, dead time, clamp,
+                                          off-bias rail
+  strength set by one bias resistor       720-point control word
+  pattern chosen at design time           we measure what choosing it per
+                                          operating point is worth
+  no Miller clamp                         separately-timed active clamp
+  no negative off-bias rail               selectable 0 V / -2 V
 
-  Base paper, as we built it        +0.534 V   clears the 1.4 V threshold
-  Ours, constant code, no clamp     -0.249 V   FALSE TURN-ON
-  Ours, clamp on                    +0.570 V
-  Ours, clamp + -2 V off-bias       +2.576 V   4.8x their margin
+The result: choosing the pattern well is worth 25.1 %; changing it per
+operating point adds 3.9 %, and one comparator captures 72 % of that.
 
-Their idea is real and we reproduce it: their time-sequenced code alone clears
-the threshold where a fast fixed code does not.
+--------------------------------------------------------------------------------
+NOTE ON THE EARLIER BASE PAPER
+--------------------------------------------------------------------------------
 
-  Reproduce:  python3 scripts/basepaper_compare.py
+Takayama, Okuda & Hikihara (Int. J. Circuit Theory Appl., 2022,
+doi 10.1002/cta.3136) was previously listed as the base paper. It is not, and
+the deck no longer says it is: that paper is on SiC MOSFETs, not GaN.
+
+It stays in the reference list at [9] as prior art for the mechanism - the
+idea that switching behaviour can be chosen by a digital code rather than by
+a resistor. The PDF is in 5-BASE-PAPER/ for reference. The numerical
+comparison against it has been removed from the deck.
 
 --------------------------------------------------------------------------------
 The full 30-reference list, all publisher-verified, is on the reference slides

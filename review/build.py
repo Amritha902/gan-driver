@@ -164,23 +164,25 @@ sc = S[4]
 # put in front of someone who does not yet know what we build on.
 set_title(sc, "The base paper we build on")
 note = find_shape(sc, "Minimum 8")
-set_body(note, [para([("H. Takayama, T. Okuda and T. Hikihara, ", False),
-                      ("\u201cDigital Active Gate Drive of SiC MOSFETs for Controlling "
-                       "Switching Behavior,\u201d", True),
-                      (" Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183\u2013196, 2022.  "
-                       "doi.org/10.1002/cta.3136", False)],
+set_body(note, [para([("W. J. Zhang, J. Yu, Y. Leng, W. T. Cui, G. Q. Deng and W. T. Ng, ", False),
+                      ("\u201cA Segmented Gate Driver for E-mode GaN HEMTs with Simple "
+                       "Driving Strength Pattern Control,\u201d", True),
+                      (" in Proc. IEEE 32nd Int. Symp. Power Semicond. Devices ICs (ISPSD), "
+                       "2020, pp. 102\u2013105.", False)],
                      level=0, sz=1150, spc=0, bullet=False)])
 
 BASE_ROWS = [
     ("What it does",
-     "Drives the gate from a multibit CODE instead of a resistor \u2014 the driver is a DAC, and "
-     "the code changes DURING the switching edge."),
-    ("Why it matters to us",
-     "A digital code is finite. That is what makes the setting space searchable, and what makes "
-     "the driver implementable on an FPGA rather than as an analogue network."),
-    ("What it leaves open",
-     "It never asks whether the code has to CHANGE as load, voltage and temperature move. "
-     "That question is this project."),
+     "A segmented gate driver for E-mode GaN HEMTs: the output stage is split into slices, and "
+     "drive strength is selected by a pattern rather than set by a resistor."),
+    ("Same device, same architecture",
+     "GaN HEMTs in a bridge, a sliced output stage, strength chosen by a code. That is the "
+     "structure this project starts from."),
+    ("How we extend it",
+     "Theirs is an ASIC with a fixed pattern set, chosen at design time. We make every field "
+     "programmable from an FPGA \u2014 slices, dead time, Miller clamp, off-bias rail \u2014 add "
+     "the clamp and the \u22122 V rail, and measure what choosing the pattern per operating "
+     "point is worth."),
 ]
 tbl = table_of(sc)
 # The template's first column carried a row letter for the old cluster table.
@@ -188,7 +190,7 @@ tbl = table_of(sc)
 # band down the left of every row.
 tbl.columns[0].width = Inches(0.12)
 set_cell(tbl.cell(0, 0), "")
-set_cell(tbl.cell(0, 1), [("Takayama, Okuda & Hikihara (2022)", True)])
+set_cell(tbl.cell(0, 1), [("Zhang, Yu, Leng, Cui, Deng & Ng (2020)  \u2014  IEEE ISPSD", True)])
 set_cell(tbl.cell(0, 2), "")
 set_cell(tbl.cell(0, 3), "")
 set_cell(tbl.cell(0, 4), "")
@@ -207,14 +209,14 @@ move_note(sc, 6.45)
 # ---- slide 6: the five closest papers, base paper first -----------------
 CLOSEST = [R.REFS[8]] + [r for r in R.REFS if r.closest][:4]
 sn = S[5]
-set_title(sn, "The Five Closest — and the base paper we replicate")
+set_title(sn, "The five closest published drivers")
 note = find_shape(sn, "Minimum 8")
 # Was: "author lists and page ranges sit behind IEEE Xplore ... not invented".
 # No longer true -- every reference is resolved against the publisher record
 # via Crossref, so the caveat is gone and this fits on one line.
-set_body(note, [para([("[9] is the BASE PAPER: we reproduce its premise \u2014 a gate waveform "
-                       "chosen by a multibit code \u2014 on GaN, then extend it. All five are "
-                       "verified against the publisher record.", False)],
+set_body(note, [para([("[10] is the base paper: E-mode GaN, segmented output stage, "
+                       "strength chosen by a pattern. All five are verified against the "
+                       "publisher record.", False)],
                      level=0, sz=1000, spc=0, bullet=False)])
 tbl = table_of(sn)
 
@@ -262,7 +264,7 @@ move_note(sn, 6.88)
 # At 6.88 the full-width note runs under the page number in the bottom-right
 # corner, so trim its width to stop short of it.
 for _sh in sn.shapes:
-    if _sh.has_text_frame and _sh.text_frame.text.startswith("[9] is the BASE PAPER"):
+    if _sh.has_text_frame and _sh.text_frame.text.startswith("[10] is the base paper"):
         _sh.width = Inches(11.30)
         break
 

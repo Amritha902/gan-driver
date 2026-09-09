@@ -162,20 +162,19 @@ REFS = [
      "Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183–196",
      "A DAC-inspired driver: a multibit gate signal SEQUENCE sets the gate waveform digitally, "
      "so switching behaviour is chosen by a code rather than by a resistor.",
-     "THE BASE PAPER. Its multibit gate code is the direct ancestor of our 720-point control "
-     "word, and it is digital — implementable on an FPGA — rather than a fixed analogue "
-     "network. We replicate its premise on GaN and then ask the question it does not: of the "
-     "gain a code buys, how much needs per-operating-point adaptation at all?",
-     year="2022", doi="10.1002/cta.3136", base=True,
+     "Prior art for the mechanism, on SiC rather than GaN: switching behaviour chosen by a "
+     "digital code. We ask the question it does not \u2014 of the gain a code buys, how much "
+     "needs per-operating-point adaptation.",
+     year="2022", doi="10.1002/cta.3136", base=False,
      ieee="H. Takayama, T. Okuda and T. Hikihara, “Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior — Preparation Toward Universal Digitization of Power Switching,” Int. J. Circuit Theory Appl., vol. 50, no. 1, pp. 183–196, 2022.", done=True),
  Ref(10, "Zhang, Yu, Leng, Cui, Deng & Ng (2020)",
      "A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control",
      "Proc. IEEE ISPSD, 2020, pp. 102–105",
      "Segmented output stage on E-mode GaN: 7 slices, pattern timing 0.5\u20135 ns, strength set by one external bias resistor",
-     "Architecturally the closest published driver to ours — segmented slices, pattern-selected "
-     "strength. It is an ASIC with a fixed pattern set; our contribution is to search the whole "
-     "pattern space exhaustively and price what the search actually buys.",
-     xplore="9170108", year="2020", closest=True,
+     "THE BASE PAPER. Same device, same architecture: E-mode GaN, segmented output stage, "
+     "strength set by a pattern. Theirs is an ASIC with a fixed pattern set. We make every "
+     "field programmable from an FPGA and price what the pattern space buys.",
+     xplore="9170108", year="2020", base=True, closest=True,
      ieee="W.J. Zhang, J. Yu, Y. Leng, W.T. Cui, G.Q. Deng and W.T. Ng, “A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control,” in Proc. IEEE 32nd Int. Symp. Power Semicond. Devices ICs (ISPSD), 2020, pp. 102–105.", done=True),
  Ref(11, "Wang, Tao, Xiao, Luo, He, Zhou, Zhang & Wang (2024)",
      "High-Frequency Three-Level Gate Driver for GaN HEMT Bridge Crosstalk Suppression",
