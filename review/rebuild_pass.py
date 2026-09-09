@@ -190,14 +190,16 @@ if ci is not None:
     s = p.slides[ci]
     strip(s)
     set_title(s, u"The circuit, drawn and simulated")
-    place(s, "fig_circuit_ltspice.png", 1.24, 4.86)
+    place(s, "fig_circuit_and_run_slide.png", 1.30, 4.55)
     caption(s,
-            u"ltspice/BUCK_converter.asc as LTspice draws it: the 100 V supply "
-            u"and its loop parasitics, the two GaN HEMTs, a segmented driver on "
-            u"each gate, the output filter and the load.",
-            u"This is not a picture of a circuit — it is the circuit. Press "
-            u"Run and it gives 48.84 V and 4.88 A, against the netlist's "
-            u"48.56 V and 4.875 A.")
+            u"Left: ltspice/BUCK_converter.asc as LTspice draws it \u2014 the "
+            u"100 V supply and its loop parasitics, the two GaN HEMTs, a "
+            u"segmented driver on each gate, the output filter and the load. "
+            u"Right: the same file after pressing Run.",
+            u"This is not a picture of a circuit, it is the circuit. It gives "
+            u"48.84 V and 4.88 A; ngspice on the same design gives 48.56 V and "
+            u"4.875 A \u2014 0.6 % apart.",
+            top=6.05)
     print("circuit slide replaced with the drawn LTspice schematic")
 
 # ------------------------------------------------------------ demo video ---
