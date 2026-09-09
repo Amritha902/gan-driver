@@ -351,8 +351,10 @@ SHORT = [
     u"The Five Closest",
     u"The gap this project fills",
     u"Aim, and how we approached it",
+    u"How it works — one use case",
     u"The circuit we simulate",
     u"How we run ngspice",
+    u"Demo — ngspice and LTspice",
     u"ngspice output — the converter",
     u"ngspice output — the fault, and the fix",
     u"ngspice output — the named cases",
@@ -382,6 +384,26 @@ short_idx, _ = pick(SHORT)
 
 for d in [titles[i] or "(untitled)" for i in range(len(titles)) if i not in full_used]:
     print("dropped: %s" % d[:56])
+
+
+def strip_badges(prs):
+    """Remove the repeated VIT logo from content slides.
+
+    It is only 1.5 x 0.57 in in the file, but several phone viewers scale
+    embedded images wrongly and render it across half the slide. The title
+    page keeps its header logo, which is the mandated format.
+    """
+    n = 0
+    for i, sl in enumerate(prs.slides):
+        if i == 0:
+            continue
+        for sh in list(sl.shapes):
+            if sh.shape_type is not None and "PICTURE" in str(sh.shape_type) \
+               and sh.width and sh.width < Inches(2.2) \
+               and sh.left and sh.left > Inches(10.5):
+                sh._element.getparent().remove(sh._element)
+                n += 1
+    return n
 
 
 def write(idxs, path, what):
@@ -429,8 +451,10 @@ def write(idxs, path, what):
                     for r in pa.runs:
                         r.text = str(n)
                 break
+    removed = strip_badges(p)
     p.save(path)
-    print("%-8s %2d slides -> %s" % (what, len(idxs), os.path.basename(path)))
+    print("%-8s %2d slides, %d logos removed -> %s"
+          % (what, len(idxs), removed, os.path.basename(path)))
 
 
 write(short_idx, os.path.join(HERE, "GaN_Review1_PRESENT.pptx"), "PRESENT")

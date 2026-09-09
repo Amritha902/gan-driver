@@ -1,0 +1,66 @@
+BASE PAPER — how to get it
+================================================================================
+
+H. Takayama, T. Okuda and T. Hikihara,
+"Digital Active Gate Drive of SiC MOSFETs for Controlling Switching Behavior
+ — Preparation Toward Universal Digitization of Power Switching,"
+International Journal of Circuit Theory and Applications,
+vol. 50, no. 1, pp. 183–196, 2022.
+DOI: 10.1002/cta.3136
+https://doi.org/10.1002/cta.3136
+
+Authors are at the Department of Electrical Engineering, Kyoto University.
+
+--------------------------------------------------------------------------------
+I COULD NOT DOWNLOAD IT
+--------------------------------------------------------------------------------
+
+It is a Wiley journal article and it is behind a paywall. Wiley also blocks
+automated fetching, so there is no copy in this folder. I did not look for one
+on a pirate mirror.
+
+Three legitimate ways to get the PDF:
+
+  1.  VIT LIBRARY.  VIT subscribes to Wiley Online Library. From the campus
+      network, or through the library's off-campus / remote access portal,
+      open https://doi.org/10.1002/cta.3136 and the PDF button will work.
+      This is the fastest route and almost certainly works.
+
+  2.  ASK THE AUTHORS.  Emailing a corresponding author for a copy of their
+      own paper is normal and usually answered within a day or two.
+      Prof. Takashi Hikihara, Dept. of Electrical Engineering, Kyoto
+      University.
+
+  3.  KYOTO UNIVERSITY REPOSITORY (KURENAI).  Japanese universities deposit
+      accepted manuscripts. Search repository.kulib.kyoto-u.ac.jp for the
+      title. Their pages are JavaScript-driven so I could not read them from
+      here, but it is worth two minutes.
+
+--------------------------------------------------------------------------------
+WHAT WE TOOK FROM IT
+--------------------------------------------------------------------------------
+
+Their contribution: an active gate driver built like a digital-to-analogue
+converter, where a multibit gate code SEQUENCE sets the gate waveform. The
+switching behaviour is chosen by a code instead of by a resistor.
+
+That multibit code is the direct ancestor of our 720-point control word. The
+differences are stated on the "We implemented the base paper, then ours" slide
+in the backup deck:
+
+  - theirs steps the code DURING the switching edge; ours holds it constant
+  - theirs has no Miller clamp and no negative off-bias rail; both are ours
+  - we implemented their driver as models/basedrv.lib and ran it in our own
+    testbench, so the comparison is like for like
+
+  Base paper, as we built it        +0.534 V   clears the 1.4 V threshold
+  Ours, constant code, no clamp     -0.249 V   FALSE TURN-ON
+  Ours, clamp on                    +0.570 V
+  Ours, clamp + -2 V off-bias       +2.576 V   4.8x their margin
+
+Reproduce: python3 scripts/basepaper_compare.py
+
+--------------------------------------------------------------------------------
+The full 30-reference list, all publisher-verified, is on the reference slides
+and in review/refs.py.
+================================================================================
