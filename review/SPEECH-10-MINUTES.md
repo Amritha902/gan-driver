@@ -4,16 +4,23 @@
 Amritha S (23BEC1368) · Sanjay Kumar (23BEC1447) · Aamir Abdullah (23BPS1197)
 Guide: Dr. Bindu, SENSE, VIT Chennai
 
-21 slides. Bracketed times are cumulative — if you are past one, move on.
-Total about 9:30. The video on slide 10 is two minutes long — scrub it or
-play twenty seconds, do not run it through unless she asks.
+21 slides in 600 seconds. Bracketed times are cumulative — if the clock is
+past one, you are behind.
+
+**This is tight.** Twenty-one slides averages 28 seconds each, and there is no
+slack in it. Four slides are marked "drop this one first" — cutting all four
+buys 110 seconds and the talk still covers every rubric item. Decide before
+you start, not halfway through.
+
+The video on slide 10 is two minutes long. Scrub it, or play twenty seconds.
+Playing it through costs you the last four slides.
 
 Slides 11 to 17 are screenshots of a tool printing its own output. Say the
 number on the screen, not one from memory.
 
 ---
 
-## 1 · Title — 20 s  *(0:20)*
+## 1 · Title — 15 s  *(0:15)*
 
 Good morning. Our project is a **GaN-based DC-to-DC power converter**, and what
 we are contributing is the **gate driver** inside it.
@@ -23,7 +30,7 @@ what we measured — and every result I show is the simulator's own output.
 
 ---
 
-## 2 · Problem Statement & Background — 55 s  *(1:15)*
+## 2 · Problem Statement & Background — 45 s  *(1:00)*
 
 A converter chops a DC voltage with two transistors and filters it back into DC
 at a different voltage. Ours uses GaN, because GaN switches in nanoseconds
@@ -40,7 +47,7 @@ the supply is shorted through them.
 
 ---
 
-## 3 · Literature survey — 50 s  *(2:05)*
+## 3 · Literature survey — 30 s  *(1:30)*
 
 Five closest papers. The first row is our base paper — **Takayama, Okuda and
 Hikihara** — who showed the gate waveform can be set by a digital code instead
@@ -54,7 +61,7 @@ different jobs.
 
 ---
 
-## 4 · The gap — 55 s  *(3:00)*
+## 4 · The gap — 40 s  *(2:10)*
 
 Here are the two jobs.
 
@@ -72,7 +79,7 @@ and only the second one has to be paid for in hardware.
 
 ---
 
-## 5 · Aim and approach — 55 s  *(3:55)*
+## 5 · Aim and approach — 40 s  *(2:50)*
 
 Our aim is that measurement.
 
@@ -89,7 +96,7 @@ ngspice for the circuit, Vivado for the FPGA.
 
 ---
 
-## 6 · System architecture — 35 s  *(4:30)*
+## 6 · System architecture — 30 s  *(3:20)*  ⟵ *drop this one first if you are behind*
 
 Block level, left to right. The PWM command comes in, the FPGA controller
 decides the settings, the segmented driver drives the gates, and the power
@@ -101,7 +108,7 @@ question.
 
 ---
 
-## 7 · How it works — one edge, start to finish — 40 s  *(5:10)*
+## 7 · How it works — one edge, start to finish — 30 s  *(3:50)*  ⟵ *drop this one first if you are behind*
 
 One switching edge followed through, for a real case: a battery-storage
 converter as the load falls from 10 amps to 2.
@@ -112,7 +119,7 @@ set once at power-up.
 
 ---
 
-## 8 · The circuit we simulate — 40 s  *(4:35)*
+## 8 · The circuit we simulate — 30 s  *(4:20)*
 
 This is the circuit. 100 volt supply on the left with the stray resistance and
 inductance of the power loop, the two GaN transistors in the middle with a
@@ -123,7 +130,7 @@ laptop if you would like to see that.
 
 ---
 
-## 9 · How we run ngspice — 55 s  *(5:30)*
+## 9 · How we run ngspice — 40 s  *(5:00)*
 
 This is one run, end to end.
 
@@ -145,7 +152,7 @@ Those four steps run 2,880 times for the search, about 35,000 times in total.
 
 ---
 
-## 10 · Demo — the tools running — 30 s  *(6:00)*
+## 10 · Demo — the tools running — 25 s  *(5:25)*  ⟵ *drop this one first if you are behind*
 
 This was recorded on the project laptop. It runs the converter in ngspice, the
 crosstalk fault and its fix, the cases, the Verilog controller, and then
@@ -156,7 +163,7 @@ if she does, everything in it is also on the next six slides.)*
 
 ---
 
-## 11 · Circuit simulation — the converter — 45 s  *(6:15)*
+## 11 · Circuit simulation — the converter — 30 s  *(5:55)*
 
 This is the terminal. 100 volts and 2.426 amps in; **48.56 volts and 4.875 amps
 out**. 242.63 watts drawn, 236.85 delivered — **97.62 per cent efficient**.
@@ -166,7 +173,7 @@ transistors inside it.
 
 ---
 
-## 12 · Crosstalk simulation — the fault and the fix — 50 s  *(7:05)*
+## 12 · Crosstalk simulation — the fault and the fix — 40 s  *(6:35)*
 
 Two runs of the same circuit.
 
@@ -181,7 +188,7 @@ controls.
 
 ---
 
-## 13 · The same result in LTspice — 30 s
+## 13 · The same result in LTspice — 25 s  *(7:00)*  ⟵ *drop this one first if you are behind*
 
 The same circuit drawn as a schematic and run in a second simulator. LTspice
 gets **+1.647556** and **−1.176857 volts**; ngspice got **+1.6486** and
@@ -192,7 +199,7 @@ simulator.
 
 ---
 
-## 14 · Driver simulation — case by case — 45 s  *(7:50)*
+## 14 · Driver simulation — case by case — 30 s  *(7:30)*
 
 Thirteen runs. The top half builds the fix one change at a time, so each change
 owns a line — the clamp, then the negative rail, then slowing the drive.
@@ -204,7 +211,7 @@ thing there is to adapt to.
 
 ---
 
-## 15 · What re-tuning is worth — 40 s  *(8:30)*
+## 15 · What re-tuning is worth — 30 s  *(8:00)*
 
 Of 720 settings, **474 are safe at all four operating points**.
 
@@ -214,7 +221,7 @@ One loses 12.7.
 
 ---
 
-## 16 · The split — the finding — 45 s  *(9:15)*
+## 16 · The split — the finding — 40 s  *(8:40)*
 
 And this is the answer.
 
@@ -228,7 +235,7 @@ really a design-time choice.
 
 ---
 
-## 17 · Vivado output — synthesis — 35 s  *(9:50)*  ⟵ *compress if behind*
+## 17 · Vivado output — synthesis — 25 s  *(9:05)*
 
 The controller in hardware. **20 LUTs and 20 flip-flops** strapped, 33 fully
 programmable — so programmability costs thirteen LUTs. **200 megahertz is met**
@@ -236,7 +243,7 @@ with 1.996 nanoseconds of slack.
 
 ---
 
-## 18 · Work completed — 50 % — 30 s
+## 18 · Work completed — 50 % — 20 s  *(9:25)*
 
 The converter is built and converting. The fault is reproduced and fixed. The
 named cases have been run. The setting has been measured on the running
@@ -244,7 +251,7 @@ converter. The FPGA controller is written, verified and synthesised.
 
 ---
 
-## 19 · What is next — 30 s
+## 19 · What is next — 20 s  *(9:45)*
 
 Review-II: close the loop — add feedback so the output holds when the load
 changes, then re-run the setting study with it closed.
@@ -254,14 +261,14 @@ actually saves. Same tools.
 
 ---
 
-## 20 · References — 10 s
+## 20 · References — 8 s  *(9:53)*
 
 Thirty references, publisher-verified. Fifteen here, the rest in the backup
 deck.
 
 ---
 
-## 21 · Thank you — 10 s
+## 21 · Thank you — 7 s  *(10:00)*
 
 Thank you. I have the files on the laptop and can run any of this now.
 
@@ -293,6 +300,14 @@ Six fields: 6 × 2 × 3 × 5 × 2 × 2 = 720. Slide in the backup deck.
 Ten times the breakdown field, so a thinner device for the same voltage, so far
 less charge to move and much faster switching. The fault we study is a
 consequence of that speed.
+
+**"Your base paper is SiC and yours is GaN — is it really your base paper?"**
+Yes, and the difference is the point. What we take is the architecture: a
+multibit gate code instead of a fixed resistor. That is device-independent.
+Carrying it to GaN is where it has more to do — a GaN gate turns on at 1.4 V
+against roughly 2 to 4 for SiC, so there is far less margin, and GaN has no
+body diode, so the off gate has to be held down across the whole dead time.
+Their paper also has no Miller clamp and no negative rail; both are ours.
 
 **"What is new here?"**
 Nobody has separated the design-time gain from the run-time gain, because it
