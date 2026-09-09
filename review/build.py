@@ -207,7 +207,9 @@ for row in range(len(tbl.rows)):
 move_note(sc, 6.45)
 
 # ---- slide 6: the five closest papers, base paper first -----------------
-CLOSEST = [R.REFS[8]] + [r for r in R.REFS if r.closest][:4]
+# base paper first, then the four closest others
+CLOSEST = ([r for r in R.REFS if r.base]
+           + [r for r in R.REFS if r.closest and not r.base][:4])
 sn = S[5]
 set_title(sn, "The five closest published drivers")
 note = find_shape(sn, "Minimum 8")
@@ -245,7 +247,7 @@ FILLS = {
 }
 
 for row, ref in enumerate(CLOSEST, start=1):
-    tag = "BASE" if ref.base else str(ref.n)
+    tag = "BASE\nPAPER" if ref.base else str(ref.n)
     set_cell(tbl.cell(row, 0), [(tag, ref.base)])
     set_cell(tbl.cell(row, 1), ref.table_author(), grey=not ref.done)
     set_cell(tbl.cell(row, 2), [(ref.title, False), ("\n" + ref.table_venue(), True)],

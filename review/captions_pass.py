@@ -27,7 +27,7 @@ from fill import para, set_body, q
 HERE = os.path.dirname(os.path.abspath(__file__))
 DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
 
-TITLE = u"GaN Based DC–DC Power Converter with an Improved Gate Driver"
+TITLE = u"GaN Based Synchronous Buck Converter with an Improved Gate Driver"
 
 p = Presentation(DECK)
 B, N = True, False

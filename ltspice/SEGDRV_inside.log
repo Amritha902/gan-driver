@@ -1,0 +1,15 @@
+LTspice 26.0.2 for MacOS
+Circuit: /Users/amritha/gan-driver/ltspice/SEGDRV_inside.net
+Start Time: Wed Sep  9 11:15:06 2026
+solver = Normal
+Maximum thread count: 10
+tnom = 27
+temp = 27
+method = trap
+Direct Newton iteration succeeded in finding operating point.
+Total elapsed time: 0.126 seconds.
+
+Files loaded:
+/Users/amritha/gan-driver/ltspice/SEGDRV_inside.net
+
+vgate_high: MAX(V(out))=5.00011587143 FROM 0 TO 1e-06

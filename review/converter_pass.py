@@ -34,7 +34,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
 DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
 
-TITLE = u"GaN Based Power Converter"
+TITLE = u"GaN Based Synchronous Buck Converter with an Improved Gate Driver"
 SUB   = None      # a title should be a name, not a name plus an explanation
 
 p = Presentation(DECK)

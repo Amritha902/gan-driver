@@ -143,6 +143,11 @@ def caption(s, text, top=6.30):
 # ------------------------------------------------------- new figure slides --
 SRC = index_of(u"Result 1")
 NEW = [
+ ("fig_segdrv_inside.png", u"Inside the segmented gate driver",
+  u"Contents of models/segdrv.lib, drawn as ltspice/SEGDRV_inside.asc: eight "
+  u"pull-up slices from the +5 V rail to the gate, eight pull-down slices to "
+  u"the off rail, and the Miller clamp on its own 0.5 \u03a9 path. It runs \u2014 "
+  u"the gate charges to 5.000 V."),
  ("fig_howrun.png", u"How we run ngspice",
   u"One case end to end: the parameters set into sim/dpt.cir, the command, "
   u"what the simulator wrote, and the window the measurement is taken over. "
@@ -272,7 +277,7 @@ s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
 set_title(s, u"Thank you")
 add_text(s, 0.70, 2.30, 11.90, 3.20, [
-    para([(u"GaN Based DC–DC Power Converter with an Improved Gate Driver", B)],
+    para([(u"GaN Based Synchronous Buck Converter with an Improved Gate Driver", B)],
          level=0, sz=2600, spc=400, bullet=False),
     para([(u"Amritha S  23BEC1368     ·     Sanjay Kumar  23BEC1447     ·     "
            u"Aamir Abdullah  23BPS1197", N)],
@@ -306,6 +311,7 @@ ORDER = [
     u"How it works — one use case",
     u"The circuit we simulate",
     u"What ngspice runs",
+    u"Inside the segmented gate driver",
     u"How we run ngspice",
     u"How the work was run",
     u"Which tool did what",
@@ -347,28 +353,21 @@ for i, s in enumerate(p.slides):
 
 # 15 slides, one per rubric item plus the finding the project exists for.
 SHORT = [
-    u"School of",
-    u"Problem Statement",
-    u"The five closest published drivers",
-    u"The base paper we build on",
+    u"School of",                                  # signed title page
+    u"Problem Statement",                          # problem
+    u"The five closest published drivers",         # literature, BASE tagged
     u"The gap this project fills",
-    u"Aim, and how we approached it",
+    u"Aim, and how we approached it",              # solution, method, scope, tools
     u"System Architecture",
-    u"How it works — one use case",
+    u"How it works — one use case",                # the master flowchart
     u"The circuit we simulate",
     u"How we run ngspice",
-    u"Demo — ngspice and LTspice",
+    u"Demo — ngspice and LTspice",                 # the video
     u"Circuit simulation",
     u"Crosstalk simulation",
-    u"The same result in LTspice",
     u"Driver simulation",
-    u"ngspice output — what re-tuning is worth",
-    u"ngspice output — the split",
-    u"Vivado output — synthesis",
-    u"Work Completed",
-    u"Where we are, and what is next",
-    u"References  (1\u201315)",
-    u"Thank you",
+    u"Work Completed",                             # 50 % completion
+    u"References  (1–15)",
 ]
 
 
