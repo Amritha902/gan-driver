@@ -144,6 +144,16 @@ def caption(s, figure, meaning, top=6.22):
 # ------------------------------------------------------- new figure slides --
 SRC = index_of(u"Result 1")
 NEW = [
+ ("fig_netlist.png", u"What ngspice runs",
+  u"The power stage of sim/buck.cir, line by line, with what each line is "
+  u"beside it.",
+  u"ngspice is not given a schematic \u2014 it reads the circuit as text. It is "
+  u"the same converter the schematic draws: ngspice gives 48.56 V, LTspice "
+  u"48.84 V."),
+ ("fig_method.png", u"How the work was run",
+  u"The six steps, in the order they were done.",
+  u"Each had to hold before the next was worth doing \u2014 the fault is "
+  u"recreated and measured before anything is claimed to fix it."),
  ("fig_gan_1.png", u"What a GaN HEMT is",
   u"Silicon against gallium nitride, side by side, on the properties that "
   u"matter for switching.",
@@ -189,17 +199,17 @@ ci = index_of(u"The circuit that is simulated")
 if ci is not None:
     s = p.slides[ci]
     strip(s)
-    set_title(s, u"The circuit, drawn and simulated")
-    place(s, "fig_circuit_and_run_slide.png", 1.30, 4.55)
-    caption(s,
-            u"Left: ltspice/BUCK_converter.asc as LTspice draws it \u2014 the "
-            u"100 V supply and its loop parasitics, the two GaN HEMTs, a "
-            u"segmented driver on each gate, the output filter and the load. "
-            u"Right: the same file after pressing Run.",
-            u"This is not a picture of a circuit, it is the circuit. It gives "
-            u"48.84 V and 4.88 A; ngspice on the same design gives 48.56 V and "
-            u"4.875 A \u2014 0.6 % apart.",
-            top=6.05)
+    set_title(s, u"The circuit we simulate")
+    # Full slide height. The side-by-side composite made the schematic 6.6 in
+    # wide; on its own it gets 8.2 in, which is the difference between a
+    # reviewer reading the component names and squinting at them.
+    place(s, "fig_circuit_ltspice.png", 1.16, 5.28)
+    add_text(s, 0.55, 6.58, 12.25, 0.60, [
+        para([(u"ltspice/BUCK_converter.asc, as LTspice draws it. ", B),
+              (u"100 V supply and its loop parasitics, the two GaN HEMTs, a "
+               u"segmented gate driver on each gate, the output filter, the "
+               u"10 \u03a9 load. Open it and press Run.", N)],
+             level=0, sz=1150, spc=0, bullet=False)])
     print("circuit slide replaced with the drawn LTspice schematic")
 
 # ------------------------------------------------------------ demo video ---
@@ -260,7 +270,9 @@ ORDER = [
     u"The output — what is actually measured",
     u"What “margin” means",
     u"How it works — one use case",
-    u"The circuit, drawn and simulated",
+    u"The circuit we simulate",
+    u"What ngspice runs",
+    u"How the work was run",
     u"Which tool did what",
     u"Demo — ngspice and LTspice",
     u"What we are building — the converter",
