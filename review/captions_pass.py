@@ -31,7 +31,8 @@ TITLE = u"GaN Based DC–DC Power Converter with an Improved Gate Driver"
 
 p = Presentation(DECK)
 B, N = True, False
-EM, MINUS = u"—", u"−"
+EM, MINUS = u"\u2014", u"\u2212"
+SUB = u"GD"
 
 
 def title_shape(slide):
@@ -133,66 +134,55 @@ print("title set on %d slide(s): %s" % (hits, TITLE))
 
 
 # ------------------------------------------------------ 3. the captions ----
-def cap(figure, meaning):
-    return [
-        [(u"The figure. ", B), (figure, N)],
-        [(u"What it means. ", B), (meaning, N)],
-    ]
+def cap(text):
+    """One terse caption line. "The figure... What it means..." was narration
+    printed on the slide -- it belongs in the script, not under the figure."""
+    return [[(u"@FIG@ ", B), (text, N)]]
 
 
 CAPTIONS = [
  (u"What we are building", "TextBox 5", cap(
-   u"(a) the output charging from zero and settling; (b) three switching "
-   u"cycles of the half-bridge; (c) power in against power out.",
-   u"The converter works. 100 V DC becomes 48.6 V DC at 4.88 A, and 97.6 % of "
-   u"the power gets through.")),
+   u"GaN synchronous buck converter. (a) output charging from zero and "
+   u"settling; (b) three switching cycles; (c) power in against power out. "
+   u"100 V DC in, 48.56 V DC out at 4.875 A, 97.62 % efficient.")),
 
  (u"How it works", "TextBox 5", cap(
-   u"One switching edge followed through. Top row: what the controller "
-   u"decides. Bottom row: what the circuit then does.",
-   u"The one shaded diamond is the only live decision. Everything else is set "
-   u"once at power-up.")),
+   u"One switching edge, followed through. Top row: the controller's decision. "
+   u"Bottom row: the circuit's response. Only the shaded diamond is decided at "
+   u"run time.")),
 
  (u"The circuit that is simulated", "TextBox 5", cap(
-   u"The half-bridge as ngspice runs it, from sim/dpt.cir. The red path is "
-   u"Cᴳᴰ on Q2.",
-   u"Charge crosses that red path into the gate that should be OFF. The clamp "
-   u"and the " + MINUS + u"2 V rail are what stop it.")),
+   u"Half-bridge as simulated in sim/dpt.cir. C" + SUB + u" on Q2, in red, is "
+   u"the crosstalk path. GaN has no body diode, so the off-state gate is held "
+   u"down for the whole dead time.")),
 
  (u"The cases we ran", "TextBox 5", cap(
-   u"(a) five settings at full load, each its own ngspice run; (b) the same "
-   u"driver swept at two operating points.",
-   u"The clamp removes the fault. The cheapest dead time is 15 ns at full load "
-   u"and 5 ns at light load " + EM + u" two different numbers, and that gap is "
-   u"the only thing worth adapting.")),
+   u"(a) five settings at 100 V / 10 A, one ngspice run each; (b) dead-time "
+   u"sweep at two operating points. Cheapest dead time: 15 ns at full load, "
+   u"5 ns at light load.")),
 
  (u"Result 1", "TextBox 5", cap(
-   u"Voltage on the gate that is supposed to be OFF, with the fix and without.",
-   u"1.65 V against a 1.4 V threshold turns the device on. The clamp and the "
-   + MINUS + u"2 V rail leave 2.58 V of margin.")),
+   u"Gate\u2013source voltage of the off-state device at low-side turn-on, "
+   u"100 V / 10 A. No clamp: +1.65 V against a 1.4 V threshold. Clamp and "
+   + MINUS + u"2 V rail: " + MINUS + u"1.18 V, margin 2.58 V.")),
 
  (u"Result 2", "TextBox 5", cap(
-   u"Power lost and peak device voltage against drive strength, measured on "
-   u"the running converter.",
-   u"They move in opposite directions, so no setting is best at both. Lowest "
-   u"loss is 4 slices, not the fastest.")),
+   u"Power lost and peak switch-node voltage against pull-up slice count, "
+   u"measured on the running converter. Eight runs of sim/buck.cir; minimum "
+   u"loss at four slices.")),
 
  (u"Result 5", "TextBox 5", cap(
-   u"What re-tuning is worth, against the inductance of the power loop. Eight "
-   u"values, 7,200 runs.",
-   u"It only pays below about 2.5 nH. Loop inductance is board layout, so this "
-   u"is a layout decision, not a device one.")),
+   u"Ceiling on operating-point scheduling against power-loop inductance. "
+   u"Eight values, 7,200 transients. Scheduling pays only below about "
+   u"2.5 nH.")),
 
  (u"Demo", "TextBox 5", cap(
-   u"ngspice waveforms from sim/dpt.cir, the same file every number in this "
-   u"deck comes from. Click to play, 22 s.",
-   u"Left panel crosses the 1.4 V line and the device turns on. Right panel, "
-   u"same circuit with the fix, peaks at " + MINUS + u"1.18 V.")),
+   u"ngspice waveforms from sim/dpt.cir, failing and shipped configurations. "
+   u"22 s. Click to play.")),
 
  (u"FPGA Controller", "TextBox 6", cap(
-   u"The controller's own output, captured by Icarus Verilog.",
-   u"The two pull-up banks never overlap. The shaded gap is the dead time, so "
-   u"no shoot-through window exists.")),
+   u"Icarus Verilog VCD of seg_gate_ctrl.v. The pull-up banks never overlap; "
+   u"the shaded interval is the dead time.")),
 ]
 
 for prefix, name, blocks in CAPTIONS:
@@ -207,10 +197,15 @@ for prefix, name, blocks in CAPTIONS:
 # --- Result 3 and 4 carry prose blocks rather than figure captions ---------
 try:
     s = slide_titled(u"Result 3")
-    restyle(find_by_name(s, "TextBox 6"), cap(
-        u"What one fixed setting costs at each of the four operating points.",
-        u"Three points lose 1" + u"–" + u"4 %. One loses 12.7 %. So "
-        u"re-tuning is worth 5.2 % at the very most."))
+    # TextBox 5 already carries this figure's caption; TextBox 6 was a second
+    # prose block under the same chart. One figure, one caption -- so the text
+    # is merged into 5 and 6 is removed.
+    restyle(find_by_name(s, "TextBox 5"), cap(
+        u"Cost of one fixed control word against the true per-corner optimum, "
+        u"four operating points, 2,880 transients. Penalty 1.1 / 2.3 / 12.7 / "
+        u"3.8 %."))
+    _b6 = find_by_name(s, "TextBox 6")
+    _b6._element.getparent().remove(_b6._element)
     print("caption set: Result 3")
 except KeyError as e:
     print("SKIPPED Result 3 (%s)" % e)
@@ -218,12 +213,10 @@ except KeyError as e:
 try:
     s = slide_titled(u"Result 4")
     restyle(find_by_name(s, "TextBox 14"), [
-        [(u"What it means. ", B),
-         (u"The full sensor + ADC + lookup table is left justifying 3.7 % of "
-          u"the gain, over one fixed setting plus a single comparator.", N)],
-        [(u"The split does not depend on how the two goals are weighted: across "
-          u"106 weightings, (A) stays 23.4" + u"–" + u"29.0 % and (B) 1.3"
-          + u"–" + u"6.4 %, and (A) wins every time.", N)],
+        [(u"Full sensing, ADC and lookup table justify 3.7 % of the total gain "
+          u"over a fixed word plus one comparator. Split is weight-independent: "
+          u"across 106 overshoot weights (A) stays 23.4\u201329.0 % and (B) "
+          u"1.3\u20136.4 %.", N)],
     ])
     print("caption set: Result 4")
 except KeyError as e:
@@ -239,13 +232,10 @@ try:
     for k in ("lIns", "tIns", "rIns", "bIns"):
         bp.set(k, "0")
     set_body(tb, [
-        para([(u"The figure. ", B),
-              (u"What talks to what, left to right: the PWM command, the FPGA, "
-               u"the segmented driver, the power stage.", N)],
-             level=0, sz=1150, spc=60, bullet=False),
-        para([(u"What it means. ", B),
-              (u"Only the dashed block needs sensing, and 72 % of what it buys "
-               u"needs one comparator.", N)],
+        para([(u"@FIG@ ", B),
+              (u"System architecture, left to right: PWM command, FPGA "
+               u"controller, segmented driver, power stage. Only the dashed "
+               u"block requires sensing.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("caption added: System Architecture")
 except KeyError as e:
@@ -333,17 +323,11 @@ if r1 is not None:
     strip(s_lt)
     set_title(s_lt, u"The same result in LTspice, on the drawn circuit")
     place(s_lt, "fig_ltspice_annotated.png", 1.28, 4.80)
-    add_text(s_lt, 0.55, 6.22, 12.25, 0.90, [
-        para([(u"The figure. ", B),
-              (u"LTspice's own output, from the schematic in ltspice/. Top: the "
-               u"switch node falling 100 V. Bottom: what that does to the gate "
-               u"of the device that is supposed to be OFF.", N)],
-             level=0, sz=1150, spc=60, bullet=False),
-        para([(u"What it means. ", B),
-              (u"A second simulator, on a drawn circuit, gets +1.6476 V and "
-               u"−1.1769 V where ngspice gets +1.6486 and −1.1757. About a "
-               u"millivolt apart, so the result is the circuit's, not the "
-               u"simulator's.", N)],
+    add_text(s_lt, 0.55, 6.28, 12.25, 0.74, [
+        para([(u"@FIG@ ", B),
+              (u"Switch node and off-state gate\u2013source voltage, read from "
+               u"the LTspice .raw file. LTspice +1.647556 / \u22121.176857 V; "
+               u"ngspice +1.6486 / \u22121.1757 V on the same netlist.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("LTspice slide inserted after Result 1")
 
@@ -351,14 +335,11 @@ if r1 is not None:
     strip(s_tl)
     set_title(s_tl, u"Which tool did what")
     place(s_tl, "fig_tools.png", 1.35, 4.70)
-    add_text(s_tl, 0.55, 6.20, 12.25, 0.90, [
-        para([(u"The figure. ", B),
-              (u"Every circuit simulation in the study is ngspice. LTspice draws "
-               u"the same circuit and re-measures the crosstalk result.", N)],
-             level=0, sz=1150, spc=60, bullet=False),
-        para([(u"What it means. ", B),
-              (u"One tool does the work. The second exists so that no headline "
-               u"number rests on a single program.", N)],
+    add_text(s_tl, 0.55, 6.26, 12.25, 0.74, [
+        para([(u"@FIG@ ", B),
+              (u"Division of work between the two circuit simulators. All "
+               u"\u2248 35,000 transients are ngspice; LTspice provides an "
+               u"independent check of the crosstalk result.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("tools slide inserted before Result 1")
 
