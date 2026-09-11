@@ -17,7 +17,7 @@ Double-pulse test: GaN half-bridge, SKY130 transistor-level segmented driver
 * ===================================================================
 
 .include ../models/egan.lib
-.lib "/home/user/gan-driver/pdk/sky130_5v.lib" tt
+.lib "../pdk/sky130_5v.lib" tt
 .include ../models/segdrv_sky130.lib
 .include ../models/segdrv.lib
 
