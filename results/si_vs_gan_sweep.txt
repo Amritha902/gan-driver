@@ -1,0 +1,35 @@
+
+  SILICON MOSFET vs GaN HEMT -- swept
+  sim/buck.cir for both. Only the device model and its rated gate
+  drive differ (GaN 5 V, Si 10 V). Rds(on) matched 25.0 / 24.0 mOhm,
+  so conduction loss is equal by construction and what these sweeps
+  show is switching, gate drive and body-diode reverse recovery.
+
+  FREQUENCY SWEEP -- 100 V -> 50 V, 10 ohm load
+  switching loss is paid per cycle, so GaN's lead should grow
+  ------------------------------------------------------------------------
+  f_sw          GaN loss     Si loss     GaN eff      Si eff  GaN wins
+  100k            6.44 W      8.42 W     97.43 %     96.68 %      24 %
+  250k            5.14 W     10.49 W     97.88 %     95.84 %      51 %
+  500k            7.00 W     18.40 W     97.15 %     93.09 %      62 %
+  750k            7.71 W     25.32 W     96.62 %     90.25 %      70 %
+  1meg            6.68 W     30.49 W     97.04 %     88.60 %      78 %
+
+  LOAD SWEEP -- 100 V -> 50 V, 500 kHz  (higher ohms = lighter load)
+  at light load the per-cycle costs dominate, so the gap should widen
+  ------------------------------------------------------------------------
+  R_load        GaN loss     Si loss     GaN eff      Si eff  GaN wins
+  2 ohm          94.76 W    121.84 W     91.50 %     89.44 %      22 %
+  5 ohm          19.81 W     32.74 W     95.80 %     93.45 %      40 %
+  10 ohm          7.00 W     18.40 W     97.15 %     93.09 %      62 %
+  20 ohm          3.06 W     14.86 W     97.64 %     89.87 %      79 %
+  50 ohm          1.44 W     14.10 W     97.46 %     81.00 %      90 %
+
+  BUS SWEEP -- 50 % duty, 500 kHz, 10 ohm load
+  device capacitance is voltage dependent; check it is not one-point luck
+  ------------------------------------------------------------------------
+  V_bus         GaN loss     Si loss     GaN eff      Si eff  GaN wins
+  50 V            1.93 W      6.28 W     96.88 %     90.84 %      69 %
+  100 V           7.00 W     18.40 W     97.15 %     93.09 %      62 %
+  150 V          14.80 W     35.46 W     97.32 %     93.99 %      58 %
+  200 V          25.73 W     57.97 W     97.37 %     94.42 %      56 %

@@ -63,9 +63,18 @@ def make(device):
         t = t.replace("Xls    lsd lsg 0  EGAN params: vth={VTH_T} bh={BH_T}",
                       "Xls    lsd lsg 0  SIMOS")
     # Start settled: the loss measurement wants steady state, not the
-    # start-up transient the stock deck deliberately shows.
+    # start-up transient the stock deck deliberately shows. EVERY reactive
+    # element has to be initialised, not just the output node. `out` is a
+    # derived node -- it hangs off the capacitor through the 0.3 ohm ESR --
+    # so .ic v(out) on its own is overridden by the capacitor's own IC=0
+    # and the converter charges from zero anyway. Set the capacitor and the
+    # inductor, which are where the energy actually lives.
     t = t.replace(".ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)=0",
                   ".ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)={VO}")
+    t = t.replace("Lo     sw  nlo {LOUT} IC=0",
+                  "Lo     sw  nlo {LOUT} IC={IO}")
+    t = t.replace("Co     nc  0   {COUT} IC=0",
+                  "Co     nc  0   {COUT} IC={VO}")
     # ngspice's `let` will not expand {PARAM} the way the netlist body does,
     # so the averaging window is computed here and written in as literals.
     fsw  = float(re.search(r"^\.param FSW=(\S+)", t, re.M).group(1).rstrip("k")) * 1e3
