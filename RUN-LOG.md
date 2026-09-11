@@ -210,3 +210,53 @@ but it points the same way as everything else here.
   each point is still like-for-like, but GaN's own absolute trend across
   frequency is confounded by it. Claim that silicon's loss clearly grows; do
   not claim GaN's is perfectly flat.
+
+---
+
+## Addendum — the RTL and the SPICE model now meet
+
+The architecture was verified in two halves that never touched:
+`seg_gate_ctrl.v` emits eight thermometer-coded wires per bank, and
+`models/segdrv.lib` consumes an **integer** slice count, switching every slice
+from one shared node and enabling each by its series resistance. So every
+number in this project rested on an assumption nobody had tested — that
+"npu = N" in SPICE faithfully stands in for whatever bus the FPGA drives. A
+fault in `thermo_decode.v` could have passed the Icarus bench and stayed
+invisible to every figure ngspice produced.
+
+`scripts/rtl_cosim.py` now reads the RTL's own VCD and checks it:
+
+| bank | configured → asserted |
+|---|---|
+| `ls_pu` | 0→0, 1→1, 2→2, 3→3, 4→4, 5→5, 6→6, 7→7, 8→8 |
+| `ls_pd` | 8→8 |
+| `hs_pu` | 0→0, 8→8 |
+| `hs_pd` | 8→8 |
+
+**Zero mismatches.** Every configured count asserts exactly that many slices,
+on every bank. The abstraction is sound and the existing results stand.
+
+### What was attempted and did not work, and why
+
+Driving the power stage directly from those waveforms — each slice wire as its
+own PWL source into `models/segdrv_bus.lib`, which has one control pin per
+slice. It produced a 7 kV gate on a 5 V rail.
+
+That is not a solver failure; ngspice reported no warnings and solved the
+circuit correctly. It is a true answer to a meaningless question.
+`seg_gate_ctrl_tb.v` is a **controller unit test** — it sweeps encoder
+configurations, and its timeline has no relation to `dpt.cir`'s T1–T4
+schedule. Its stimulus contains windows (35–45 ns among them) where
+`ls_pu = 0`, `ls_pd = 0` and `ls_clamp = 0` together: all sixteen slices off
+and no clamp. Played into the real power stage the gate is then held only
+through the 1 GΩ off-switches, the 100 V transient couples in through C_GD,
+and the node integrates to kilovolts.
+
+Worth recording separately: the first version of that check asserted only
+`V(lsg) > 0.9 × rail`, which passed 7158 V as happily as 5 V. A one-sided
+bound is not a check. It now tests both rails.
+
+`models/segdrv_bus.lib` is kept — it is correct and it is what a real
+co-simulation needs. What is missing is a testbench written for the purpose,
+emitting a realistic PWM edge with dead time matched to the power-stage
+timing. That is the next step, and it is real work rather than a tidy-up.

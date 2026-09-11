@@ -1,0 +1,78 @@
+* ===================================================================
+* segdrv_bus.lib -- the segmented output stage, driven SLICE BY SLICE
+*
+* WHY THIS EXISTS
+* models/segdrv.lib takes the slice count as a PARAMETER (npu, npd) and
+* switches every slice from one shared control node, enabling or
+* disabling each by its series resistance. That is electrically right and
+* it is what every result in this project was measured with -- but it
+* means the RTL's actual output is never exercised in SPICE. The FPGA
+* emits eight thermometer-coded wires per bank; segdrv.lib consumes an
+* integer. A bug in thermo_decode.v would be invisible to every number
+* the simulator produces, because the simulator never sees the bus.
+*
+* This variant closes that gap. Each slice has its OWN control pin, so
+* the eight wires the RTL really drives can be played into the power
+* stage directly, as PWL sources generated from the RTL's VCD. Slice
+* selection is then a property of the waveform, not of a parameter.
+*
+* Everything else is identical to segdrv.lib on purpose -- same SWP
+* switch model, same runit, same clamp on its own 0.5 ohm path -- so that
+* a difference between the two is attributable to the control bus and to
+* nothing else. That comparison is the point: scripts/rtl_cosim.py runs
+* both and checks they agree.
+*
+* Pins:  pu1..pu8  pd1..pd8  clk  out  vp  vn  ref
+*   puN  : logic high => slice N of the pull-up bank conducts
+*   pdN  : logic high => slice N of the pull-down bank conducts
+*   clk  : logic high => Miller clamp engaged
+*   ref  : local logic/driver ground (0 for low side, SW for high side)
+* ===================================================================
+
+.model SWPB2 SW(Ron=0.01 Roff=1e9 Vt=0.5 Vh=0.05)
+
+.subckt SEGDRVBUS pu1 pu2 pu3 pu4 pu5 pu6 pu7 pu8
++                 pd1 pd2 pd3 pd4 pd5 pd6 pd7 pd8
++                 clk out vp vn ref params: runit=8 rclamp=0.5
+
+* ---- pull-up bank : one switch per slice, one control wire each ----
+Spu1 vp nu1 pu1 ref SWPB2
+Rpu1 nu1 out {runit}
+Spu2 vp nu2 pu2 ref SWPB2
+Rpu2 nu2 out {runit}
+Spu3 vp nu3 pu3 ref SWPB2
+Rpu3 nu3 out {runit}
+Spu4 vp nu4 pu4 ref SWPB2
+Rpu4 nu4 out {runit}
+Spu5 vp nu5 pu5 ref SWPB2
+Rpu5 nu5 out {runit}
+Spu6 vp nu6 pu6 ref SWPB2
+Rpu6 nu6 out {runit}
+Spu7 vp nu7 pu7 ref SWPB2
+Rpu7 nu7 out {runit}
+Spu8 vp nu8 pu8 ref SWPB2
+Rpu8 nu8 out {runit}
+
+* ---- pull-down bank ------------------------------------------------
+Spd1 nd1 vn pd1 ref SWPB2
+Rpd1 out nd1 {runit}
+Spd2 nd2 vn pd2 ref SWPB2
+Rpd2 out nd2 {runit}
+Spd3 nd3 vn pd3 ref SWPB2
+Rpd3 out nd3 {runit}
+Spd4 nd4 vn pd4 ref SWPB2
+Rpd4 out nd4 {runit}
+Spd5 nd5 vn pd5 ref SWPB2
+Rpd5 out nd5 {runit}
+Spd6 nd6 vn pd6 ref SWPB2
+Rpd6 out nd6 {runit}
+Spd7 nd7 vn pd7 ref SWPB2
+Rpd7 out nd7 {runit}
+Spd8 nd8 vn pd8 ref SWPB2
+Rpd8 out nd8 {runit}
+
+* ---- active Miller clamp, same as segdrv.lib -----------------------
+Sclk out nclk clk ref SWPB2
+Rclk nclk vn {rclamp}
+
+.ends SEGDRVBUS
