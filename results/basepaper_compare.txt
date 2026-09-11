@@ -3,12 +3,25 @@
   Zhang et al., ISPSD 2020 -- same device (E-mode GaN), same
   architecture (segmented). Identical testbench (sim/dpt.cir);
   only the driver differs.
+
+  Their driver over its own stated range, margin in V:
+                    2n       3n       4n       5n
+      nseg=1    +0.100   +0.204   +0.058   +0.303
+      nseg=2    +0.281   +0.254   +0.407   +0.407
+      nseg=3    +0.292   +0.292   +0.292   +0.292
+      nseg=4    +0.107   +0.107   +0.107   +0.107
+  Their best: nseg=2, TSTEP=4n -> +0.407 V. That is the number we
+  compare against -- quoting them anywhere worse would be choosing
+  the opponent rather than measuring against it.
   --------------------------------------------------------------------------
                                                    V_spur     margin
-  BASE PAPER   7-slice pattern, no clamp, 0 V      1.146 V    +0.254 V   safe
+  BASE PAPER   7-slice pattern at its best, no clamp     0.993 V    +0.407 V   safe
   OURS         clamp OFF, 0 V  (their control)     1.649 V    -0.249 V   FALSE TURN-ON
   OURS         clamp ON,  0 V                      0.830 V    +0.570 V   safe
   OURS         clamp ON, -2 V  (shipped)          -1.176 V    +2.576 V   safe
 
   Threshold 1.4 V. Margin = Vth - max(V_GS,HS) at the hard turn-on (T4).
+  Ours is 6.3x their best (+2.576 V against +0.407 V). Against their
+  worst in-range setting it would read far higher; that number is not
+  the one to quote.
 

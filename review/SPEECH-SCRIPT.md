@@ -148,22 +148,31 @@ This is the slide that separates you from a literature review. Be fair to
 them; the comparison is stronger when you are.
 
 > "Citing a base paper isn't a comparison, so we built theirs. Their driver is
-> a multibit code that changes *during* the switching edge — a shaped gate
-> waveform. No Miller clamp, no negative rail, because those are ours. We ran
-> it inside our own testbench, byte-identical except for the driver."
+> a segmented output stage on the same device we use — seven slices brought in
+> as a timed pattern across the switching edge, the pattern selected by one
+> bias resistor. No Miller clamp, no negative rail, because those are ours. We
+> ran it inside our own testbench, byte-identical except for the driver."
 >
-> "Their approach works. **Plus 0.534 volts** of margin — their sequenced code
-> alone clears the threshold. And it beats our own fast fixed code, which
+> "Their approach works. **Plus 0.407 volts** of margin — their pattern alone
+> clears the threshold. And it beats our own constant code, which
 > false-turns-on at **minus 0.249**. So their contribution is real and we
 > reproduce it."
 >
+> "And we quote them at their *best*. Their pattern has two controls, and we
+> searched their own stated range to find the setting that suits them most.
+> Across that range they run from plus 0.407 down to minus 0.278 — so which
+> setting you hand them decides how far ahead we look. We handed them the best
+> one."
+>
 > "Our Miller clamp gets **plus 0.570** — only marginally past them. The
 > clamp alone is not the story. It's the negative off-bias that does the work:
-> **plus 2.576 volts**, about **4.8 times** their margin."
+> **plus 2.576 volts**, about **6.3 times** their best margin."
 
-If asked what's genuinely new: not the multibit code, that's theirs. Ours is
-the two actuators they don't have, and the exhaustive search that lets us
-price adaptation — which their paper can't do.
+If asked what's genuinely new: not the segmented stage or the pattern, those
+are theirs. Ours is the two actuators they don't have, every field made
+programmable from an FPGA where theirs is an ASIC with a fixed pattern set,
+and the exhaustive search that lets us price adaptation — which their paper
+cannot do.
 
 ---
 ## 15 — Work completed, 50 % (30 s)
@@ -366,8 +375,11 @@ rail, not the source — clamping to source would fight the −2 V bias. Do not
 open the .asc sheets for this; they're teaching drawings and don't have it.
 
 **"Did you actually implement the base paper or just cite it?"**
-Implemented. models/basedrv.lib, run in our own testbench. Slide 13 is the
-result. Their approach works — +0.534 V — and beats our fast fixed code.
+Implemented. models/zhangdrv.lib, run in our own testbench with only the
+driver swapped, and there is a slide for it. Their approach works — +0.407 V
+at their best setting — and beats our own constant code, which fails at
+−0.249 V. We searched their own parameter range to quote them at their best
+rather than at a setting we chose for them.
 
 **"Isn't 13.4 % an artefact of your cost function?"**
 Partly, and we quantified it rather than defending it. Over 106 overshoot

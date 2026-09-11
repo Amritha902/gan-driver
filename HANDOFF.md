@@ -43,18 +43,31 @@ each one.
 - 34,622 transients, matching the row counts of every result CSV
 
 **Base paper, implemented — not just cited**
-`models/basedrv.lib` implements Takayama, Okuda & Hikihara's DAC-architecture
-driver (multibit code changing during the edge; no clamp, no negative rail).
+`models/zhangdrv.lib` implements Zhang et al.'s segmented driver (ISPSD 2020,
+Xplore 9170108): seven slices brought in as a timed pattern across the edge,
+the pattern selected by one bias resistor; no clamp, no negative rail.
 `scripts/basepaper_compare.py` runs it inside `sim/dpt.cir` verbatim, swapping
 only the driver:
 
-    base paper, as implemented    +0.534 V   safe
+    base paper, at its best       +0.407 V   safe
     ours, constant code, no clamp -0.249 V   FALSE TURN-ON
     ours, clamp on                +0.570 V   safe
     ours, clamp + -2 V            +2.576 V   safe
 
-Their sequenced code works and beats a fast fixed code. Our margin comes from
-the negative off-bias, 4.8x theirs. Report it that way.
+Their pattern works and beats a constant code. Our margin comes from the
+negative off-bias, 6.3x theirs. Report it that way.
+
+**Quote them at their BEST — this matters.** Their driver has two controls:
+how many of the seven slices engage first, and the pattern timing, which the
+paper puts at 0.5–5 ns. Across that range their margin runs from **+0.407 V
+down to −0.278 V**, so whichever setting you hand them decides how far ahead
+we look. `basepaper_compare.py` searches their range and quotes their best
+point. Do not quote them anywhere worse — that is choosing the opponent, and
+a reviewer who checks will say so.
+
+NOTE: the earlier Takayama (SiC) reproduction in `models/basedrv.lib` is
+**not** the base paper any more. Ref [9] cites it as prior art for the
+mechanism only; the base paper is now [10], Zhang, on the same device.
 
 **RTL**
 - 8 properties T1–T8 pass under Icarus; `mutate.sh` catches an injected

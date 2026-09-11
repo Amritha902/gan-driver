@@ -189,31 +189,35 @@ EDITS = [
  # ---- base paper ----------------------------------------------------------
  (u"We implemented the base paper", "TextBox 5", [
    [(u"Citing a base paper is not a comparison, so we built theirs too. ", N),
-    (u"models/basedrv.lib", Y),
-    (u" is Takayama, Okuda & Hikihara's driver: a multi-bit code that changes DURING "
-     u"the switching edge, with no gate clamp and no " + MINUS + u"2 V rail, because "
-     u"those two are ours. It runs inside the same sim/dpt.cir, so only the driver "
-     u"differs.", N)],
+    (u"models/zhangdrv.lib", Y),
+    (u" is Zhang et al.'s driver: seven slices brought in as a timed pattern across "
+     u"the switching edge, the pattern picked by one bias resistor, with no gate clamp "
+     u"and no " + MINUS + u"2 V rail, because those two are ours. It runs inside the "
+     u"same sim/dpt.cir, so only the driver differs.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 8", [
-   [(u"Their changing-in-time code on its own already clears the 1.4 V threshold.", N)],
+   [(u"Their staged pattern on its own already clears the 1.4 V threshold, at the "
+     u"best setting in their own stated range.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 11", [
-   [(u"FALSE TURN-ON. ", Y), (u"A fast fixed code is worse than their timed one " + EM +
+   [(u"FALSE TURN-ON. ", Y), (u"A constant code is worse than their staged one " + EM +
      u" their idea is real, and we reproduce it.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 14", [
    [(u"Only just past the base paper. The clamp on its own is not the story.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 17", [
-   [(u"4.8" + TIMES + u" the base paper's margin. This is the version we ship.", N)],
+   [(u"6.3" + TIMES + u" the base paper's best margin. This is the version we ship.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 18", [
    [(u"What the comparison shows. ", Y),
-    (u"The base paper shapes the gate over TIME; we keep the code steady and add two "
-     u"things they do not have. Both clear the threshold " + EM + u" theirs works " +
-     EM + u" but ours clears it by 4.8" + TIMES + u" more, and ours is the one whose "
-     u"settings can then be searched in full.", N)],
+    (u"The base paper stages its slices over TIME and picks the pattern with one "
+     u"resistor; we add two things they do not have and make every field programmable. "
+     u"Both clear the threshold " + EM + u" theirs works, and we quote it at its best "
+     u"setting " + EM + u" but ours clears it by 6.3" + TIMES + u" more, and ours is "
+     u"the one whose settings can then be searched in full. Across their own stated "
+     u"range their margin runs +0.407 V down to " + MINUS + u"0.278 V, so quoting them "
+     u"anywhere worse would be picking the opponent.", N)],
    [(u"Command: python3 scripts/basepaper_compare.py " + EM + u" four ngspice runs, "
      u"prints this table.", N)],
  ]),

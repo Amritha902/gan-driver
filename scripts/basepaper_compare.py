@@ -30,9 +30,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SIM  = os.path.join(ROOT, "sim")
 BASE_SRC = open(os.path.join(SIM, "dpt.cir")).read()
 
-# Pattern step timing. The paper gives 0.5-5 ns; 3 ns sits mid-range and is
-# not tuned to favour either side. NSEG=2 of 7 slices engage first.
+# Their driver has two controls: how many of the seven slices engage first
+# (NSEG) and how long before the rest join (TSTEP, which the paper puts in the
+# 0.5-5 ns range). Both matter a great deal -- across that range their margin
+# runs from -0.278 V to +0.407 V -- so picking one setting for them and then
+# reporting how far ahead we are is not a comparison, it is a choice of
+# opponent. SEARCH below is their own stated range, and main() quotes them at
+# their BEST point in it. Beating a strawman is worth nothing.
 TSTEP, NSEG = "3n", 2
+SEARCH_NSEG  = (1, 2, 3, 4)
+SEARCH_TSTEP = ("2n", "3n", "4n", "5n")
 
 
 def make(clken, vneg, base_paper=False):
@@ -80,29 +87,75 @@ def run(tag, deck):
     return (float(m.group(1)) if m else None), err
 
 
+def search_base(vth):
+    """Run their driver across its own stated range; return the best point.
+
+    Reported in full, not just the winner: the spread is the honest context
+    for any claim about how far ahead we are.
+    """
+    global NSEG, TSTEP
+    keep = (NSEG, TSTEP)
+    best, grid = (None, None, -9.0), []
+    for n in SEARCH_NSEG:
+        row = []
+        for t in SEARCH_TSTEP:
+            NSEG, TSTEP = n, t
+            v, _ = run("srch%d%s" % (n, t), make(0, 0, base_paper=True))
+            m = (vth - v) if v is not None else None
+            row.append(m)
+            if m is not None and m > best[2]:
+                best = (n, t, m)
+        grid.append((n, row))
+    NSEG, TSTEP = keep
+    return best, grid
+
+
 def main():
     VTH = 1.4
-    cases = [
-        ("BASE PAPER   7-slice pattern, no clamp, 0 V", make(0, 0, base_paper=True)),
-        ("OURS         clamp OFF, 0 V  (their control)", make(0, 0)),
-        ("OURS         clamp ON,  0 V", make(1, 0)),
-        ("OURS         clamp ON, -2 V  (shipped)", make(1, -2)),
-    ]
     print("\n  BASE PAPER vs THIS WORK")
     print("  Zhang et al., ISPSD 2020 -- same device (E-mode GaN), same")
     print("  architecture (segmented). Identical testbench (sim/dpt.cir);")
     print("  only the driver differs.")
+
+    # --- their driver, across its own range --------------------------------
+    best, grid = search_base(VTH)
+    print("\n  Their driver over its own stated range, margin in V:")
+    print("      %-8s %s" % ("", "  ".join("%7s" % t for t in SEARCH_TSTEP)))
+    for n, row in grid:
+        cells = "  ".join(("%+7.3f" % m) if m is not None else "   FAIL" for m in row)
+        print("      nseg=%-3d %s" % (n, cells))
+    print("  Their best: nseg=%d, TSTEP=%s -> %+.3f V. That is the number we"
+          % (best[0], best[1], best[2]))
+    print("  compare against -- quoting them anywhere worse would be choosing")
+    print("  the opponent rather than measuring against it.")
+
+    global NSEG, TSTEP
+    NSEG, TSTEP = best[0], best[1]
+    cases = [
+        ("BASE PAPER   7-slice pattern at its best, no clamp", make(0, 0, base_paper=True)),
+        ("OURS         clamp OFF, 0 V  (their control)", make(0, 0)),
+        ("OURS         clamp ON,  0 V", make(1, 0)),
+        ("OURS         clamp ON, -2 V  (shipped)", make(1, -2)),
+    ]
     print("  " + "-" * 74)
     print("  %-44s %10s %10s" % ("", "V_spur", "margin"))
+    ours = None
     for label, deck in cases:
         v, err = run(label.split()[0].lower() + str(abs(hash(label)) % 999), deck)
         if v is None:
             print("  %-44s   FAILED  %s" % (label, err[0][:28] if err else ""))
             continue
         marg = VTH - v
+        if label.startswith("OURS") and "shipped" in label:
+            ours = marg
         print("  %-44s %9.3f V %+9.3f V   %s"
               % (label, v, marg, "FALSE TURN-ON" if marg < 0 else "safe"))
-    print("\n  Threshold %.1f V. Margin = Vth - max(V_GS,HS) at the hard turn-on (T4).\n" % VTH)
+    print("\n  Threshold %.1f V. Margin = Vth - max(V_GS,HS) at the hard turn-on (T4)." % VTH)
+    if ours and best[2] > 0:
+        print("  Ours is %.1fx their best (%+.3f V against %+.3f V). Against their"
+              % (ours / best[2], ours, best[2]))
+        print("  worst in-range setting it would read far higher; that number is not")
+        print("  the one to quote.\n")
 
 
 if __name__ == "__main__":

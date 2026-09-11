@@ -1298,21 +1298,22 @@ add_text(s_bp, 12.53, 7.05, 0.50, 0.30,
          [para([("13", False)], level=0, sz=1100, spc=0, bullet=False)])
 add_text(s_bp, 0.70, 1.32, 12.10, 0.95, [
     para([("Citing a base paper is not a comparison. ", True),
-          ("models/basedrv.lib implements Takayama, Okuda & Hikihara's DAC-architecture "
-           "driver — a multibit code that changes DURING the switching edge, with no "
-           "Miller clamp and no negative off-bias rail, because those are ours. It runs "
-           "inside sim/dpt.cir, byte-identical otherwise, so only the driver differs.",
+          ("models/zhangdrv.lib implements Zhang et al.'s segmented driver — seven "
+           "slices brought in as a timed pattern across the switching edge, the pattern "
+           "selected by one bias resistor, with no Miller clamp and no negative off-bias "
+           "rail, because those are ours. It runs inside sim/dpt.cir, byte-identical "
+           "otherwise, so only the driver differs.",
            False)], level=0, sz=1250, spc=0, bullet=False)])
 BPC = [
- ("Base paper, as we built it", "+0.534 V", False,
-  "Their time-sequenced multibit code alone already clears the 1.4 V threshold."),
+ ("Base paper, at its best setting", "+0.407 V", False,
+  "Their seven-slice pattern alone already clears the 1.4 V threshold."),
  ("Ours, constant code, no clamp", "−0.249 V", False,
-  "FALSE TURN-ON. A fast FIXED code is worse than their sequenced one — their "
+  "FALSE TURN-ON. A constant code is worse than their staged pattern — their "
   "contribution is real, and we reproduce it."),
  ("Ours, active Miller clamp on", "+0.570 V", False,
   "Only marginally past the base paper. The clamp alone is not the story."),
  ("Ours, clamp + −2 V off-bias", "+2.576 V", True,
-  "4.8× the base paper's margin. This is the shipped configuration."),
+  "6.3× the base paper's best margin. This is the shipped configuration."),
 ]
 for i, (lab, val, hot, note) in enumerate(BPC):
     y = 2.62 + i * 0.70
@@ -1324,10 +1325,12 @@ for i, (lab, val, hot, note) in enumerate(BPC):
              [para([(note, False)], level=0, sz=1150, spc=0, bullet=False)])
 add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
     para([("What the comparison shows. ", True),
-          ("The base paper shapes the gate waveform in TIME; we hold the code constant and "
-           "add two actuators it does not have. Both clear the threshold — theirs works "
-           "— but ours clears it by 4.8× more, and ours is the one whose settings "
-           "can then be searched exhaustively to ask what adaptation is actually worth.",
+          ("The base paper stages its slices in TIME and picks the pattern with one "
+           "resistor; we add two actuators it does not have and make every field "
+           "programmable. Both clear the threshold — theirs works, and we quote it at "
+           "the best setting in its own stated range — but ours clears it by 6.3× more, "
+           "and ours is the one whose settings can then be searched exhaustively to ask "
+           "what adaptation is actually worth.",
            False)], level=0, sz=1250, spc=150, bullet=False),
     para([("Reproduce: ", True), ("python3 scripts/basepaper_compare.py", True),
           ("  — four ngspice runs, prints this table.", False)],

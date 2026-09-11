@@ -310,6 +310,11 @@ ORDER = [
     u"Why GaN and not silicon",
     u"Why the GaN HEMT causes",
     u"The base paper we build on",
+    # build.py creates this slide and simplify.py writes its text, but it was
+    # never named here -- so ORDER dropped it and the deck cited a base paper
+    # it never compared against, while the speech script talked the audience
+    # through a slide that did not exist.
+    u"We implemented the base paper",
     u"The five closest published drivers",
     u"The gap this project fills",
     u"The driver's settings",
