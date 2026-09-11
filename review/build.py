@@ -594,11 +594,12 @@ set_body(con_shape, [
     para([("Choosing the word well: ", True), ("25.1 %.   ", False),
           ("Adapting it per operating point: ", True), ("3.9 %.", False)],
          level=0, sz=1600, spc=220, bullet=True),
-    para([("One comparator takes 72 % of that 3.9 %.", True)],
+    para([("One comparator takes 46 % of that 3.9 %; two take 72 %.", True)],
          level=0, sz=1600, spc=220, bullet=True),
     para([("The deliverable: ", True),
-          ("a fixed word plus a light-load comparator. The full sense + ADC + lookup table "
-           "is left justifying ", False), ("3.7 %", True), (".", False)],
+          ("a fixed word plus one bus-voltage comparator. The full sense + ADC + lookup "
+           "table is left justifying ", False), ("7.2 %", True),
+          (" — or 3.7 % if the second comparator is built too.", False)],
          level=0, sz=1600, spc=340, bullet=True),
     para([("The FPGA half is real: ", True),
           ("20 LUTs and 20 flip-flops on an xc7a35t, 200 MHz met with 1.996 ns of slack.",
@@ -714,11 +715,12 @@ NOTES = {
               "and you are reporting it rather than hiding it. Keep it short — slides 18 and "
               "19 do the real work."),
  14: ("45 s", "CORE — the novelty slide, and the one sentence the panel should leave with: "
-              "'a full sense-plus-ADC-plus-lookup-table is left justifying 3.7 % of the gain "
-              "over a fixed word and one comparator.' Build it in three steps. (1) Choosing "
+              "'a full sense-plus-ADC-plus-lookup-table is left justifying 7.2 % of the gain "
+              "over a fixed word and ONE comparator.' Build it in three steps. (1) Choosing "
               "the fixed word well is worth 25.1 %. (2) Adapting per corner adds only 3.9 % "
-              "— a seventh of the total. (3) And 72 % of even THAT is capturable with a "
-              "single light-load comparator, not a lookup table. No published work separates "
+              "— a seventh of the total. (3) And 46 % of even THAT is capturable with a "
+              "single comparator on bus voltage, not a lookup table; two comparators reach "
+              "72 %, which is the 3.7 % figure. No published work separates "
               "these, because separating them needs the exhaustive search rather than a "
               "shortlist. If asked why nobody found this: they report one number."),
  15: ("40 s", "CORE — the design chart, and the most USEFUL thing in the deck. Do NOT call it "
@@ -823,7 +825,7 @@ add_text(s_nov, 0.70, 1.38, 12.10, 0.80, [
 
 NOV = [("(A)   Choose a better FIXED word",        "25.1 %", "no sensing · no LUT"),
        ("(B)   ADAPT it per operating point",      "3.9 %",  "needs all of it"),
-       ("(B′)  …but ONE comparator captures 72 % of (B)", "2.8 %", "a threshold, not a LUT")]
+       ("(B′)  …but ONE comparator captures 46 % of (B)", "1.8 %", "a threshold, not a LUT")]
 for i, (label, val, sub) in enumerate(NOV):
     y = 2.42 + i * 1.12
     add_text(s_nov, 0.70, y, 6.55, 0.40,
@@ -835,9 +837,12 @@ for i, (label, val, sub) in enumerate(NOV):
 
 add_text(s_nov, 0.70, 5.92, 12.10, 1.10, [
     para([("So the full sense + ADC + lookup table is left justifying ", False),
-          ("3.7 % of the total achievable gain", True),
-          (" over a fixed word plus one comparator. Adaptation is 13.4 % of the gain; a single "
-           "threshold takes 72 % of that.", False)], level=0, sz=1300, spc=130, bullet=False),
+          ("7.2 % of the total achievable gain", True),
+          (" over a fixed word plus ONE comparator. Adaptation is 13.4 % of the gain; one "
+           "threshold, on bus voltage at 75 V, takes 46 % of that. Two comparators take "
+           "72 %, leaving 3.7 % — the corner worth isolating shares its bus, load and "
+           "temperature with others, so one threshold cannot reach it.", False)],
+         level=0, sz=1300, spc=130, bullet=False),
     para([("Every figure shares one baseline — the median control word that is safe at all four "
            "corners. The split does not rest on the weighting: swept over 106 overshoot "
            "weights, (A) stays ", False), ("23.4–29.0 %", True), (" and (B) ", False),

@@ -215,10 +215,13 @@ try:
     restyle(find_by_name(s, "TextBox 14"), [
         [(u"Adaptation is 13.4 % of the total gain \u2014 3.9 points of 29.0; "
           u"the other 86.6 % comes from the fixed word and needs no sensing. ", B),
-         (u"Full sensing, ADC and lookup table justify 3.7 % of the total gain "
-          u"over a fixed word plus one comparator. Split is weight-independent: "
-          u"across 106 overshoot weights (A) stays 23.4\u201329.0 % and (B) "
-          u"1.3\u20136.4 %.", N)],
+         (u"Full sensing, ADC and lookup table justify 7.2 % of the total gain "
+          u"over a fixed word plus ONE comparator (bus voltage at 75 V, which "
+          u"takes 46 % of the adaptive gap), or 3.7 % over a fixed word plus TWO. "
+          u"One threshold cannot do better: the corner worth isolating shares its "
+          u"bus, its load and its temperature with others. Split is "
+          u"weight-independent: across 106 overshoot weights (A) stays "
+          u"23.4\u201329.0 % and (B) 1.3\u20136.4 %.", N)],
     ])
     print("caption set: Result 4")
 except KeyError as e:

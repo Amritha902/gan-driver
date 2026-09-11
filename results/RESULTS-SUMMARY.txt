@@ -21,8 +21,10 @@
   (A) choosing a better fixed word                           25.1 % of baseline             novelty.py
   (B) adapting it per operating point                        3.9 % of baseline              novelty.py
   adaptation as a share of the total gain                    13.4 %                         novelty.py
-  captured by ONE comparator (K = 2)                         72 % of (B)                    howmanywords.py
-  left for a full sense + ADC + LUT                          3.7 % of the total gain        novelty.py
+  captured by ONE real comparator (VBUS at 75 V)             46 % of (B)                    novelty.py
+  captured by TWO comparators (best 2-word split)            72 % of (B)                    novelty.py
+  left for a full sense + ADC + LUT, over 1 comparator       7.2 % of the total gain        novelty.py
+  left for a full sense + ADC + LUT, over 2 comparators      3.7 % of the total gain        novelty.py
   words needed for the full benefit                          3 of 4  (K = 4 adds nothing)   howmanywords.py
 
   WHAT THE ADAPTIVE HARDWARE COSTS

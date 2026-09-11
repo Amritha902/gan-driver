@@ -304,8 +304,17 @@ even weaker in practice.
 > adaptation is **13.4 %** of the total gain — the other 86.6 % needs no
 > sensing, no ADC, no lookup table."
 >
-> "And one comparator takes 72 % of even that 3.9. A full sense-plus-ADC-plus-
-> lookup-table system is left justifying **3.7 %**."
+> "And one comparator — a threshold on bus voltage — takes 46 % of even that
+> 3.9. So a full sense-plus-ADC-plus-lookup-table system is left justifying
+> **7.2 %**."
+>
+> "Two comparators reach 72 %, which brings it down to 3.7. We report the
+> one-comparator number because the corner worth isolating shares its bus
+> voltage, its load and its temperature with other corners — so a single
+> threshold cannot select it, however much we would like to quote 3.7."
+
+If asked why not just quote 3.7: because it is not one comparator, and saying
+"one comparator" when it takes two is the kind of thing that gets found.
 
 Say plainly: this is a negative result about the adaptive premise, and it is
 the contribution.

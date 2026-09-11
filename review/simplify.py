@@ -267,11 +267,14 @@ EDITS = [
  (u"Result 3", "TextBox 8",
   [[(u"(B)   CHANGE it per operating point", Y)]]),
  (u"Result 3", "TextBox 11",
-  [[(u"(B′)  …but ONE comparator gets 72 % of (B)", Y)]]),
+  [[(u"(B′)  …but ONE comparator gets 46 % of (B)", Y)]]),
  (u"Result 3", "TextBox 14", [
-   [(u"So the full sensor + ADC + lookup table is left justifying 3.7 % of the total "
+   [(u"So the full sensor + ADC + lookup table is left justifying 7.2 % of the total "
      u"gain, over a fixed setting plus one comparator. Re-tuning is 13.4 % of the "
-     u"gain; a single threshold takes 72 % of that.", N)],
+     u"gain; one comparator " + EM + u" a threshold on bus voltage at 75 V " + EM +
+     u" takes 46 % of that. Two comparators take 72 %, leaving 3.7 %; the isolated "
+     u"corner shares its bus, load and temperature with others, so one threshold "
+     u"cannot select it.", N)],
    [(u"Every figure uses the same baseline " + EM + u" the middle setting that is safe "
      u"at all four operating points. The split does not depend on the weighting: "
      u"across 106 weightings, (A) stays 23.4" + u"–" + u"29.0 % and (B) 1.3" +
@@ -313,9 +316,11 @@ EDITS = [
  (u"Conclusion & next steps", "Text 2", [
    [(u"What the data supports", Y)],
    [(u"Picking the setting well: 25.1 %.   Changing it per operating point: 3.9 %.", N)],
-   [(u"One comparator gets 72 % of that 3.9 %.", N)],
-   [(u"What to build: ", Y), (u"one fixed setting plus a light-load comparator. The "
-     u"full sensor + ADC + lookup table is left justifying 3.7 %.", N)],
+   [(u"One comparator " + EM + u" bus voltage at 75 V " + EM + u" gets 46 % of that "
+     u"3.9 %. Two comparators get 72 %.", N)],
+   [(u"What to build: ", Y), (u"one fixed setting plus one comparator. The full "
+     u"sensor + ADC + lookup table is left justifying 7.2 % " + EM + u" or 3.7 % if "
+     u"you build the second comparator.", N)],
    [(u"The FPGA half is real: 20 LUTs and 20 flip-flops on an xc7a35t, 200 MHz met "
      u"with 1.996 ns to spare.", N)],
    [(u"What is next", Y)],

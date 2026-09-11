@@ -279,10 +279,11 @@ for _s in p.slides:
                       u"\u2014 236.9 W, 97.6 % efficient.", N)],
                     [(u"Picking the setting well: 25.1 %.   Changing it per "
                       u"operating point: 3.9 %.", N)],
-                    [(u"One comparator gets 72 % of that 3.9 %.", N)],
+                    [(u"One comparator — bus voltage at 75 V — gets 46 % of "
+                      u"that 3.9 %; two comparators get 72 %.", N)],
                     [(u"What to build: ", B),
-                     (u"one fixed setting plus a light-load comparator \u2014 not a "
-                      u"sensor, an ADC and a lookup table.", N)],
+                     (u"one fixed setting plus one bus-voltage comparator \u2014 not "
+                      u"a sensor, an ADC and a lookup table.", N)],
                     [(u"The FPGA half is real: 20 LUTs and 20 flip-flops, 200 MHz "
                       u"met with 1.996 ns to spare.", N)],
                     [(u"What is next", B)],

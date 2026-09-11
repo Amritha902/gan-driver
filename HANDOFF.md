@@ -35,8 +35,13 @@ each one.
 **Simulation**
 - Crosstalk margins **−0.249 / +0.570 / +2.576 V** (`scripts/gansim.py`)
 - Ceiling on scheduling **5.2 %**, per-corner 1.1 / 2.3 / 12.7 / 3.8 (`ceiling.py`)
-- Decomposition **25.1 % fixed, 3.9 % adaptive, 13.4 % share**, 72 % from one
-  comparator, 3.7 % residual (`novelty.py`)
+- Decomposition **25.1 % fixed, 3.9 % adaptive, 13.4 % share**. Of the adaptive
+  part, **46 % is reachable with ONE comparator** (bus voltage at 75 V),
+  leaving **7.2 %** for a full sense + ADC + LUT. Two comparators reach 72 %,
+  leaving 3.7 % (`novelty.py`).
+  QUOTE THE ONE-COMPARATOR NUMBER. The corner worth isolating shares its bus
+  voltage, load and temperature with other corners, so no single threshold
+  selects it -- 72 % needs two comparators, and calling it one is wrong.
 - Weight independence: over 106 overshoot weights, (A) stays 23.4–29.0 % and
   (B) 1.3–6.4 %, and **(A) exceeds (B) at every weight out to 5.0**
   (`weight_sensitivity.py`) — the strongest form of the headline claim

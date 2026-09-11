@@ -107,8 +107,8 @@ roughly 33,200 transient simulations. Splitting the benefit:
 - **Adapting** it per operating point on top of that: a further **3.9%**.
 
 So adaptation is only about **13.4%** of the total gain — the large majority
-comes from simply picking a better *fixed* setting. And 72% of even that small
-adaptive part is captured by a **single comparator** (K=2), leaving ~3.7% of
+comes from simply picking a better *fixed* setting. And 46% of even that small
+adaptive part is captured by a **single comparator** on bus voltage, leaving ~7.2% of
 the total to justify a full sense + ADC + lookup-table system.
 
 **This is the contribution, and it is a negative-result finding — say so

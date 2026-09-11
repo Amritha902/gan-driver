@@ -227,11 +227,11 @@ And this is the answer.
 
 Choosing a fixed setting well: **25.1 per cent**, no hardware. Adapting per
 operating point: **3.9**. So adaptation is thirteen per cent of the gain, and
-one comparator captures most of that.
+a single comparator on bus voltage captures nearly half of even that.
 
-Which means the full sensor, ADC and lookup table justify under four per cent.
-Our conclusion is that most of what the literature credits to adaptation is
-really a design-time choice.
+Which means the full sensor, ADC and lookup table justify about seven per cent
+— or about four, if you build a second comparator. Our conclusion is that most
+of what the literature credits to adaptation is really a design-time choice.
 
 ---
 
