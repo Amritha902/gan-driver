@@ -163,6 +163,13 @@ NEW = [
   u"Silicon MOSFET against GaN HEMT on the properties that govern switching. "
   u"Device modelled: EPC2010C class, 200 V, 25 m\u03a9, V" + u"th" +
   u" = 1.4 V (models/egan.lib)."),
+ ("fig_si_vs_gan.png", u"Why GaN and not silicon — measured, same converter",
+  u"Same buck converter, same job, only the device swapped. Rₓₛ(on) "
+  u"matched 25.0 mΩ GaN against 24.0 mΩ Si, each at its own rated gate "
+  u"drive, so conduction loss is equal by construction and what is left is "
+  u"switching, gate drive and the body-diode recovery GaN does not have. At "
+  u"500 kHz GaN wastes 5.9 W against silicon's 17.3 W; the lead widens to 78 % "
+  u"at 1 MHz and 90 % at light load (scripts/si_vs_gan_sweep.py)."),
  ("fig_gan_2.png", u"Why the GaN HEMT causes the problem we solve",
   u"Three device properties and their consequence in a half-bridge: a 1.4 V "
   u"threshold, 150 pF from drain to gate, and no body diode."),
@@ -300,6 +307,7 @@ ORDER = [
     u"Problem Statement",
     u"Aim, and how we approached it",
     u"What a GaN HEMT is",
+    u"Why GaN and not silicon",
     u"Why the GaN HEMT causes",
     u"The base paper we build on",
     u"The five closest published drivers",
