@@ -1,0 +1,31 @@
+
+  HOW MUCH CONTROLLER DOES THIS DRIVER NEED?
+  4 corners, 720 control words, 474 of them feasible at every corner.
+  Cost = E_tot (uJ) + 0.05 x overshoot %%; words that false-turn-on excluded.
+  Everything below is scored as the share of the 0.3470 uJ that lies
+  between one fixed word and a perfect lookup table.
+
+  controller                    mean cost     vs fixed  of oracle
+  ----------------------------------------------------------------
+  0  CONSTANT  (no sensing)      6.7123 uJ          --       0 %
+  1  STUMP     (1 comparator)     6.5535 uJ     0.1589       46 %
+  2  TREE d=2  (<=2 comps)       6.3653 uJ     0.3470      100 %
+  3  ORACLE    (full LUT)        6.3653 uJ     0.3470      100 %
+
+  The one comparator that does it: VBUS at 75 -- and it recovers
+  46 % of everything a perfect lookup table could ever deliver.
+  The depth-2 tree equals the oracle exactly. With four corners a
+  four-leaf tree can address each one separately, so this is
+  arithmetic, not a result -- it is reported to be complete.
+
+  LEAVE-ONE-CORNER-OUT (n=4, so: weak evidence, not proof)
+  Fit the comparator on three corners, score it on the fourth.
+    hold out 100V_10A_25C     split on VBUS   -> +0.2245 uJ vs the fixed word  (WORSE)
+    hold out 200V_10A_125C    split on VBUS   -> +3.0742 uJ vs the fixed word  (WORSE)
+    hold out 200V_2A_125C     split on VBUS   -> -0.2494 uJ vs the fixed word  (better)
+    hold out 50V_2A_25C       split on ILOAD  -> +4.8039 uJ vs the fixed word  (WORSE)
+  3 of 4 held-out corners came out worse than just using the fixed
+  word. A comparator tuned on three corners does not reliably help on
+  a fourth it never saw -- which is the same conclusion the rest of
+  the project reaches, arrived at a different way.
+

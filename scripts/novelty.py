@@ -96,7 +96,21 @@ def main(w_ov=W_OV):
           % (100 - 100*B/T))
 
     # How much of (B) survives if the controller may pick between only TWO
-    # words on a single threshold? Exhaustive over the 7 two-way splits.
+    # words? Exhaustive over the 7 two-way splits.
+    #
+    # CAREFUL -- and this was wrong here until it was checked. Enumerating all
+    # 2^n splits allows partitions that NO single comparator can produce. The
+    # best split below isolates {200V_2A_125C}, and that corner shares its bus
+    # voltage with 200V_10A_125C, its load with 50V_2A_25C and its junction
+    # temperature with 200V_10A_125C -- so no one threshold on one sensed
+    # quantity separates it. Selecting it needs TWO comparators (e.g. VBUS
+    # high AND load low).
+    #
+    # So this search answers "best two-word controller with a perfect
+    # selector", which is a real and useful bound, but it is NOT "one
+    # comparator". The threshold-realisable search below is the one-comparator
+    # answer, and it is the weaker of the two. Both are reported; quoting the
+    # first as a single comparator overstates what the cheap hardware buys.
     def best_for(group):
         cand = [k for k, d in by.items()
                 if all(c in d and d[c]["margin"] > 0 for c in group)]
@@ -116,19 +130,60 @@ def main(w_ov=W_OV):
         tot = (t1 + t2) / len(corners)
         if best2 is None or tot < best2[0]: best2 = (tot, g1, g2)
 
+    # Now the same search restricted to splits ONE comparator can actually
+    # produce: a threshold on a single sensed quantity.
+    SENSED = ("VBUS", "ILOAD", "TJ")
+    opv = {}
+    for r in rows:
+        if r["corner"] in corners:
+            opv.setdefault(r["corner"], {k: r[k] for k in SENSED if k in r})
+    best1 = None
+    for feat in SENSED:
+        if not all(feat in opv[c] for c in corners):
+            continue
+        vals = sorted({opv[c][feat] for c in corners})
+        for i in range(len(vals) - 1):
+            thr = (vals[i] + vals[i + 1]) / 2.0
+            lo = [c for c in corners if opv[c][feat] <= thr]
+            hi = [c for c in corners if opv[c][feat] > thr]
+            if not lo or not hi:
+                continue
+            t1, t2 = best_for(lo), best_for(hi)
+            if t1 is None or t2 is None:
+                continue
+            tot = (t1 + t2) / len(corners)
+            if best1 is None or tot < best1[0]:
+                best1 = (tot, feat, thr, lo, hi)
+
     if best2 and B > 0:
         c2, g1, g2 = best2
         closed = (c_best - c2) / B
-        print("\n  With only TWO words, chosen by a single comparator:")
+        small = g1 if len(g1) < len(g2) else g2
+        print("\n  TWO words with a PERFECT selector (upper bound, not hardware):")
         print("    mean cost %.3f  -> closes %.0f %% of the adaptive gap" % (c2, 100*closed))
-        print("    split: {%s} vs the rest" % ", ".join(g1 if len(g1) < len(g2) else g2))
-        print("\n  So a full sense + ADC + lookup table delivers %.1f %% x %.1f %% ="
-              % (100*B/T, 100*(1-closed)))
-        print("  %.1f %% of the total achievable gain over a fixed word plus one"
-              % (100 * (B/T) * (1-closed)))
-        print("  comparator. That is the number the adaptive hardware has to justify.")
+        print("    split: {%s} vs the rest" % ", ".join(small))
         out["closed"] = 100 * closed
         out["residual"] = 100 * (B / T) * (1 - closed)
+
+    if best1 and B > 0:
+        c1, feat, thr, lo, hi = best1
+        closed1 = (c_best - c1) / B
+        print("\n  TWO words chosen by ONE REAL COMPARATOR (%s at %.4g):" % (feat, thr))
+        print("    mean cost %.3f  -> closes %.0f %% of the adaptive gap" % (c1, 100*closed1))
+        print("    split: {%s} vs {%s}" % (", ".join(lo), ", ".join(hi)))
+        print("\n  The two differ, and the difference matters. The split above needs")
+        print("  a selector no single threshold can build: the isolated corner shares")
+        print("  its bus voltage, its load and its temperature with other corners, so")
+        print("  picking it out takes TWO comparators. With one, %.0f %% of the adaptive"
+              % (100 * closed1))
+        print("  gap closes, not %.0f %%." % (100 * closed))
+        print("\n  So the residual a full sense + ADC + lookup table must justify is")
+        print("    %.1f %% over a fixed word + ONE comparator   (%.1f %% x %.1f %%)"
+              % (100 * (B/T) * (1-closed1), 100*B/T, 100*(1-closed1)))
+        print("    %.1f %% over a fixed word + TWO comparators  (%.1f %% x %.1f %%)"
+              % (100 * (B/T) * (1-closed), 100*B/T, 100*(1-closed)))
+        out["closed_1comp"] = 100 * closed1
+        out["residual_1comp"] = 100 * (B / T) * (1 - closed1)
 
     print("\n  Robustness of the split to the overshoot weight:")
     print("    %6s %10s %10s %9s" % ("w_ov", "(A)", "(B)", "B share"))

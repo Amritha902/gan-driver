@@ -1,0 +1,28 @@
+
+  DOES THE TRADE-OFF TIP TO GaN IN REAL DUTY?
+  Measured per-point losses from results/si_vs_gan_sweep.txt, weighted
+  by how long a converter spends at each load. Energy over one year.
+  ------------------------------------------------------------------------
+  duty profile                 GaN kWh      Si kWh   GaN saves    share
+  Always heavy load            830.1      1067.3       237.2       22 %
+  Grid-support converter       192.9       318.5       125.6       39 %
+  Storage, mostly idling        83.6       196.6       113.0       57 %
+  Always light load             12.6       123.5       110.9       90 %
+  ------------------------------------------------------------------------
+  GaN wastes less energy under every profile, including the two
+  extremes. The trade-off does not turn around anywhere in between.
+
+  THE ONE MECHANISM THAT FAVOURS SILICON
+  GaN has no body diode, so during dead time its reverse drop is
+  Vth + |Voff| + I*Rds(on) rather than one diode drop. Sizing it at
+  the shipped settings, per switching edge:
+    2     ohm  I=21.03 A   GaN  1.24 W vs Si  0.25 W   penalty =  1.0 % of GaN's total loss
+    5     ohm  I= 9.32 A   GaN  0.51 W vs Si  0.11 W   penalty =  2.0 % of GaN's total loss
+    10    ohm  I= 4.92 A   GaN  0.26 W vs Si  0.06 W   penalty =  2.9 % of GaN's total loss
+    20    ohm  I= 2.61 A   GaN  0.14 W vs Si  0.03 W   penalty =  3.4 % of GaN's total loss
+    50    ohm  I= 1.14 A   GaN  0.06 W vs Si  0.01 W   penalty =  3.1 % of GaN's total loss
+  Real, and it is already inside every loss number above -- the
+  simulation has no body diode on the GaN and a real one on the
+  silicon. GaN still wins, which is the point: the penalty is
+  charged and the answer does not change.
+
