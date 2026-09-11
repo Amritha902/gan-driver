@@ -1,0 +1,108 @@
+* ===================================================================
+* simosfet.lib -- Behavioural silicon MOSFET model, for the Si-vs-GaN
+* comparison.  Target: 200 V / ~24 mOhm silicon MOSFET, IRFB4227-class.
+*
+* WHY THIS FILE EXISTS
+* The reviewer asked for silicon MOSFET vs GaN HEMT in the same buck
+* converter.  To make that comparison mean anything, the two device
+* models must differ ONLY where the two technologies actually differ.
+* This file is therefore written in the same form as egan.lib -- same
+* square-law channel, same junction-capacitance treatment, same
+* smoothing function -- with four physical changes, each of which is a
+* real, citable difference between the technologies:
+*
+*   1. BODY DIODE WITH REVERSE RECOVERY.  The big one.  A silicon
+*      MOSFET has an intrinsic p-n body diode that conducts during dead
+*      time and then must sweep out its stored charge Qrr on every
+*      turn-on of the opposite device.  GaN has NO body diode and NO
+*      Qrr -- its reverse conduction is channel conduction.  egan.lib
+*      gets that for free from its symmetric channel; here the diode is
+*      explicit, with TT set so the recovery charge is realistic.
+*
+*   2. LARGER CAPACITANCES.  For the same voltage rating and the same
+*      Rds(on), a silicon die is far bigger than a GaN die, so Ciss,
+*      Coss and Crss are all several times larger.  This is the
+*      figure-of-merit gap (Rds(on) x Qg) that GaN exists to close, and
+*      it drives both switching loss and Miller-induced crosstalk.
+*
+*   3. HIGHER THRESHOLD, HIGHER DRIVE.  Si Vgs(th) is ~4 V and the part
+*      is specified at Vgs = 10 V, against 1.4 V and 5 V for the GaN.
+*      The comparison therefore drives each device at its own rated
+*      gate voltage, which is the only fair way to run it.
+*
+*   4. MORE PACKAGE AND GATE RESISTANCE.  A power-package Si MOSFET has
+*      more internal gate resistance and more bond inductance than a
+*      chip-scale GaN device.
+*
+* HOW THE CHANNEL IS CALIBRATED
+* Same square law as egan.lib, so Rds(on) = 1 / (2*bh*(Vgs-Vth)).
+*   GaN:  bh=5.55, vth=1.4, Vgs=5 V   ->  25.0 mOhm
+*   Si:   bh=3.47, vth=4.0, Vgs=10 V  ->  24.0 mOhm
+* The two devices are therefore matched on Rds(on), which is the point:
+* matched conduction loss, so every difference the comparison reports
+* comes from switching, gate drive or reverse recovery -- never from
+* one device simply being a bigger conductor than the other.
+*
+* VERIFY BEFORE PUBLICATION
+* The parameter values below are datasheet-CLASS figures for a 200 V
+* silicon MOSFET of this on-resistance, not values transcribed from a
+* datasheet in front of the author.  Before this comparison goes into a
+* report, open the IRFB4227PbF datasheet and check Rds(on), Vgs(th),
+* Ciss/Coss/Crss, Qg and Qrr against the numbers here, and correct them
+* if they differ.  The QUALITATIVE result (Si loses on switching, gate
+* drive and reverse recovery) does not depend on the third digit, but
+* the quantitative one does, and this project does not ship numbers it
+* has not checked.
+* ===================================================================
+
+* smooth max(x,0) -- identical to egan.lib
+.func smaxs(x) {0.5*(x+sqrt(x*x+1e-4))}
+
+* --- junction capacitances ------------------------------------------
+* Same non-conducting-diode treatment as egan.lib (IS tiny, N large),
+* so only the C(V) law acts.  Zero-bias values are several times the
+* GaN ones: this is the die-area difference, and it is the mechanism
+* behind most of what the comparison will show.
+*   GaN Crss CJO=150p   ->  Si 1200p   (8x)
+*   GaN Coss-Crss 800p  ->  Si 3500p   (4.4x)
+.model DGDSI D(IS=1e-30 N=40 CJO=1200p VJ=1.0 M=0.5 FC=0.5)   $ Crss (Miller)
+.model DDSSI D(IS=1e-30 N=40 CJO=3500p VJ=1.0 M=0.5 FC=0.5)   $ Coss-Crss
+
+* --- body diode, WITH reverse recovery -------------------------------
+* This is the component GaN does not have.  TT is the transit time that
+* produces the stored charge: with the ~5 A dead-time current of this
+* converter, TT=30n gives Qrr on the order of 150 nC, which is the right
+* size for a 200 V silicon MOSFET.  RS is the diode's series resistance,
+* VJ/M/CJO its junction capacitance -- already counted in DDSSI, so CJO
+* here is set to zero to avoid double-counting Coss.
+.model DBODY D(IS=3e-9 N=1.6 RS=0.02 BV=220 TT=30n CJO=0 VJ=1.0 M=0.5)
+
+.subckt SIMOS d g s params: vth=4.0 bh=3.47 rg=1.5 cgs=2900p lg=1.5n ls=0.8n
+
+* package / bond inductance -- larger than the chip-scale GaN part
+Lgint  g   gi  {lg}
+Lsint  s   si  {ls}
+
+* internal gate resistance -- larger than GaN
+Rgint  gi  g2  {rg}
+
+* --- square-law channel ---------------------------------------------
+* Same form as egan.lib.  A MOSFET channel does conduct in reverse when
+* it is enhanced, so the symmetric form is correct for the ON state.
+* The DIFFERENCE from GaN is what happens when the gate is OFF: here the
+* body diode below takes over, at one diode drop and with stored charge.
+* In GaN there is no such path -- reverse conduction needs the channel,
+* which is why negative off-bias costs third-quadrant drop there and not
+* here.  That asymmetry is the physics the comparison is measuring.
+Bchs d si I = {bh} * ( smaxs(v(g2,si)-{vth})*smaxs(v(g2,si)-{vth})
++                    - smaxs(v(g2,d) -{vth})*smaxs(v(g2,d) -{vth}) )
+
+* --- capacitances ----------------------------------------------------
+Cgss  g2  si  {cgs}
+Dgds  g2  d   DGDSI
+Ddss  si  d   DDSSI
+
+* --- body diode: source to drain, conducts when Vds goes negative ----
+Dbody si  d   DBODY
+
+.ends SIMOS

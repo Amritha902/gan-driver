@@ -1,0 +1,21 @@
+
+  SILICON MOSFET vs GaN HEMT -- same buck converter
+  100 V -> 50 V, 500 kHz, 10 ohm load. sim/buck.cir, identical
+  except the device model and its rated gate drive.
+  Rds(on) matched: 25.0 mOhm GaN / 24.0 mOhm Si.
+  --------------------------------------------------------------------
+                  P_in     P_out      loss      eff     V_out
+  GaN HEMT     242.39 W   236.35 W     6.04 W   97.51 %    48.48 V
+  Si MOSFET    263.07 W   245.61 W    17.46 W   93.36 %    49.43 V
+  --------------------------------------------------------------------
+  GaN wastes 11.42 W less: 6.04 W against 17.46 W, a 65 % reduction
+  Efficiency 97.51 % against 93.36 %, worth 4.14 points
+  Loss per watt delivered: 2.56 % against 7.11 %
+
+  NOTE, and say this if asked: the two do NOT deliver identical
+  output power, because GaN's third-quadrant drop during dead time
+  is larger than a silicon body-diode drop -- GaN has no body diode,
+  so reverse conduction costs Vth + |Voff| + I*Rds(on) instead of one
+  diode drop. That is a genuine GaN disadvantage and it is why V_out
+  differs. Efficiency is a ratio so it stays a fair comparison, and
+  'loss per watt delivered' above normalises it explicitly.
