@@ -164,7 +164,7 @@ CAPTIONS = [
  (u"Result 1", "TextBox 5", cap(
    u"Gate\u2013source voltage of the off-state device at low-side turn-on, "
    u"100 V / 10 A. No clamp: +1.65 V against a 1.4 V threshold. Clamp and "
-   + MINUS + u"2 V rail: " + MINUS + u"1.18 V, margin 2.58 V.")),
+   + MINUS + u"2 V rail: " + MINUS + u"1.18 V, margin 2.576 V.")),
 
  (u"Result 2", "TextBox 5", cap(
    u"Power lost and peak switch-node voltage against pull-up slice count, "
@@ -213,7 +213,9 @@ except KeyError as e:
 try:
     s = slide_titled(u"Result 4")
     restyle(find_by_name(s, "TextBox 14"), [
-        [(u"Full sensing, ADC and lookup table justify 3.7 % of the total gain "
+        [(u"Adaptation is 13.4 % of the total gain \u2014 3.9 points of 29.0; "
+          u"the other 86.6 % comes from the fixed word and needs no sensing. ", B),
+         (u"Full sensing, ADC and lookup table justify 3.7 % of the total gain "
           u"over a fixed word plus one comparator. Split is weight-independent: "
           u"across 106 overshoot weights (A) stays 23.4\u201329.0 % and (B) "
           u"1.3\u20136.4 %.", N)],
