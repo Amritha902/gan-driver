@@ -1,0 +1,4 @@
+Power-stage co-simulation: RTL thermometer bus vs parameterised driver
+clamp OFF  margin RTL -0.242 V  .param -0.249 V
+clamp ON   margin RTL +0.651 V  .param +0.570 V
+worst disagreement 0.081 V

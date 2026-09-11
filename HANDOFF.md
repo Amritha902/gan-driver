@@ -77,6 +77,19 @@ mechanism only; the base paper is now [10], Zhang, on the same device.
 **RTL**
 - 8 properties T1–T8 pass under Icarus; `mutate.sh` catches an injected
   shoot-through 221 times
+- **RTL-in-the-loop, verified end to end** (`scripts/rtl_cosim.py`). The
+  thermometer encoding matches the SPICE abstraction on every bank, 0
+  mismatches. And `sim/dpt.cir` is now run twice — once with `segdrv.lib`'s
+  integer slice count, once with the low-side slices driven by sixteen PWL
+  sources built from the RTL's own VCD into `models/segdrv_bus.lib`. Margins:
+  **-0.242 V clamp off, +0.651 V clamp on** from the RTL bus, against
+  -0.249 / +0.570 V from the parameters. Worst disagreement **0.081 V**, and
+  that is 2.5 ns of dead-time timing, not encoding. The bench that made this
+  possible is `rtl/seg_gate_ctrl_dpt_tb.v`.
+- **Dead time is (dt_cycles + 1) x 5 ns**, measured. `dpt.cir`'s DT = 15 ns is
+  `dt_cycles = 2`, NOT 15/5 = 3 — `dead_time_gen` counts down through zero.
+  Mapping the swept DT grid to hardware by dividing by the clock period makes
+  the driver one cycle slow at every operating point.
 - Vivado export in `rtl/vivado/`: top level, XDC, `build.tcl`, own bench
 - **Vivado 2024.1.2, xc7a35tcpg236-1, run 5 Sep 2026** (reports committed in
   `rtl/vivado/build/`): **20 LUTs, 20 flip-flops**, 0.10 % of the part; 40

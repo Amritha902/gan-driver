@@ -236,7 +236,58 @@ invisible to every figure ngspice produced.
 **Zero mismatches.** Every configured count asserts exactly that many slices,
 on every bank. The abstraction is sound and the existing results stand.
 
-### What was attempted and did not work, and why
+### The power stage, driven by the RTL
+
+The encoding check above is the narrow claim. The wide one — that the
+parameterised driver every figure was measured with is the driver the FPGA
+actually builds — is now tested where it matters. `sim/dpt.cir` is run twice.
+Same deck, same devices, same `.meas` statements. The only difference is how
+the low-side slices are chosen: by `segdrv.lib`'s `npu`/`npd` integers in one
+run, and in the other by sixteen PWL sources generated from the RTL's own VCD
+into `models/segdrv_bus.lib`, one per wire.
+
+| | crosstalk margin, RTL bus | crosstalk margin, `.param` | difference |
+|---|---|---|---|
+| clamp off | **−0.242 V** | −0.249 V | 0.007 V |
+| clamp on | **+0.651 V** | +0.570 V | 0.081 V |
+
+Low-side gate excursion agrees to four significant figures in both runs
+(8.231 V peak, identical). Worst disagreement anywhere: **0.081 V**.
+
+So the abstraction holds, and the clamp's sign change — the project's central
+claim — is reproduced by the actual logic rather than by a parameter. The
+0.081 V on the clamp-on row is timing, not encoding: the deck's ideal stimulus
+turns the low side on at T4 = 2.015 µs, while the RTL's dead-time generator
+puts it at 2.0175 µs, so the switch-node transient the high-side gate sees is
+displaced by 2.5 ns.
+
+The high side keeps the parameterised driver in both runs. It is the victim
+being measured, and holding it fixed is what keeps this margin comparable with
+every other number in the project; driving it from the RTL too would need the
+high-side level shifter `dpt.cir` deliberately models as ideal.
+
+### The dead time is one cycle longer than dividing by the clock suggests
+
+`rtl/seg_gate_ctrl_dpt_tb.v` was swept over `dt_cycles`, measuring both the
+width of `dead_time_active` and the real bank-to-bank gap from `ls_pu`
+releasing to `hs_pu` engaging. The two agree exactly, and both give
+
+    dead time = (dt_cycles + 1) x 5 ns
+
+    dt_cycles = 1 -> 10 ns      dt_cycles = 3 -> 20 ns
+    dt_cycles = 2 -> 15 ns      dt_cycles = 4 -> 25 ns
+
+`dead_time_gen` loads `cnt <= dt_cycles` and then counts down *through* zero,
+so it spends `dt_cycles + 1` clocks in the dead state. `dpt.cir`'s DT = 15 ns
+is therefore `dt_cycles = 2`, not the obvious 15/5 = 3, which gives 20 ns.
+
+This matters beyond bookkeeping: anyone mapping the swept DT grid onto hardware
+by dividing by the clock period builds a driver that is one cycle slow at every
+operating point. Neither the Icarus bench nor the ngspice sweep could see it
+alone — it is exactly the class of error co-simulating the two halves exists
+to catch.
+
+### What was attempted first and did not work, and why
 
 Driving the power stage directly from those waveforms — each slice wire as its
 own PWL source into `models/segdrv_bus.lib`, which has one control pin per
@@ -256,7 +307,19 @@ Worth recording separately: the first version of that check asserted only
 `V(lsg) > 0.9 × rail`, which passed 7158 V as happily as 5 V. A one-sided
 bound is not a check. It now tests both rails.
 
-`models/segdrv_bus.lib` is kept — it is correct and it is what a real
-co-simulation needs. What is missing is a testbench written for the purpose,
-emitting a realistic PWM edge with dead time matched to the power-stage
-timing. That is the next step, and it is real work rather than a tidy-up.
+The fix was not a solver setting. It was `rtl/seg_gate_ctrl_dpt_tb.v`: a
+bench written for this purpose, reproducing `dpt.cir`'s double pulse at the
+real 200 MHz clock, with the RTL's own dead-time generator making the T2 and
+T4 edges rather than a testbench drawing them.
+
+One further startup artifact had to be dealt with honestly. The controller
+needs a few clocks to leave reset and load its word, and until it does it
+commands neither device on. Start the SPICE run at that instant and the power
+stage sees both GaN devices off with 10 A already in the load inductor: the
+switch node slews to the rail, rings, and couples **59 V** into the low-side
+gate. True, and meaningless — no converter is energised while its controller
+is held in reset. The bench therefore offsets the whole double pulse by a
+25 ns settle window (5 clock periods, so every edge stays clock-aligned) and
+`rtl_cosim.py` subtracts it again, putting the reset before SPICE t = 0. The
+low side is then already fully on at t = 0, exactly as `dpt.cir`'s own
+stimulus has it.
