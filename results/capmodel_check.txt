@@ -1,0 +1,5 @@
+Junction capacitance: diodes (egan.lib) vs charge (egan_c.lib)
+constant word, no clamp    diodes -0.249 V   charge +0.115 V   diff +0.364 V
+clamp on                   diodes +0.570 V   charge +0.800 V   diff +0.230 V
+clamp + -2 V off-bias      diodes +2.576 V   charge +2.710 V   diff +0.134 V
+worst difference 0.364 V; ordering holds: True; signs agree: False

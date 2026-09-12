@@ -289,14 +289,16 @@ scheme in our testbench, not their measured result.
 
 ## 16c · Closing the loop, and real transistors — 35 s
 
-**The loop is closed.** Same power stage, same drivers. 50.02 V nominal, 50.00
+**The loop is closed.** Same power stage, same drivers. 50.01 V nominal, 50.00
 after a 2× load step, 50.01 after the input goes 100 → 120 V. Worst error
-0.05 %. Open loop walks to 58 V on that line step.
+0.02 %. Open loop walks to 58 V on that line step.
 
-**And the driver is rebuilt in real SKY130 transistors.** The architecture
-survives — and it corrects our own headline. On real devices **the clamp alone
-gives +0.031 V**, not +0.570. The −2 V off-bias is the fix; the clamp is what
-makes it hold.
+**And we swapped out both modelling assumptions.** In real SKY130 transistors
+**the clamp alone gives +0.031 V**, not +0.570 — the −2 V off-bias is the fix
+and the clamp is what makes it hold. With a charge capacitance instead of
+diodes the no-clamp row changes **sign**, so that claim is model-dependent and
+we say so. The shipped design is safe under all four models with over 2 V of
+room — the only one that is.
 
 ---
 

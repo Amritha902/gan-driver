@@ -44,7 +44,51 @@ Bch d si I = {bh} * ( smax(v(g2,si)-{vth})*smax(v(g2,si)-{vth})
 
 * --- capacitances ---------------------------------------------------
 Cgs   g2  si  {cgs}
-Cgd   g2  d   C={150p/pow(1+0.5*(v(d,g2)+sqrt(v(d,g2)*v(d,g2)+1e-4)),0.65)}
-Cds   si  d   C={800p/pow(1+0.5*(v(d,si)+sqrt(v(d,si)*v(d,si)+1e-4)),0.5)}
+* THIS IS NOT THE SAME LAW AS egan.lib's DIODES, AND THAT IS THE POINT.
+* Under reverse bias -- where the victim device sits during the crosstalk
+* event -- both give C0/(1+u)^m and agree. Under FORWARD bias they part: a
+* SPICE diode applies its FC extrapolation above FC*VJ = 0.5 V and its
+* capacitance keeps climbing, while this form saturates at C0. The aggressor
+* device is forward-biased through its own turn-on, so the two give it
+* different Cgd, different slew, and different coupling.
+* scripts/capmodel_check.py measures exactly that, and finds the constant-word
+* margin changes sign between them: -0.249 V with diodes, +0.115 V here. The
+* shipped configuration is safe under both with over 2.5 V of room. Read that
+* as a sensitivity, not as one model being wrong.
+*
+* WRITTEN AS CHARGE, NOT AS CAPACITANCE, AND WHY.
+* These two were C={...} expressions and two of the three decks that use
+* this model would not start: "Timestep too small; initial timepoint;
+* trouble with node hstop", at the FIRST timepoint, on dpt_dcload_c.cir and
+* dpt_sky130_c.cir. Raising itl1, itl4 and gmin changed nothing, which is
+* the tell: it was never solver effort.
+*
+* A C= behavioural capacitor asks ngspice to build the charge itself from a
+* capacitance that moves with the voltage it is trying to solve for. Q= hands
+* it the charge directly and lets it differentiate, which is exact and
+* monotonic and is what the device equations actually want.
+*
+* The charge is the integral of the same C(V) law, so the physics is
+* unchanged:
+*     C(u) = C0 / (1+u)^m        =>  Q(u) = C0 [ (1+u)^(1-m) - 1 ] / (1-m)
+* with u = 0.5*(v + sqrt(v^2+1e-4)), a smooth max(v,0) so the junction is not
+* driven into a fractional power of a negative number. Node order is n1 = d
+* so that Q is the charge on the drain side and the sign of dQ/dV is right.
+*
+*   Cgd  C0 = 150p, m = 0.65  ->  (1-m) = 0.35
+*   Cds  C0 = 800p, m = 0.50  ->  (1-m) = 0.50
+*
+* THE SECOND TERM IS NOT DECORATION. u is a smooth max(V,0), so du/dV falls to
+* zero under forward bias and the first term's derivative -- the capacitance --
+* falls to zero with it. The C= form did not do that: at V < 0 it sits at the
+* full C0. Getting this wrong makes the Miller capacitance VANISH exactly when
+* the device is on, and dpt_c.cir, which had always run, stopped converging at
+* 20 ps. C0*(V-u) is a smooth min(V,0); it contributes nothing above zero bias
+* and restores the missing C0 slope below it, so the law is the same one the
+* C= expression implemented, everywhere.
+Cgd   d   g2  Q={(150p/0.35)*(pow(1+0.5*(v(d,g2)+sqrt(v(d,g2)*v(d,g2)+1e-4)),0.35)-1)
++                + 150p*0.5*(v(d,g2)-sqrt(v(d,g2)*v(d,g2)+1e-4))}
+Cds   d   si  Q={(800p/0.50)*(pow(1+0.5*(v(d,si)+sqrt(v(d,si)*v(d,si)+1e-4)),0.50)-1)
++                + 800p*0.5*(v(d,si)-sqrt(v(d,si)*v(d,si)+1e-4))}
 
 .ends EGAN

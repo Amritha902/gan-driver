@@ -267,9 +267,9 @@ measured result and we do not claim it is.
 > voltage sags all day and the load steps whenever something turns on."
 >
 > "So we closed it, around the same power stage and the same drivers, and then
-> disturbed it on purpose. Fifty point zero two volts, fifty point zero zero
+> disturbed it on purpose. Fifty point zero one volts, fifty point zero zero
 > after a two-times load step, fifty point zero one after the input goes from a
-> hundred to a hundred and twenty. Worst error five hundredths of a percent.
+> hundred to a hundred and twenty. Worst error two hundredths of a percent.
 > The open-loop converter walks to fifty-eight volts on that line step, because
 > V-out equals D times V-in and nothing in it knows V-in moved."
 >
@@ -287,7 +287,7 @@ it empirically and measured each step, and that is on the slide.
 
 ---
 
-## NEW — Does the result survive real transistors? (50 s) — **core slide**
+## NEW — Does the result depend on the model? (55 s) — **core slide**
 
 > "Every margin in this deck was measured with an output stage whose slices are
 > ideal switches. Ten milliohms on, a gigaohm off, no gate charge, no
@@ -307,6 +307,18 @@ it empirically and measured each step, and that is on the slide.
 > "The ideal switch was flattering the clamp, because it pulls the gate down
 > through ten milliohms while a real NMOS pulls it through a channel that has
 > to be turned on first."
+
+> "And we did the same thing to the device's capacitance — junction diodes
+> against a charge formulation. The ordering survives that too. But the
+> no-clamp row changes sign: minus 0.249 volts with diodes, plus 0.115 with
+> charge. The two laws differ under forward bias, and the aggressor is
+> forward-biased through its own turn-on, so it slews differently."
+>
+> "So I want to be precise: **'the constant word causes false turn-on' is
+> model-dependent.** It is not a measurement. And that is an argument for the
+> design rather than against it — the shipped configuration is safe under all
+> four models we tried, with over two volts of room in each. It is the only
+> one whose verdict survives changing an assumption underneath it."
 
 *Limits to say yourself:* the predrivers in that stage are still behavioural,
 and there is no equivalent check on the GaN side — no open PDK ships a 200 V

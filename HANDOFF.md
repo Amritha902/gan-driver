@@ -69,6 +69,17 @@ each one.
   path, so every transistor-level run through it silently measured nothing.
   Fails safe (returns None, never a wrong number), but it made the whole
   transistor-level stage unreachable through the standard interface.
+- `scripts/capmodel_check.py`: **all ten decks in `sim/` now run** (the `_c`
+  ones needed `Q=` instead of `C=`, plus `rshunt=1e12` for ngspice's internal
+  nodes), and the capacitance cross-check they exist for finally ran.
+  **It changes a headline claim.** Junction diodes give the constant word
+  -0.249 V; behavioural charge gives +0.115 V. The ordering holds under both,
+  but the SIGN flips, because the two laws differ under forward bias and the
+  aggressor is forward-biased through its own turn-on.
+  So say "the constant word causes false turn-on" is MODEL-DEPENDENT. The
+  shipped design is safe under all four models tried -- ideal switches,
+  SKY130, diodes, charge -- with over 2 V of room in each, and that is the
+  strongest argument for it.
 
 **Base paper, implemented — not just cited**
 `models/zhangdrv.lib` implements Zhang et al.'s segmented driver (ISPSD 2020,
@@ -147,8 +158,10 @@ file satisfies both. Invoke it by typing `gan_master`.
 **Deck** — 45 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`
 (the 20-slide `GaN_Review1_PRESENT.pptx` is the one to actually present).
 Rebuild `cd review && python3 build.py`; geometry check `python3 qa.py`
-(9 flags is the known-good baseline, all investigated false positives;
-the three slides added on 12 Sep add none).
+**All three decks now report zero flags** and `qa.py` checks all three, not
+just the full one. The old "9 known-good false positives" were six real
+defects (captions under the page number, a text box under a picture) and three
+true ones; `rebuild_pass.py` now fixes both kinds generally as a final pass.
 Speech script in `review/SPEECH-SCRIPT.md`; the 10-minute cut is
 `review/SPEECH-10-MINUTES.md`. Run `python3 check_consistency.py` after any
 edit — it fails the build if the deck and the scripts stop agreeing.

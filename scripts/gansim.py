@@ -9,7 +9,14 @@ import numpy as np
 
 ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CIR    = os.path.join(ROOT, "sim", "dpt.cir")
-CIRS   = {"ideal": "dpt.cir", "dcload": "dpt_dcload.cir", "sky130": "dpt_sky130.cir", "hybrid": "dpt_hyb_ls_sky130.cir"}
+CIRS   = {"ideal": "dpt.cir", "dcload": "dpt_dcload.cir",
+          "sky130": "dpt_sky130.cir", "hybrid": "dpt_hyb_ls_sky130.cir",
+          # the "_c" decks are the same circuits with models/egan_c.lib, whose
+          # junction capacitances are behavioural charge expressions instead of
+          # non-conducting diodes. They exist to cross-check the capacitance
+          # modelling; scripts/capmodel_check.py is what finally runs them.
+          "ideal_c": "dpt_c.cir", "dcload_c": "dpt_dcload_c.cir",
+          "sky130_c": "dpt_sky130_c.cir"}
 MODELS = os.path.join(ROOT, "models")
 
 DEFAULTS = dict(VBUS=100, ILOAD=10, VDRV=5, VNEG=0,

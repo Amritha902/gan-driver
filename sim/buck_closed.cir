@@ -42,6 +42,16 @@ GaN synchronous buck converter, CLOSED LOOP: regulated 50 V through line and loa
 * a smaller undershoot and would be the wrong thing to claim: this one is
 * stable across both disturbances at one fixed set of component values,
 * which is the honest demonstration.
+*
+* TSS IS 600 us BECAUSE 200 us WAS NOT GOOD ENOUGH. At the end of a
+* reference ramp the loop has to absorb a step in dv/dt, and how much it
+* overshoots doing so depends on how fast the ramp was. Measured:
+*     TSS = 200 us  ->  +10.8 % start-up overshoot
+*     TSS = 400 us  ->   +5.5 %
+*     TSS = 600 us  ->   +3.6 %   <- shipped
+* The first version of this deck shipped 200 us and the slide said 10.9 %
+* was "the one number here we are not proud of". Three runs was the whole
+* cost of not having to say that.
 * ===================================================================
 
 .include ../models/egan.lib
@@ -146,10 +156,10 @@ GaN synchronous buck converter, CLOSED LOOP: regulated 50 V through line and loa
 .param OL=0
 .param VCFIX=0.614                    $ the closed loop's own control level at nominal
 * ---- schedule ----
-.param TSS=200u                       $ soft-start ramp
-.param TLOAD=500u
-.param TLINE=800u
-.param TSTOP=1100u
+.param TSS=600u                       $ soft-start ramp
+.param TLOAD=900u
+.param TLINE=1200u
+.param TSTOP=1500u
 * ==================== END PARAM BLOCK ==============================
 
 .param KT    = {1 + 0.009*(TJ-25)}

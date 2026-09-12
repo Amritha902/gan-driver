@@ -93,6 +93,14 @@ Xdrvhs hspu hspd hsclkl hsg hsvp hsvn sw SEGDRV
 * ---------------- analysis -----------------------------------------
 * NOTE: trapezoidal on purpose.  Gear damps numerically and would
 * quietly flatter the ringing metric, which is one of the objectives.
+* rshunt: ngspice realises a Q= behavioural capacitor as an internal
+* subcircuit with its own node and branch, and under uic those internal
+* nodes have no DC path -- "singular matrix: check nodes
+* l.xhs.lcds#branch and xhs.cds_int1". 1 Tohm from every node to ground
+* gives them one. It is three orders below the 1 Gohm off-switches
+* already in the driver model, so it changes nothing that is measured,
+* and the same technique is already used in dpt_sky130.cir.
+.options rshunt=1e12
 .options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
 .ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)={VOUT}
 

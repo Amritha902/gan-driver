@@ -23,8 +23,8 @@ Each deck in `sim/` run directly: `cd sim && ngspice -b <deck>.cir`.
 | `dpt_sky130_b.cir` | runs (after the fix in §2) |
 | `dpt_hyb_hs_sky130.cir` | runs (after the fix in §2) |
 | `dpt_hyb_ls_sky130.cir` | runs (after the fix in §2) |
-| `dpt_dcload_c.cir` | **does not converge** — see §3 |
-| `dpt_sky130_c.cir` | **does not converge** — see §3 |
+| `dpt_dcload_c.cir` | **does not converge** — see §3. *Fixed 12 Sep, Addendum 3* |
+| `dpt_sky130_c.cir` | **does not converge** — see §3. *Fixed 12 Sep, Addendum 3* |
 
 ## 2. Bug found and fixed: the SKY130 decks had a hard-coded path
 
@@ -198,9 +198,12 @@ but it points the same way as everything else here.
 
 ## Still open
 
-- `dpt_dcload_c.cir` and `dpt_sky130_c.cir` do not converge (§3). Nothing
-  depends on them; fixing would mean reworking `egan_c.lib`'s capacitance
-  expressions, not changing solver settings.
+- ~~`dpt_dcload_c.cir` and `dpt_sky130_c.cir` do not converge (§3).~~ **Fixed
+  12 September — see Addendum 3.** The guess in this line was right about the
+  cause (the capacitance expressions, not the solver settings) and wrong about
+  the consequence: the cross-check those decks exist for had therefore never
+  run, and when it did it turned a headline claim from a measurement into a
+  model-dependent one.
 - The silicon model's parameters are datasheet-*class* for a 200 V / 24 mΩ
   part, not transcribed from the IRFB4227PbF datasheet. The qualitative result
   does not depend on the third digit; the quantitative one does. Check before
@@ -507,3 +510,103 @@ the timestep, narrower than the edge. The numbers above are that measurement.
 Two blocks move to done. `review/JUDGE.md` is the examiner's report on all of
 it, written adversarially and then answered, with each finding marked FIXED,
 STATED or OPEN.
+
+
+---
+
+# Addendum 3 — the second pass, and what "known-good" was hiding
+
+Three things this project had looked at, decided were acceptable, and written
+down a reason for. All three were wrong, and in the same way: investigating
+cost more than writing the reason, so the reason got written.
+
+## The `_c` decks run, and the cross-check they exist for finally happened
+
+§3 above says `dpt_dcload_c.cir` and `dpt_sky130_c.cir` do not converge, that
+nothing reported depends on them, and that fixing would mean reworking the
+capacitance expressions. All true. It also meant the cross-check those decks
+exist to perform had never been performed once.
+
+Two causes:
+
+1. **`C=` instead of `Q=`.** A `C={...}` behavioural capacitor asks ngspice to
+   build the charge itself out of a capacitance that moves with the voltage it
+   is solving for. Rewritten as the integral of the same law, `Q={...}`, they
+   converge. The first attempt at that integral dropped the forward-bias
+   branch — which makes the Miller capacitance vanish exactly when the device
+   is on — and `dpt_c.cir`, which had always run, stopped converging at 20 ps
+   and said so. Found by re-running all three rather than only the two that
+   were broken.
+2. **Singular matrix on ngspice's own internal nodes.** A `Q=` capacitor is
+   realised as an internal subcircuit with its own node and branch, and under
+   `uic` those have no DC path: *check nodes l.xhs.lcds#branch and
+   xhs.cds_int1*. `rshunt=1e12` gives them one — three orders below the 1 GΩ
+   off-switches already in the driver model, and the same technique
+   `dpt_sky130.cir` already used.
+
+**All ten decks in `sim/` now run.** §1's table is superseded.
+
+## And the cross-check changed a headline claim
+
+`scripts/capmodel_check.py`:
+
+| configuration | junction diodes | behavioural charge | difference |
+|---|---|---|---|
+| constant word, no clamp | **−0.249 V** | **+0.115 V** | +0.364 V |
+| clamp on | +0.570 V | +0.800 V | +0.230 V |
+| clamp + −2 V off-bias | +2.576 V | +2.710 V | +0.134 V |
+
+The ordering holds under both — every change still buys what this project says
+it buys. **The constant-word row changes sign.**
+
+The two are not the same law and never were. Under reverse bias, where the
+victim sits during the crosstalk event, both give C0/(1+u)^m. Under forward
+bias a SPICE diode applies its FC extrapolation above 0.5 V and keeps
+climbing, while the behavioural form saturates at C0 — and the *aggressor* is
+forward-biased through its own turn-on, so it gets a different C_GD, a
+different slew rate, and different coupling into the victim.
+
+So **"the constant word causes false turn-on" is model-dependent** and has to
+be said that way. It is not a measurement.
+
+This is an argument for the design, not against the result. The shipped
+configuration is safe under all four models tried today — ideal switches,
+SKY130 transistors, junction diodes and behavioural charge — with more than
+2 V of room in each. It is the only configuration whose verdict survives
+changing an assumption underneath it, and that is a better reason to build it
+than any ratio.
+
+## Six of the nine "known-good" QA flags were real
+
+HANDOFF called them "the known-good baseline, all investigated false
+positives".
+
+- **Four** were full-width caption boxes running under the page number. The
+  text did not reach that far, so it looked fine; one caption a word longer
+  would have printed over the slide number.
+- **Two** were slide 34's body text box, 5.40 in tall, with the VCD
+  screenshot laid over it from 4.05 in down. `build.py`'s own comment says
+  that text was written to fit 2.45 in — the box was never resized.
+- **Three** were genuine: labels deliberately inside the signature panel.
+
+Fixed generally rather than per-slide. `rebuild_pass.py` gained a final
+geometry pass that keeps text off the page number and out from under pictures;
+`qa.py` learned that text inside a blank panel is a layout, not a collision;
+and `qa.py` now checks **all three** output decks rather than only the full
+one — it had never checked `GaN_Review1_PRESENT.pptx`, the file that actually
+goes on the projector, and doing so immediately found a tenth defect, a
+caption overlapping a figure by 0.07 in.
+
+**All three decks report zero.**
+
+## The soft-start overshoot
+
+10.9 %, reported on its own slide as "the one number here we are not proud
+of". Owning it honestly was also a reason not to fix it. It is the loop
+absorbing the step in dv/dt at the end of the reference ramp, so it depends on
+the ramp length:
+
+    TSS = 200 us  ->  +10.8 %      TSS = 600 us  ->  +3.6 %   <- shipped
+    TSS = 400 us  ->   +5.5 %
+
+Three runs.

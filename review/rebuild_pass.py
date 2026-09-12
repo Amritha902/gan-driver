@@ -638,9 +638,9 @@ grid(s, 1.30, 2.14, 10.70, 1.10, [
      u"after 100 \u2192 120 V line step", u"worst error"),
     ((u"closed loop", None, True), (u"50.02 V", GREEN, True),
      (u"50.00 V", GREEN, True), (u"50.01 V", GREEN, True),
-     (u"0.05 %", GREEN, True)),
-    ((u"open loop", None, True), (u"49.45 V", None, False),
-     (u"48.69 V", None, False), (u"58.33 V", AMBER, True),
+     (u"0.02 %", GREEN, True)),
+    ((u"open loop", None, True), (u"49.58 V", None, False),
+     (u"48.72 V", None, False), (u"58.33 V", AMBER, True),
      (u"16.7 %", AMBER, True)),
 ], widths=(16, 21, 21, 26, 16), sizes=(10.0, 11.0))
 
@@ -649,7 +649,7 @@ add_text(s, 0.70, 3.44, 5.85, 0.34, [
 add_text(s, 0.70, 3.82, 5.85, 2.10, [
     para([(u"Load step 5 \u2192 10 A: dips 1.8 %, back inside \u00b11 % in 4 \u00b5s.", N)],
          level=0, sz=1150, spc=110, bullet=False),
-    para([(u"Line step 100 \u2192 120 V: peaks 1.3 %, recovers in 19 \u00b5s.", N)],
+    para([(u"Line step 100 \u2192 120 V: peaks 1.3 %, recovers in 21 \u00b5s.", N)],
          level=0, sz=1150, spc=110, bullet=False),
     para([(u"Output ripple 0.28 %. Soft-start overshoot 10.9 % — the one "
            u"number here we are not proud of, and it is on the slide.", N)],
@@ -686,55 +686,78 @@ add_text(s, 0.70, 6.10, 11.70, 1.00, [
 print("added: Closing the loop")
 
 
-# ---- slide: does it survive real transistors? ------------------------------
+# ---- slide: does the result depend on the model? --------------------------
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
-set_title(s, u"Does the result survive real transistors?")
+set_title(s, u"Does the result depend on the model?")
 
-add_text(s, 0.70, 1.18, 12.10, 0.76, [
-    para([(u"Every margin in this deck was measured with an output stage whose "
-           u"slices are IDEAL SWITCHES — 10 m\u03a9 on, 1 G\u03a9 off, no gate "
-           u"charge, no threshold, no transition. Fair for comparing control "
-           u"words. Not a driver anyone can fabricate. So we rebuilt the same "
-           u"output stage in real SKY130 5 V devices and ran it again.", N)],
-         level=0, sz=1250, spc=0, bullet=False)])
-
-grid(s, 1.90, 2.08, 9.50, 1.35, [
-    (u"configuration", u"ideal switches", u"SKY130 transistors", u""),
-    ((u"constant word, no clamp", None, False), (u"\u22120.249 V", None, False),
-     (u"\u22120.563 V", None, False), (u"FALSE TURN-ON", AMBER, True)),
-    ((u"clamp on", None, False), (u"+0.570 V", None, False),
-     (u"+0.031 V", AMBER, True), (u"barely holds", AMBER, True)),
-    ((u"clamp + \u22122 V off-bias", None, True), (u"+2.576 V", None, False),
-     (u"+2.032 V", GREEN, True), (u"safe", GREEN, True)),
-], widths=(30, 22, 24, 24), sizes=(10.5, 11.0))
-
-add_text(s, 0.70, 3.66, 12.10, 1.55, [
-    para([(u"The architecture survives — and the reason it survives changes.", B)],
-         level=0, sz=1350, spc=180, bullet=False),
-    para([(u"Sign and ordering hold on both stages: the constant word fails on "
-           u"real transistors too, the clamp beats no clamp, and clamp plus "
-           u"negative bias beats clamp alone. That is what had to be true, and "
-           u"it is. But on real devices ", N),
-          (u"the clamp ALONE gives +0.031 V", B),
-          (u" — thirty-one millivolts, at one corner, with nothing left over "
-           u"for temperature or a worse layout. That is not a fix.", N)],
+add_text(s, 0.70, 1.16, 12.10, 0.56, [
+    para([(u"Two assumptions carry every margin in this deck: that an ideal "
+           u"switch stands in for the driver's output stage, and that a "
+           u"junction diode stands in for the device's capacitance. We "
+           u"replaced each with the alternative and re-ran.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 
-add_text(s, 0.70, 5.34, 11.70, 1.75, [
-    para([(u"So we correct our own headline. ", B),
-          (u"The \u22122 V off-bias is the fix; the clamp is what makes the "
-           u"off-bias hold. The ideal-switch model was flattering the clamp, "
-           u"because an ideal switch pulls the gate down through 10 m\u03a9 "
-           u"while a real NMOS pulls it through a channel that has to be "
-           u"turned on first.", N)],
-         level=0, sz=1250, spc=170, bullet=False),
-    para([(u"Stated limit: the predrivers in this stage are still behavioural. "
-           u"The output stage is what is being checked. And there is no "
-           u"equivalent check on the GaN side — no open PDK ships a 200 V GaN "
-           u"HEMT — so that model remains the single assumption everything "
-           u"rests on.", N)], level=0, sz=1150, spc=0, bullet=False)])
-print("added: Does the result survive real transistors?")
+add_text(s, 0.70, 1.78, 5.85, 0.32, [
+    para([(u"1.  The output stage \u2014 in real SKY130 devices", B)],
+         level=0, sz=1200, spc=0, bullet=False)])
+grid(s, 0.70, 2.14, 5.85, 1.30, [
+    (u"", u"ideal sw", u"SKY130"),
+    ((u"no clamp", None, False), (u"\u22120.249", None, False),
+     (u"\u22120.563", None, False)),
+    ((u"clamp on", None, False), (u"+0.570", None, False),
+     (u"+0.031", AMBER, True)),
+    ((u"clamp + \u22122 V", None, True), (u"+2.576", None, False),
+     (u"+2.032", GREEN, True)),
+], widths=(42, 29, 29), sizes=(10.0, 10.5))
+
+add_text(s, 7.00, 1.78, 5.80, 0.32, [
+    para([(u"2.  The capacitance \u2014 charge, not diodes", B)],
+         level=0, sz=1200, spc=0, bullet=False)])
+grid(s, 7.00, 2.14, 5.80, 1.30, [
+    (u"", u"diodes", u"charge"),
+    ((u"no clamp", None, False), (u"\u22120.249", AMBER, True),
+     (u"+0.115", AMBER, True)),
+    ((u"clamp on", None, False), (u"+0.570", None, False),
+     (u"+0.800", None, False)),
+    ((u"clamp + \u22122 V", None, True), (u"+2.576", None, False),
+     (u"+2.710", GREEN, True)),
+], widths=(42, 29, 29), sizes=(10.0, 10.5))
+
+add_text(s, 0.70, 3.58, 5.85, 1.70, [
+    para([(u"The clamp alone is not the fix.", B)],
+         level=0, sz=1200, spc=120, bullet=False),
+    para([(u"On real transistors it gives 31 millivolts \u2014 at one corner, "
+           u"with nothing left for temperature or a worse layout. The ideal "
+           u"switch was flattering it, because it pulls the gate down through "
+           u"10 m\u03a9 while a real NMOS pulls through a channel that has to "
+           u"be turned on first.", N)],
+         level=0, sz=1100, spc=0, bullet=False)])
+
+add_text(s, 7.00, 3.58, 5.80, 1.70, [
+    para([(u"And the fault itself changes sign.", B)],
+         level=0, sz=1200, spc=120, bullet=False),
+    para([(u"Under forward bias a SPICE diode keeps climbing above 0.5 V and "
+           u"the charge form saturates. The aggressor is forward-biased "
+           u"through its own turn-on, so it slews differently. \u201cThe "
+           u"constant word causes false turn-on\u201d is model-dependent, and "
+           u"we say so rather than calling it a measurement.", N)],
+         level=0, sz=1100, spc=0, bullet=False)])
+
+add_text(s, 0.70, 5.44, 11.70, 1.60, [
+    para([(u"Both tables point the same way, and it is an argument FOR the "
+           u"design rather than against the result.", B)],
+         level=0, sz=1300, spc=170, bullet=False),
+    para([(u"The ordering survives every substitution \u2014 each change still "
+           u"buys what we say it buys. What does not survive is the middle "
+           u"row: the configurations closest to zero are exactly the ones "
+           u"whose verdict a modelling choice can flip. ", N),
+          (u"The shipped design is the only one that is safe under all four "
+           u"models, with over 2 V of room in each.", B),
+          (u" That is a better reason to build it than any ratio on the "
+           u"previous slide.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
+print("added: Does the result depend on the model?")
 
 
 # ---- slide: head to head ---------------------------------------------------
@@ -843,13 +866,91 @@ if i is not None:
     print("rebuilt: Where we are, and what is next")
 
 
+# ======================================================= geometry cleanup ==
+# Nine QA flags had been carried for weeks as a "known-good baseline, all
+# investigated false positives". Six of them were not false positives. They
+# were small and consistent and nobody had looked at what they actually were:
+#
+#   4x  a full-width caption box running under the page number. The TEXT does
+#       not reach that far, so it looks fine, and one caption one word longer
+#       would have printed over the slide number.
+#   2x  slide 34's body text box is 5.40 in tall and the VCD screenshot sits
+#       on top of it from 4.05 in down. build.py's own comment says that text
+#       was written to fit 2.45 in -- the box was simply never resized, so the
+#       layout was one added sentence away from text under a picture.
+#
+# The remaining three ARE false positives, and the fix for those is in qa.py
+# rather than here: text deliberately placed inside a panel is not a
+# collision. A checker that cries wolf nine times is a checker nobody reads,
+# which is exactly what happened.
+#
+# Both rules below are general rather than per-slide, so a slide added later
+# cannot reintroduce either fault.
+PAGENUM_GAP = 0.13
+
+
+def _rect(sh):
+    if sh.left is None or sh.top is None or not sh.width or not sh.height:
+        return None
+    return (sh.left / 914400.0, sh.top / 914400.0,
+            sh.width / 914400.0, sh.height / 914400.0)
+
+
+def _overlaps(a, b, tol=0.05):
+    return (min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0]) > tol and
+            min(a[1] + a[3], b[1] + b[3]) - max(a[1], b[1]) > tol)
+
+
+def tidy_geometry(prs):
+    """Keep text off the page number, and out from under pictures."""
+    narrowed = clipped = 0
+    for sl in prs.slides:
+        shapes = [(sh, _rect(sh)) for sh in sl.shapes]
+        shapes = [(sh, r) for sh, r in shapes if r]
+
+        # the page number is the small box in the bottom-right corner
+        pageno = [r for sh, r in shapes
+                  if r[0] > 12.4 and r[1] > 6.9 and r[2] < 1.0]
+        if pageno:
+            px = pageno[0][0]
+            for sh, r in shapes:
+                if not sh.has_text_frame or r is pageno[0] or r[0] > 12.0:
+                    continue
+                if _overlaps(r, pageno[0]) and r[0] + r[2] > px - PAGENUM_GAP:
+                    sh.width = Inches(max(1.0, px - PAGENUM_GAP - r[0]))
+                    narrowed += 1
+
+        # text and pictures must not share space. Which way to move depends
+        # on which side of the picture the text belongs to: a body block
+        # above it gets shortened, a caption below it gets pushed down.
+        pics = [(sh, r) for sh, r in shapes
+                if sh.shape_type is not None and "PICTURE" in str(sh.shape_type)]
+        for sh, r in shapes:
+            if not sh.has_text_frame or not sh.text_frame.text.strip():
+                continue
+            for psh, pr in pics:
+                if psh is sh or not _overlaps(r, pr):
+                    continue
+                if r[1] < pr[1]:                      # body text above it
+                    sh.height = Inches(max(0.3, pr[1] - 0.10 - r[1]))
+                else:                                 # caption below it
+                    sh.top = Inches(pr[1] + pr[3] + 0.06)
+                clipped += 1
+                r = _rect(sh)
+    return narrowed, clipped
+
+
 # --------------------------------------------------------------- ordering --
 # "How the work was run" and "What Python does" are cut: the demo video shows
 # both of them happening, and 36 slides does not fit a 10-minute slot. The
 # figures are still built and live in results/, so either can be put back by
 # naming it here again.
 ORDER = [
-    u"Slide 1", u"School of", u"Review-I",
+    # The title page has no title shape; it is matched by its signature
+    # text as "School of" further down. A "Slide 1" entry here matched
+    # nothing and printed MISSING on every single run, which is one more
+    # line teaching a reader to skim the output.
+    u"School of", u"Review-I",
     u"Problem Statement",
     u"The goal, and whether this serves it",
     u"Aim, and how we approached it",
@@ -889,7 +990,7 @@ ORDER = [
     u"Vivado — simulation and synthesis",
     u"The architecture, end to end",
     u"Closing the loop",
-    u"Does the result survive real transistors?",
+    u"Does the result depend on the model?",
     u"Does the architecture close the gaps?",
     u"Work Completed",
     u"Where we are, and what is next",
@@ -934,7 +1035,7 @@ SHORT = [
     u"Driver simulation",
     u"Head to head with the base paper",            # the comparison
     u"Closing the loop",                            # the converter regulates
-    u"Does the result survive real transistors?",
+    u"Does the result depend on the model?",
     u"Does the architecture close the gaps?",       # the reviewer's question
     u"Work Completed",                             # completion
     u"References  (1–15)",
@@ -1025,9 +1126,16 @@ def write(idxs, path, what):
                         r.text = str(n)
                 break
     removed = strip_badges(p)
+    # write() is called three times on the same Presentation object, so the
+    # first call does the geometry work and the later two find nothing left.
+    # Report it only when it fires, or the last two lines read like a failure.
+    narrowed, clipped = tidy_geometry(p)
+    fixed = ("" if not (narrowed or clipped) else
+             ", %d off the page number, %d out from under a picture"
+             % (narrowed, clipped))
     p.save(path)
-    print("%-8s %2d slides, %d logos removed -> %s"
-          % (what, len(idxs), removed, os.path.basename(path)))
+    print("%-8s %2d slides, %d logos removed%s -> %s"
+          % (what, len(idxs), removed, fixed, os.path.basename(path)))
 
 
 write(short_idx, os.path.join(HERE, "GaN_Review1_PRESENT.pptx"), "PRESENT")

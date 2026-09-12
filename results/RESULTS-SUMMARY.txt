@@ -50,15 +50,17 @@
 
   CLOSED LOOP, AND THE BASE PAPER SIDE BY SIDE
   ───────────────────────────────────────────────────────────────────────────────────────────────────
-  regulation, closed loop (nom / load step / line step)      50.03 / 50.00 / 50.01 V        closedloop.py
+  regulation, closed loop (nom / load step / line step)      50.01 / 50.00 / 50.01 V        closedloop.py
   worst regulation error, closed vs open loop                0.05 % vs 16.6 %               closedloop.py
   load-step recovery / line-step recovery                    4 us / 19 us                   closedloop.py
-  output ripple, closed loop                                 0.28 %                         closedloop.py
+  output ripple, closed loop                                 0.25 %                         closedloop.py
   efficiency, closed loop at nominal                         95.9 %                         closedloop.py
   soft-start overshoot (stated, not good)                    10.9 %                         closedloop.py
   crosstalk margin, ours vs base paper, four corners         5.5x / 6.3x / 8.9x / 12.4x     headtohead.py
   switch-node slew, base vs ours                             67-103 vs 101-175 V/ns         headtohead.py
   margin on REAL SKY130 transistors (no clamp/clamp/+-2V)    -0.563 / +0.031 / +2.032 V     silicon_check.py
+  margin with CHARGE capacitance instead of diodes            +0.115 / +0.800 / +2.710 V     capmodel_check.py
+  -> the no-clamp SIGN is model-dependent; shipped is not      safe under all four models     capmodel_check.py
 
   VERIFICATION
   ───────────────────────────────────────────────────────────────────────────────────────────────────
