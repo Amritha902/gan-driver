@@ -323,3 +323,187 @@ is held in reset. The bench therefore offsets the whole double pulse by a
 `rtl_cosim.py` subtracts it again, putting the reset before SPICE t = 0. The
 low side is then already fully on at t = 0, exactly as `dpt.cir`'s own
 stimulus has it.
+
+
+---
+
+# Addendum 2 — 12 September 2026: the converter regulates, and the driver is
+# built out of real transistors
+
+Three pieces of work, each closing one of the blocks the completion table said
+was not done, plus a full side-by-side against the base paper. And one bug
+found along the way that was hiding an entire capability.
+
+## 1. The loop is closed — `sim/buck_closed.cir`, `scripts/closedloop.py`
+
+Every result before this was open loop: the duty ratio was a `.param`. That is
+the right instrument for characterising a switching edge and the wrong
+description of a converter, because an energy-storage system's pack voltage
+sags all day and its load steps whenever something downstream turns on.
+
+The deck adds a divider, a type-III error amplifier, a voltage-mode modulator
+and a dead-time generator built from a delay line rather than drawn as edges,
+around the **same** power stage and the **same** segmented drivers at the
+**same** shipped control word. Then it disturbs it on purpose.
+
+| | nominal 100 V / 5 A | after 2× load step | after 100 → 120 V line step | worst error |
+|---|---|---|---|---|
+| closed loop | **50.03 V** | **50.00 V** | **50.01 V** | **0.05 %** |
+| open loop | 49.45 V | 48.69 V | 58.32 V | 16.6 % |
+
+The open-loop run is the same deck with `OL=1`, which freezes the control node
+and changes nothing else — and the frozen level is bisected until the
+open-loop converter starts at the same output voltage as the closed-loop one,
+so both begin at the same operating point and only the response differs.
+Quoting an open-loop converter that started at the wrong voltage would flatter
+the loop the same way quoting the base paper at a setting we chose would.
+
+Transients: load step 5 → 10 A dips 1.8 % and is back inside ±1 % in 4 µs;
+line step peaks 1.3 % and recovers in 19 µs; output ripple 0.28 %.
+Efficiency 95.9 % at nominal and 94.5 % at the doubled load.
+**Soft-start overshoot is 10.9 %**, which is the one number here that is not
+good, and it is reported rather than tuned away.
+
+### An efficiency above 100 %, and the averaging bug behind it
+
+The first efficiency numbers were 107.8 %. Energy was not being created; the
+average was. ngspice's timestep is adaptive — tiny steps through every
+switching edge, where the input current spikes, long ones in between — so a
+plain `.mean()` over those samples weights the edges hundreds of times too
+heavily. It put input power at 230 W against 249 W delivered. Replaced with
+trapezoidal integration over the real time axis.
+
+The rest of the project already did this correctly, checked rather than
+assumed: `gansim.py` and `bucksim.py` integrate with `np.trapezoid`, and
+`si_vs_gan.py` uses ngspice's own time-weighted `meas ... AVG`. The bug was
+confined to the script written that day. The lesson generalises — an
+impossible number is the cheapest bug to find, and the same mistake in a
+plausible number is invisible. The output-voltage averages carried the same
+bias and nobody would ever have noticed.
+
+### Two compensators that did not work, and why that is on the record
+
+- **Period doubling.** The first attempt, on the 4.7 µF filter inherited from
+  `buck.cir` with the HF pole at 132 kHz, ran a 4 µs triangle on a 2 µs
+  switching period. That is the classic f_sw/2 limit cycle, and it was
+  visible in the raw waveform rather than inferred.
+- **Type II cannot do this job.** One zero cannot beat the output LC's −180°.
+  Crossing over above the LC corner gives negative phase margin wherever the
+  zero is put; crossing below leaves a loop too slow to settle between two
+  disturbances. Measured at three gains: 10.4 µS still climbing at 340 µs,
+  30 µS drifting 23 V on the cycle average, 100 µS railing through 98 V.
+- **Type III works.** The second zero is exactly the missing phase.
+
+### And the analytic design was 4× out
+
+The K-factor design predicted a 33 kHz crossover and 59° of phase margin. The
+measured step response said about 2 kHz: 109 % overshoot, 119 µs to settle.
+The feedback branch was scaled and the step response re-measured at each
+point — ×1 109 %/119 µs, ×2 53 %/86 µs, ×4 33 %/52 µs, ×8 38 %/11 µs — and ×4
+is shipped.
+
+**No phase margin is claimed anywhere.** It needs an AC analysis about a
+periodic operating point, which ngspice cannot do on a switching deck. What is
+demonstrated is weaker and is stated as such: one fixed set of component
+values is stable through both disturbances. The deck header says so in those
+words, so that nobody quotes 59°.
+
+## 2. Real transistors — `scripts/silicon_check.py`
+
+Every margin in this project is measured with `models/segdrv.lib`, whose
+slices are ideal switches: 10 mΩ on, 1 GΩ off, no gate charge, no threshold,
+no transition. Fair for comparing control words, because the abstraction is
+the same on both sides — and not a driver anyone can fabricate.
+`models/segdrv_sky130.lib` is the same output stage in real SKY130 5 V
+devices. Both were run on the three headline configurations.
+
+| configuration | ideal switches | SKY130 transistors |
+|---|---|---|
+| constant word, no clamp | −0.249 V | −0.563 V |
+| clamp on | +0.570 V | **+0.031 V** |
+| clamp + −2 V off-bias | +2.576 V | **+2.032 V** |
+
+**The architecture survives and the explanation changes.** Sign and ordering
+hold on both stages, which is what had to be true. But on real devices the
+clamp *alone* gives thirty-one millivolts — at one corner, with nothing left
+for temperature or a worse layout. That is not a fix.
+
+So the project corrects its own headline: **the −2 V off-bias is the fix, and
+the clamp is what makes the off-bias hold.** The ideal-switch model was
+flattering the clamp, because an ideal switch pulls the gate down through
+10 mΩ while a real NMOS pulls it through a channel that has to be turned on
+first. This is now a slide.
+
+Stated limits: the predrivers in that stage are still behavioural, and there
+is no equivalent check on the GaN side, because no open PDK ships a 200 V GaN
+HEMT.
+
+### The bug this found
+
+`gansim.py` copies a deck to a temp directory and rewrites
+`.include ../models/` to an absolute path. The SKY130 decks also pull the PDK
+in with `.lib "../pdk/sky130_5v.lib"`, which was **not** rewritten. From a
+temp directory that resolves to nothing, ngspice continues without the
+transistor models, and the run exits zero having measured nothing.
+
+It fails safe — callers got `None`, not a wrong number, so no published figure
+is affected — but it made the transistor-level stage unreachable through the
+one interface every other script uses. Found by watching three rows come back
+blank against a deck that runs perfectly from `sim/`. The `.lib` path is now
+rewritten too.
+
+## 3. Head to head with the base paper — `scripts/headtohead.py`
+
+`basepaper_compare.py` answers one question at one operating point. That is
+the headline and it is not the whole claim: a driver that wins at one corner
+and loses at three is not better, and a driver that wins on crosstalk by
+making the device overshoot harder has moved the problem rather than solved
+it. Neither would have been visible.
+
+Four corners, four metrics, and the base paper given a freedom its own design
+does not have — **re-optimised at every corner** against our one fixed word.
+
+| corner | base, as their paper builds it | base, re-tuned per corner | ours, ONE fixed word | ratio |
+|---|---|---|---|---|
+| 50 V / 2 A / 25 °C | +0.503 V | +0.503 V | **+2.757 V** | 5.5× |
+| 100 V / 10 A / 25 °C | +0.407 V | +0.407 V | **+2.576 V** | 6.3× |
+| 200 V / 2 A / 125 °C | +0.261 V | +0.261 V | **+2.309 V** | 8.9× |
+| 200 V / 10 A / 125 °C | +0.181 V | +0.181 V | **+2.251 V** | 12.4× |
+
+**The gap widens with stress.** Their margin falls +0.503 → +0.181 V from the
+mildest corner to the hottest; ours goes +2.757 → +2.251. A clamp does not
+care how hot the device is.
+
+**And we slew harder, not softer.** Their scheme reduces crosstalk by slowing
+the edge: 67–103 V/ns at the switch node against our 101–175 V/ns, roughly
+half the speed. We win by a factor of several while slewing about twice as
+hard, which is the useful form of the result — the margin is not bought with
+switching speed.
+
+**What it costs.** Our turn-on energy is higher at three of the four corners,
+which is the −2 V rail deepening GaN's dead-time reverse drop — a penalty this
+project already measures at 1.0–3.4 % of total loss. Their driver needs one
+bias resistor; ours needs a clamp device per side, a negative supply and 20
+LUTs. For a converter that never leaves one operating point, theirs may be the
+right engineering. The case for ours is the worst corner.
+
+**And what the claim is NOT.** `models/zhangdrv.lib` is our reading of their
+described scheme, not their netlist, which is not published, and not their
+silicon. "6.3×" means 6.3× our implementation of their scheme in our testbench
+with our parasitics. It does not mean 6.3× their measured result.
+
+### The dv/dt measurement had to be rebuilt
+
+The first version used `meas tran ... WHEN v(sw)=<level> FALL=1`. That reports
+the first crossing of a level, the transient rings through those levels
+several times, and the answer is quantised to the timestep — it produced
+3333 V/ns on a 100 V bus, an edge faster than the solver's own resolution,
+which is a number about the grid rather than about the circuit. Replaced with
+a centred difference over a 0.2 ns window taken from the waveform: wider than
+the timestep, narrower than the edge. The numbers above are that measurement.
+
+## Completion
+
+Two blocks move to done. `review/JUDGE.md` is the examiner's report on all of
+it, written adversarially and then answered, with each finding marked FIXED,
+STATED or OPEN.

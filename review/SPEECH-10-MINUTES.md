@@ -270,13 +270,43 @@ with 1.996 nanoseconds of slack.
 
 ---
 
+## 16b · Head to head with the base paper — 35 s
+
+Same deck, same devices, only the driver swapped. **We hold one fixed word at
+all four corners; they are re-optimised at every corner** — more freedom than
+their own design has. We still lead at all four, **5.5× at the mildest corner
+and 12.4× at the hottest**, because their margin degrades with temperature and
+a clamp does not.
+
+And the switch-node slew: **theirs 67–103 V/ns, ours 101–175.** They reduce
+crosstalk by slowing the edge; we keep the edge fast and hold the gate down.
+The margin is not bought with switching speed.
+
+Say it before you are asked: this is our implementation of their described
+scheme in our testbench, not their measured result.
+
+---
+
+## 16c · Closing the loop, and real transistors — 35 s
+
+**The loop is closed.** Same power stage, same drivers. 50.02 V nominal, 50.00
+after a 2× load step, 50.01 after the input goes 100 → 120 V. Worst error
+0.05 %. Open loop walks to 58 V on that line step.
+
+**And the driver is rebuilt in real SKY130 transistors.** The architecture
+survives — and it corrects our own headline. On real devices **the clamp alone
+gives +0.031 V**, not +0.570. The −2 V off-bias is the fix; the clamp is what
+makes it hold.
+
+---
+
 ## 17b · Does the architecture close the gaps? — 30 s
 
-This is the slide that answers whether the project serves its purpose. **Six
+This is the slide that answers whether the project serves its purpose. **Eight
 gaps** in the published work, what our architecture does about each, and the
 evidence, with the script that produces it.
 
-**Five are closed.** The sixth we answered in the negative — a schedule fitted
+**Seven are closed.** The sixth we answered in the negative — a schedule fitted
 on three corners is worse than the fixed word on three of the four held out.
 That is a result, not a failure.
 
@@ -286,11 +316,10 @@ simulation study.
 
 ---
 
-## 18 · Work completed — 75 % — 20 s  *(9:25)*
+## 18 · Work completed — 90 % — 20 s  *(9:25)*
 
-**Seventy-five percent, counted rather than asserted** — twelve blocks with a
-weight each, eight finished, the weights on the slide so you can argue with
-them.
+**Ninety percent, counted rather than asserted** — twelve blocks with a weight
+each, ten finished, the weights on the slide so you can argue with them.
 
 The converter is built and converting. The fault is reproduced and fixed. The
 named cases have been run. The setting has been measured on the running
@@ -298,8 +327,8 @@ converter. The FPGA controller is written, verified and synthesised — and its
 output now drives the SPICE power stage directly, so the two halves have been
 made to meet.
 
-The rubric asks for fifty at Review-I. The remaining twenty-five percent is the
-half that needs Cadence, a board and a bench.
+The remaining ten percent is place-and-route on a chosen board and a hardware
+half-bridge on a bench. Neither is more simulating.
 
 ---
 

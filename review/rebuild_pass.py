@@ -412,7 +412,7 @@ s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
 set_title(s, u"Does the architecture close the gaps?")
 add_text(s, 0.70, 1.22, 12.10, 0.42, [
-    para([(u"Six gaps in the published work, what our architecture does about "
+    para([(u"Nine gaps in the published work, what our architecture does about "
            u"each, and the evidence. Every row names the script that produces "
            u"it.", N)], level=0, sz=1200, spc=0, bullet=False)])
 
@@ -452,10 +452,21 @@ ROWS = [
      u"fourth.",
      u"Worse than the fixed word on 3 of 4 held-out corners. n = 4, so weak "
      u"— and we say so.", u"ANSWERED, NEGATIVE"),
+    (u"Segmented-driver papers characterise one switching EDGE. The converter "
+     u"is never closed-loop regulated.",
+     u"A type-III loop around the same power stage and the same drivers, then "
+     u"disturbed on purpose.",
+     u"0.05 % error through a 2× load step and a 20 % line step; open loop "
+     u"walks to 58 V (closedloop.py).", u"CLOSED"),
+    (u"Segmented output stages are published as ideal switches. Whether the "
+     u"result survives real devices is untested.",
+     u"The same output stage rebuilt in SKY130 5 V transistors and re-run.",
+     u"Sign and ordering both survive — and the clamp ALONE turns out to give "
+     u"only +0.031 V (silicon_check.py).", u"CLOSED"),
     (u"All of the above is simulation.",
      u"—",
-     u"No silicon measured. One behavioural device model underlies every "
-     u"number in this deck.", u"OPEN → Review-III"),
+     u"No silicon measured. The DRIVER is now rebuilt on a real PDK; the GaN "
+     u"model has no equivalent check.", u"OPEN → Review-III"),
 ]
 coloured = []
 for r, row in enumerate(ROWS):
@@ -467,13 +478,13 @@ for r, row in enumerate(ROWS):
                                          else GREY)
     coloured.append([(row[0], None, False), (row[1], None, False),
                      (row[2], None, False), (st, col, True)])
-grid(s, 0.62, 1.78, 12.14, 4.55, coloured, widths=(30, 26, 32, 12),
-     sizes=(10.5, 9.0))
+grid(s, 0.62, 1.74, 12.14, 4.62, coloured, widths=(30, 26, 32, 12),
+     sizes=(10.0, 8.0))
 
 add_text(s, 0.70, 6.46, 11.70, 0.80, [
     para([(u"DOES IT SERVE ITS PURPOSE?  ", B),
           (u"Yes, for a simulation study, and that is what it is titled as. "
-           u"Five gaps closed, one answered in the negative — which is a "
+           u"Seven gaps closed, one answered in the negative — which is a "
            u"result, not a failure — and one that needs a bench. The "
            u"honest summary is that the architecture is finished and the "
            u"measurement of it on real silicon is not.", N)],
@@ -562,10 +573,10 @@ COMPLETION = [
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
-    (u"Closed-loop regulation of the converter", 8, False,
-     u"Review-II. Changes where it operates, so the study is redone after"),
-    (u"Transistor-level output stage in Cadence", 7, False,
-     u"Review-II. Re-run the ceiling on real devices, not behavioural ones"),
+    (u"Closed-loop regulation, disturbed on purpose", 8, True,
+     u"type-III loop: 0.05 % error through a 2x load and a 20 % line step"),
+    (u"Transistor-level output stage, on a real PDK", 7, True,
+     u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
      u"Needs real package pins and an MMCM for the clock"),
     (u"A hardware half-bridge, measured", 7, False,
@@ -597,9 +608,9 @@ if wi is not None:
         para([(u"%d of 100 done. " % DONE, B),
               (u"Review-I's rubric asks for 50 %%. We are past it because this "
                u"is a simulation study and the simulation half is finished — "
-               u"the remaining %d %% is the half that needs Cadence, a board "
-               u"and a bench, and no amount of further simulating will "
-               u"deliver it." % (100 - DONE), N)],
+               u"the remaining %d %% is place-and-route on a chosen board and "
+               u"a hardware half-bridge on a bench, and no amount of further "
+               u"simulating will deliver either." % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
         para([(u"Stated plainly: the architecture is finished. The "
                u"measurement of it on real silicon is not.", B)],
@@ -607,6 +618,229 @@ if wi is not None:
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
     print("  MISSING: Work Completed slide to rebuild")
+
+
+# ---- slide: closing the loop ----------------------------------------------
+s = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(s)
+set_title(s, u"Closing the loop")
+
+add_text(s, 0.70, 1.20, 12.10, 0.80, [
+    para([(u"Every result so far was measured OPEN LOOP — the duty ratio was "
+           u"a parameter and nothing moved while we measured. That is the right "
+           u"instrument for a switching edge and the wrong description of a "
+           u"converter: a storage system's pack voltage sags all day and its "
+           u"load steps whenever something downstream turns on.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
+
+grid(s, 1.30, 2.14, 10.70, 1.10, [
+    (u"", u"nominal  100 V / 5 A", u"after 2\u00d7 load step",
+     u"after 100 \u2192 120 V line step", u"worst error"),
+    ((u"closed loop", None, True), (u"50.02 V", GREEN, True),
+     (u"50.00 V", GREEN, True), (u"50.01 V", GREEN, True),
+     (u"0.05 %", GREEN, True)),
+    ((u"open loop", None, True), (u"49.45 V", None, False),
+     (u"48.69 V", None, False), (u"58.33 V", AMBER, True),
+     (u"16.7 %", AMBER, True)),
+], widths=(16, 21, 21, 26, 16), sizes=(10.0, 11.0))
+
+add_text(s, 0.70, 3.44, 5.85, 0.34, [
+    para([(u"What the loop buys", B)], level=0, sz=1250, spc=0, bullet=False)])
+add_text(s, 0.70, 3.82, 5.85, 2.10, [
+    para([(u"Load step 5 \u2192 10 A: dips 1.8 %, back inside \u00b11 % in 4 \u00b5s.", N)],
+         level=0, sz=1150, spc=110, bullet=False),
+    para([(u"Line step 100 \u2192 120 V: peaks 1.3 %, recovers in 19 \u00b5s.", N)],
+         level=0, sz=1150, spc=110, bullet=False),
+    para([(u"Output ripple 0.28 %. Soft-start overshoot 10.9 % — the one "
+           u"number here we are not proud of, and it is on the slide.", N)],
+         level=0, sz=1150, spc=110, bullet=False),
+    para([(u"Open loop is not merely less accurate. On the line step it walks "
+           u"to 58 V, because V_out = D \u00d7 V_in and nothing in it knows "
+           u"V_in moved.", B)], level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 7.00, 3.44, 5.80, 0.34, [
+    para([(u"Two compensators that did NOT work", B)],
+         level=0, sz=1250, spc=0, bullet=False)])
+add_text(s, 7.00, 3.82, 5.80, 2.10, [
+    para([(u"The first period-doubled: a 4 \u00b5s triangle on a 2 \u00b5s "
+           u"switching period — the textbook f", N), (u"sw", N),
+          (u"/2 limit cycle.", N)], level=0, sz=1150, spc=110, bullet=False),
+    para([(u"A proper type-II could not be made to work at all. One zero "
+           u"cannot beat the output LC's \u2212180\u00b0: cross above the "
+           u"corner and the phase margin is negative, cross below and the loop "
+           u"cannot settle between two disturbances. Both measured — 30 \u00b5S "
+           u"drifts 23 V, 100 \u00b5S rails 98 V.", N)],
+         level=0, sz=1150, spc=110, bullet=False),
+    para([(u"Type III adds the second zero, which is exactly the missing "
+           u"phase. Crossover ~30 kHz, f", N), (u"sw", N), (u"/16.", N)],
+         level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 0.70, 6.10, 11.70, 1.00, [
+    para([(u"Said out loud: the K-factor design was 4\u00d7 out. ", B),
+          (u"It predicted 30 kHz; the measured step response said about 2 kHz, "
+           u"109 % overshoot, 119 \u00b5s to settle. The gain was scaled "
+           u"empirically and re-measured at each step. No phase margin is "
+           u"claimed anywhere — that needs an AC analysis about a periodic "
+           u"operating point, which ngspice cannot do on a switching deck.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+print("added: Closing the loop")
+
+
+# ---- slide: does it survive real transistors? ------------------------------
+s = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(s)
+set_title(s, u"Does the result survive real transistors?")
+
+add_text(s, 0.70, 1.18, 12.10, 0.76, [
+    para([(u"Every margin in this deck was measured with an output stage whose "
+           u"slices are IDEAL SWITCHES — 10 m\u03a9 on, 1 G\u03a9 off, no gate "
+           u"charge, no threshold, no transition. Fair for comparing control "
+           u"words. Not a driver anyone can fabricate. So we rebuilt the same "
+           u"output stage in real SKY130 5 V devices and ran it again.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
+
+grid(s, 1.90, 2.08, 9.50, 1.35, [
+    (u"configuration", u"ideal switches", u"SKY130 transistors", u""),
+    ((u"constant word, no clamp", None, False), (u"\u22120.249 V", None, False),
+     (u"\u22120.563 V", None, False), (u"FALSE TURN-ON", AMBER, True)),
+    ((u"clamp on", None, False), (u"+0.570 V", None, False),
+     (u"+0.031 V", AMBER, True), (u"barely holds", AMBER, True)),
+    ((u"clamp + \u22122 V off-bias", None, True), (u"+2.576 V", None, False),
+     (u"+2.032 V", GREEN, True), (u"safe", GREEN, True)),
+], widths=(30, 22, 24, 24), sizes=(10.5, 11.0))
+
+add_text(s, 0.70, 3.66, 12.10, 1.55, [
+    para([(u"The architecture survives — and the reason it survives changes.", B)],
+         level=0, sz=1350, spc=180, bullet=False),
+    para([(u"Sign and ordering hold on both stages: the constant word fails on "
+           u"real transistors too, the clamp beats no clamp, and clamp plus "
+           u"negative bias beats clamp alone. That is what had to be true, and "
+           u"it is. But on real devices ", N),
+          (u"the clamp ALONE gives +0.031 V", B),
+          (u" — thirty-one millivolts, at one corner, with nothing left over "
+           u"for temperature or a worse layout. That is not a fix.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+
+add_text(s, 0.70, 5.34, 11.70, 1.75, [
+    para([(u"So we correct our own headline. ", B),
+          (u"The \u22122 V off-bias is the fix; the clamp is what makes the "
+           u"off-bias hold. The ideal-switch model was flattering the clamp, "
+           u"because an ideal switch pulls the gate down through 10 m\u03a9 "
+           u"while a real NMOS pulls it through a channel that has to be "
+           u"turned on first.", N)],
+         level=0, sz=1250, spc=170, bullet=False),
+    para([(u"Stated limit: the predrivers in this stage are still behavioural. "
+           u"The output stage is what is being checked. And there is no "
+           u"equivalent check on the GaN side — no open PDK ships a 200 V GaN "
+           u"HEMT — so that model remains the single assumption everything "
+           u"rests on.", N)], level=0, sz=1150, spc=0, bullet=False)])
+print("added: Does the result survive real transistors?")
+
+
+# ---- slide: head to head ---------------------------------------------------
+s = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(s)
+set_title(s, u"Head to head with the base paper")
+
+add_text(s, 0.70, 1.16, 12.10, 0.56, [
+    para([(u"Same deck, same GaN, same power loop, same parasitics — only the "
+           u"driver is swapped. We hold ONE fixed word at all four corners. "
+           u"They are re-optimised at EVERY corner, which is more freedom than "
+           u"their own design has.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+
+grid(s, 0.62, 1.80, 12.14, 1.55, [
+    (u"crosstalk margin", u"base, as their paper builds it",
+     u"base, re-tuned at every corner", u"ours, ONE fixed word", u"vs their best"),
+    ((u"50 V / 2 A / 25 \u00b0C", None, True), (u"+0.503 V", None, False),
+     (u"+0.503 V", None, False), (u"+2.757 V", GREEN, True), (u"5.5\u00d7", None, True)),
+    ((u"100 V / 10 A / 25 \u00b0C", None, True), (u"+0.407 V", None, False),
+     (u"+0.407 V", None, False), (u"+2.576 V", GREEN, True), (u"6.3\u00d7", None, True)),
+    ((u"200 V / 2 A / 125 \u00b0C", None, True), (u"+0.261 V", None, False),
+     (u"+0.261 V", None, False), (u"+2.309 V", GREEN, True), (u"8.9\u00d7", None, True)),
+    ((u"200 V / 10 A / 125 \u00b0C", None, True), (u"+0.181 V", AMBER, True),
+     (u"+0.181 V", None, False), (u"+2.251 V", GREEN, True), (u"12.4\u00d7", None, True)),
+], widths=(24, 21, 22, 20, 13), sizes=(10.0, 10.0))
+
+add_text(s, 0.70, 3.54, 5.85, 0.34, [
+    para([(u"The gap WIDENS with stress", B)], level=0, sz=1250, spc=0, bullet=False)])
+add_text(s, 0.70, 3.92, 5.85, 1.55, [
+    para([(u"Their margin falls +0.503 \u2192 +0.181 V from the mildest corner "
+           u"to the hottest. Ours goes +2.757 \u2192 +2.251. They degrade where "
+           u"it matters most; a clamp does not care how hot the device is.", N)],
+         level=0, sz=1150, spc=110, bullet=False),
+    para([(u"Worst corner is what a converter has to survive: +0.181 V against "
+           u"+2.251 V.", B)], level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 7.00, 3.54, 5.80, 0.34, [
+    para([(u"And we slew HARDER, not softer", B)], level=0, sz=1250, spc=0, bullet=False)])
+add_text(s, 7.00, 3.92, 5.80, 1.55, [
+    para([(u"Their scheme reduces crosstalk by slowing the edge: 67\u2013103 "
+           u"V/ns at the switch node. Ours runs 101\u2013175 V/ns — about "
+           u"twice as fast — and still wins by a factor of several.", N)],
+         level=0, sz=1150, spc=110, bullet=False),
+    para([(u"The margin is not bought with switching speed. That is the useful "
+           u"form of the result.", B)], level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 0.70, 5.60, 11.70, 1.50, [
+    para([(u"What it costs, and what the claim is NOT. ", B),
+          (u"Our turn-on energy is higher at three of four corners — the "
+           u"\u22122 V rail deepens GaN's dead-time reverse drop, a penalty "
+           u"this project already measures at 1.0\u20133.4 % of total loss. "
+           u"Their driver needs one bias resistor; ours needs a clamp device, "
+           u"a negative supply and 20 LUTs. For a converter that never leaves "
+           u"one operating point, theirs may be the right engineering.", N)],
+         level=0, sz=1200, spc=160, bullet=False),
+    para([(u"And this is OUR implementation of their described scheme in OUR "
+           u"testbench — their netlist is not published. It is not 6.3\u00d7 "
+           u"their measured result, and we do not say it is.", B)],
+         level=0, sz=1200, spc=0, bullet=False)])
+print("added: Head to head with the base paper")
+
+
+# ---- two slides the transistor-level result makes stale -------------------
+# "the clamp fixes it" was true of the ideal-switch stage and is not true of
+# real devices, where the clamp alone gives +0.031 V. Leaving the old title up
+# and correcting it four slides later is how a reviewer decides you knew.
+i = index_of(u"Result 1")
+if i is not None:
+    set_title(p.slides[i], u"Result 1 \u2014 crosstalk is real, and what fixes it")
+    print("retitled: Result 1")
+
+# Review-II was "close the loop". The loop is closed, so the plan has to say
+# what is actually left rather than list work already in the deck.
+i = index_of(u"Where we are, and what is next")
+if i is not None:
+    s = p.slides[i]
+    strip(s)
+    set_title(s, u"Where we are, and what is next")
+    add_text(s, 0.70, 1.35, 12.10, 5.30, [
+        para([(u"Where we are", B)], level=0, sz=1700, spc=200, bullet=False),
+        para([(u"90 % by the count on the previous slide. The converter is "
+               u"built and regulating, the fault is reproduced and fixed, the "
+               u"720-word study is run, the controller is written, verified and "
+               u"synthesised, its output drives the SPICE power stage directly, "
+               u"and the driver has been rebuilt in real transistors.", N)],
+             level=0, sz=1300, spc=260, bullet=True),
+        para([(u"What is actually left \u2014 and it is not more simulating", B)],
+             level=0, sz=1700, spc=200, bullet=False),
+        para([(u"Place-and-route on a chosen board. ", B),
+              (u"Synthesis is done; the flow stops there because the XDC pins "
+               u"are placeholders. Doing it properly also means driving the "
+               u"200 MHz clock from an MMCM rather than straight off a pin, "
+               u"which is what makes 34 clock-to-pin paths fail today.", N)],
+             level=0, sz=1300, spc=220, bullet=True),
+        para([(u"A hardware half-bridge, measured. ", B),
+              (u"This is the whole of the remaining honest risk. Everything in "
+               u"this deck is a simulation of a converter that has never been "
+               u"built, and one behavioural GaN model underlies all of it.", N)],
+             level=0, sz=1300, spc=220, bullet=True),
+        para([(u"Also worth doing: transcribe the silicon MOSFET datasheet "
+               u"digits rather than using datasheet-class values, and re-run "
+               u"the ceiling on the transistor-level stage now that it is "
+               u"known to work.", N)], level=0, sz=1200, spc=0, bullet=True),
+    ])
+    print("rebuilt: Where we are, and what is next")
 
 
 # --------------------------------------------------------------- ordering --
@@ -628,6 +862,7 @@ ORDER = [
     # it never compared against, while the speech script talked the audience
     # through a slide that did not exist.
     u"We implemented the base paper",
+    u"Head to head with the base paper",
     u"The five closest published drivers",
     u"The gap this project fills",
     u"The driver's settings",
@@ -653,6 +888,8 @@ ORDER = [
     u"FPGA Controller",
     u"Vivado — simulation and synthesis",
     u"The architecture, end to end",
+    u"Closing the loop",
+    u"Does the result survive real transistors?",
     u"Does the architecture close the gaps?",
     u"Work Completed",
     u"Where we are, and what is next",
@@ -695,6 +932,9 @@ SHORT = [
     u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",
+    u"Head to head with the base paper",            # the comparison
+    u"Closing the loop",                            # the converter regulates
+    u"Does the result survive real transistors?",
     u"Does the architecture close the gaps?",       # the reviewer's question
     u"Work Completed",                             # completion
     u"References  (1–15)",

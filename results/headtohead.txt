@@ -1,0 +1,5 @@
+Head to head, base paper (re-optimised per corner) vs ours (one fixed word)
+50V_2A_25C base +0.503 V (nseg=1 tstep=5n) ours +2.757 V
+100V_10A_25C base +0.407 V (nseg=2 tstep=4n) ours +2.576 V
+200V_2A_125C base +0.261 V (nseg=2 tstep=4n) ours +2.309 V
+200V_10A_125C base +0.181 V (nseg=2 tstep=4n) ours +2.251 V

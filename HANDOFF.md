@@ -47,6 +47,29 @@ each one.
   (`weight_sensitivity.py`) — the strongest form of the headline claim
 - 34,622 transients, matching the row counts of every result CSV
 
+**Closed loop, and real transistors** (12 Sep)
+- `sim/buck_closed.cir` + `scripts/closedloop.py`: type-III loop around the
+  same power stage and the same drivers. **50.02 / 50.00 / 50.01 V** through a
+  2x load step and a 100 -> 120 V line step; worst error **0.05 %** against
+  open loop's 16.7 %. Load step recovers in 4 us, line step in 19 us, ripple
+  0.28 %, soft-start overshoot 10.9 % (stated, not good).
+  DO NOT QUOTE A PHASE MARGIN. None is measured; the 59 deg in the design
+  notes is from an averaged model the measurement shows is 4x out on gain.
+- `scripts/silicon_check.py`: the same output stage in real SKY130 5 V
+  devices. Sign and ordering both survive -- **and the clamp ALONE gives
+  +0.031 V, not +0.570**. Quote it that way: the -2 V off-bias is the fix and
+  the clamp is what makes it hold. The ideal-switch model was flattering the
+  clamp.
+- `scripts/headtohead.py`: four corners, four metrics, base paper re-optimised
+  at every corner against our one fixed word. **5.5x / 6.3x / 8.9x / 12.4x** --
+  the lead WIDENS with stress. And our switch node slews about 2x faster than
+  theirs, so the margin is not bought with switching speed. Costs: our turn-on
+  energy is higher at 3 of 4 corners (the -2 V rail).
+- Bug fixed: `gansim.py` did not rewrite the SKY130 decks' relative `.lib`
+  path, so every transistor-level run through it silently measured nothing.
+  Fails safe (returns None, never a wrong number), but it made the whole
+  transistor-level stage unreachable through the standard interface.
+
 **Base paper, implemented — not just cited**
 `models/zhangdrv.lib` implements Zhang et al.'s segmented driver (ISPSD 2020,
 Xplore 9170108): seven slices brought in as a timed pattern across the edge,
@@ -121,8 +144,8 @@ the two agree to the last printed digit** (`results/matlab_online/RUN-LOG.txt`).
 functions after all code, Octave does not hoist them, and only a function
 file satisfies both. Invoke it by typing `gan_master`.
 
-**Deck** — 42 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`
-(the 17-slide `GaN_Review1_PRESENT.pptx` is the one to actually present).
+**Deck** — 45 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`
+(the 20-slide `GaN_Review1_PRESENT.pptx` is the one to actually present).
 Rebuild `cd review && python3 build.py`; geometry check `python3 qa.py`
 (9 flags is the known-good baseline, all investigated false positives;
 the three slides added on 12 Sep add none).
@@ -140,10 +163,15 @@ reviewer asked what the goal actually is):
   CLOSED, one ANSWERED NEGATIVE, one OPEN (hardware).
 - *The architecture, end to end* — the RTL-in-the-loop co-simulation.
 
-**Completion is now counted, not asserted: 75 %.** Twelve weighted blocks on
-the Work Completed slide, eight done. The remaining 25 % is closed-loop
-control, the transistor-level stage, place-and-route and a hardware bench —
-none of which more simulating can deliver.
+**Completion is counted, not asserted: 90 %.** Twelve weighted blocks on the
+Work Completed slide, ten done. The remaining 10 % is place-and-route on a
+chosen board (3) and a hardware half-bridge on a bench (7) — neither of which
+more simulating can deliver.
+
+**`review/JUDGE.md` is the examiner's report**: the project reviewed
+adversarially and then answered, every finding marked FIXED, STATED or OPEN.
+Read it before the viva; the questions a reviewer will ask are in it, with the
+answers.
 Demo video `results/demo_crosstalk_explained.mp4`, embedded on slide 23.
 
 ## Open work, in priority order
@@ -188,7 +216,7 @@ came across rather than a copied working tree: **52 commits**, back to the
 original "Add GaN segmented gate driver simulation project". Verified by
 cloning it fresh and running the project from the clone —
 `scripts/gansim.py CLKEN=1 VNEG=-2` gives margin **+2.576 V** and the deck
-builds to 42 slides with the usual 9 QA lines. Paths survived the move
+builds to 45 slides with the usual 9 QA lines. Paths survived the move
 untouched because every script resolves its root from `__file__`.
 
 **This repo is now canonical. Work here, not in `vero`.**

@@ -227,6 +227,93 @@ assumption.
 
 ---
 
+## NEW — Head to head with the base paper (60 s) — **core slide**
+
+> "Same deck, same GaN, same power loop, same parasitics. Only the driver is
+> swapped. We hold one fixed word at all four corners — because our own result
+> says a fixed word is the deliverable, so we hold ourselves to it. They are
+> re-optimised at every corner, which is more freedom than their own design
+> has: their paper sets one bias resistor once."
+>
+> "Even so we lead at all four: five and a half times at the mildest corner,
+> twelve point four at the hottest. And look at the direction — their margin
+> falls from half a volt to a hundred and eighty millivolts as it gets hot;
+> ours barely moves. A clamp does not care how hot the device is."
+>
+> "The part I would want a reviewer to notice is the switch-node slew. Their
+> scheme reduces crosstalk by slowing the edge — sixty-seven to a hundred volts
+> per nanosecond. Ours runs a hundred to a hundred and seventy-five, about
+> twice as fast, and still wins by a factor of several. **The margin is not
+> bought with switching speed.**"
+>
+> "It is not free. Our turn-on energy is higher at three of four corners —
+> that's the minus two volt rail deepening GaN's dead-time drop, a penalty we
+> already measure at one to three percent of total loss. And their driver is
+> one resistor against our clamp, negative supply and twenty LUTs. For a
+> converter that never leaves one operating point, theirs may be the right
+> engineering."
+
+*Say this before anyone asks:* this is our implementation of their described
+scheme in our testbench. Their netlist is not published. It is not 6.3× their
+measured result and we do not claim it is.
+
+---
+
+## NEW — Closing the loop (50 s)
+
+> "Everything up to here was measured open loop — the duty ratio was a
+> parameter and nothing moved while we measured. Right instrument for a
+> switching edge, wrong description of a converter: a storage system's pack
+> voltage sags all day and the load steps whenever something turns on."
+>
+> "So we closed it, around the same power stage and the same drivers, and then
+> disturbed it on purpose. Fifty point zero two volts, fifty point zero zero
+> after a two-times load step, fifty point zero one after the input goes from a
+> hundred to a hundred and twenty. Worst error five hundredths of a percent.
+> The open-loop converter walks to fifty-eight volts on that line step, because
+> V-out equals D times V-in and nothing in it knows V-in moved."
+>
+> "Two compensators did not work before this one did. The first period-doubled
+> — a four microsecond triangle on a two microsecond switching period. And a
+> proper type-two cannot do this job at all: one zero cannot beat the output
+> LC's minus one-eighty. Type three adds the second zero, which is exactly the
+> missing phase."
+
+*If asked about phase margin:* we do not claim one. It needs an AC analysis
+about a periodic operating point, which ngspice cannot do on a switching deck.
+What is shown is weaker: one fixed set of values, stable through both
+disturbances. And the K-factor design was four times out on gain — we scaled
+it empirically and measured each step, and that is on the slide.
+
+---
+
+## NEW — Does the result survive real transistors? (50 s) — **core slide**
+
+> "Every margin in this deck was measured with an output stage whose slices are
+> ideal switches. Ten milliohms on, a gigaohm off, no gate charge, no
+> threshold. Fair for comparing control words. Not a driver anyone can build."
+>
+> "So we rebuilt the same output stage in real SKY130 five-volt transistors and
+> ran it again. The architecture survives — the constant word still fails, the
+> clamp still beats no clamp, clamp plus negative bias still beats clamp
+> alone."
+>
+> "**But the reason it survives changes, and I want to correct our own
+> headline.** On real devices the clamp alone gives thirty-one millivolts. Not
+> half a volt — thirty-one millivolts, at one corner, with nothing left for
+> temperature or a worse layout. That is not a fix. The minus two volt off-bias
+> is the fix, and the clamp is what makes the off-bias hold."
+>
+> "The ideal switch was flattering the clamp, because it pulls the gate down
+> through ten milliohms while a real NMOS pulls it through a channel that has
+> to be turned on first."
+
+*Limits to say yourself:* the predrivers in that stage are still behavioural,
+and there is no equivalent check on the GaN side — no open PDK ships a 200 V
+GaN HEMT, so that one model is still what everything rests on.
+
+---
+
 ## NEW — Does the architecture close the gaps? (50 s) — **core slide**
 
 > "This is the slide that answers whether the project serves its purpose. Six
@@ -244,20 +331,19 @@ assumption.
 
 ---
 
-## 15 — Work completed, 75 % (30 s)
+## 15 — Work completed, 90 % (30 s)
 
-> "Seventy-five percent, and it is counted rather than asserted — twelve blocks
-> with a weight each, eight finished, the weights on the slide so you can argue
-> with them."
+> "Ninety percent, and it is counted rather than asserted — twelve blocks with
+> a weight each, ten finished, the weights on the slide so you can argue with
+> them."
 >
 > "The problem is reproduced and fixed. The full search is done: 720 settings at
 > four operating points, about 34,600 simulation runs across every study."
 >
-> "The rubric asks for fifty at Review-I. We are past it because this is a
-> simulation study and the simulation half is finished. The remaining
-> twenty-five percent is the half that needs Cadence, a board and a bench — no
-> amount of further simulating delivers it. The architecture is finished; the
-> measurement of it on real silicon is not."
+> "The remaining ten percent is place-and-route on a chosen board, and a
+> hardware half-bridge on a bench. No amount of further simulating delivers
+> either. The architecture is finished; the measurement of it on real silicon
+> is not."
 
 ---
 

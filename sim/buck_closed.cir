@@ -1,0 +1,265 @@
+GaN synchronous buck converter, CLOSED LOOP: regulated 50 V through line and load steps
+* ===================================================================
+* buck_closed.cir -- the converter with the loop closed.
+*
+* WHY THIS EXISTS
+* buck.cir runs the converter OPEN LOOP: the duty ratio is a .param and
+* the PWM comes from two PULSE sources. That is the right way to measure
+* switching behaviour, because nothing is moving the operating point
+* while you measure it. But it is not a converter anyone would build.
+* Its output is whatever D*Vin minus the losses happens to be -- 48.5 V
+* when you asked for 50 -- and it has no answer at all to the load
+* changing or the battery sagging, which in an energy-storage system is
+* the normal condition rather than the exception.
+*
+* This closes the loop, and then disturbs it on purpose.
+*
+* THE LOOP, STAGE BY STAGE
+*   1. divider     out -> fb, 1/20, so 50 V out is 2.5 V at the pin
+*   2. error amp   a transconductance stage into a type-II network:
+*                  Cc sets the integrator (zero DC error), Rz the zero
+*                  that buys back phase at crossover, Cp the high
+*                  frequency pole that stops the switching ripple being
+*                  amplified into the control node
+*   3. modulator   v(comp) against a 0->1 sawtooth at FSW: trailing-edge
+*                  voltage-mode PWM, the same modulator a UC3843-class
+*                  part implements
+*   4. dead time   each device turns ON one DT after its command rises
+*                  and OFF the instant it falls, which is what the FPGA's
+*                  dead_time_gen does in rtl/. Built here from a delay
+*                  line and two AND terms rather than by drawing the
+*                  edges, so the dead time is generated, not assumed.
+*   5. the SAME segmented gate drivers, at the SAME shipped control word
+*
+* WHAT IS DISTURBED, AND WHEN
+*   0      soft start: the reference is ramped, not stepped, so the
+*          inductor current at start-up is a design choice
+*   TLOAD  load step 10 ohm -> 5 ohm. Output current doubles.
+*   TLINE  line step 100 V -> 120 V. This is the battery-voltage swing
+*          an energy-storage system lives with all day.
+*
+* The compensator is deliberately unaggressive. A faster loop would show
+* a smaller undershoot and would be the wrong thing to claim: this one is
+* stable across both disturbances at one fixed set of component values,
+* which is the honest demonstration.
+* ===================================================================
+
+.include ../models/egan.lib
+.include ../models/segdrv.lib
+
+* ==================== PARAM BLOCK ==================================
+.param VIN=100
+.param VSTEP=120
+.param FSW=500k
+.param LOUT=22u
+.param COUT=10u
+.param RLOAD=10
+.param RSTEP=10                       $ switched in parallel -> 5 ohm
+.param VOREF=50
+.param KDIV=0.05                      $ 1/20
+.param VDRV=5
+.param VNEG=0
+.param NPU_LS=8
+.param NPD_LS=8
+.param NPU_HS=8
+.param NPD_HS=8
+.param DT=15n
+.param CLKEN=1
+.param RUNIT=8
+.param TJ=25
+* ---- output filter, sized for THIS job ----
+* buck.cir's 4.7 uF / 0.3 ohm was sized for an open-loop switching study,
+* where output ripple is a cosmetic number nobody feeds back. Here it is
+* fed back, and at 4.7 uF the ripple reaching the modulator was large
+* enough to period-double the loop at fsw/2 -- measured, not feared: the
+* output ran a 4 us triangle on a 2 us switching period. Sizing the
+* filter for the job it now has removes the cause rather than filtering
+* the symptom in the compensator.
+.param ESR=0.05
+* ---- compensator: TYPE III, and why it is not type II ----
+* A type-II compensator was built first and it does not work here, which is
+* worth recording because the reason is structural rather than a bad value.
+* Type II has one zero, so its phase never gets past -90 deg + the zero. The
+* output LC contributes -180 deg above its corner. Crossing over above the
+* corner therefore lands at negative phase margin no matter how the zero is
+* placed, and crossing over below it leaves a loop too slow to settle between
+* two disturbances. Both failures were measured, not assumed:
+*
+*   GMEA = 10.4 uS  crossover below the LC corner -> 42.6 V at 340 us,
+*                   still climbing; the loop cannot settle in time
+*   GMEA = 30 uS    23 V of drift on the cycle average -- unstable
+*   GMEA = 100 uS   98 V swing -- the loop is railing, not regulating
+*
+* And the first attempt of all, at 4.7 uF with the HF pole at 132 kHz,
+* period-doubled: a 4 us triangle on a 2 us switching period, which is the
+* classic fsw/2 limit cycle and is visible in the raw waveform.
+*
+* Type III adds a second zero, which is exactly the missing phase. Designed
+* by the K-factor method against the 10 uF plant and then verified:
+*
+*   plant           L 22 uH, C 10 uF, ESR 50 mohm, R 10 ohm -> LC corner
+*                   10.7 kHz, ESR zero 318 kHz, modulator gain Vin/Vramp = 100
+*   target          crossover 30 kHz (fsw/16), phase margin 55 deg
+*   K factor        29 -> zero pair at 5.4 kHz, pole pair at 167 kHz
+*   predicted       crossover 33.2 kHz, phase margin 59.1 deg, loop gain
+*                   -26 dB at fsw/2 -- from the averaged model, and NOT a
+*                   measurement. No phase margin is measured anywhere in this
+*                   project: it needs an AC analysis about a periodic
+*                   operating point, which ngspice cannot do on a switching
+*                   deck. Do not quote 59 degrees as a result.
+*
+* AND THEN MEASURED, because the design model is an averaged ideal buck and
+* this is not one. The K-factor values gave the right SHAPE and not enough
+* gain: a 5 % reference step overshot by 109 % and took 119 us to settle,
+* which is a loop crossing over near 2 kHz, not 33 kHz. The feedback branch
+* was scaled (R2 up, C1 and C2 down by the same factor, so both corner
+* frequencies stay put and only the gain moves) and the step response
+* measured at each:
+*
+*     x1   overshoot 109 %   settles 119 us   ripple 0.173 V
+*     x2   overshoot  53 %   settles  86 us   ripple 0.125 V
+*     x4   overshoot  33 %   settles  52 us   ripple 0.115 V   <- shipped
+*     x8   overshoot  38 %   settles  11 us   ripple 0.116 V
+*
+* x4 is shipped: best damped, exact DC, 0.23 % ripple. x8 settles faster but
+* overshoots more and pushes the crossover closer to fsw/2, which is where
+* the type-II attempt died. The gap between the analytic design and the
+* measured one is the averaged model neglecting the driver, the dead time
+* and the device losses -- it is reported rather than papered over, because
+* a design procedure that needs a 4x empirical correction should say so.
+*
+* Network, around an inverting amplifier with its + input at the reference:
+*   input    R1, with R3 + C3 in parallel across it  -> second zero and pole
+*   feedback R2 + C1, with C2 across the pair        -> first zero and pole
+.param R1C=10k
+.param R3C=334
+.param C3C=2.85n
+.param R2C=11.6k
+.param C1C=2.55n
+.param C2C=82.5p
+.param AOL=1e5
+* ---- open-loop comparison ----
+* OL=1 freezes the control node at VCFIX, breaking the loop while
+* changing nothing else: same power stage, same modulator, same dead
+* time, same drivers, same disturbances. The difference between the two
+* runs is then the loop and only the loop.
+.param OL=0
+.param VCFIX=0.614                    $ the closed loop's own control level at nominal
+* ---- schedule ----
+.param TSS=200u                       $ soft-start ramp
+.param TLOAD=500u
+.param TLINE=800u
+.param TSTOP=1100u
+* ==================== END PARAM BLOCK ==============================
+
+.param KT    = {1 + 0.009*(TJ-25)}
+.param BH_T  = {5.55/KT}
+.param VTH_T = {1.4 - 0.0015*(TJ-25)}
+.param TSW   = {1/FSW}
+.param TR    = 0.5n
+.param LLOOP = 3n
+.param VREF  = {VOREF*KDIV}
+
+* ---------------- input source, stepped at TLINE -------------------
+Vin    vin 0 PWL(0 {VIN} {TLINE} {VIN} {TLINE+1u} {VSTEP})
+Vsin   vin bus DC 0
+
+* ---------------- power stage --------------------------------------
+Rloop  bus n1  0.3
+Lloop  n1  hstop {LLOOP}
+Vshs   hstop hsd DC 0
+Xhs    hsd hsg sw EGAN params: vth={VTH_T} bh={BH_T}
+Vsls   sw  lsd DC 0
+Xls    lsd lsg 0  EGAN params: vth={VTH_T} bh={BH_T}
+
+* ---------------- output filter and load ---------------------------
+Lo     sw  nlo {LOUT} IC=0
+Vsout  nlo out DC 0
+Resr   out nc  {ESR}
+Co     nc  0   {COUT} IC=0
+Rload  out 0   {RLOAD}
+
+* load step: a second RSTEP in parallel, switched in at TLOAD
+Vstep  stepc 0 PWL(0 0 {TLOAD} 0 {TLOAD+10n} 1)
+Sstep  out nstep stepc 0 SWLOAD
+Rstep  nstep 0 {RSTEP}
+.model SWLOAD SW(Ron=0.01 Roff=1e9 Vt=0.5 Vh=0.05)
+
+* ---------------- 1. feedback divider ------------------------------
+Bfb    fb 0 V = {KDIV*v(out)}
+
+* ---------------- soft-started reference ---------------------------
+Vrefs  refs 0 PWL(0 0 {TSS} {VREF} {TSTOP} {VREF})
+
+* ---------------- 2. type-III error amplifier ----------------------
+* Ideal inverting amplifier: output = AOL x (ref - summing junction),
+* saturating at the rails like a real part, with a small output
+* resistance and a pole an order above crossover so the model does not
+* pretend to infinite bandwidth.
+Bea    ea_raw 0 V = {AOL*(v(refs)-v(eam)) < 0 ? 0 :
++                   (AOL*(v(refs)-v(eam)) > 1 ? 1 : AOL*(v(refs)-v(eam)))}
+Rea    ea_raw comp 100
+Cea    comp 0 1n
+
+* input network: R1 in parallel with R3 + C3
+R1c    fb  eam {R1C}
+R3c    fb  n3c {R3C}
+C3c    n3c eam {C3C}
+
+* feedback network: R2 + C1, with C2 across
+R2c    eam n1c {R2C}
+C1c    n1c comp {C1C}
+C2c    eam comp {C2C}
+
+* keep the control node inside the ramp: a real error amplifier
+* saturates at its rails and so must this one, or the duty ratio
+* integrates to nonsense during soft start
+Bclamp cmpc 0 V = {OL > 0.5 ? VCFIX :
++                   (v(comp) < 0.02 ? 0.02 : (v(comp) > 0.98 ? 0.98 : v(comp)))}
+
+* ---------------- 3. modulator -------------------------------------
+* Trailing-edge sawtooth, 0 to 1 over one switching period.
+Vramp  ramp 0 PULSE(0 1 0 {TSW*0.97} {TSW*0.03} 0 {TSW})
+Bpwm   pwmraw 0 V = {v(cmpc) > v(ramp) ? 1 : 0}
+
+* ---------------- 4. dead-time generator ---------------------------
+* A lossless line is the cleanest delay element ngspice has: no time
+* constant to distort the edge, matched at both ends so nothing
+* reflects. hs turns on DT after its command rises and off the instant
+* it falls; ls is the complement, same rule. Both low during dead time,
+* neither ever high together -- which is the property the RTL asserts.
+Tdly   pwmraw 0 pwmd 0 Z0=50 TD={DT}
+Rterm  pwmd 0 50
+Bhs    pwmhs 0 V = {(v(pwmraw) > 0.5 && v(pwmd) > 0.5) ? 1 : 0}
+Bls    pwmls 0 V = {(v(pwmraw) < 0.5 && v(pwmd) < 0.5) ? 1 : 0}
+
+* ---------------- low-side driver (ground referenced) --------------
+Vlsvp  lsvp 0 DC {VDRV}
+Vlsvn  lsvn 0 DC {VNEG}
+Blspu  lspu 0 V = {v(pwmls)}
+Blspd  lspd 0 V = {1-v(pwmls)}
+Blsclk lsclk 0 V = {CLKEN*(1-v(pwmls))}
+Xdrvls lspu lspd lsclk lsg lsvp lsvn 0 SEGDRV
++      params: npu={NPU_LS} npd={NPD_LS} runit={RUNIT} rclamp=0.5
+
+* ---------------- high-side driver (floating on SW) ----------------
+Vhsvp  hsvp sw DC {VDRV}
+Vhsvn  hsvn sw DC {VNEG}
+Bhspu  hspu sw V = {v(pwmhs)}
+Bhspd  hspd sw V = {1-v(pwmhs)}
+Bhsclk hsclkl sw V = {CLKEN*(1-v(pwmhs))}
+Xdrvhs hspu hspd hsclkl hsg hsvp hsvn sw SEGDRV
++      params: npu={NPU_HS} npd={NPD_HS} runit={RUNIT} rclamp=0.5
+
+* ---------------- analysis -----------------------------------------
+.options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
+.ic v(sw)=0 v(lsg)={VDRV} v(hsg)={VNEG} v(out)=0 v(comp)=0
+
+.tran 0.5n {TSTOP} 0 4n uic
+
+.control
+run
+wrdata buck_closed.dat v(out) v(sw) v(comp) i(vsout) v(vin) i(vsin)
+quit
+.endc
+.end

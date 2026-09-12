@@ -1,0 +1,7 @@
+corner, base_as_built, base_retuned, ours, ov_base, ov_ours, eon_base_uJ, eon_ours_uJ, dvdt_base, dvdt_ours
+50V_2A_25C, 0.338, 0.503, 2.757, 17.765, 7.352, 0.677, 0.299, 67.099, 101.146
+100V_10A_25C, 0.407, 0.407, 2.576, 19.246, 23.484, 3.883, 4.035, 68.338, 146.445
+200V_2A_125C, 0.261, 0.261, 2.309, 3.412, 3.915, 4.853, 6.051, 103.058, 172.199
+200V_10A_125C, 0.181, 0.181, 2.251, 9.592, 5.963, 11.064, 12.463, 87.327, 174.616
+their one fixed setting: nseg=2 tstep=4n
+worst corner: base as built 0.181 V, ours 2.251 V

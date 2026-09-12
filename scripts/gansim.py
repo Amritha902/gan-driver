@@ -23,6 +23,12 @@ T1, T3, VTH_NOM = 1e-6, 2e-6, 1.4
 def _netlist(params, cir=None):
     src = open(os.path.join(ROOT, "sim", CIRS.get(cir or "ideal", "dpt.cir"))).read()
     src = src.replace(".include ../models/", ".include %s/" % MODELS)
+    # The SKY130 decks also pull the PDK in with a RELATIVE .lib path. Every
+    # run here happens in a temp directory, so that path resolves to nothing
+    # and ngspice carries on and produces a deck with no transistor models in
+    # it -- silently, with a zero exit status. That is how the transistor-level
+    # rows came back blank while the deck ran perfectly from sim/.
+    src = src.replace('.lib "../pdk/', '.lib "%s/pdk/' % ROOT)
     block = "\n".join(".param %s=%s" % (k, v) for k, v in params.items())
     return re.sub(r"(?s)(==== PARAM BLOCK.*?====\n).*?(\* ====+ END PARAM BLOCK)",
                   lambda m: m.group(1) + block + "\n" + m.group(2), src)

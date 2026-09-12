@@ -1,0 +1,5 @@
+Headline configurations on ideal switches vs SKY130 transistors
+constant word, no clamp    ideal -0.249 V   sky130 -0.563 V
+clamp on                   ideal +0.570 V   sky130 +0.031 V
+clamp + -2 V off-bias      ideal +2.576 V   sky130 +2.032 V
+sign and ordering agree: True
