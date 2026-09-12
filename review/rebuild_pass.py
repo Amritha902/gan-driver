@@ -297,6 +297,318 @@ add_text(s, 0.70, 2.30, 11.90, 3.20, [
 print("added: Thank you")
 
 
+
+# ===================================================================== goal ==
+# WHY THESE THREE SLIDES EXIST
+# A reviewer asked the only question that actually matters: the goal is a GaN
+# buck converter for an energy-storage system -- does this project serve that
+# goal, and does the architecture close the gaps the literature leaves open?
+# The deck could answer that from its results, but it never asked the question
+# out loud, so the answer was spread across six slides and nobody assembled
+# it. These three assemble it: what the goal is, whether the architecture
+# closes each gap, and how much of the project that amounts to.
+
+from pptx.util import Pt as _Pt
+from pptx.dml.color import RGBColor as _RGB
+
+GREEN = _RGB(0x1B, 0x7F, 0x3B)
+AMBER = _RGB(0xB5, 0x6A, 0x00)
+GREY  = _RGB(0x55, 0x55, 0x55)
+BLUE  = _RGB(0x2A, 0x78, 0xD6)
+
+
+def grid(s, x, y, w, h, rows, widths, sizes=(10.0, 9.5), head_fill=None):
+    """A table sized for a projector: no borders to read around, one rule
+    under the header, and columns proportioned by content rather than evenly.
+
+    Written here rather than reusing build.py's set_cell because these tables
+    carry a status column that has to be coloured per row, which set_cell has
+    no way to express."""
+    tb = s.shapes.add_table(len(rows), len(widths), Inches(x), Inches(y),
+                            Inches(w), Inches(h)).table
+    tb.first_row = True
+    tb.horz_banding = False
+    total = float(sum(widths))
+    for i, frac in enumerate(widths):
+        tb.columns[i].width = Inches(w * frac / total)
+    for r, row in enumerate(rows):
+        for c, cell in enumerate(row):
+            txt, colour, bold = (cell if isinstance(cell, tuple)
+                                 else (cell, None, r == 0))
+            tc = tb.cell(r, c)
+            tc.margin_left = tc.margin_right = Inches(0.055)
+            tc.margin_top = tc.margin_bottom = Inches(0.03)
+            tf = tc.text_frame
+            tf.word_wrap = True
+            pa = tf.paragraphs[0]
+            run = pa.add_run()
+            run.text = txt
+            run.font.size = _Pt(sizes[0] if r == 0 else sizes[1])
+            run.font.bold = bool(bold)
+            run.font.name = "Calibri"
+            if colour is not None:
+                run.font.color.rgb = colour
+    return tb
+
+
+# ---- slide: the goal, stated as a goal -------------------------------------
+s = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(s)
+set_title(s, u"The goal, and whether this serves it")
+add_text(s, 0.70, 1.25, 12.10, 1.05, [
+    para([(u"THE GOAL.  ", B),
+          (u"Build a synchronous buck converter for an energy-storage system "
+           u"out of GaN HEMTs, and make it work at the switching speed GaN is "
+           u"bought for. Everything else in this deck exists to serve that "
+           u"sentence.", N)], level=0, sz=1350, spc=0, bullet=False)])
+
+add_text(s, 0.70, 2.35, 3.85, 0.38, [
+    para([(u"1.  Why GaN at all", B)], level=0, sz=1300, spc=0, bullet=False)])
+add_text(s, 0.70, 2.78, 3.85, 1.95, [
+    para([(u"Same converter, same job, only the device swapped. At 500 kHz "
+           u"GaN wastes 5.9 W against silicon's 17.3 W. The lead widens to "
+           u"78 % at 1 MHz and 90 % at light load, and never turns back.", N)],
+         level=0, sz=1150, spc=120, bullet=False),
+    para([(u"Raising the frequency to shrink the magnetics is nearly free on "
+           u"GaN and ruinous on silicon.", B)],
+         level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 4.80, 2.35, 3.85, 0.38, [
+    para([(u"2.  What GaN costs you", B)], level=0, sz=1300, spc=0, bullet=False)])
+add_text(s, 4.80, 2.78, 3.85, 1.95, [
+    para([(u"The same speed that wins is what breaks it. A 1.4 V threshold "
+           u"and 150 pF of drain-to-gate capacitance mean the device that is "
+           u"supposed to be OFF gets pushed toward ON by its partner "
+           u"switching.", N)], level=0, sz=1150, spc=120, bullet=False),
+    para([(u"Measured: the off gate reaches 1.65 V against a 1.4 V "
+           u"threshold. That is a shoot-through.", B)],
+         level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 8.90, 2.35, 3.90, 0.38, [
+    para([(u"3.  What we build about it", B)], level=0, sz=1300, spc=0, bullet=False)])
+add_text(s, 8.90, 2.78, 3.90, 1.95, [
+    para([(u"A segmented gate driver: 8 pull-up steps, 8 pull-down steps, an "
+           u"adjustable dead time, a Miller clamp and a −2 V off rail — "
+           u"driven by an FPGA, so every one of them is a setting that can be "
+           u"changed and measured.", N)], level=0, sz=1150, spc=120, bullet=False),
+    para([(u"Result: −0.249 V of margin becomes +2.576 V.", B)],
+         level=0, sz=1150, spc=0, bullet=False)])
+
+add_text(s, 0.70, 4.92, 12.10, 1.90, [
+    para([(u"SO THE TEST OF PURPOSE IS NOT “does the converter run”.  ", B),
+          (u"It runs — 100 V in, 48.6 V out at 4.88 A, 97.6 % efficient. "
+           u"Any textbook buck converter runs. The test is whether the "
+           u"architecture we put around it answers the questions the "
+           u"published work on these drivers leaves open, because that is the "
+           u"only part of this that is ours.", N)],
+         level=0, sz=1250, spc=180, bullet=False),
+    para([(u"The next slide is that question, gap by gap, with the evidence "
+           u"for each.", B)], level=0, sz=1250, spc=0, bullet=False)])
+print("added: The goal, and whether this serves it")
+
+
+# ---- slide: the scorecard --------------------------------------------------
+s = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(s)
+set_title(s, u"Does the architecture close the gaps?")
+add_text(s, 0.70, 1.22, 12.10, 0.42, [
+    para([(u"Six gaps in the published work, what our architecture does about "
+           u"each, and the evidence. Every row names the script that produces "
+           u"it.", N)], level=0, sz=1200, spc=0, bullet=False)])
+
+ROWS = [
+    (u"Gap in the published work", u"What the architecture does",
+     u"Evidence", u"Status"),
+    (u"Segmented drivers report one number. Nobody separates a better FIXED "
+     u"setting from live RE-TUNING.",
+     u"720 control words × 4 operating points, every combination run.",
+     u"Fixed 25.1 %, adaptive 3.9 % — adaptive is 13.4 % of the gain "
+     u"(novelty.py).", u"CLOSED"),
+    (u"Nobody says how much CONTROLLER the adaptive part justifies.",
+     u"A complexity ladder: constant word → one comparator → two "
+     u"→ full lookup table.",
+     u"One comparator takes 46 % of it. 7.2 % is left to justify a sense + "
+     u"ADC + LUT (controller_ladder.py).", u"CLOSED"),
+    (u"Prior segmented drivers stage the slices but carry no Miller clamp and "
+     u"no negative off rail.",
+     u"8 + 8 slices AND a clamp AND a −2 V off-bias, each measurable on "
+     u"its own.",
+     u"Base paper at its best +0.407 V; ours +2.576 V — 6.3× "
+     u"(basepaper_compare.py).", u"CLOSED"),
+    (u"The driver is asserted to be programmable; the logic is rarely "
+     u"synthesised.",
+     u"seg_gate_ctrl.v, thermometer-coded, with its own dead-time generator.",
+     u"8 properties in Icarus; 20 LUT / 20 FF on xc7a35t, 200 MHz met, "
+     u"1.996 ns slack.", u"CLOSED"),
+    (u"Controller and power stage are verified separately and never made to "
+     u"meet.",
+     u"The RTL's own VCD drives the SPICE slices — one source per wire, "
+     u"no integer in between.",
+     u"Margins agree to 0.081 V, and it found a one-cycle dead-time error "
+     u"(rtl_cosim.py).", u"CLOSED"),
+    (u"Whether a fitted schedule GENERALISES to an unseen operating point is "
+     u"never tested.",
+     u"Leave-one-corner-out: fit the comparator on three corners, test on the "
+     u"fourth.",
+     u"Worse than the fixed word on 3 of 4 held-out corners. n = 4, so weak "
+     u"— and we say so.", u"ANSWERED, NEGATIVE"),
+    (u"All of the above is simulation.",
+     u"—",
+     u"No silicon measured. One behavioural device model underlies every "
+     u"number in this deck.", u"OPEN → Review-III"),
+]
+coloured = []
+for r, row in enumerate(ROWS):
+    if r == 0:
+        coloured.append([(c, None, True) for c in row])
+        continue
+    st = row[3]
+    col = GREEN if st == u"CLOSED" else (AMBER if st.startswith(u"ANSWERED")
+                                         else GREY)
+    coloured.append([(row[0], None, False), (row[1], None, False),
+                     (row[2], None, False), (st, col, True)])
+grid(s, 0.62, 1.78, 12.14, 4.55, coloured, widths=(30, 26, 32, 12),
+     sizes=(10.5, 9.0))
+
+add_text(s, 0.70, 6.46, 11.70, 0.80, [
+    para([(u"DOES IT SERVE ITS PURPOSE?  ", B),
+          (u"Yes, for a simulation study, and that is what it is titled as. "
+           u"Five gaps closed, one answered in the negative — which is a "
+           u"result, not a failure — and one that needs a bench. The "
+           u"honest summary is that the architecture is finished and the "
+           u"measurement of it on real silicon is not.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+print("added: Does the architecture close the gaps?")
+
+
+# ---- slide: the RTL and the power stage, made to meet ----------------------
+s = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(s)
+set_title(s, u"The architecture, end to end")
+
+add_text(s, 0.70, 1.22, 5.85, 0.38, [
+    para([(u"The gap we found in our OWN work", B)],
+         level=0, sz=1300, spc=0, bullet=False)])
+add_text(s, 0.70, 1.66, 5.85, 2.05, [
+    para([(u"The controller was verified in Icarus. The power stage was "
+           u"verified in ngspice. The two never touched.", N)],
+         level=0, sz=1200, spc=140, bullet=False),
+    para([(u"The FPGA emits eight thermometer-coded wires per bank. The SPICE "
+           u"driver took an INTEGER slice count. A fault in the decoder would "
+           u"have passed the Verilog bench and stayed invisible in every "
+           u"figure ngspice produced.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+
+add_text(s, 7.00, 1.22, 5.80, 0.38, [
+    para([(u"What we did about it", B)], level=0, sz=1300, spc=0, bullet=False)])
+add_text(s, 7.00, 1.66, 5.80, 2.05, [
+    para([(u"rtl/seg_gate_ctrl_dpt_tb.v reproduces the double-pulse schedule "
+           u"at the real 200 MHz clock, letting the RTL's own dead-time "
+           u"generator make the edges.", N)],
+         level=0, sz=1200, spc=140, bullet=False),
+    para([(u"Its VCD becomes sixteen PWL sources, one per wire, into "
+           u"models/segdrv_bus.lib. Same deck, same devices, same "
+           u"measurement — only the slice selection changes.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+
+grid(s, 2.35, 3.85, 8.65, 1.05, [
+    (u"", u"margin, RTL bus", u"margin, .param", u"difference"),
+    ((u"clamp off", None, True), (u"−0.242 V", None, True),
+     (u"−0.249 V", None, False), (u"0.007 V", None, False)),
+    ((u"clamp on", None, True), (u"+0.651 V", GREEN, True),
+     (u"+0.570 V", None, False), (u"0.081 V", None, False)),
+], widths=(20, 28, 28, 24), sizes=(11.0, 11.0))
+
+add_text(s, 0.70, 5.20, 12.10, 1.90, [
+    para([(u"Worst disagreement anywhere: 0.081 V", B),
+          (u" — and it is timing, not encoding. The ideal stimulus turns "
+           u"the low side on at 2.015 µs; the RTL's dead-time generator "
+           u"puts it at 2.0175 µs. The clamp's sign change, which is this "
+           u"project's central claim, is now produced by the actual logic "
+           u"rather than by a parameter.", N)],
+         level=0, sz=1250, spc=170, bullet=False),
+    para([(u"And it found a real bug, which is the whole argument for doing "
+           u"it: ", B),
+          (u"dead time is (dt_cycles + 1) × 5 ns. The counter loads and "
+           u"then counts down THROUGH zero, so 15 ns is 2 cycles, not the "
+           u"obvious 15/5 = 3. Anyone mapping our swept dead-time grid onto "
+           u"hardware by dividing by the clock period builds a driver that is "
+           u"one cycle slow at every operating point — and neither half "
+           u"of the verification could have seen it alone.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
+print("added: The architecture, end to end")
+
+
+# ---- slide: how much of the project this is, and how that was counted ------
+# "50 %" was a placeholder from the template, asserted rather than counted.
+# A reviewer is entitled to ask what the denominator is. So the slide now
+# carries the denominator: twelve blocks with a weight each, eight of them
+# done. Arguing with the weights is a real conversation; arguing with a bare
+# percentage is not.
+COMPLETION = [
+    (u"The converter itself, built and converting", 8, True,
+     u"100 V → 48.6 V at 4.88 A, 97.6 % efficient (buck.cir)"),
+    (u"The device choice justified against silicon", 8, True,
+     u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
+    (u"The base paper implemented, not just cited", 10, True,
+     u"zhangdrv.lib in our own deck; quoted at ITS best, +0.407 V"),
+    (u"The segmented driver; the fault reproduced and fixed", 12, True,
+     u"−0.249 V → +2.576 V, one change at a time"),
+    (u"The full study: 720 words × 4 corners", 12, True,
+     u"34,622 transients; fixed 25.1 % vs adaptive 3.9 %"),
+    (u"How much controller that justifies", 8, True,
+     u"ladder + leave-one-corner-out; two implementations agree"),
+    (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
+     u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
+    (u"The two halves made to meet in one simulation", 5, True,
+     u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
+    (u"Closed-loop regulation of the converter", 8, False,
+     u"Review-II. Changes where it operates, so the study is redone after"),
+    (u"Transistor-level output stage in Cadence", 7, False,
+     u"Review-II. Re-run the ceiling on real devices, not behavioural ones"),
+    (u"Place-and-route on a chosen board", 3, False,
+     u"Needs real package pins and an MMCM for the clock"),
+    (u"A hardware half-bridge, measured", 7, False,
+     u"Review-III. Until then this is a simulation study, and is titled as one"),
+]
+DONE = sum(w for _, w, d, _ in COMPLETION if d)
+assert sum(w for _, w, _, _ in COMPLETION) == 100
+
+wi = index_of(u"Work Completed")
+if wi is not None:
+    s = p.slides[wi]
+    strip(s)
+    set_title(s, u"Work Completed — %d %%" % DONE)
+    add_text(s, 0.70, 1.18, 12.10, 0.46, [
+        para([(u"Counted, not asserted. ", B),
+              (u"Twelve blocks, weighted by how much of the project each is. "
+               u"Eight are finished. The weights are on the slide so they can "
+               u"be argued with.", N)], level=0, sz=1200, spc=0, bullet=False)])
+
+    rows = [(u"", u"Block of work", u"Weight", u"Evidence, or why not yet")]
+    for name, w, done, ev in COMPLETION:
+        mark = (u"✔", GREEN, True) if done else (u"—", GREY, True)
+        rows.append([mark, (name, None, done), (u"%d" % w, None, False),
+                     (ev, None if done else GREY, False)])
+    grid(s, 0.62, 1.74, 12.14, 4.45, rows, widths=(4, 36, 8, 52),
+         sizes=(10.0, 9.0))
+
+    add_text(s, 0.70, 6.34, 11.70, 0.90, [
+        para([(u"%d of 100 done. " % DONE, B),
+              (u"Review-I's rubric asks for 50 %%. We are past it because this "
+               u"is a simulation study and the simulation half is finished — "
+               u"the remaining %d %% is the half that needs Cadence, a board "
+               u"and a bench, and no amount of further simulating will "
+               u"deliver it." % (100 - DONE), N)],
+             level=0, sz=1250, spc=140, bullet=False),
+        para([(u"Stated plainly: the architecture is finished. The "
+               u"measurement of it on real silicon is not.", B)],
+             level=0, sz=1250, spc=0, bullet=False)])
+    print("rebuilt: Work Completed — %d %%" % DONE)
+else:
+    print("  MISSING: Work Completed slide to rebuild")
+
+
 # --------------------------------------------------------------- ordering --
 # "How the work was run" and "What Python does" are cut: the demo video shows
 # both of them happening, and 36 slides does not fit a 10-minute slot. The
@@ -305,6 +617,7 @@ print("added: Thank you")
 ORDER = [
     u"Slide 1", u"School of", u"Review-I",
     u"Problem Statement",
+    u"The goal, and whether this serves it",
     u"Aim, and how we approached it",
     u"What a GaN HEMT is",
     u"Why GaN and not silicon",
@@ -339,6 +652,8 @@ ORDER = [
     u"Result 5",
     u"FPGA Controller",
     u"Vivado — simulation and synthesis",
+    u"The architecture, end to end",
+    u"Does the architecture close the gaps?",
     u"Work Completed",
     u"Where we are, and what is next",
     u"Conclusion",
@@ -370,6 +685,7 @@ SHORT = [
     u"Problem Statement",                          # problem
     u"The five closest published drivers",         # literature, BASE tagged
     u"The gap this project fills",
+    u"The goal, and whether this serves it",
     u"Aim, and how we approached it",              # solution, method, scope, tools
     u"System Architecture",
     u"How it works — one use case",                # the master flowchart
@@ -379,7 +695,8 @@ SHORT = [
     u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",
-    u"Work Completed",                             # 50 % completion
+    u"Does the architecture close the gaps?",       # the reviewer's question
+    u"Work Completed",                             # completion
     u"References  (1–15)",
 ]
 

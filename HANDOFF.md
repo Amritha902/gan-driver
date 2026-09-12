@@ -121,10 +121,29 @@ the two agree to the last printed digit** (`results/matlab_online/RUN-LOG.txt`).
 functions after all code, Octave does not hoist them, and only a function
 file satisfies both. Invoke it by typing `gan_master`.
 
-**Deck** — 27 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`.
+**Deck** — 42 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`
+(the 17-slide `GaN_Review1_PRESENT.pptx` is the one to actually present).
 Rebuild `cd review && python3 build.py`; geometry check `python3 qa.py`
-(8 flags is the known-good baseline, all investigated false positives).
-Speech script in `review/SPEECH-SCRIPT.md`, aligned to the current 27 slides.
+(9 flags is the known-good baseline, all investigated false positives;
+the three slides added on 12 Sep add none).
+Speech script in `review/SPEECH-SCRIPT.md`; the 10-minute cut is
+`review/SPEECH-10-MINUTES.md`. Run `python3 check_consistency.py` after any
+edit — it fails the build if the deck and the scripts stop agreeing.
+
+**Three slides answer the examiner directly** (added 12 Sep, after the
+reviewer asked what the goal actually is):
+- *The goal, and whether this serves it* — GaN buck converter for storage;
+  why GaN, what GaN costs, what we build about it, and the statement that the
+  test of purpose is the architecture, not "does the converter run".
+- *Does the architecture close the gaps?* — six literature gaps, what the
+  architecture does about each, the evidence and the owning script. Five
+  CLOSED, one ANSWERED NEGATIVE, one OPEN (hardware).
+- *The architecture, end to end* — the RTL-in-the-loop co-simulation.
+
+**Completion is now counted, not asserted: 75 %.** Twelve weighted blocks on
+the Work Completed slide, eight done. The remaining 25 % is closed-loop
+control, the transistor-level stage, place-and-route and a hardware bench —
+none of which more simulating can deliver.
 Demo video `results/demo_crosstalk_explained.mp4`, embedded on slide 23.
 
 ## Open work, in priority order
@@ -169,7 +188,7 @@ came across rather than a copied working tree: **52 commits**, back to the
 original "Add GaN segmented gate driver simulation project". Verified by
 cloning it fresh and running the project from the clone —
 `scripts/gansim.py CLKEN=1 VNEG=-2` gives margin **+2.576 V** and the deck
-builds to 27 slides with the usual 8 QA lines. Paths survived the move
+builds to 42 slides with the usual 9 QA lines. Paths survived the move
 untouched because every script resolves its root from `__file__`.
 
 **This repo is now canonical. Work here, not in `vero`.**

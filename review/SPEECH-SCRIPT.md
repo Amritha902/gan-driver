@@ -95,6 +95,31 @@ GaN, where the device has no body diode and the trade changes.
 
 ---
 
+## NEW — The goal, and whether this serves it (45 s) — **core slide**
+
+> "Before the aim, the goal, because everything else serves it. Build a
+> synchronous buck converter for an energy-storage system out of GaN HEMTs, and
+> make it work at the switching speed GaN is bought for."
+>
+> "Why GaN: same converter, same job, only the device swapped — at 500 kilohertz
+> GaN wastes 5.9 watts against silicon's 17.3, and the lead widens to
+> seventy-eight percent at a megahertz and ninety percent at light load. It
+> never turns back."
+>
+> "What GaN costs you: the same speed that wins is what breaks it. The device
+> that is supposed to be off gets pushed to 1.65 volts against a 1.4 volt
+> threshold. That is a shoot-through."
+>
+> "What we build about it: the segmented driver, with the clamp and the minus
+> two volt rail. Minus 0.249 volts of margin becomes plus 2.576."
+>
+> "So the test of purpose is not 'does the converter run'. It runs — 97.6
+> percent efficient. Any textbook buck converter runs. The test is whether the
+> architecture we put around it answers what the published work leaves open,
+> because that is the only part of this that is ours."
+
+---
+
 ## 10 — Proposed solution and aim (40 s)
 
 Open with the aim. The examiner is listening for it.
@@ -175,10 +200,64 @@ and the exhaustive search that lets us price adaptation — which their paper
 cannot do.
 
 ---
-## 15 — Work completed, 50 % (30 s)
+## NEW — The architecture, end to end (40 s) — **after Vivado**
 
+> "One more thing we had to fix, and it was in our own work rather than in the
+> literature. The controller was verified in Icarus. The power stage was
+> verified in ngspice. The two never touched. The FPGA emits eight
+> thermometer-coded wires per bank; the SPICE driver took an integer. A bug in
+> the decoder would have passed the Verilog bench and stayed invisible in every
+> figure ngspice produced."
+>
+> "So we made them meet. A new testbench reproduces the double-pulse schedule at
+> the real 200 megahertz clock, and its waveform dump becomes sixteen sources —
+> one per wire — into the SPICE driver. Same deck, same devices, same
+> measurement. Only the slice selection changes."
+>
+> "Margins agree to eighty-one millivolts, and that difference is timing, not
+> encoding. And it found a real bug: the dead time is dt_cycles plus one, times
+> five nanoseconds. Fifteen nanoseconds is two cycles, not three. Anyone who
+> mapped our swept grid onto hardware by dividing by the clock period would have
+> built a driver one cycle slow at every operating point — and neither half of
+> the verification could have caught that alone."
+
+*If asked why it matters:* it is the difference between a design that has been
+verified and one whose two halves have each been verified against a different
+assumption.
+
+---
+
+## NEW — Does the architecture close the gaps? (50 s) — **core slide**
+
+> "This is the slide that answers whether the project serves its purpose. Six
+> gaps in the published work, down the left. What our architecture does about
+> each. And the evidence, with the script that produces it."
+>
+> "Five are closed. The sixth — does a fitted schedule generalise to an
+> operating point it was not fitted on — we answered in the negative: the
+> comparator is worse than the fixed word on three of four held-out corners.
+> That is a result, not a failure, and it is the honest one."
+>
+> "The seventh row is the one that is open. All of this is simulation. No
+> silicon has been measured. That is Review-III, and the title of this project
+> says 'simulation study' for that reason."
+
+---
+
+## 15 — Work completed, 75 % (30 s)
+
+> "Seventy-five percent, and it is counted rather than asserted — twelve blocks
+> with a weight each, eight finished, the weights on the slide so you can argue
+> with them."
+>
 > "The problem is reproduced and fixed. The full search is done: 720 settings at
 > four operating points, about 34,600 simulation runs across every study."
+>
+> "The rubric asks for fifty at Review-I. We are past it because this is a
+> simulation study and the simulation half is finished. The remaining
+> twenty-five percent is the half that needs Cadence, a board and a bench — no
+> amount of further simulating delivers it. The architecture is finished; the
+> measurement of it on real silicon is not."
 
 ---
 

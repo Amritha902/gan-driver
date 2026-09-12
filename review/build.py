@@ -94,7 +94,10 @@ for sh in S[2].shapes:
                 if "8\u201310 minutes" in r.text:
                     r.text = r.text.replace("8\u201310 minutes", "10 minutes")
 
-set_title(S[8], "Work Completed — 50 %")
+# No number here. rebuild_pass.py rebuilds this slide from its COMPLETION
+# table and puts the counted percentage in the title, so a figure written
+# here would be a second source of truth that silently goes stale.
+set_title(S[8], "Work Completed")
 set_title(S[9], "Timeline, Milestones & Tools")
 
 p.save(OUT)
@@ -590,7 +593,14 @@ s_con = S[18]
 set_title(s_con, "Conclusion & next steps")
 con_shape = find_shape(s_con, "Problem Statement:")
 set_body(con_shape, [
-    para([("What the data supports", True)], level=0, sz=1700, spc=240, bullet=False),
+    para([("Does it serve its purpose? Yes \u2014 as a simulation study, "
+           "which is what it is titled as.", True)],
+         level=0, sz=1600, spc=200, bullet=False),
+    para([("Five of the six gaps in the published work are closed by the "
+           "architecture; the sixth is answered in the negative, which is a "
+           "result. What is left needs a bench, not more simulating.", False)],
+         level=0, sz=1350, spc=260, bullet=False),
+    para([("What the data supports", True)], level=0, sz=1700, spc=200, bullet=False),
     para([("Choosing the word well: ", True), ("25.1 %.   ", False),
           ("Adapting it per operating point: ", True), ("3.9 %.", False)],
          level=0, sz=1600, spc=220, bullet=True),

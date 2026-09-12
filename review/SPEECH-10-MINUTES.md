@@ -4,13 +4,18 @@
 Amritha S (23BEC1368) · Sanjay Kumar (23BEC1447) · Aamir Abdullah (23BPS1197)
 Guide: Dr. Bindu, SENSE, VIT Chennai
 
-21 slides in 600 seconds. Bracketed times are cumulative — if the clock is
+23 slides in 600 seconds. Bracketed times are cumulative — if the clock is
 past one, you are behind.
 
-**This is tight.** Twenty-one slides averages 28 seconds each, and there is no
-slack in it. Four slides are marked "drop this one first" — cutting all four
-buys 110 seconds and the talk still covers every rubric item. Decide before
-you start, not halfway through.
+**This is tight, and it is now two slides tighter.** Two slides were added
+because a reviewer asked the question the deck never asked out loud — what the
+goal is, and whether the architecture serves it. They are worth 65 seconds and
+they are not optional; they are the slides that answer the examiner directly.
+
+**Fund them by dropping two of the four slides marked "drop this one first."**
+Those four are worth 110 seconds between them, so dropping two covers the
+addition and the cumulative times below stay correct as printed. Decide which
+two before you start, not halfway through.
 
 The video on slide 10 is two minutes long. Scrub it, or play twenty seconds.
 Playing it through costs you the last four slides.
@@ -76,6 +81,28 @@ separating them means running every setting at every operating point.
 
 So the gap is: **nobody has measured what the adaptation is actually worth** —
 and only the second one has to be paid for in hardware.
+
+---
+
+## 4b · The goal, and whether this serves it — 35 s
+
+The goal, before the aim, because everything else serves it: **build a
+synchronous buck converter for an energy-storage system out of GaN HEMTs, and
+make it work at the switching speed GaN is bought for.**
+
+**Why GaN.** Same converter, only the device swapped: at 500 kilohertz GaN
+wastes **5.9 watts against silicon's 17.3**, and the lead widens to 78 percent
+at a megahertz and 90 percent at light load. It never turns back.
+
+**What GaN costs you.** The same speed that wins is what breaks it — the device
+that should be off reaches **1.65 volts against a 1.4 volt threshold.**
+
+**What we build about it.** The segmented driver, the clamp, the minus two volt
+rail: **minus 0.249 volts becomes plus 2.576.**
+
+So the test of purpose is not "does the converter run." It runs, at 97.6
+percent. Any textbook buck converter runs. The test is whether the architecture
+around it answers what the literature leaves open.
 
 ---
 
@@ -243,11 +270,36 @@ with 1.996 nanoseconds of slack.
 
 ---
 
-## 18 · Work completed — 50 % — 20 s  *(9:25)*
+## 17b · Does the architecture close the gaps? — 30 s
+
+This is the slide that answers whether the project serves its purpose. **Six
+gaps** in the published work, what our architecture does about each, and the
+evidence, with the script that produces it.
+
+**Five are closed.** The sixth we answered in the negative — a schedule fitted
+on three corners is worse than the fixed word on three of the four held out.
+That is a result, not a failure.
+
+The seventh row is the open one: **all of this is simulation.** No silicon
+measured. That is Review-III, and it is why the project is titled as a
+simulation study.
+
+---
+
+## 18 · Work completed — 75 % — 20 s  *(9:25)*
+
+**Seventy-five percent, counted rather than asserted** — twelve blocks with a
+weight each, eight finished, the weights on the slide so you can argue with
+them.
 
 The converter is built and converting. The fault is reproduced and fixed. The
 named cases have been run. The setting has been measured on the running
-converter. The FPGA controller is written, verified and synthesised.
+converter. The FPGA controller is written, verified and synthesised — and its
+output now drives the SPICE power stage directly, so the two halves have been
+made to meet.
+
+The rubric asks for fifty at Review-I. The remaining twenty-five percent is the
+half that needs Cadence, a board and a bench.
 
 ---
 
