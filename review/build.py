@@ -214,14 +214,15 @@ move_note(sc, 6.45)
 CLOSEST = ([r for r in R.REFS if r.base]
            + [r for r in R.REFS if r.closest and not r.base][:4])
 sn = S[5]
-set_title(sn, "The five closest published drivers")
+set_title(sn, "The closest published drivers")
 note = find_shape(sn, "Minimum 8")
 # Was: "author lists and page ranges sit behind IEEE Xplore ... not invented".
 # No longer true -- every reference is resolved against the publisher record
 # via Crossref, so the caveat is gone and this fits on one line.
 set_body(note, [para([("[10] is the base paper: E-mode GaN, segmented output stage, "
-                       "strength chosen by a pattern. All five are verified against the "
-                       "publisher record.", False)],
+                       "strength chosen by a pattern. All %s are verified against the "
+                       "publisher record."
+                       % {4: "four", 5: "five", 6: "six"}.get(len(CLOSEST), len(CLOSEST)), False)],
                      level=0, sz=1000, spc=0, bullet=False)])
 tbl = table_of(sn)
 
@@ -260,7 +261,13 @@ for row, ref in enumerate(CLOSEST, start=1):
     if ref.n in FILLS:
         gap += [("WE FILL: ", True), (FILLS[ref.n], False)]
     set_cell(tbl.cell(row, 4), gap, size=Pt(9))
-tbl._tbl.remove(tbl.rows[6]._tr)
+# Delete every row past the last one we filled. The template ships six and
+# only four references are flagged as closest, so the slide had been carrying
+# a BLANK ROW in the middle of the literature survey -- on the one slide a
+# panel reads first. Sized from the data rather than to a fixed count, so
+# flagging a fifth reference in refs.py adds a row instead of filling a hole.
+for _r in list(tbl.rows)[len(CLOSEST) + 1:]:
+    tbl._tbl.remove(_r._tr)
 for row in range(len(tbl.rows)):
     tbl.rows[row].height = Inches(0.88 if row else 0.35)
 # 6.62 was measured against the table's DECLARED height (6.25 in). Cells wrap,

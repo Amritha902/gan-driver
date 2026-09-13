@@ -57,7 +57,7 @@ setting is provably not optimal everywhere.
 
 ---
 
-## 7 — The five closest (40 s)
+## 7 — The closest published drivers (40 s)
 
 Walk the columns once, then stop on the last one.
 

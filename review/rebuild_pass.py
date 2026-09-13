@@ -400,7 +400,9 @@ add_text(s, 8.90, 2.78, 3.90, 1.95, [
 
 add_text(s, 0.70, 4.92, 12.10, 1.90, [
     para([(u"SO THE TEST OF PURPOSE IS NOT “does the converter run”.  ", B),
-          (u"It runs — 100 V in, 48.6 V out at 4.88 A, 97.6 % efficient. "
+          (u"It runs — 100 V in, 48.6 V out at 4.88 A, 97.6 % efficient, "
+           u"OPEN LOOP at a fixed duty, which is the deck the switching study "
+           u"is measured on; the regulated version holds 50.0 V at 95.9 %. "
            u"Any textbook buck converter runs. The test is whether the "
            u"architecture we put around it answers the questions the "
            u"published work on these drivers leaves open, because that is the "
@@ -587,6 +589,7 @@ COMPLETION = [
      u"Review-III. Until then this is a simulation study, and is titled as one"),
 ]
 DONE = sum(w for _, w, d, _ in COMPLETION if d)
+NDONE = sum(1 for _, _, d, _ in COMPLETION if d)
 assert sum(w for _, w, _, _ in COMPLETION) == 100
 
 wi = index_of(u"Work Completed")
@@ -596,9 +599,10 @@ if wi is not None:
     set_title(s, u"Work Completed — %d %%" % DONE)
     add_text(s, 0.70, 1.18, 12.10, 0.46, [
         para([(u"Counted, not asserted. ", B),
-              (u"Twelve blocks, weighted by how much of the project each is. "
-               u"Eight are finished. The weights are on the slide so they can "
-               u"be argued with.", N)], level=0, sz=1200, spc=0, bullet=False)])
+              (u"%d blocks, weighted by how much of the project each is. "
+               u"%d are finished. The weights are on the slide so they can "
+               u"be argued with." % (len(COMPLETION), NDONE), N)],
+             level=0, sz=1200, spc=0, bullet=False)])
 
     rows = [(u"", u"Block of work", u"Weight", u"Evidence, or why not yet")]
     for name, w, done, ev in COMPLETION:
@@ -649,7 +653,11 @@ RESULT_SLIDES = [
   u"own design has. Their margin falls +0.50 \u2192 +0.18 V from the mildest "
   u"corner to the hottest and ours barely moves, because a clamp does not care "
   u"how hot the device is. Our switch node also slews about twice as fast, so "
-  u"the margin is not bought with switching speed."),
+  u"the margin is not bought with switching speed. AND WHAT THIS IS NOT: "
+  u"models/zhangdrv.lib is our implementation of their DESCRIBED scheme "
+  u"\u2014 their netlist is not published \u2014 run in our testbench with "
+  u"our parasitics. It is not 5.5\u201312.4\u00d7 their measured result, and "
+  u"we do not claim it is."),
  ("fig_modeldep.png", u"Does the result depend on the model?",
   u"Only the shipped design is safe under every model we tried.",
   u"Two assumptions carry every margin in this deck, and each was replaced and "
@@ -669,8 +677,12 @@ for fname, title, lead, cap_text in RESULT_SLIDES:
     set_title(sl, title)
     add_text(sl, 0.70, 1.14, 12.10, 0.40, [
         para([(lead, B)], level=0, sz=1450, spc=0, bullet=False)])
-    place(sl, fname, 1.62, 4.34)
-    caption(sl, cap_text, top=6.10, h=1.00)
+    # The base-paper caption has to carry the "this is our implementation of
+    # their described scheme" caveat, which is the longest line in the deck and
+    # does not fit under a full-height plot. All three lose 0.28 in of figure
+    # so the layout stays identical across them.
+    place(sl, fname, 1.58, 4.06)
+    caption(sl, cap_text, top=5.78, h=1.24)
     print("added: %s" % title)
 
 
@@ -707,6 +719,7 @@ COMPLETION = [
      u"Review-III. Until then this is a simulation study, and is titled as one"),
 ]
 DONE = sum(w for _, w, d, _ in COMPLETION if d)
+NDONE = sum(1 for _, _, d, _ in COMPLETION if d)
 assert sum(w for _, w, _, _ in COMPLETION) == 100
 
 wi = index_of(u"Work Completed")
@@ -716,9 +729,10 @@ if wi is not None:
     set_title(s, u"Work Completed — %d %%" % DONE)
     add_text(s, 0.70, 1.18, 12.10, 0.46, [
         para([(u"Counted, not asserted. ", B),
-              (u"Twelve blocks, weighted by how much of the project each is. "
-               u"Eight are finished. The weights are on the slide so they can "
-               u"be argued with.", N)], level=0, sz=1200, spc=0, bullet=False)])
+              (u"%d blocks, weighted by how much of the project each is. "
+               u"%d are finished. The weights are on the slide so they can "
+               u"be argued with." % (len(COMPLETION), NDONE), N)],
+             level=0, sz=1200, spc=0, bullet=False)])
 
     rows = [(u"", u"Block of work", u"Weight", u"Evidence, or why not yet")]
     for name, w, done, ev in COMPLETION:
@@ -1265,7 +1279,7 @@ ORDER = [
     # through a slide that did not exist.
     u"We implemented the base paper",
     u"Head to head with the base paper",
-    u"The five closest published drivers",
+    u"The closest published drivers",
     u"The gap this project fills",
     u"The driver's settings",
     u"The input — what an operating point is",
@@ -1322,7 +1336,7 @@ for i, s in enumerate(p.slides):
 SHORT = [
     u"School of",                                  # signed title page
     u"Problem Statement",                          # problem
-    u"The five closest published drivers",         # literature, BASE tagged
+    u"The closest published drivers",         # literature, BASE tagged
     u"The gap this project fills",
     u"The goal, and whether this serves it",
     u"Aim, and how we approached it",              # solution, method, scope, tools

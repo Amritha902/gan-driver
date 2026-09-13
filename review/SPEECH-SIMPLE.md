@@ -32,7 +32,7 @@ That is the problem the gate driver has to solve.
 
 **3 · Literature — 40 s   (1:50)**
 
-These are the five closest published gate drivers. The first row is our
+These are the four closest published gate drivers. The first row is our
 **base paper** — Zhang and others, IEEE ISPSD 2020.
 
 They built a segmented gate driver for GaN transistors: the driver is split

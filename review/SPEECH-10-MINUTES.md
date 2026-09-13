@@ -54,9 +54,13 @@ the supply is shorted through them.
 
 ## 3 · Literature survey — 30 s  *(1:30)*
 
-Five closest papers. The first row is our base paper — **Takayama, Okuda and
-Hikihara** — who showed the gate waveform can be set by a digital code instead
-of a fixed resistor.
+Four closest papers. The first row is our base paper — **Zhang, Yu, Leng, Cui,
+Deng and Ng, ISPSD 2020** — a segmented gate driver for E-mode GaN, with the
+drive strength chosen by a pattern. Same device, same architecture: that is
+why it is the one we implement and measure against.
+
+*(Takayama is reference [9] and is prior art for the mechanism only. It is a
+SiC device. Do not call it the base paper.)*
 
 The rest are the active gate drivers that followed, and they report real gains:
 thirty per cent less overshoot, seventy-five per cent less turn-off loss.

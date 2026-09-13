@@ -10,6 +10,8 @@ SLIDE4 = [
        "the gate of the other transistor \u2014 the one that is supposed to stay OFF. "
        "That gate rises to ", False),
       ("1.65 V, and only 1.4 V is needed to turn it on", B),
+      (" \u2014 on our device model. How much that depends on the model is "
+       "itself a result, and it is on its own slide.", False),
       (". Both devices conduct at once and the supply shorts through them.", False)], 1),
     ([("Background & Significance:", B)], 0),
     ([("GaN half-bridges sit inside EV inverters and battery chargers. GaN is chosen "
