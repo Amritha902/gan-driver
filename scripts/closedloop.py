@@ -162,6 +162,37 @@ def recovery(c, t0, target, band=0.01):
     return (t[bad].max() - t0) * 1e6
 
 
+def save_wave(cl, ol, n=4000):
+    """Downsample onto one common time base and write a small CSV.
+
+    Cycle-averaged, not decimated: the raw trace carries 500 kHz ripple and
+    picking every k-th sample of that aliases into whatever beat frequency the
+    stride happens to make. Averaging over one switching period gives the
+    envelope the loop actually controls, which is what the plot is about.
+    """
+    import csv as _csv
+    import numpy as np
+    t0, t1 = 0.0, min(cl["t"][-1], ol["t"][-1])
+    grid = np.linspace(t0, t1, n)
+
+    def env(c):
+        tt, yy = cycle_avg(c)
+        return np.interp(grid, tt, yy)
+
+    def raw(c, k):
+        return np.interp(grid, c["t"], c[k])
+
+    path = os.path.join(RES, "closedloop_wave.csv")
+    with open(path, "w", newline="") as f:
+        w = _csv.writer(f)
+        w.writerow(["t_us", "vout_closed", "vout_open", "iout", "vin"])
+        vc, vo, io_, vi = env(cl), env(ol), raw(cl, "iout"), raw(cl, "vin")
+        for i in range(n):
+            w.writerow(["%.4f" % (grid[i] * 1e6), "%.4f" % vc[i], "%.4f" % vo[i],
+                        "%.4f" % abs(io_[i]), "%.3f" % vi[i]])
+    print("  wrote results/closedloop_wave.csv (%d points)" % n)
+
+
 def main():
     print("\n  CLOSING THE LOOP")
     print("  Same power stage, same segmented drivers, same control word.")
@@ -244,6 +275,11 @@ def main():
           % rows["open loop"][0][2])
     print("  nothing in it knows Vin moved. In an energy-storage system that is")
     print("  the normal condition, not a fault.")
+
+    # Save the waveform, downsampled, so the figure can be redrawn without
+    # re-running two 1.5 ms transients. The raw dumps are ~80 MB each and are
+    # gitignored; this is 4000 points and is the artifact the plot cites.
+    save_wave(cl, ol)
 
     with open(os.path.join(RES, "closedloop.txt"), "w") as f:
         f.write("Closed-loop buck converter, sim/buck_closed.cir\n")

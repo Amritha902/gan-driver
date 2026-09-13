@@ -85,8 +85,9 @@ evidence for that choice rather than against it.
 `guardband` · `whichbit` · `howmanywords` · `design_rule` · `safety_price` ·
 `scaling` · `verdict_stability` — all exit 0.
 
-## 5. Figure generators — 14 of 14 run
+## 5. Figure generators — 15 of 15 run
 
+`result_figures` (closed loop, head to head, model dependence) ·
 `paper_figs` · `figures` · `si_vs_gan_figure` · `buck_figure` · `cases_figure` ·
 `flow_diagram` · `arch_diagram` · `circuit_diagram` · `netlist_figure` ·
 `tools_figure` · `vivado_figure` · `explainer_figures` · `howrun_figure` ·

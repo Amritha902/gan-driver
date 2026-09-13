@@ -133,9 +133,13 @@ def place(s, name, top, height):
                          height=Inches(height))
 
 
-def caption(s, text, top=6.30):
-    """One line, in the register a journal figure caption is written in."""
-    add_text(s, 0.55, top, 12.25, 0.72, [
+def caption(s, text, top=6.30, h=0.72):
+    """One line, in the register a journal figure caption is written in.
+
+    `h` because the three result slides carry a caption that has to name the
+    script, the method and four numbers, and at 0.72 in those overflow.
+    """
+    add_text(s, 0.55, top, 12.25, h, [
         para([(u"@FIG@ ", B), (text, N)],
              level=0, sz=1150, spc=0, bullet=False)])
 
@@ -620,6 +624,126 @@ else:
     print("  MISSING: Work Completed slide to rebuild")
 
 
+# ---- three result slides, as pictures ------------------------------------
+# These three were built as tables of numbers and a reviewer asked for the
+# deck to be simple. A table is the wrong form for all three: each is a
+# comparison of magnitudes across a handful of categories, and nobody at the
+# back of a room does arithmetic on a table -- but everybody can see a bar
+# that crosses zero. One picture, one sentence of takeaway, one caption with
+# the numbers a questioner might want. scripts/result_figures.py draws them
+# from results/, so a figure cannot drift from the run that made it.
+RESULT_SLIDES = [
+ ("fig_closedloop.png", u"Closing the loop",
+  u"The loop holds 50 V. Open loop walks to 58 V.",
+  u"sim/buck_closed.cir \u2014 the SAME power stage and the SAME segmented "
+  u"drivers, now regulated by a type-III loop and then disturbed on purpose. "
+  u"Closed loop 50.01 / 50.00 / 50.01 V through a 2\u00d7 load step and a "
+  u"100 \u2192 120 V line step; worst error 0.02 % against open loop's 16.6 %. "
+  u"Load step recovers in 4 \u00b5s, line step in 21 \u00b5s. Ripple 0.25 %, "
+  u"efficiency 95.9 %, start-up overshoot 3.8 %."),
+ ("fig_headtohead.png", u"Head to head with the base paper",
+  u"5.5\u00d7 to 12.4\u00d7, and the lead widens as the corner gets harder.",
+  u"scripts/headtohead.py \u2014 same deck, same GaN, same parasitics; only "
+  u"the driver is swapped. We hold ONE fixed control word at all four corners; "
+  u"they are re-optimised at EVERY corner, which is more freedom than their "
+  u"own design has. Their margin falls +0.50 \u2192 +0.18 V from the mildest "
+  u"corner to the hottest and ours barely moves, because a clamp does not care "
+  u"how hot the device is. Our switch node also slews about twice as fast, so "
+  u"the margin is not bought with switching speed."),
+ ("fig_modeldep.png", u"Does the result depend on the model?",
+  u"Only the shipped design is safe under every model we tried.",
+  u"Two assumptions carry every margin in this deck, and each was replaced and "
+  u"re-run. scripts/silicon_check.py rebuilds the output stage in real SKY130 "
+  u"5 V transistors; scripts/capmodel_check.py swaps the junction diodes for a "
+  u"charge capacitance. The ordering survives both. Two things do not: the "
+  u"clamp ALONE gives +0.03 V on real devices rather than +0.57, and the "
+  u"no-clamp row changes SIGN between capacitance laws \u2014 so \u201cthe "
+  u"constant word causes false turn-on\u201d is model-dependent, and we say so."),
+]
+for fname, title, lead, cap_text in RESULT_SLIDES:
+    if not os.path.exists(os.path.join(RES, fname)):
+        print("  MISSING FIGURE: %s -- run scripts/result_figures.py" % fname)
+        continue
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, title)
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(lead, B)], level=0, sz=1450, spc=0, bullet=False)])
+    place(sl, fname, 1.62, 4.34)
+    caption(sl, cap_text, top=6.10, h=1.00)
+    print("added: %s" % title)
+
+
+# ---- slide: how much of the project this is, and how that was counted ------
+# "50 %" was a placeholder from the template, asserted rather than counted.
+# A reviewer is entitled to ask what the denominator is. So the slide now
+# carries the denominator: twelve blocks with a weight each, eight of them
+# done. Arguing with the weights is a real conversation; arguing with a bare
+# percentage is not.
+COMPLETION = [
+    (u"The converter itself, built and converting", 8, True,
+     u"100 V → 48.6 V at 4.88 A, 97.6 % efficient (buck.cir)"),
+    (u"The device choice justified against silicon", 8, True,
+     u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
+    (u"The base paper implemented, not just cited", 10, True,
+     u"zhangdrv.lib in our own deck; quoted at ITS best, +0.407 V"),
+    (u"The segmented driver; the fault reproduced and fixed", 12, True,
+     u"−0.249 V → +2.576 V, one change at a time"),
+    (u"The full study: 720 words × 4 corners", 12, True,
+     u"34,622 transients; fixed 25.1 % vs adaptive 3.9 %"),
+    (u"How much controller that justifies", 8, True,
+     u"ladder + leave-one-corner-out; two implementations agree"),
+    (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
+     u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
+    (u"The two halves made to meet in one simulation", 5, True,
+     u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
+    (u"Closed-loop regulation, disturbed on purpose", 8, True,
+     u"type-III loop: 0.05 % error through a 2x load and a 20 % line step"),
+    (u"Transistor-level output stage, on a real PDK", 7, True,
+     u"SKY130 5 V devices: sign and ordering of the result both survive"),
+    (u"Place-and-route on a chosen board", 3, False,
+     u"Needs real package pins and an MMCM for the clock"),
+    (u"A hardware half-bridge, measured", 7, False,
+     u"Review-III. Until then this is a simulation study, and is titled as one"),
+]
+DONE = sum(w for _, w, d, _ in COMPLETION if d)
+assert sum(w for _, w, _, _ in COMPLETION) == 100
+
+wi = index_of(u"Work Completed")
+if wi is not None:
+    s = p.slides[wi]
+    strip(s)
+    set_title(s, u"Work Completed — %d %%" % DONE)
+    add_text(s, 0.70, 1.18, 12.10, 0.46, [
+        para([(u"Counted, not asserted. ", B),
+              (u"Twelve blocks, weighted by how much of the project each is. "
+               u"Eight are finished. The weights are on the slide so they can "
+               u"be argued with.", N)], level=0, sz=1200, spc=0, bullet=False)])
+
+    rows = [(u"", u"Block of work", u"Weight", u"Evidence, or why not yet")]
+    for name, w, done, ev in COMPLETION:
+        mark = (u"✔", GREEN, True) if done else (u"—", GREY, True)
+        rows.append([mark, (name, None, done), (u"%d" % w, None, False),
+                     (ev, None if done else GREY, False)])
+    grid(s, 0.62, 1.74, 12.14, 4.45, rows, widths=(4, 36, 8, 52),
+         sizes=(10.0, 9.0))
+
+    add_text(s, 0.70, 6.34, 11.70, 0.90, [
+        para([(u"%d of 100 done. " % DONE, B),
+              (u"Review-I's rubric asks for 50 %%. We are past it because this "
+               u"is a simulation study and the simulation half is finished — "
+               u"the remaining %d %% is place-and-route on a chosen board and "
+               u"a hardware half-bridge on a bench, and no amount of further "
+               u"simulating will deliver either." % (100 - DONE), N)],
+             level=0, sz=1250, spc=140, bullet=False),
+        para([(u"Stated plainly: the architecture is finished. The "
+               u"measurement of it on real silicon is not.", B)],
+             level=0, sz=1250, spc=0, bullet=False)])
+    print("rebuilt: Work Completed — %d %%" % DONE)
+else:
+    print("  MISSING: Work Completed slide to rebuild")
+
+
 # ---- slide: closing the loop ----------------------------------------------
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
@@ -916,7 +1040,10 @@ def tidy_geometry(prs):
             for sh, r in shapes:
                 if not sh.has_text_frame or r is pageno[0] or r[0] > 12.0:
                     continue
-                if _overlaps(r, pageno[0]) and r[0] + r[2] > px - PAGENUM_GAP:
+                # tol=0.01, not the 0.05 the checker uses. A box that clears
+                # the page number by four hundredths of an inch passes QA and
+                # is still one longer caption away from printing over it.
+                if _overlaps(r, pageno[0], tol=0.01) and r[0] + r[2] > px - PAGENUM_GAP:
                     sh.width = Inches(max(1.0, px - PAGENUM_GAP - r[0]))
                     narrowed += 1
 
