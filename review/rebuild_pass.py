@@ -1025,9 +1025,48 @@ def _overlaps(a, b, tol=0.05):
             min(a[1] + a[3], b[1] + b[3]) - max(a[1], b[1]) > tol)
 
 
+def _text_need(sh, w):
+    """Estimate the height a text frame needs, the way qa.py does.
+
+    Same 0.50 em advance, so this and the checker agree about what fits. If
+    they disagreed, this pass would 'fix' boxes the checker still flags, or
+    leave ones it does not.
+    """
+    need = 0.0
+    for pa in sh.text_frame.paragraphs:
+        txt = "".join(r.text for r in pa.runs)
+        if not txt:
+            continue
+        szs = [r.font.size.pt for r in pa.runs if r.font.size]
+        sz = max(szs) if szs else 16.0
+        pPr = pa._pPr
+        marL = pPr.get("marL") if pPr is not None else None
+        ind = (int(marL) / 914400.0) if marL else 0.0
+        avail = max(0.5, w - ind)
+        cw = sz * 0.50 / 72.0
+        lines = max(1, int(len(txt) * cw / avail) +
+                    (1 if (len(txt) * cw) % avail else 0))
+        spc = 0.0
+        if pPr is not None:
+            sa = pPr.find("{http://schemas.openxmlformats.org/drawingml/2006/"
+                          "main}spcAft")
+            if sa is not None and len(sa):
+                v = sa[0].get("val")
+                if v:
+                    spc = int(v) / 100.0 / 72.0
+        need += lines * sz * 1.22 / 72.0 + spc
+    return need
+
+
 def tidy_geometry(prs):
-    """Keep text off the page number, and out from under pictures."""
-    narrowed = clipped = 0
+    """Keep text off the page number, out from under pictures, and fitting.
+
+    The third rule exists because stamp_provenance() adds words to captions
+    that were already sized to the line, and a caption that overflows its box
+    does not wrap -- PowerPoint just draws it past the bottom edge, over
+    whatever is there.
+    """
+    narrowed = clipped = grown = 0
     for sl in prs.slides:
         shapes = [(sh, _rect(sh)) for sh in sl.shapes]
         shapes = [(sh, r) for sh, r in shapes if r]
@@ -1064,7 +1103,142 @@ def tidy_geometry(prs):
                     sh.top = Inches(pr[1] + pr[3] + 0.06)
                 clipped += 1
                 r = _rect(sh)
-    return narrowed, clipped
+
+        # grow any caption the stamps pushed past its box, as far as the
+        # page-number band allows
+        for sh, r in shapes:
+            if not sh.has_text_frame or not sh.text_frame.text.strip():
+                continue
+            need = _text_need(sh, r[2])
+            if need <= r[3] + 0.02 or r[1] + need > 7.02:
+                continue
+            sh.height = Inches(need + 0.04)
+            grown += 1
+    return narrowed, clipped, grown
+
+
+# ==================================================== figure provenance ====
+# A reviewer's fair question about any picture on a slide is "is that the
+# simulator's output, or did you draw it?" The deck had 26 figures and no
+# answer to it, which puts a drawn explainer and an ngspice waveform on the
+# same footing and invites the panel to distrust both.
+#
+# So every figure caption is now stamped with where it came from. The map is
+# keyed by the file's SHA-1 rather than by its name, because the picture in
+# the .pptx is an embedded copy and the slide does not remember which file it
+# was -- and a name-based map silently stops matching the day a generator is
+# renamed, which is exactly the failure that leaves a wrong label on a slide.
+#
+# Four honest categories. The one that matters is the last: a figure that
+# explains something is not evidence of it, and the caption has to say so.
+P_SIM  = u"SIMULATED IN NGSPICE."
+P_SCR  = u"NGSPICE, ON SCREEN."
+P_RTL  = u"ICARUS VERILOG OUTPUT."
+P_VIV  = u"VIVADO OUTPUT."
+P_LT   = u"DRAWN AND SIMULATED IN LTSPICE."
+P_DRAW = u"DIAGRAM \u2014 DRAWN, NOT SIMULATION OUTPUT."
+P_FILE = u"A PROJECT FILE, TYPESET \u2014 NOT SIMULATION OUTPUT."
+
+PROVENANCE = {
+    # plotted from ngspice transient output
+    "fig_si_vs_gan.png": P_SIM, "fig_headtohead.png": P_SIM,
+    "fig_closedloop.png": P_SIM, "fig_modeldep.png": P_SIM,
+    "fig_converter.png": P_SIM, "fig_cases.png": P_SIM,
+    "fig1_crosstalk.png": P_SIM, "fig_buck_tradeoff.png": P_SIM,
+    "paper_fig2_ceiling.png": P_SIM, "fig_lloop.png": P_SIM,
+    "fig_master_weight.png": P_SIM,
+    # the simulator's own terminal, captured
+    "17-converter-power.png": P_SCR, "01-ngspice-crosstalk.png": P_SCR,
+    "18-named-cases.png": P_SCR, "12-result2-ceiling.png": P_SCR,
+    "13-result3-split.png": P_SCR,
+    # the other two tools
+    "fig_rtl_waveform.png": P_RTL, "03-verilog-8-properties.png": P_RTL,
+    "vivado_console.png": P_VIV, "vivado_simulation.png": P_VIV,
+    "11-vivado-synthesis-console.png": P_VIV, "fig_vivado.png": P_VIV,
+    "fig_circuit_ltspice.png": P_LT, "fig_segdrv_inside.png": P_LT,
+    "fig_ltspice_annotated.png": P_LT,
+    # drawn: these explain the work, they are not evidence of it
+    "fig_gan_1.png": P_DRAW, "fig_gan_2.png": P_DRAW,
+    "fig_settings.png": P_DRAW, "fig_input.png": P_DRAW,
+    "fig_output.png": P_DRAW, "fig_margin.png": P_DRAW,
+    "fig_flow.png": P_DRAW,
+    "fig_howrun.png": P_DRAW, "fig_method.png": P_DRAW,
+    "fig_tools.png": P_DRAW, "fig_architecture.png": P_DRAW,
+    # not a diagram and not output: the deck's own netlist, set in type
+    "fig_netlist.png": P_FILE,
+    "fig_circuit.png": P_DRAW, "pareto_matlab.png": P_DRAW,
+}
+
+
+def _sha_map():
+    import glob, hashlib
+    out = {}
+    for pat in ("results/**/*.png", "review/*.png"):
+        for f in glob.glob(os.path.join(HERE, "..", pat), recursive=True):
+            name = os.path.basename(f)
+            if name in PROVENANCE:
+                out[hashlib.sha1(open(f, "rb").read()).hexdigest()] = \
+                    PROVENANCE[name]
+    return out
+
+
+SHA_PROV = None
+
+
+def stamp_provenance(prs):
+    """Put the source of every figure into its own caption."""
+    global SHA_PROV
+    import hashlib
+    if SHA_PROV is None:
+        SHA_PROV = _sha_map()
+    stamped = unknown = 0
+    for sl in prs.slides:
+        tags = []
+        for sh in sl.shapes:
+            if sh.shape_type is None or "PICTURE" not in str(sh.shape_type):
+                continue
+            if not sh.width or sh.width < Inches(2.5):
+                continue
+            t = SHA_PROV.get(hashlib.sha1(sh.image.blob).hexdigest())
+            if t and t not in tags:
+                tags.append(t)
+            elif not t:
+                unknown += 1
+        if not tags:
+            continue
+        tag = u"  ".join(tags)
+        # Most figure slides carry a "Fig. n" caption. The Vivado slide carries
+        # two side-by-side screenshot captions instead, and skipping it would
+        # leave the one slide whose pictures are literally a tool's screen as
+        # the only unlabelled one -- so fall back to the first caption-shaped
+        # box under the picture.
+        caps = [sh for sh in sl.shapes
+                if sh.has_text_frame and sh.text_frame.text.strip().startswith("Fig.")]
+        if not caps:
+            caps = [sh for sh in sl.shapes
+                    if sh.has_text_frame and sh.text_frame.text.strip()
+                    and sh.top is not None and sh.top > Inches(1.2)
+                    and sh.width and sh.width > Inches(3.0)]
+            caps = caps[:1]
+        for sh in caps:
+            txt = sh.text_frame.text
+            if tag.split(u".")[0] in txt:      # write() runs three times
+                break
+            pa = sh.text_frame.paragraphs[0]
+            runs = pa.runs
+            if not runs:
+                break
+            # insert after the "Fig. n —" run so the stamp reads as part of
+            # the caption's own front matter rather than as a stray heading
+            new = _copy.deepcopy(runs[0]._r)
+            for t_el in new.findall(q("t")):
+                t_el.text = u" " + tag + u" "
+            for rPr in new.findall(q("rPr")):
+                rPr.set("b", "1")
+            runs[0]._r.addnext(new)
+            stamped += 1
+            break
+    return stamped, unknown
 
 
 # --------------------------------------------------------------- ordering --
@@ -1256,10 +1430,16 @@ def write(idxs, path, what):
     # write() is called three times on the same Presentation object, so the
     # first call does the geometry work and the later two find nothing left.
     # Report it only when it fires, or the last two lines read like a failure.
-    narrowed, clipped = tidy_geometry(p)
-    fixed = ("" if not (narrowed or clipped) else
-             ", %d off the page number, %d out from under a picture"
-             % (narrowed, clipped))
+    stamped, unknown_pics = stamp_provenance(p)
+    if unknown_pics:
+        print("  %d picture(s) with no provenance entry -- add them to "
+              "PROVENANCE" % unknown_pics)
+    narrowed, clipped, grown = tidy_geometry(p)
+    fixed = ((", %d figures stamped with their source" % stamped)
+             if stamped else "")
+    fixed += ("" if not (narrowed or clipped or grown) else
+              ", %d off the page number, %d out from under a picture, "
+              "%d grown to fit" % (narrowed, clipped, grown))
     p.save(path)
     print("%-8s %2d slides, %d logos removed%s -> %s"
           % (what, len(idxs), removed, fixed, os.path.basename(path)))
