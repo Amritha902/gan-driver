@@ -1,0 +1,64 @@
+ngspice waveform audit -- what the output actually contains
+==================================================================
+
+buck.cir
+    303638 points, 0.0003 s, timestep 1.68e-13 s min / 4.66e-10 s median
+    v(hsg) - v(sw) reaches 7.01 V at t = 2.959e-10 s, outside [-1.0, 6.0] for 1.58e-10 s total (3 of 303638 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(sw) spans -5.0 to 168.0 V on a 100 V bus once settled (68 % overshoot)
+    v(sw) reaches 167.99 V at t = 6e-05 s, outside [-10.0, 160.0] for 1.39e-09 s total (5 of 303638 samples); worst after settling: 167.99 V at t = 6e-05 s
+
+buck_closed.cir
+    1199012 points, 0.0015 s, timestep 4.2e-13 s min / 4.53e-10 s median
+    v(sw) spans -4.3 to 168.3 V on a 100 V bus once settled (68 % overshoot)
+    v(sw) reaches 168.34 V at t = 3.002e-05 s, outside [-10.0, 160.0] for 3.5e-08 s total (115 of 1199012 samples); worst after settling: 168.34 V at t = 3.002e-05 s
+
+dpt.cir
+    60070 points, 3e-06 s, timestep 5.49e-15 s min / 5e-11 s median
+    v(lsg) reaches 8.23 V at t = 2e-13 s, outside [-1.0, 6.0] for 2.39e-10 s total (24 of 60070 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(hsg) - v(sw) reaches -1.27 V at t = 1.006e-06 s, outside [-1.0, 6.0] for 1.3e-09 s total (26 of 60070 samples); worst after settling: -1.27 V at t = 1.006e-06 s
+    v(lsd) (vs the 200 V class rating) reaches 4849.95 V at t = 2e-13 s, outside [-50.0, 200.0] for 0 s total (1 of 60070 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(hsd) (vs the 200 V class rating) reaches 4696.68 V at t = 2e-13 s, outside [-50.0, 200.0] for 0 s total (1 of 60070 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(sw) spans -1.3 to 122.4 V on a 100 V bus once settled (22 % overshoot)
+    v(sw) reaches 4849.95 V at t = 2e-13 s, outside [-10.0, 160.0] for 0 s total (1 of 60070 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+
+dpt_c.cir
+    60072 points, 3e-06 s, timestep 5.49e-15 s min / 5e-11 s median
+    v(lsg) reaches 8.23 V at t = 2e-13 s, outside [-1.0, 6.0] for 5.39e-10 s total (30 of 60072 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(hsg) - v(sw) reaches -1.29 V at t = 1.005e-06 s, outside [-1.0, 6.0] for 8e-10 s total (16 of 60072 samples); worst after settling: -1.29 V at t = 1.005e-06 s
+    v(lsd) (vs the 200 V class rating) reaches 4849.96 V at t = 2e-13 s, outside [-50.0, 200.0] for 0 s total (1 of 60072 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(hsd) (vs the 200 V class rating) reaches 4696.69 V at t = 2e-13 s, outside [-50.0, 200.0] for 0 s total (1 of 60072 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+    v(sw) spans -1.6 to 123.5 V on a 100 V bus once settled (23 % overshoot)
+    v(sw) reaches 4849.96 V at t = 2e-13 s, outside [-10.0, 160.0] for 0 s total (1 of 60072 samples) -- SETTLING ARTIFACT: before 5e-09 s, and the earliest measurement window in this project opens at 1 us
+
+dpt_dcload.cir
+    60063 points, 3e-06 s, timestep 2e-13 s min / 5e-11 s median
+    v(hsg) - v(sw) reaches -1.21 V at t = 1.006e-06 s, outside [-1.0, 6.0] for 1.2e-09 s total (24 of 60063 samples); worst after settling: -1.21 V at t = 1.006e-06 s
+    v(sw) spans -1.3 to 122.4 V on a 100 V bus once settled (22 % overshoot)
+
+dpt_dcload_c.cir
+    60063 points, 3e-06 s, timestep 2e-13 s min / 5e-11 s median
+    v(sw) spans -1.3 to 112.2 V on a 100 V bus once settled (12 % overshoot)
+
+dpt_hyb_hs_sky130.cir
+    60090 points, 3e-06 s, timestep 2e-13 s min / 5e-11 s median
+    v(hsg) - v(sw) reaches -1.13 V at t = 1.006e-06 s, outside [-1.0, 6.0] for 1.1e-09 s total (22 of 60090 samples); worst after settling: -1.13 V at t = 1.006e-06 s
+    v(sw) spans -1.4 to 147.3 V on a 100 V bus once settled (47 % overshoot)
+
+dpt_hyb_ls_sky130.cir
+    60081 points, 3e-06 s, timestep 2e-13 s min / 5e-11 s median
+    v(hsg) - v(sw) reaches -1.10 V at t = 1.01e-06 s, outside [-1.0, 6.0] for 9e-10 s total (18 of 60081 samples); worst after settling: -1.10 V at t = 1.01e-06 s
+    v(sw) spans -1.2 to 117.3 V on a 100 V bus once settled (17 % overshoot)
+
+dpt_sky130.cir
+    60113 points, 3e-06 s, timestep 2e-13 s min / 5e-11 s median
+    v(hsg) - v(sw) reaches -1.05 V at t = 1.01e-06 s, outside [-1.0, 6.0] for 7e-10 s total (14 of 60113 samples); worst after settling: -1.05 V at t = 1.01e-06 s
+    v(sw) spans -1.2 to 147.4 V on a 100 V bus once settled (47 % overshoot)
+
+dpt_sky130_b.cir
+    60129 points, 3e-06 s, timestep 2e-13 s min / 5e-11 s median
+    v(hsg) - v(sw) reaches -1.07 V at t = 1.01e-06 s, outside [-1.0, 6.0] for 8e-10 s total (16 of 60129 samples); worst after settling: -1.07 V at t = 1.01e-06 s
+    v(sw) spans -1.2 to 147.6 V on a 100 V bus once settled (48 % overshoot)
+
+dpt_sky130_c.cir
+    60119 points, 3e-06 s, timestep 1e-13 s min / 5e-11 s median
+    v(sw) spans -1.2 to 148.1 V on a 100 V bus once settled (48 % overshoot)

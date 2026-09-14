@@ -29,7 +29,11 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
 DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
-VIDEO = os.path.expanduser("~/GAN_MAIN/PROOF/DEMO-VIDEO.mp4")
+# IN the repository, not next to it. This was "~/GAN_MAIN/PROOF/DEMO-VIDEO.mp4"
+# -- a path on the machine the project started on -- so on every checkout since
+# the split the demo slide has been built with NO VIDEO IN IT, while its own
+# caption said "2 min. Click to play." A panel would have clicked on nothing.
+VIDEO = os.path.join(HERE, "..", "proof", "DEMO-VIDEO.mp4")
 
 p = Presentation(DECK)
 B, N = True, False
@@ -274,6 +278,14 @@ if os.path.exists(VIDEO):
                        Inches(4.55),
                        poster_frame_image=os.path.join(HERE, "poster_demo.png"),
                        mime_type="video/mp4")
+    print("demo video embedded: %s (%.1f MB)"
+          % (os.path.basename(VIDEO), os.path.getsize(VIDEO) / 1048576.0))
+else:
+    # Loud, because the caption promises a video and a silent skip ships a
+    # slide that says "click to play" over an empty box.
+    raise SystemExit("DEMO VIDEO MISSING at %s -- the demo slide would ship "
+                     "empty while its caption promises one. Fix the path or "
+                     "remove the slide." % VIDEO)
 caption(s,
         u"Demo recording: the converter in ngspice, the crosstalk fault and "
         u"its fix, the named cases, the Verilog controller, and LTspice "
@@ -1295,6 +1307,16 @@ ORDER = [
     u"Demo — ngspice and LTspice",
     u"What we are building — the converter",
     u"The cases we ran",
+    # The simulator's own terminal, captured. These were in the 20-slide cut
+    # and NOT in the full deck, which is backwards -- the full deck is the one
+    # a reviewer takes away, and it was the one with no raw tool output in it.
+    u"Circuit simulation",
+    u"Crosstalk simulation",
+    u"Driver simulation",
+    u"ngspice output — what re-tuning is worth",
+    u"ngspice output — the split",
+    u"Icarus Verilog output",
+    u"Vivado output",
     u"Result 1",
     u"The same result in LTspice",
     u"Result 2",

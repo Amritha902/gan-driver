@@ -629,7 +629,10 @@ set_body(con_shape, [
           ("measure a hardware half-bridge. Until then this is a simulation study, and is "
            "titled as one.", False)], level=0, sz=1600, spc=220, bullet=True),
     para([("Limits we state ourselves: ", True),
-          ("no silicon measured; one device model underlies everything.", False)],
+          ("no silicon measured; one device model underlies everything; and the "
+           "converter deck drives the switch node to 168 V on a 100 V bus \u2014 "
+           "84 % of the modelled device's rating, found by opening the waveform "
+           "rather than reading the measured scalars.", False)],
          level=0, sz=1450, spc=0, bullet=True),
 ])
 

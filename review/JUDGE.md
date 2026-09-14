@@ -286,6 +286,32 @@ saying they affect nothing that is reported was true, and the thing they
 existed to check had therefore never been checked, and when it finally was it
 changed a headline claim from a measurement into a model-dependent one.
 
+### J16. The demo slide had no demo in it — **FIXED**
+
+The video path pointed outside the repository, at the machine the project
+started on. The build checked `os.path.exists` and skipped silently, so for
+weeks the slide shipped as an empty box under a caption saying *"2 min. Click
+to play."* A missing video is now fatal to the build.
+
+### J17. Nobody had opened the waveforms — **FIXED, and it found two things**
+
+Every reported number is a `.meas` scalar, and a scalar cannot tell you that
+the waveform behind it is wrong. `scripts/output_audit.py` now opens every
+column every deck writes.
+
+It found that `dpt.cir` — the source of every headline number — writes 4850 V
+on a 100 V bus. That turned out to be one sample at t = 2e-13 s, the solver's
+first step under `uic`, outside every measurement window; nothing reported is
+affected. But **nobody knew that**, and the difference between "an artifact we
+have characterised" and "a number we never looked at" is the whole point.
+
+It also found something that is not an artifact: `buck.cir` drives the device
+to 168 V on a 100 V bus, 84 % of its rating. That is now on the limits line.
+
+The audit's own first version printed the 4850 V with no time and no duration,
+which reads like the project is worthless. **A number without its time is not
+a finding** — fixed before it went anywhere.
+
 ## Verdict
 
 The project does what it says. The gaps it claims to close are closed and the
