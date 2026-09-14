@@ -4,10 +4,10 @@
 Amritha S (23BEC1368) · Sanjay Kumar (23BEC1447) · Aamir Abdullah (23BPS1197)
 Guide: Dr. Bindu, SENSE, VIT Chennai
 
-23 slides in 600 seconds. Bracketed times are cumulative — if the clock is
+24 slides in 600 seconds. Bracketed times are cumulative — if the clock is
 past one, you are behind.
 
-**This is tight, and it is now two slides tighter.** Two slides were added
+**This is tight, and it is now three slides tighter.** Two slides were added
 because a reviewer asked the question the deck never asked out loud — what the
 goal is, and whether the architecture serves it. They are worth 65 seconds and
 they are not optional; they are the slides that answer the examiner directly.
@@ -273,6 +273,19 @@ of what the literature credits to adaptation is really a design-time choice.
 The controller in hardware. **20 LUTs and 20 flip-flops** strapped, 33 fully
 programmable — so programmability costs thirteen LUTs. **200 megahertz is met**
 with 1.996 nanoseconds of slack.
+
+---
+
+## 16a · The FPGA controller — 25 s
+
+The driver is **programmable, and it is synthesised.** `seg_gate_ctrl.v`:
+thermometer-coded banks, its own dead-time generator. **Eight properties pass
+in Icarus**, and mutation testing catches an injected shoot-through 221 times.
+**20 LUTs and 20 flip-flops** on an xc7a35t, **200 MHz met with 1.996 ns of
+slack.**
+
+This slide is here because the completion table weights the FPGA at 12 % of
+the project. Claiming that and showing nothing invites the obvious question.
 
 ---
 

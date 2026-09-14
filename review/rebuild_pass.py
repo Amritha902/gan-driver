@@ -654,9 +654,9 @@ RESULT_SLIDES = [
   u"The loop holds 50 V. Open loop walks to 60 V.",
   u"sim/buck_closed.cir \u2014 the SAME power stage and the SAME segmented "
   u"drivers, now regulated by a type-III loop and then disturbed on purpose. "
-  u"Closed loop 50.01 / 50.00 / 50.01 V through a 2\u00d7 load step and a "
+  u"Closed loop 50.01 / 50.00 / 50.00 V through a 2\u00d7 load step and a "
   u"100 \u2192 120 V line step; worst error 0.01 % against open loop's 20.0 %. "
-  u"Load step recovers in 4 \u00b5s, line step in 21 \u00b5s. Ripple 0.25 %, "
+  u"Load step recovers in 4 \u00b5s, line step in 22 \u00b5s. Ripple 0.25 %, "
   u"efficiency 96.1 %, start-up overshoot 3.8 %."),
  ("fig_headtohead.png", u"Head to head with the base paper",
   u"5.5\u00d7 to 12.4\u00d7, and the lead widens as the corner gets harder.",
@@ -1371,6 +1371,7 @@ SHORT = [
     u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",
+    u"FPGA Controller",                             # 12 % of the count
     u"Head to head with the base paper",            # the comparison
     u"Closing the loop",                            # the converter regulates
     u"Does the result depend on the model?",

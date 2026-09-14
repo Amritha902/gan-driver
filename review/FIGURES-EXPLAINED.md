@@ -662,7 +662,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 32 — SIMULATED IN NGSPICE. sim/buck_closed.cir — the SAME power stage and the SAME segmented drivers, now regulated by a type-III loop and then disturbed on purpose. Closed loop 50.01 / 50.00 / 50.01 V through a 2× load step and a 100 → 120 V line step; worst error 0.01 % against open loop's 20.0 %. Load step recovers in 4 µs, line step in 21 µs. Ripple 0.25 %, efficiency 96.1 %, start-up overshoot 3.8 %.
+> Fig. 32 — SIMULATED IN NGSPICE. sim/buck_closed.cir — the SAME power stage and the SAME segmented drivers, now regulated by a type-III loop and then disturbed on purpose. Closed loop 50.01 / 50.00 / 50.00 V through a 2× load step and a 100 → 120 V line step; worst error 0.01 % against open loop's 20.0 %. Load step recovers in 4 µs, line step in 22 µs. Ripple 0.25 %, efficiency 96.1 %, start-up overshoot 3.8 %.
 
 </details>
 
