@@ -1,0 +1,6 @@
+Central claims recomputed on n = 5 corners
+ceiling: deck(n=4) 5.2 %  ->  grid(n=5) 4.29 %
+per-corner penalty 0.00 to 9.28 %, worst 50V_2A_25C
+best fixed word: 8.0, 2.0, 8.0, 25n, 0.0, 0.0
+distinct best words: 3 over 5 corners
+leave-one-out: better 0, worse 2, identical 3

@@ -1,0 +1,44 @@
+models/egan.lib -- extracted terminal characteristics
+NOT a validation: the datasheet is not in this repository.
+==================================================================
+R_DS(on) vs gate drive, at 25 C, V_DS = 0.1 V
+    V_GS = 3.0 V   58.1 mohm
+    V_GS = 4.0 V   35.3 mohm
+    V_GS = 5.0 V   25.4 mohm
+    V_GS = 6.0 V   19.8 mohm
+  claimed in the model header: 25 mohm at 5 V
+
+R_DS(on) vs junction temperature, at V_GS = 5 V
+    T_J =  25 C    25.4 mohm   (x1.00)
+    T_J =  75 C    36.0 mohm   (x1.42)
+    T_J = 125 C    46.3 mohm   (x1.82)
+  GaN datasheets put this near x2 from 25 to 125 C
+
+Capacitances vs V_DS  (pF)
+        V_DS     C_iss     C_oss     C_rss
+          0 V     500.0     950.0    150.00
+         10 V     381.6     272.8     31.56
+         50 V     361.6     123.7     11.65
+        100 V     357.5      87.1      7.47
+        150 V     355.8      70.9      5.75
+  C_rss IS the crosstalk mechanism. A datasheet states it as a curve;
+  this is that curve, and it is the first thing to check.
+
+Gate charge to the 5 V rail: 7.3 nC
+  sanity: C_iss(0 V) x 5 V = 2.5 nC, so a Q_g a few times that 
+  is expected (the Miller plateau is the rest). consistent.
+
+Third-quadrant drop at 10 A (GaN has no body diode)
+    V_off = +0 V   V_SD = 2.74 V
+    V_off = -2 V   V_SD = 4.74 V
+  the -2 V rail costs +2.00 V of extra drop, and the physics says
+  it should cost exactly 2.00 V. Agrees.
+  This is the cost of the -2 V rail, and it is why our turn-on
+  energy is higher than the base paper's at three of four corners.
+
+HOW TO CHECK THIS, IN FIVE MINUTES
+  Open the EPC2010C datasheet next to this table. R_DS(on) at 5 V,
+  the C_rss curve at 100 V, and Q_g are the three that matter. If
+  any of them is out by more than about 30 %, scripts/robust.py
+  says which conclusions move -- and the +-50 % C_GD row there is
+  the one to read first.
