@@ -164,6 +164,79 @@ def main():
         print("     The deck says a fitted schedule does not generalise; on")
         print("     %d corners it does. That claim has to change." % n)
 
+    # ---- 4. the split, and what one comparator buys -----------------------
+    # This is the number the deck leads with: of the total gain over a naive
+    # baseline, how much is choosing the fixed word well (A) and how much is
+    # adapting per corner (B)? And of B, how much can ONE real comparator on
+    # ONE sensed quantity actually take? At n = 4 the answer was 25.1 / 3.9,
+    # with one comparator taking 46 % of the 3.9.
+    print("\n  4. THE SPLIT, AND WHAT ONE COMPARATOR BUYS")
+    # THE BASELINE IS THE MEDIAN SAFE FIXED WORD, and getting this wrong
+    # changes the answer by a factor of fifty.
+    #
+    # The first version measured the gain against the CONVENTIONAL word
+    # (8,8,8,15n, no clamp, 0 V) and got (A) = 0.46 % against the deck's
+    # 25.1 %. That is not a correction to the deck, it is a different
+    # question asked badly: the conventional word is SAFE AT ONLY 9 OF THESE
+    # 36 CORNERS, and scripts/decompose.py says in as many words that gains
+    # against it are meaningless, because a driver that destroys the device
+    # is not a cheaper driver.
+    #
+    # novelty.py -- which owns the 25.1 / 3.9 split -- uses the median of the
+    # words that are safe EVERYWHERE, and says why: one baseline for every
+    # percentage, because mixing baselines is how a share stops meaning
+    # anything. Same baseline here.
+    from statistics import median
+    mean_cost = {w: sum(cost(by[c][w]) for c in corners) / len(corners)
+                 for w in common}
+    c_best = mean_cost[best_fixed]
+    c_med = median(mean_cost.values())
+    c_orc = sum(oracle.values()) / len(corners)
+    base = c_med
+    A = (c_med - c_best) / base * 100
+    B = (c_best - c_orc) / base * 100
+    print("     (A) choosing the fixed word well : %.2f %%   [deck: %.1f %%]"
+          % (A, OLD["fixed"]))
+    print("     (B) adapting per corner          : %.2f %%   [deck: %.1f %%]"
+          % (B, OLD["adaptive"]))
+    print("     B as a share of the total gain   : %.2f %%   [deck: %.1f %%]"
+          % (B / (A + B) * 100 if A + B else 0, OLD["share"]))
+
+    # one comparator: one threshold on one sensed quantity, two words
+    best_split, best_gain = None, 0.0
+    for idx, axis in ((0, "VBUS"), (1, "ILOAD"), (2, "TJ")):
+        levels = sorted({parse_corner(c)[idx] for c in corners})
+        for k in range(1, len(levels)):
+            thr = levels[k]
+            # `lo`/`hi` are taken: they hold the per-corner penalty range
+            below = [c for c in corners if parse_corner(c)[idx] < thr]
+            above = [c for c in corners if parse_corner(c)[idx] >= thr]
+            if not below or not above:
+                continue
+            fl = set.intersection(*[set(feas[c]) for c in below])
+            fh = set.intersection(*[set(feas[c]) for c in above])
+            if not fl or not fh:
+                continue
+            wl = min(fl, key=lambda w: sum(cost(by[c][w]) for c in below))
+            wh = min(fh, key=lambda w: sum(cost(by[c][w]) for c in above))
+            tot = sum(cost(by[c][wl]) for c in below) + \
+                  sum(cost(by[c][wh]) for c in above)
+            gain = (c_best - tot / len(corners)) / base * 100
+            if gain > best_gain:
+                best_gain, best_split = gain, (axis, thr, wl, wh)
+    if best_split:
+        axis, thr, wl, wh = best_split
+        print("     one comparator, %s at %s: takes %.2f %% of the %.2f %%"
+              % (axis, thr, best_gain, B))
+        print("       = %.0f %% of the adaptive part   [deck: 46 %%]"
+              % (best_gain / B * 100 if B else 0))
+        print("       below: %s" % ", ".join(wl))
+        print("       above: %s" % ", ".join(wh))
+        print("     residual a full sense + ADC + LUT must justify: %.2f %%"
+              % (B - best_gain))
+    else:
+        print("     no single threshold splits these corners usefully")
+
     with open(os.path.join(RES, "grid_analyse.txt"), "w") as f:
         f.write("Central claims recomputed on n = %d corners\n" % n)
         f.write("ceiling: deck(n=4) %.1f %%  ->  grid(n=%d) %.2f %%\n"
@@ -175,6 +248,13 @@ def main():
                 % (len(allbest), len(corners)))
         f.write("leave-one-out: better %d, worse %d, identical %d\n"
                 % (wins, losses, ties))
+        f.write("split: fixed %.2f %%, adaptive %.2f %% (deck: %.1f / %.1f)\n"
+                % (A, B, OLD["fixed"], OLD["adaptive"]))
+        if best_split:
+            f.write("one comparator on %s at %s takes %.2f %% of the %.2f %%"
+                    " (%.0f %%); residual %.2f %%\n"
+                    % (best_split[0], best_split[1], best_gain, B,
+                       best_gain / B * 100 if B else 0, B - best_gain))
     print("\n  wrote results/grid_analyse.txt")
     return 0
 

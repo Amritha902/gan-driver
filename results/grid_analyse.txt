@@ -1,6 +1,8 @@
-Central claims recomputed on n = 5 corners
-ceiling: deck(n=4) 5.2 %  ->  grid(n=5) 4.29 %
-per-corner penalty 0.00 to 9.28 %, worst 50V_2A_25C
-best fixed word: 8.0, 2.0, 8.0, 25n, 0.0, 0.0
-distinct best words: 3 over 5 corners
-leave-one-out: better 0, worse 2, identical 3
+Central claims recomputed on n = 36 corners
+ceiling: deck(n=4) 5.2 %  ->  grid(n=36) 3.50 %
+per-corner penalty 0.01 to 14.18 %, worst 200V_2A_125C
+best fixed word: 8.0, 8.0, 1.0, 15n, 1.0, 0.0
+distinct best words: 10 over 36 corners
+leave-one-out: better 0, worse 0, identical 36
+split: fixed 26.45 %, adaptive 2.57 % (deck: 25.1 / 3.9)
+one comparator on ILOAD at 10 takes 1.22 % of the 2.57 % (47 %); residual 1.35 %
