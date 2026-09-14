@@ -42,7 +42,7 @@ SLIDE6 = [
         "change and measure.", False)], 1),
     ([("How we approached it:", B)], 0),
     ([("1. Build the converter and check it converts.", B),
-      (" 100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W delivered, 97.6 % "
+      (" 100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W delivered, 97.7 % "
        "efficient.", False)], 1),
     ([("2. Recreate the fault.", B),
       (" At the fastest setting the gate that should be OFF reaches 1.65 V, "
@@ -62,7 +62,7 @@ SLIDE6 = [
 SLIDE7 = [
     ([("The converter is built and it runs.", B)], 0),
     ([("100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W into the load from "
-       "242.6 W drawn, 97.6 % efficient.", False)], 1),
+       "242.5 W drawn, 97.7 % efficient.", False)], 1),
     ([("The fault is reproduced, and fixed.", B)], 0),
     ([("The off gate reaches 1.65 V against a 1.4 V threshold. With the clamp "
        "and the \u22122 V rail: 2.58 V of margin.", False)], 1),

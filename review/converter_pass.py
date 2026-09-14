@@ -15,7 +15,7 @@ This pass fixes that.
 
   * the title becomes "GaN-Based Power Converter"
   * a new slide, second in the deck, shows the converter running: 100 V DC in,
-    48.6 V DC out, 237 W into the load, 97.6 % efficient (sim/buck.cir)
+    48.6 V DC out, 237 W into the load, 97.7 % efficient (sim/buck.cir)
   * a new result slide shows the gate-driver setting moving converter-level
     quantities -- power lost and device stress -- in opposite directions,
     which is what makes the driver worth studying at all
@@ -200,7 +200,7 @@ add_text(s_cv, 0.55, 6.15, 12.25, 0.95, [
     para([(u"A GaN synchronous buck converter. ", B),
           (u"100 V DC goes in; the two GaN transistors chop it at 500 kHz; the "
            u"filter turns that back into DC. 48.6 V at 4.88 A comes out — "
-           u"236.9 W into the load from 242.6 W drawn, so 97.6 % of the power "
+           u"236.9 W into the load from 242.5 W drawn, so 97.7 % of the power "
            u"gets through. 5.8 W is lost in the transistors and the power loop.",
            N)], level=0, sz=1250, spc=120, bullet=False),
     para([(u"The duty ratio is fixed at 0.5, which is what puts the output at half "
@@ -276,7 +276,7 @@ for _s in p.slides:
                 blocks = [
                     [(u"What the data supports", B)],
                     [(u"The converter works: 100 V DC in, 48.6 V DC out at 4.88 A "
-                      u"\u2014 236.9 W, 97.6 % efficient.", N)],
+                      u"\u2014 236.9 W, 97.7 % efficient.", N)],
                     [(u"Picking the setting well: 25.1 %.   Changing it per "
                       u"operating point: 3.9 %.", N)],
                     [(u"One comparator — bus voltage at 75 V — gets 46 % of "

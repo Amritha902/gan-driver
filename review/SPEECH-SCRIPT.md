@@ -113,7 +113,7 @@ GaN, where the device has no body diode and the trade changes.
 > "What we build about it: the segmented driver, with the clamp and the minus
 > two volt rail. Minus 0.249 volts of margin becomes plus 2.576."
 >
-> "So the test of purpose is not 'does the converter run'. It runs — 97.6
+> "So the test of purpose is not 'does the converter run'. It runs — 97.7
 > percent efficient. Any textbook buck converter runs. The test is whether the
 > architecture we put around it answers what the published work leaves open,
 > because that is the only part of this that is ours."
@@ -269,8 +269,8 @@ measured result and we do not claim it is.
 > "So we closed it, around the same power stage and the same drivers, and then
 > disturbed it on purpose. Fifty point zero one volts, fifty point zero zero
 > after a two-times load step, fifty point zero one after the input goes from a
-> hundred to a hundred and twenty. Worst error two hundredths of a percent.
-> The open-loop converter walks to fifty-eight volts on that line step, because
+> hundred to a hundred and twenty. Worst error one hundredth of a percent.
+> The open-loop converter walks to sixty volts on that line step, because
 > V-out equals D times V-in and nothing in it knows V-in moved."
 >
 > "Two compensators did not work before this one did. The first period-doubled

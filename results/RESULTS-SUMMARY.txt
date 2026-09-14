@@ -50,17 +50,23 @@
 
   CLOSED LOOP, AND THE BASE PAPER SIDE BY SIDE
   ───────────────────────────────────────────────────────────────────────────────────────────────────
-  regulation, closed loop (nom / load step / line step)      50.01 / 50.00 / 50.01 V        closedloop.py
-  worst regulation error, closed vs open loop                0.05 % vs 16.6 %               closedloop.py
-  load-step recovery / line-step recovery                    4 us / 19 us                   closedloop.py
+  regulation, closed loop (nom / load step / line step)      50.01 / 50.00 / 50.00 V        closedloop.py
+  worst regulation error, closed vs open loop                0.01 % vs 20.0 %               closedloop.py
+  load-step recovery / line-step recovery                    4 us / 22 us                   closedloop.py
   output ripple, closed loop                                 0.25 %                         closedloop.py
-  efficiency, closed loop at nominal                         95.9 %                         closedloop.py
+  efficiency, closed loop at nominal                         96.1 %                         closedloop.py
   soft-start overshoot (stated, not good)                    10.9 %                         closedloop.py
   crosstalk margin, ours vs base paper, four corners         5.5x / 6.3x / 8.9x / 12.4x     headtohead.py
   switch-node slew, base vs ours                             67-103 vs 101-175 V/ns         headtohead.py
   margin on REAL SKY130 transistors (no clamp/clamp/+-2V)    -0.563 / +0.031 / +2.032 V     silicon_check.py
   margin with CHARGE capacitance instead of diodes            +0.115 / +0.800 / +2.710 V     capmodel_check.py
   -> the no-clamp SIGN is model-dependent; shipped is not      safe under all four models     capmodel_check.py
+
+  THE CONVERTER'S OWN SWITCH NODE
+  ───────────────────────────────────────────────────────────────────────────────────────────────────
+  peak switch node, buck.cir, WITH bus decoupling                115.4 V (15.4 % overshoot)     bucksim.py
+  peak switch node, same deck, WITHOUT decoupling                168.0 V (68 % overshoot)       output_audit.py
+  -> 84 % of the 200 V device rating became 58 %; found by opening the waveform, not the scalars
 
   VERIFICATION
   ───────────────────────────────────────────────────────────────────────────────────────────────────

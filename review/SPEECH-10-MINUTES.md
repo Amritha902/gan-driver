@@ -104,7 +104,7 @@ that should be off reaches **1.65 volts against a 1.4 volt threshold.**
 **What we build about it.** The segmented driver, the clamp, the minus two volt
 rail: **minus 0.249 volts becomes plus 2.576.**
 
-So the test of purpose is not "does the converter run." It runs, at 97.6
+So the test of purpose is not "does the converter run." It runs, at 97.7
 percent. Any textbook buck converter runs. The test is whether the architecture
 around it answers what the literature leaves open.
 
@@ -197,7 +197,9 @@ if she does, everything in it is also on the next six slides.)*
 ## 11 · Circuit simulation — the converter — 30 s  *(5:55)*
 
 This is the terminal. 100 volts and 2.426 amps in; **48.56 volts and 4.875 amps
-out**. 242.63 watts drawn, 236.85 delivered — **97.62 per cent efficient**.
+out**. 242.47 watts drawn, 236.89 delivered — **97.70 per cent efficient**.
+Peak switch node **115.4 volts on a 100 volt bus** — fifteen per cent
+overshoot, with bus decoupling. Without it, 168.
 
 That is the converter working. Everything after this is about the two
 transistors inside it.
@@ -295,7 +297,7 @@ scheme in our testbench, not their measured result.
 
 **The loop is closed.** Same power stage, same drivers. 50.01 V nominal, 50.00
 after a 2× load step, 50.01 after the input goes 100 → 120 V. Worst error
-0.02 %. Open loop walks to 58 V on that line step.
+0.01 %. Open loop walks to 60 V on that line step.
 
 **And we swapped out both modelling assumptions.** In real SKY130 transistors
 **the clamp alone gives +0.031 V**, not +0.570 — the −2 V off-bias is the fix

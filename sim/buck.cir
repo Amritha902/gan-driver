@@ -66,6 +66,42 @@ Rloop  bus n1  0.3                    $ power-loop parasitic resistance
 *                                     $ 0.05 gives Q~600 and 30 ringing cycles,
 *                                     $ which no real GaN half-bridge does.
 Lloop  n1  hstop {LLOOP}              $ power-loop parasitic inductance
+
+* ---------------- bus decoupling -----------------------------------
+* THIS WAS MISSING, AND IT COST 38 V OF OVERSHOOT.
+* Without it the only path from the supply to the half-bridge is Rloop +
+* Lloop, so every turn-on has to pull its current through 3 nH from an
+* ideal source. scripts/output_audit.py opened the waveform and found the
+* switch node reaching 168 V on a 100 V bus -- 84 % of the modelled
+* device's rating -- as a ~0.6 ns spike at each high-side turn-on, where
+* the node swings from the third-quadrant drop (-2.4 V) to the bus
+* through that inductance and the low-side device's Coss.
+*
+* That is correct physics for a circuit with no decoupling, and no real
+* GaN half-bridge is built that way: there is always ceramic right at the
+* devices, and its loop is short. Modelled as a realistic part rather
+* than an ideal capacitor -- 100 nF with its own ESL and ESR -- because
+* an ideal one would flatter the result:
+*
+*     no decoupling        168 V   +68 %
+*     100 nF, 0.5 nH ESL   116 V   +16 %     <- shipped
+*     1 uF,   0.5 nH ESL   117 V   +17 %     (no better: ESL sets it)
+*
+* 1 uF buys nothing over 100 nF, which is the tell that the ESL and not
+* the capacitance is what limits it. Slowing the turn-on with the
+* segmented driver also helps (NPU_HS=2 gives 125 V) and costs switching
+* energy; decoupling costs a part.
+*
+* NOTE sim/dpt.cir deliberately does NOT get this. It is the
+* characterisation bench, its loop inductance is a swept parameter
+* (scripts/lloop_analyse.py sweeps it from 1.0 to 4.5 nH), and adding a
+* decoupling path would remove the quantity being swept.
+.param CDEC=100n
+.param LDEC=0.5n
+.param RDEC=20m
+Ldec   hstop ndec1 {LDEC}
+Cdec   ndec1 ndec2 {CDEC}
+Rdec   ndec2 0     {RDEC}
 Vshs   hstop hsd DC 0
 Xhs    hsd hsg sw EGAN params: vth={VTH_T} bh={BH_T}
 Vsls   sw  lsd DC 0

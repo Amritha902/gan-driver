@@ -213,8 +213,9 @@ for fname, title, figtxt in NEW:
 TOOLOUT = [
  ("toolout/17-converter-power.png", u"Circuit simulation \u2014 the converter",
   u"scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A "
-  u"in, 48.56 V and 4.875 A out: 242.63 W drawn, 236.85 W delivered, "
-  u"97.62 % efficient."),
+  u"in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, "
+  u"97.70 % efficient. Peak switch node 115.4 V on a 100 V bus — 15.4 % "
+  u"overshoot, with bus decoupling. Without it: 168 V."),
  ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
   u"Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches "
   u"+1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with "
@@ -412,9 +413,9 @@ add_text(s, 8.90, 2.78, 3.90, 1.95, [
 
 add_text(s, 0.70, 4.92, 12.10, 1.90, [
     para([(u"SO THE TEST OF PURPOSE IS NOT “does the converter run”.  ", B),
-          (u"It runs — 100 V in, 48.6 V out at 4.88 A, 97.6 % efficient, "
+          (u"It runs — 100 V in, 48.6 V out at 4.88 A, 97.7 % efficient, "
            u"OPEN LOOP at a fixed duty, which is the deck the switching study "
-           u"is measured on; the regulated version holds 50.0 V at 95.9 %. "
+           u"is measured on; the regulated version holds 50.0 V at 96.1 %. "
            u"Any textbook buck converter runs. The test is whether the "
            u"architecture we put around it answers the questions the "
            u"published work on these drivers leaves open, because that is the "
@@ -474,8 +475,8 @@ ROWS = [
      u"is never closed-loop regulated.",
      u"A type-III loop around the same power stage and the same drivers, then "
      u"disturbed on purpose.",
-     u"0.05 % error through a 2× load step and a 20 % line step; open loop "
-     u"walks to 58 V (closedloop.py).", u"CLOSED"),
+     u"0.01 % error through a 2× load step and a 20 % line step; open loop "
+     u"walks to 60 V (closedloop.py).", u"CLOSED"),
     (u"Segmented output stages are published as ideal switches. Whether the "
      u"result survives real devices is untested.",
      u"The same output stage rebuilt in SKY130 5 V transistors and re-run.",
@@ -576,7 +577,7 @@ print("added: The architecture, end to end")
 # percentage is not.
 COMPLETION = [
     (u"The converter itself, built and converting", 8, True,
-     u"100 V → 48.6 V at 4.88 A, 97.6 % efficient (buck.cir)"),
+     u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
     (u"The device choice justified against silicon", 8, True,
      u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 10, True,
@@ -592,7 +593,7 @@ COMPLETION = [
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
     (u"Closed-loop regulation, disturbed on purpose", 8, True,
-     u"type-III loop: 0.05 % error through a 2x load and a 20 % line step"),
+     u"type-III loop: 0.01 % error through a 2x load and a 20 % line step"),
     (u"Transistor-level output stage, on a real PDK", 7, True,
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
@@ -650,13 +651,13 @@ else:
 # from results/, so a figure cannot drift from the run that made it.
 RESULT_SLIDES = [
  ("fig_closedloop.png", u"Closing the loop",
-  u"The loop holds 50 V. Open loop walks to 58 V.",
+  u"The loop holds 50 V. Open loop walks to 60 V.",
   u"sim/buck_closed.cir \u2014 the SAME power stage and the SAME segmented "
   u"drivers, now regulated by a type-III loop and then disturbed on purpose. "
   u"Closed loop 50.01 / 50.00 / 50.01 V through a 2\u00d7 load step and a "
-  u"100 \u2192 120 V line step; worst error 0.02 % against open loop's 16.6 %. "
+  u"100 \u2192 120 V line step; worst error 0.01 % against open loop's 20.0 %. "
   u"Load step recovers in 4 \u00b5s, line step in 21 \u00b5s. Ripple 0.25 %, "
-  u"efficiency 95.9 %, start-up overshoot 3.8 %."),
+  u"efficiency 96.1 %, start-up overshoot 3.8 %."),
  ("fig_headtohead.png", u"Head to head with the base paper",
   u"5.5\u00d7 to 12.4\u00d7, and the lead widens as the corner gets harder.",
   u"scripts/headtohead.py \u2014 same deck, same GaN, same parasitics; only "
@@ -706,7 +707,7 @@ for fname, title, lead, cap_text in RESULT_SLIDES:
 # percentage is not.
 COMPLETION = [
     (u"The converter itself, built and converting", 8, True,
-     u"100 V → 48.6 V at 4.88 A, 97.6 % efficient (buck.cir)"),
+     u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
     (u"The device choice justified against silicon", 8, True,
      u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 10, True,
@@ -722,7 +723,7 @@ COMPLETION = [
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
     (u"Closed-loop regulation, disturbed on purpose", 8, True,
-     u"type-III loop: 0.05 % error through a 2x load and a 20 % line step"),
+     u"type-III loop: 0.01 % error through a 2x load and a 20 % line step"),
     (u"Transistor-level output stage, on a real PDK", 7, True,
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
@@ -787,10 +788,10 @@ grid(s, 1.30, 2.14, 10.70, 1.10, [
     (u"", u"nominal  100 V / 5 A", u"after 2\u00d7 load step",
      u"after 100 \u2192 120 V line step", u"worst error"),
     ((u"closed loop", None, True), (u"50.02 V", GREEN, True),
-     (u"50.00 V", GREEN, True), (u"50.01 V", GREEN, True),
-     (u"0.02 %", GREEN, True)),
-    ((u"open loop", None, True), (u"49.58 V", None, False),
-     (u"48.72 V", None, False), (u"58.33 V", AMBER, True),
+     (u"50.00 V", GREEN, True), (u"50.00 V", GREEN, True),
+     (u"0.01 %", GREEN, True)),
+    ((u"open loop", None, True), (u"51.03 V", None, False),
+     (u"50.15 V", None, False), (u"58.33 V", AMBER, True),
      (u"16.7 %", AMBER, True)),
 ], widths=(16, 21, 21, 26, 16), sizes=(10.0, 11.0))
 
@@ -799,13 +800,13 @@ add_text(s, 0.70, 3.44, 5.85, 0.34, [
 add_text(s, 0.70, 3.82, 5.85, 2.10, [
     para([(u"Load step 5 \u2192 10 A: dips 1.8 %, back inside \u00b11 % in 4 \u00b5s.", N)],
          level=0, sz=1150, spc=110, bullet=False),
-    para([(u"Line step 100 \u2192 120 V: peaks 1.3 %, recovers in 21 \u00b5s.", N)],
+    para([(u"Line step 100 \u2192 120 V: peaks 1.4 %, recovers in 22 \u00b5s.", N)],
          level=0, sz=1150, spc=110, bullet=False),
     para([(u"Output ripple 0.28 %. Soft-start overshoot 10.9 % — the one "
            u"number here we are not proud of, and it is on the slide.", N)],
          level=0, sz=1150, spc=110, bullet=False),
     para([(u"Open loop is not merely less accurate. On the line step it walks "
-           u"to 58 V, because V_out = D \u00d7 V_in and nothing in it knows "
+           u"to 60 V, because V_out = D \u00d7 V_in and nothing in it knows "
            u"V_in moved.", B)], level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 7.00, 3.44, 5.80, 0.34, [

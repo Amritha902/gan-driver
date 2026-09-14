@@ -133,7 +133,7 @@ the fault and the fix, then the Verilog controller, then LTspice.
 This is ngspice printing the converter result.
 
 100 volts and 2.4 amps going in. **48.56 volts and 4.875 amps coming out.**
-242 watts in, 237 watts out — **97.6 per cent efficient**.
+242 watts in, 237 watts out — **97.7 per cent efficient**.
 
 The converter works.
 

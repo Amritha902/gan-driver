@@ -1,9 +1,9 @@
 Closed-loop buck converter, sim/buck_closed.cir
-closed loop  nominal 50.01 V, after load 50.00 V, after line 50.01 V, worst error 0.02 %
-open loop    nominal 49.58 V, after load 48.72 V, after line 58.30 V, worst error 16.59 %
-load step dip 49.13 V, recovery 4 us
-line step peak 50.68 V, recovery 21 us
+closed loop  nominal 50.01 V, after load 50.00 V, after line 50.00 V, worst error 0.01 %
+open loop    nominal 51.03 V, after load 50.15 V, after line 60.01 V, worst error 20.01 %
+load step dip 49.12 V, recovery 4 us
+line step peak 50.68 V, recovery 22 us
 soft-start overshoot 51.89 V
 output ripple 0.124 V pk-pk
-efficiency closed 95.92 %, open 95.85 % (nominal)
-open-loop control level calibrated to VCFIX=0.5266
+efficiency closed 96.12 %, open 96.16 % (nominal)
+open-loop control level calibrated to VCFIX=0.5422

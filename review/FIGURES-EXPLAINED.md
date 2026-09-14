@@ -322,7 +322,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 17 — SIMULATED IN NGSPICE. GaN synchronous buck converter. (a) output charging from zero and settling; (b) three switching cycles; (c) power in against power out. 100 V DC in, 48.56 V DC out at 4.875 A, 97.62 % efficient.
+> Fig. 17 — SIMULATED IN NGSPICE. GaN synchronous buck converter. (a) output charging from zero and settling; (b) three switching cycles; (c) power in against power out. 100 V DC in, 48.56 V DC out at 4.876 A, 97.70 % efficient.
 
 </details>
 
@@ -362,7 +362,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 19 — NGSPICE, ON SCREEN. scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A in, 48.56 V and 4.875 A out: 242.63 W drawn, 236.85 W delivered, 97.62 % efficient.
+> Fig. 19 — NGSPICE, ON SCREEN. scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, 97.70 % efficient. Peak switch node 115.4 V on a 100 V bus — 15.4 % overshoot, with bus decoupling. Without it: 168 V.
 
 </details>
 
@@ -662,7 +662,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 32 — SIMULATED IN NGSPICE. sim/buck_closed.cir — the SAME power stage and the SAME segmented drivers, now regulated by a type-III loop and then disturbed on purpose. Closed loop 50.01 / 50.00 / 50.01 V through a 2× load step and a 100 → 120 V line step; worst error 0.02 % against open loop's 16.6 %. Load step recovers in 4 µs, line step in 21 µs. Ripple 0.25 %, efficiency 95.9 %, start-up overshoot 3.8 %.
+> Fig. 32 — SIMULATED IN NGSPICE. sim/buck_closed.cir — the SAME power stage and the SAME segmented drivers, now regulated by a type-III loop and then disturbed on purpose. Closed loop 50.01 / 50.00 / 50.01 V through a 2× load step and a 100 → 120 V line step; worst error 0.01 % against open loop's 20.0 %. Load step recovers in 4 µs, line step in 21 µs. Ripple 0.25 %, efficiency 96.1 %, start-up overshoot 3.8 %.
 
 </details>
 
