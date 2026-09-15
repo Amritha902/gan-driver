@@ -12,19 +12,19 @@
   THE SEARCH
   ───────────────────────────────────────────────────────────────────────────────────────────────────
   Control-word space, searched in full                       720 words × 4 corners          sweep.py, corners.py
-  Transient simulations, all studies                         34,622                         row count, all result CSVs
+  Transient simulations, all studies                         60,533                         row count, all result CSVs
   Switching-energy spread across the word                    up to 483 %                    figures.py
 
   WHAT ADAPTATION IS WORTH
   ───────────────────────────────────────────────────────────────────────────────────────────────────
-  ceiling on scheduling, four corners                        5.2 % (vs best fixed word)     ceiling.py
-  (A) choosing a better fixed word                           25.1 % of baseline             novelty.py
-  (B) adapting it per operating point                        3.9 % of baseline              novelty.py
-  adaptation as a share of the total gain                    13.4 %                         novelty.py
-  captured by ONE real comparator (VBUS at 75 V)             46 % of (B)                    novelty.py
-  captured by TWO comparators (best 2-word split)            72 % of (B)                    novelty.py
-  left for a full sense + ADC + LUT, over 1 comparator       7.2 % of the total gain        novelty.py
-  left for a full sense + ADC + LUT, over 2 comparators      3.7 % of the total gain        novelty.py
+  ceiling on scheduling, four corners                        3.5 % (vs best fixed word)     ceiling.py
+  (A) choosing a better fixed word                           26.5 % of baseline             novelty.py
+  (B) adapting it per operating point                        2.6 % of baseline              novelty.py
+  adaptation as a share of the total gain                    8.9 %                         novelty.py
+  captured by ONE real comparator (VBUS at 75 V)             47 % of (B)                    novelty.py
+  captured by TWO comparators (best 2-word split)            61 % of (B)                    novelty.py
+  left for a full sense + ADC + LUT, over 1 comparator       4.7 % of the total gain        novelty.py
+  left for a full sense + ADC + LUT, over 2 comparators      3.4 % of the total gain        novelty.py
   words needed for the full benefit                          3 of 4  (K = 4 adds nothing)   howmanywords.py
 
   WHAT THE ADAPTIVE HARDWARE COSTS
@@ -67,6 +67,20 @@
   peak switch node, buck.cir, WITH bus decoupling                115.4 V (15.4 % overshoot)     bucksim.py
   peak switch node, same deck, WITHOUT decoupling                168.0 V (68 % overshoot)       output_audit.py
   -> 84 % of the 200 V device rating became 58 %; found by opening the waveform, not the scalars
+
+  THE FULL GRID  (n = 36, not n = 4)
+  ───────────────────────────────────────────────────────────────────────────────────────────────────
+  transients in the 36-corner grid                           25,911 of 25,920                grid_analyse.py
+  (A) choosing the fixed word well                           26.45 %  (n=4 said 25.1 %)      grid_analyse.py
+  (B) adapting per operating point                           2.57 %   (n=4 said 3.9 %)       grid_analyse.py
+  B as a share of the total gain                             8.86 %   (n=4 said 13.4 %)      grid_analyse.py
+  ceiling on per-corner scheduling                           3.50 %   (n=4 said 5.2 %)       grid_analyse.py
+  per-corner penalty of the fixed word, range                0.01 % to 14.18 %               grid_analyse.py
+  worst corner                                               200V_2A_125C                    grid_analyse.py
+  one comparator, on LOAD CURRENT at 10 A                    47 % of (B); residual 4.7 %     grid_analyse.py
+  two comparators, VBUS at 100 and ILOAD at 10               61 % of (B); residual 3.4 %     grid_analyse.py
+  leave-one-corner-out, 36 folds                             identical to global on 36/36    grid_analyse.py
+  distinct best words over the 36 corners                    10                              grid_analyse.py
 
   VERIFICATION
   ───────────────────────────────────────────────────────────────────────────────────────────────────

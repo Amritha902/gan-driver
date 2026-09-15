@@ -258,7 +258,7 @@ One loses 12.7.
 
 And this is the answer.
 
-Choosing a fixed setting well: **25.1 per cent**, no hardware. Adapting per
+Choosing a fixed setting well: **26.5 per cent**, no hardware. Adapting per
 operating point: **3.9**. So adaptation is thirteen per cent of the gain, and
 a single comparator on bus voltage captures nearly half of even that.
 

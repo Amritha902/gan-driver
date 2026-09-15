@@ -35,13 +35,22 @@ each one.
 **Simulation**
 - Crosstalk margins **−0.249 / +0.570 / +2.576 V** (`scripts/gansim.py`)
 - Ceiling on scheduling **5.2 %**, per-corner 1.1 / 2.3 / 12.7 / 3.8 (`ceiling.py`)
-- Decomposition **25.1 % fixed, 3.9 % adaptive, 13.4 % share**. Of the adaptive
-  part, **46 % is reachable with ONE comparator** (bus voltage at 75 V),
-  leaving **7.2 %** for a full sense + ADC + LUT. Two comparators reach 72 %,
-  leaving 3.7 % (`novelty.py`).
-  QUOTE THE ONE-COMPARATOR NUMBER. The corner worth isolating shares its bus
-  voltage, load and temperature with other corners, so no single threshold
-  selects it -- 72 % needs two comparators, and calling it one is wrong.
+- **n = 36, NOT n = 4.** `scripts/full_grid.py` runs 720 words at all 36
+  corners (4 bus x 3 load x 3 temperature) -- 25,911 transients, ~4 h,
+  checkpointed per corner. `scripts/grid_analyse.py` owns every number below.
+  Decomposition **26.5 % fixed, 2.6 % adaptive, 8.9 % share**. Of the adaptive
+  part, **47 % is reachable with ONE comparator on LOAD CURRENT at 10 A**,
+  leaving **4.7 %** of the total gain for a full sense + ADC + LUT. Two
+  comparators reach 61 %, leaving 3.4 %.
+  THE FOUR-CORNER STUDY NAMED THE WRONG SENSOR: it said bus voltage at 75 V.
+  On the full grid it is load current. A design built to the old advice would
+  sense the wrong quantity.
+  Ceiling on scheduling **3.5 %** (was 5.2 %). Per-corner penalty of the fixed
+  word spans **0.01 % to 14.18 %**, worst at 200V_2A_125C -- the average hides
+  that one corner.
+  Leave-one-corner-out over 36 folds returns **exactly the global fixed word
+  on all 36**. At n = 4 this was "worse on 3 of 4, weak evidence"; it is no
+  longer weak.
 - Weight independence: over 106 overshoot weights, (A) stays 23.4–29.0 % and
   (B) 1.3–6.4 %, and **(A) exceeds (B) at every weight out to 5.0**
   (`weight_sensitivity.py`) — the strongest form of the headline claim

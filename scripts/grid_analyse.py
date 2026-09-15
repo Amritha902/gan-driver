@@ -232,8 +232,57 @@ def main():
               % (best_gain / B * 100 if B else 0))
         print("       below: %s" % ", ".join(wl))
         print("       above: %s" % ", ".join(wh))
-        print("     residual a full sense + ADC + LUT must justify: %.2f %%"
+        # The deck expresses the residual as a share of the TOTAL gain
+        # (A + B), not of baseline -- that is where its 7.2 % comes from.
+        # Quote it the same way or the two cannot be compared.
+        tot_gain = A + B
+        print("     residual a full sense + ADC + LUT must justify: %.2f %% of"
               % (B - best_gain))
+        print("       baseline, = %.1f %% of the total gain   [deck: 7.2 %%]"
+              % ((B - best_gain) / tot_gain * 100 if tot_gain else 0))
+
+        # two comparators: two thresholds on any two axes, four regions. The
+        # deck quotes 72 % from the four-corner study and it is the figure a
+        # reviewer will press on, so it has to move with the rest.
+        two_gain, two_desc = 0.0, None
+        axes = ((0, "VBUS"), (1, "ILOAD"), (2, "TJ"))
+        for (i1, a1), (i2, a2) in itertools.combinations(axes, 2):
+            l1 = sorted({parse_corner(c)[i1] for c in corners})
+            l2 = sorted({parse_corner(c)[i2] for c in corners})
+            for t1 in l1[1:]:
+                for t2 in l2[1:]:
+                    regions, ok = [], True
+                    for p1 in (False, True):
+                        for p2 in (False, True):
+                            g = [c for c in corners
+                                 if (parse_corner(c)[i1] >= t1) == p1
+                                 and (parse_corner(c)[i2] >= t2) == p2]
+                            if not g:
+                                continue
+                            fs = set.intersection(*[set(feas[c]) for c in g])
+                            if not fs:
+                                ok = False
+                                break
+                            w = min(fs, key=lambda w: sum(cost(by[c][w])
+                                                          for c in g))
+                            regions.append(sum(cost(by[c][w]) for c in g))
+                        if not ok:
+                            break
+                    if not ok:
+                        continue
+                    g2 = (c_best - sum(regions) / len(corners)) / base * 100
+                    if g2 > two_gain:
+                        two_gain, two_desc = g2, (a1, t1, a2, t2)
+        if two_desc:
+            a1, t1, a2, t2 = two_desc
+            print("     two comparators, %s at %s and %s at %s: %.2f %% of "
+                  "the %.2f %%" % (a1, t1, a2, t2, two_gain, B))
+            print("       = %.0f %% of the adaptive part   [deck: 72 %%]"
+                  % (two_gain / B * 100 if B else 0))
+            print("       residual after two: %.2f %% of baseline, = %.1f %% "
+                  "of the total gain   [deck: 3.7 %%]"
+                  % (B - two_gain, (B - two_gain) / tot_gain * 100
+                     if tot_gain else 0))
     else:
         print("     no single threshold splits these corners usefully")
 

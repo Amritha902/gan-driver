@@ -243,7 +243,7 @@ FILLS = {
  10: "the price of the pattern space: what an exhaustive search buys over their "
      "fixed pattern set.",
  11: "whether the setting has to change with the operating point at all. It "
-     "does not: 3.9 % of baseline.",
+     "does not: 2.6 % of baseline.",
  12: "both effects in ONE cost function, showing the objectives genuinely "
      "conflict (Pareto, slide 16).",
  13: "which field is worth scheduling. Only dead time, and only at light load; "
@@ -344,15 +344,15 @@ add_text(s9, 0.70, 5.95, 6.60, 0.90, [
 
 add_text(s9, 7.65, 1.45, 4.95, 0.45, [
     para([("What adaptation is actually worth", True)], level=0, sz=1500, spc=0, bullet=False)])
-stat(s9, 7.65, 2.00, 4.95, "5.2 %", "ceiling on operating-point scheduling",
-     "vs the best single fixed word (= 3.9 % of baseline). A fixed word is nearly as good.")
+stat(s9, 7.65, 2.00, 4.95, "3.5 %", "ceiling on operating-point scheduling",
+     "over 36 corners, vs the best single fixed word (= 2.6 % of baseline).")
 # Grown from 3.40 to 3.90 in and narrowed 4.95 -> 4.80 to make room for the
 # 36-point-grid disclosure; 4.80 keeps the right edge clear of the page number.
 add_text(s9, 7.65, 3.32, 4.95, 3.72, [
     para([("The benefit is not spread out. ", True),
           ("Three corners lose 1–4 % from a fixed word; one loses 12.7 %.", False)],
          level=0, sz=1300, spc=180, bullet=False),
-    para([("5.2 % is the generous figure: ", True),
+    para([("3.5 % is the generous figure: ", True),
           ("the denser 36-point grid gives ", False), ("2.0 %", True), (".", False)],
          level=0, sz=1200, spc=180, bullet=False),
     para([("It is carried by the dead time — and the dead time by one corner. ", True),
@@ -472,7 +472,7 @@ s11 = S[17]
 retitle(s11, "Why the numbers hold")
 
 TILES = [
-    ("34,622", "transient simulations",
+    ("60,533", "transient simulations",
      "Every sweep, corner study, robustness run, loop-inductance and EMI sweep, start to finish."),
     ("720", "control words, searched in full",
      "At every corner — so each per-corner optimum is a true optimum, not the best of a shortlist."),
@@ -589,7 +589,7 @@ add_text(s_rob, 7.55, 2.25, 5.05, 4.50, [
            "re-asked, and the answer there is not even monotonic — see slide 19.", False)],
          level=0, sz=1300, spc=200, bullet=True),
     para([("Baseline note. ", True),
-          ("Nominal here is 5.95 %, not the 5.2 % headline — a two-corner search on its "
+          ("Nominal here is 5.95 %, not the 3.5 % headline — a two-corner search on its "
            "own sweep. Compare the ", False), ("vs nom.", True),
           (" column, not the absolute values.", False)],
          level=0, sz=1150, spc=0, bullet=True),
@@ -608,15 +608,15 @@ set_body(con_shape, [
            "result. What is left needs a bench, not more simulating.", False)],
          level=0, sz=1350, spc=260, bullet=False),
     para([("What the data supports", True)], level=0, sz=1700, spc=200, bullet=False),
-    para([("Choosing the word well: ", True), ("25.1 %.   ", False),
-          ("Adapting it per operating point: ", True), ("3.9 %.", False)],
+    para([("Choosing the word well: ", True), ("26.5 %.   ", False),
+          ("Adapting it per operating point: ", True), ("2.6 %.", False)],
          level=0, sz=1600, spc=220, bullet=True),
-    para([("One comparator takes 46 % of that 3.9 %; two take 72 %.", True)],
+    para([("One comparator takes 47 % of that 2.6 %; two take 61 %.", True)],
          level=0, sz=1600, spc=220, bullet=True),
     para([("The deliverable: ", True),
           ("a fixed word plus one bus-voltage comparator. The full sense + ADC + lookup "
-           "table is left justifying ", False), ("7.2 %", True),
-          (" — or 3.7 % if the second comparator is built too.", False)],
+           "table is left justifying ", False), ("4.7 %", True),
+          (" — or 3.4 % if the second comparator is built too.", False)],
          level=0, sz=1600, spc=340, bullet=True),
     para([("The FPGA half is real: ", True),
           ("20 LUTs and 20 flip-flops on an xc7a35t, 200 MHz met with 1.996 ns of slack.",
@@ -674,7 +674,7 @@ for sh in S[1].shapes:
 
 # ---------------- informative titles on the two results slides ------------
 for sl, txt in ((S[11], "Result 1 — crosstalk is real; the clamp fixes it"),
-                (S[12], "Result 2 — scheduling is worth only 5.2 %")):
+                (S[12], "Result 2 — scheduling is worth only 3.5 %")):
     for sh in sl.shapes:
         if sh.has_text_frame and sh.text_frame.text.strip() in ("Results", "Results (contd.)"):
             for pa in sh.text_frame.paragraphs:
@@ -731,16 +731,16 @@ NOTES = {
                 "strapped, because that is what the study found."),
  12: ("40 s", "CORE. The problem reproduced and fixed. Point at the red X below the threshold "
               "line. Then: safety costs 0.04 % — nearly free once the clamp is present."),
- 13: ("25 s", "CORE. 5.2 %. Say plainly this is a NEGATIVE result about the adaptive premise "
+ 13: ("25 s", "CORE. 3.5 %, on 36 corners. Say plainly this is a NEGATIVE result about the adaptive premise "
               "and you are reporting it rather than hiding it. Keep it short — slides 18 and "
               "19 do the real work."),
  14: ("45 s", "CORE — the novelty slide, and the one sentence the panel should leave with: "
-              "'a full sense-plus-ADC-plus-lookup-table is left justifying 7.2 % of the gain "
+              "'a full sense-plus-ADC-plus-lookup-table is left justifying 4.7 % of the gain "
               "over a fixed word and ONE comparator.' Build it in three steps. (1) Choosing "
-              "the fixed word well is worth 25.1 %. (2) Adapting per corner adds only 3.9 % "
-              "— a seventh of the total. (3) And 46 % of even THAT is capturable with a "
+              "the fixed word well is worth 26.5 %. (2) Adapting per corner adds only 2.6 % "
+              "— a eleventh of the total. (3) And 47 % of even THAT is capturable with a "
               "single comparator on bus voltage, not a lookup table; two comparators reach "
-              "72 %, which is the 3.7 % figure. No published work separates "
+              "61 %, which is the 3.4 % figure. No published work separates "
               "these, because separating them needs the exhaustive search rather than a "
               "shortlist. If asked why nobody found this: they report one number."),
  15: ("40 s", "CORE — the design chart, and the most USEFUL thing in the deck. Do NOT call it "
@@ -843,9 +843,9 @@ add_text(s_nov, 0.70, 1.38, 12.10, 0.80, [
            "Separating them needs the exhaustive search, which is why nobody has.", False)],
          level=0, sz=1250, spc=0, bullet=False)])
 
-NOV = [("(A)   Choose a better FIXED word",        "25.1 %", "no sensing · no LUT"),
-       ("(B)   ADAPT it per operating point",      "3.9 %",  "needs all of it"),
-       ("(B′)  …but ONE comparator captures 46 % of (B)", "1.8 %", "a threshold, not a LUT")]
+NOV = [("(A)   Choose a better FIXED word",        "26.5 %", "no sensing · no LUT"),
+       ("(B)   ADAPT it per operating point",      "2.6 %",  "needs all of it"),
+       ("(B′)  …but ONE comparator captures 47 % of (B)", "1.2 %", "a threshold, not a LUT")]
 for i, (label, val, sub) in enumerate(NOV):
     y = 2.42 + i * 1.12
     add_text(s_nov, 0.70, y, 6.55, 0.40,
@@ -857,10 +857,10 @@ for i, (label, val, sub) in enumerate(NOV):
 
 add_text(s_nov, 0.70, 5.92, 12.10, 1.10, [
     para([("So the full sense + ADC + lookup table is left justifying ", False),
-          ("7.2 % of the total achievable gain", True),
-          (" over a fixed word plus ONE comparator. Adaptation is 13.4 % of the gain; one "
-           "threshold, on bus voltage at 75 V, takes 46 % of that. Two comparators take "
-           "72 %, leaving 3.7 % — the corner worth isolating shares its bus, load and "
+          ("4.7 % of the total achievable gain", True),
+          (" over a fixed word plus ONE comparator. Adaptation is 8.9 % of the gain; one "
+           "threshold, on LOAD CURRENT at 10 A, takes 47 % of that. Two comparators take "
+           "61 %, leaving 3.4 % — the corner worth isolating shares its bus, load and "
            "temperature with others, so one threshold cannot reach it.", False)],
          level=0, sz=1300, spc=130, bullet=False),
     para([("Every figure shares one baseline — the median control word that is safe at all four "
@@ -1206,7 +1206,7 @@ for _sh in list(s_ts.shapes):
 
 TECH = [
     ("ngspice 42", "every transient in the study",
-     "34,622 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 5.2 % ceiling"),
+     "60,533 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 3.5 % ceiling"),
     ("LTspice 24", "independent re-run of the shipped netlists",
      "1.6487 / 0.8282 / \u22121.1768 V \u2014 matches ngspice within 2 mV"),
     ("MATLAB Online", "independent re-analysis of the same CSVs",
@@ -1218,7 +1218,7 @@ TECH = [
     ("Xilinx Vivado 2024.1.2", "FPGA synthesis and timing on xc7a35t",
      "20 LUTs, 20 flip-flops \u00b7 200 MHz met, 1.996 ns slack"),
     ("Python \u00b7 NumPy", "sweep orchestration and the decomposition",
-     "720-word search \u00b7 (A) 25.1 % vs (B) 3.9 %"),
+     "720 words \u00d7 36 corners \u00b7 (A) 26.5 % vs (B) 2.6 %"),
 ]
 _y = 1.55
 for _name, _did, _got in TECH:
@@ -1272,10 +1272,10 @@ add_text(s_gap, 0.70, 1.35, 12.10, 1.00, [
 GAPBOX = [
  ("Effect 1  —  a better FIXED setting",
   "Pick a better control word once, at design time. Costs nothing at run time: "
-  "no sensor, no ADC, no lookup table, no controller.", "25.1 %", "of baseline"),
+  "no sensor, no ADC, no lookup table, no controller.", "26.5 %", "of baseline"),
  ("Effect 2  —  ADAPTING per operating point",
   "Change the word as load, bus voltage and temperature move. This is what needs "
-  "the sensing hardware the architecture is sold on.", "3.9 %", "of baseline"),
+  "the sensing hardware the architecture is sold on.", "2.6 %", "of baseline"),
 ]
 for i, (head, body, num, unit) in enumerate(GAPBOX):
     x = 0.70 + i * 6.30

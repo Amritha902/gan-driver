@@ -199,8 +199,9 @@ save(fig, "fig_settings.png")
 # ==================================================== 4. the input =========
 fig, ax = frame()
 head(ax, "What we mean by the input, or \"operating point\"",
-     "A converter does not run at one condition. These are the four we test "
-     "every setting at.")
+     "A converter does not run at one condition. Every setting is tested at "
+     "36: 4 bus voltages x 3 load currents x 3 junction temperatures. These "
+     "four are the named ones.")
 
 CORNERS = [
     ("50 V,  2 A", "25 °C", "light load, low voltage",

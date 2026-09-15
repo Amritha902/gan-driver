@@ -61,12 +61,12 @@ for v in sorted(spoken):
 
 # ---- 2. headline results must match RESULTS-SUMMARY ------------------------
 HEADLINES = {
-    "5.2 %":   "ceiling on scheduling",
-    "25.1 %":  "(A) better fixed word",
-    "3.9 %":   "(B) adaptation",
-    "13.4 %":  "adaptation share",
+    "3.5 %":   "ceiling on scheduling (n = 36)",
+    "26.5 %":  "(A) better fixed word (n = 36)",
+    "2.6 %":   "(B) adaptation (n = 36)",
+    "8.9 %":   "adaptation share (n = 36)",
     "2.576":   "shipped margin",
-    "34622":   "transient count",
+    "60533":   "transient count",
 }
 for num, what in HEADLINES.items():
     n = norm(num)

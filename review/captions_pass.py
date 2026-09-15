@@ -213,15 +213,16 @@ except KeyError as e:
 try:
     s = slide_titled(u"Result 4")
     restyle(find_by_name(s, "TextBox 14"), [
-        [(u"Adaptation is 13.4 % of the total gain \u2014 3.9 points of 29.0; "
-          u"the other 86.6 % comes from the fixed word and needs no sensing. ", B),
-         (u"Full sensing, ADC and lookup table justify 7.2 % of the total gain "
-          u"over a fixed word plus ONE comparator (bus voltage at 75 V, which "
-          u"takes 46 % of the adaptive gap), or 3.7 % over a fixed word plus TWO. "
-          u"One threshold cannot do better: the corner worth isolating shares its "
-          u"bus, its load and its temperature with others. Split is "
-          u"weight-independent: across 106 overshoot weights (A) stays "
-          u"23.4\u201329.0 % and (B) 1.3\u20136.4 %.", N)],
+        [(u"Adaptation is 8.9 % of the total gain — 2.6 points of 29.0, "
+          u"over 36 operating points; the other 91.1 % comes from the fixed "
+          u"word and needs no sensing. ", B),
+         (u"Full sensing, ADC and lookup table justify 4.7 % of the total "
+          u"gain over a fixed word plus ONE comparator (LOAD CURRENT at 10 A, "
+          u"which takes 47 % of the adaptive gap), or 3.4 % over a fixed word "
+          u"plus TWO. One threshold cannot do better: ten distinct best words "
+          u"spread over the 36 corners, and bus, load and temperature each "
+          u"disagree internally. The four-corner study named bus voltage at "
+          u"75 V here; on the full grid the comparator is load current.", N)],
     ])
     print("caption set: Result 4")
 except KeyError as e:

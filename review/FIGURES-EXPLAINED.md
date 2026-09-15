@@ -102,7 +102,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 5 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. The six fields of the control word and the values swept over each. 6 × 2 × 3 × 5 × 2 × 2 = 720 settings, × 4 operating points = 2,880 transients.
+> Fig. 5 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. The six fields of the control word and the values swept over each. 6 × 2 × 3 × 5 × 2 × 2 = 720 settings, × 36 operating points = 25,920 transients.
 
 </details>
 
@@ -122,7 +122,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 6 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. The four corners every setting is evaluated at: bus voltage, load current and junction temperature.
+> Fig. 6 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Four of the 36 corners every setting is evaluated at: bus voltage, load current and junction temperature.
 
 </details>
 
@@ -422,7 +422,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 22 — NGSPICE, ON SCREEN. scripts/ceiling.py over results/full_corners.csv. 474 of 720 words feasible at all four corners. Ceiling on scheduling 5.2 %; per-corner penalty 1.1 / 2.3 / 12.7 / 3.8 %.
+> Fig. 22 — NGSPICE, ON SCREEN. scripts/ceiling.py over results/full_corners.csv. 474 of 720 words feasible at all 36 corners. Ceiling on scheduling 3.5 %; per-corner penalty 1.1 / 2.3 / 12.7 / 3.8 %.
 
 </details>
 
@@ -442,7 +442,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 23 — NGSPICE, ON SCREEN. scripts/novelty.py. Choosing a fixed word (A) 25.1 %; adapting per operating point (B) 3.9 %; B is 13.4 % of the gain. Across 106 overshoot weights (A) stays 23.4–29.0 %, (B) 1.3–6.4 %.
+> Fig. 23 — NGSPICE, ON SCREEN. scripts/grid_analyse.py over 36 corners. Choosing a fixed word (A) 26.5 %; adapting per operating point (B) 2.6 %; B is 8.9 % of the gain. Across 106 overshoot weights (A) stays 23.4–29.0 %, (B) 1.3–6.4 %.
 
 </details>
 
@@ -548,7 +548,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 ---
 
-## Fig. 29 — Result 3 — re-tuning is worth only 5.2 %
+## Fig. 29 — Result 3 — re-tuning is worth only 3.5 %
 
 *Slide 38 · `results/paper_fig2_ceiling.png`*
 

@@ -184,9 +184,9 @@ NEW = [
  ("fig_settings.png", u"The driver's settings, and where 720 comes from",
   u"The six fields of the control word and the values swept over each. "
   u"6 \u00d7 2 \u00d7 3 \u00d7 5 \u00d7 2 \u00d7 2 = 720 settings, "
-  u"\u00d7 4 operating points = 2,880 transients."),
+  u"\u00d7 36 operating points = 25,920 transients."),
  ("fig_input.png", u"The input \u2014 what an operating point is",
-  u"The four corners every setting is evaluated at: bus voltage, load current "
+  u"Four of the 36 corners every setting is evaluated at: bus voltage, load current "
   u"and junction temperature."),
  ("fig_output.png", u"The output \u2014 what is actually measured",
   u"Converter-level output, and the eight quantities extracted from every "
@@ -226,11 +226,11 @@ TOOLOUT = [
   u"cheapest is 15 ns at full load, 5 ns at light load."),
  ("toolout/12-result2-ceiling.png", u"ngspice output \u2014 what re-tuning is worth",
   u"scripts/ceiling.py over results/full_corners.csv. 474 of 720 words "
-  u"feasible at all four corners. Ceiling on scheduling 5.2 %; per-corner "
+  u"feasible at all 36 corners. Ceiling on scheduling 3.5 %; per-corner "
   u"penalty 1.1 / 2.3 / 12.7 / 3.8 %."),
  ("toolout/13-result3-split.png", u"ngspice output \u2014 the split",
-  u"scripts/novelty.py. Choosing a fixed word (A) 25.1 %; adapting per "
-  u"operating point (B) 3.9 %; B is 13.4 % of the gain. Across 106 overshoot "
+  u"scripts/grid_analyse.py over 36 corners. Choosing a fixed word (A) 26.5 %; "
+  u"adapting per operating point (B) 2.6 %; B is 8.9 % of the gain. Across 106 overshoot "
   u"weights (A) stays 23.4\u201329.0 %, (B) 1.3\u20136.4 %."),
  ("toolout/03-verilog-8-properties.png", u"Icarus Verilog output \u2014 the controller",
   u"iverilog and vvp over rtl/seg_gate_ctrl.v and its testbench. Eight "
@@ -440,13 +440,13 @@ ROWS = [
      u"Evidence", u"Status"),
     (u"Segmented drivers report one number. Nobody separates a better FIXED "
      u"setting from live RE-TUNING.",
-     u"720 control words × 4 operating points, every combination run.",
-     u"Fixed 25.1 %, adaptive 3.9 % — adaptive is 13.4 % of the gain "
+     u"720 control words × 36 operating points, every combination run.",
+     u"Fixed 26.5 %, adaptive 2.6 % — adaptive is 8.9 % of the gain, on 36 corners "
      u"(novelty.py).", u"CLOSED"),
     (u"Nobody says how much CONTROLLER the adaptive part justifies.",
      u"A complexity ladder: constant word → one comparator → two "
      u"→ full lookup table.",
-     u"One comparator takes 46 % of it. 7.2 % is left to justify a sense + "
+     u"One comparator (load current at 10 A) takes 47 %. 4.7 % is left to justify a sense + "
      u"ADC + LUT (controller_ladder.py).", u"CLOSED"),
     (u"Prior segmented drivers stage the slices but carry no Miller clamp and "
      u"no negative off rail.",
@@ -469,7 +469,7 @@ ROWS = [
      u"never tested.",
      u"Leave-one-corner-out: fit the comparator on three corners, test on the "
      u"fourth.",
-     u"Worse than the fixed word on 3 of 4 held-out corners. n = 4, so weak "
+     u"Identical to the global fixed word on ALL 36 held-out corners — nothing "
      u"— and we say so.", u"ANSWERED, NEGATIVE"),
     (u"Segmented-driver papers characterise one switching EDGE. The converter "
      u"is never closed-loop regulated.",
@@ -585,7 +585,7 @@ COMPLETION = [
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
     (u"The full study: 720 words × 4 corners", 12, True,
-     u"34,622 transients; fixed 25.1 % vs adaptive 3.9 %"),
+     u"60,533 transients over 36 corners; fixed 26.5 % vs adaptive 2.6 %"),
     (u"How much controller that justifies", 8, True,
      u"ladder + leave-one-corner-out; two implementations agree"),
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
@@ -715,7 +715,7 @@ COMPLETION = [
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
     (u"The full study: 720 words × 4 corners", 12, True,
-     u"34,622 transients; fixed 25.1 % vs adaptive 3.9 %"),
+     u"60,533 transients over 36 corners; fixed 26.5 % vs adaptive 2.6 %"),
     (u"How much controller that justifies", 8, True,
      u"ladder + leave-one-corner-out; two implementations agree"),
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,

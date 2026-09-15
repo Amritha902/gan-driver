@@ -239,9 +239,10 @@ EDITS = [
  ]),
  (u"Result 2", "TextBox 9", [
    [(u"The benefit is not spread out. ", Y),
-    (u"Three operating points lose only 1" + u"–" + u"4 % from a fixed setting; "
-     u"one loses 12.7 %.", N)],
-   [(u"5.2 % is the generous figure " + EM + u" on a finer 36-point grid it is 2.0 %.", N)],
+    (u"Over 36 points the fixed word costs 0.01 % to 14.2 %; worst is "
+     u"200 V / 2 A / 125 " + u"\u00b0" + u"C.", N)],
+   [(u"3.5 % on the full 36-corner grid " + EM + u" 720 words at each, "
+     u"25,911 transients. The four-corner study said 5.2 %.", N)],
    [(u"It all comes from the dead time, and that from one operating point. Freezing "
      u"the dead time costs 5.45 % across four points. Drop the light-load 50 V / 2 A "
      u"point and it costs 0.00 %: three points want 5 ns, only that one wants 15 ns. "
@@ -357,16 +358,16 @@ EDITS = [
    [(u"What re-tuning is actually worth", Y)],
  ]),
  (u"Result 2", "TextBox 8", [
-   [(u"5.2 %", Y)],
+   [(u"3.5 %", Y)],
    [(u"the most that re-tuning can ever gain", Y)],
-   [(u"against the best single fixed setting (= 3.9 % of baseline). One fixed setting "
-     u"is nearly as good.", N)],
+   [(u"against the best single fixed setting, over 36 corners (= 2.6 % of "
+     u"baseline). One fixed setting is nearly as good.", N)],
  ]),
 
 ]
 
 RETITLE = [
- (u"Result 2 — scheduling", u"Result 2 " + EM + u" re-tuning is worth only 5.2 %"),
+ (u"Result 2 — scheduling", u"Result 2 " + EM + u" re-tuning is worth only 3.5 %"),
  (u"Result 4 — adaptive pays", u"Result 4 " + EM + u" re-tuning only pays below ~2.5 nH"),
 ]
 

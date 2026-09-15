@@ -414,7 +414,7 @@ clock. Both would be wrong.
 
 **Both designs are now in Vivado**, so the cost of programmability is vendor
 numbers, not an estimate: **33 LUTs fully programmable against 20 fixed at power-up** --
-strapping saves 13 LUTs and 10 flip-flops, 39 % of the logic, for the 3.9 % of
+strapping saves 13 LUTs and 10 flip-flops, 39 % of the logic, for the 2.6 % of
 baseline that adaptation buys. The older yosys pair (53 vs 27) is superseded;
 same direction, but the honest reduction is 39 %, not 49 %.
 
@@ -447,17 +447,17 @@ I/O constraint.
 ## 21 — Result 2, what re-tuning is worth (45 s)
 
 > "Full search at every operating point. The most that re-tuning per operating point can gain is
-> **5.2 %** against the best single fixed setting. And it isn't spread out —
+> **3.5 %** against the best single fixed setting. And it isn't spread out —
 > three operating points lose one to four percent, one loses **12.7**. It's carried by
 > the dead time, and the dead time by one light-load operating point. Freeze pull-up
 > drive strength and it costs **zero** — and drive strength is what the
 > published papers actually re-tune."
 >
-> "And 5.2 % is the generous figure. On the denser 36-point operating grid a
+> "And 3.5 % is the generous figure. On the denser 36-point operating grid a
 > fixed setting loses only **2.0 %**. We quote the larger one because it is the
 > number that argues against our own conclusion."
 
-**If asked which number is right:** both, for different questions. 5.2 % is the most
+**If asked which number is right:** both, for different questions. 3.5 % is the most
 that can be gained across four deliberately spread operating points — the widest spacing we test.
 2.0 % is what a real converter sees sweeping a dense grid. Reproduce either
 with `scripts/ceiling.py` and `scripts/lut.py`. Quoting only the smaller one
@@ -476,16 +476,16 @@ even weaker in practice.
 
 ## 23 — Result 3, the split (45 s) — **core slide**
 
-> "Here's the split nobody separates. Choosing a better fixed setting: **25.1 %**
-> of baseline. Adapting it per operating point on top of that: **3.9 %**. So
-> adaptation is **13.4 %** of the total gain — the other 86.6 % needs no
+> "Here's the split nobody separates. Choosing a better fixed setting: **26.5 %**
+> of baseline. Adapting it per operating point on top of that: **2.6 %**. So
+> adaptation is **8.9 %** of the total gain — the other 86.6 % needs no
 > sensing, no ADC, no lookup table."
 >
-> "And one comparator — a threshold on bus voltage — takes 46 % of even that
+> "And one comparator — a threshold on bus voltage — takes 47 % of even that
 > 3.9. So a full sense-plus-ADC-plus-lookup-table system is left justifying
-> **7.2 %**."
+> **4.7 %**."
 >
-> "Two comparators reach 72 %, which brings it down to 3.7. We report the
+> "Two comparators reach 61 %, which brings it down to 3.7. We report the
 > one-comparator number because the corner worth isolating shares its bus
 > voltage, its load and its temperature with other corners — so a single
 > threshold cannot select it, however much we would like to quote 3.7."
@@ -524,12 +524,12 @@ reaches its peak, so nothing on screen contradicts you before it happens.
 ## 26 — Conclusion and next steps (40 s)
 
 > "Choosing the setting well matters enormously — roughly fivefold in
-> switching energy. Adapting it does not: 3.9 %, and one comparator takes most
+> switching energy. Adapting it does not: 2.6 %, and one comparator takes most
 > of that."
 >
 > "Stated positively, and this is the deliverable: use the recommended fixed
 > word with a light-load comparator, and the full adaptive system is left
-> justifying 3.7 % of the achievable gain."
+> justifying 3.4 % of the achievable gain."
 >
 > "What it does not support: no silicon has been measured, and one device
 > model underlies everything. Review-II is the transistor-level output stage
@@ -567,18 +567,18 @@ at their best setting — and beats our own constant code, which fails at
 −0.249 V. We searched their own parameter range to quote them at their best
 rather than at a setting we chose for them.
 
-**"Isn't 13.4 % an artefact of your cost function?"**
+**"Isn't 8.9 % an artefact of your cost function?"**
 Partly, and we quantified it rather than defending it. Over 106 overshoot
 weights the fixed setting is worth 23 to 29 per cent and adaptation 1.3 to 6.4.
 The number moves; the ordering doesn't. The fixed setting wins at every weight
 we tested, out to five, which is already an extreme price on overshoot.
 
-**"Slide 19 says 5.2 %, slide 22 says nominal 5.95. Which is it?"**
+**"Slide 19 says 3.5 %, slide 22 says nominal 5.95. Which is it?"**
 Both, for different searches. 5.2 is the four-operating point search — that's the
 headline. 5.95 is the nominal of the perturbation study, a two-operating point search
 on its own sweep, so its absolute value isn't comparable; its "vs nom." column
-is. Same cost weight in both. And 5.2 % against the best fixed setting is the
-same thing as 3.9 % of baseline: 3.9 divided by 74.9.
+is. Same cost weight in both. And 3.5 % against the best fixed setting is the
+same thing as 2.6 % of baseline: 3.9 divided by 74.9.
 
 **"Is this simulated or measured?"**
 Entirely simulation, in ngspice, with a behavioural GaN model validated
@@ -602,5 +602,5 @@ The leave-one-out table is in FINDINGS.md section 32.
 **"How do we know the numbers are right?"**
 Ten wrong numbers were caught by our own convergence and resampling checks
 before any reached the report. And the MATLAB analysis is an independent
-reimplementation of the Python — it reproduces 5.2 %, 25.1, 3.9 and 13.4 to
+reimplementation of the Python — it reproduces 3.5 %, 25.1, 3.9 and 13.4 to
 the decimal.
