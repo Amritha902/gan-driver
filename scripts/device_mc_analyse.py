@@ -146,8 +146,9 @@ def main():
         print("     subset can only raise the best fixed word's cost, which DEFLATES")
         print("     (A) and INFLATES (B) -- so these do not match the deck's 25.1 /")
         print("     3.9 and are not meant to. The ordering test is therefore")
-        print("     CONSERVATIVE: it handicaps the very claim it checks, and the")
-        print("     claim still holds on every device.")
+        print("     CONSERVATIVE: it handicaps the very claim it checks. Where the")
+        print("     ordering fails, the subset handicap is the first thing to rule")
+        print("     out -- re-run that device on the full grid before concluding.")
     print()
 
 

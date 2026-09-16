@@ -32,20 +32,20 @@ for d, rs in sorted(complete.items()):
     if r:
         AA[d], BB[d] = r[0], r[1]
 
-fig, ax = plt.subplots(1, 2, figsize=(11.0, 4.3), dpi=150)
+fig, ax = plt.subplots(1, 2, figsize=(11.6, 4.8), dpi=150)
 
 # ---- left: safety -------------------------------------------------------
 ks = sorted(worst)
 vs = [worst[k] for k in ks]
 ax[0].axhline(0, color=RED, lw=1.6, ls="--")
-ax[0].text(len(ks) - 0.5, 0.06, "false turn-on below this line",
-           ha="right", fontsize=8, color=RED)
+ax[0].text(len(ks) - 0.5, -0.17, "false turn-on below this line",
+           ha="right", va="top", fontsize=8, color=RED)
 ax[0].bar(range(len(ks)), vs, color=BLUE, width=0.72)
 ax[0].set_xlabel("sampled device")
 ax[0].set_ylabel("crosstalk margin at the worst corner  (V)")
 ax[0].set_title("Shipped word stays safe on every device", fontsize=10.5,
                 fontweight="bold", color=INK)
-ax[0].set_ylim(min(0, min(vs)) - 0.25, max(vs) * 1.20)
+ax[0].set_ylim(-0.42, max(vs) * 1.22)
 ax[0].grid(axis="y", alpha=0.25, lw=0.6)
 ax[0].text(0.4, max(vs) * 1.06, "worst case %+.2f V   (n = %d devices)"
            % (min(vs), len(vs)), fontsize=8.5, color=INK)
@@ -63,15 +63,19 @@ ax[1].set_ylabel("% of baseline switching energy")
 n_ok = sum(1 for k in ks2 if AA[k] > BB[k])
 ax[1].set_title("(A) beats (B) on %d of %d devices" % (n_ok, len(ks2)),
                 fontsize=10.5, fontweight="bold", color=INK)
-ax[1].legend(frameon=False, fontsize=8.5, loc="center right")
+ax[1].legend(frameon=False, fontsize=8.5, loc="upper left",
+             bbox_to_anchor=(0.01, 1.0))
 ax[1].grid(axis="y", alpha=0.25, lw=0.6)
-ax[1].set_ylim(0, max(AA.values()) * 1.25)
+ax[1].set_ylim(0, max(max(AA.values()), max(BB.values())) * 1.34)
 
-fig.text(0.5, 0.005,
-         "Vth, transconductance, Cgs and Cgd varied JOINTLY, +-3 sigma at the bounds "
-         "robust.py uses one at a time.  36-word candidate set: a subset deflates (A) and "
-         "inflates (B), so the ordering test is conservative.  scripts/device_mc.py.",
-         ha="center", fontsize=7.4, color=GREY)
-fig.tight_layout(rect=(0, 0.035, 1, 1))
+fig.text(0.5, 0.058,
+         "Vth, transconductance, Cgs and Cgd varied JOINTLY; \u00b13\u03c3 at the bounds "
+         "robust.py uses one at a time.",
+         ha="center", fontsize=7.6, color=GREY)
+fig.text(0.5, 0.020,
+         "36-word candidate set: a subset deflates (A) and inflates (B), so the ordering "
+         "test is conservative.   scripts/device_mc.py",
+         ha="center", fontsize=7.6, color=GREY)
+fig.tight_layout(rect=(0, 0.085, 1, 1))
 fig.savefig(OUT)
 print("wrote", OUT, "-- %d devices" % len(ks))
