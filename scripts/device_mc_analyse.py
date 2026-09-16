@@ -154,3 +154,43 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def resolve(dev=18):
+    """Compare the 36-word verdict against the full 720-word grid for one device."""
+    import csv as _csv
+    full = os.path.join(ROOT, "results", "device_mc_full_dev%d.csv" % dev)
+    if not os.path.exists(full):
+        print("no %s" % full); return
+    rows = []
+    with open(full) as f:
+        for r in _csv.DictReader(f):
+            try:
+                r["E_tot"] = float(r["E_tot"]); r["ov_pct"] = float(r["ov_pct"])
+                r["margin"] = float(r["margin"]); r["dev"] = int(r["dev"])
+            except (TypeError, ValueError):
+                continue
+            rows.append(r)
+    sub = [r for r in load() if r["dev"] == dev]
+    a36 = decompose(sub)
+    a720 = decompose(rows)
+    print("\n  DEVICE %d -- was the ordering failure real, or the candidate set?" % dev)
+    print("  " + "-" * 66)
+    print("  %-22s %8s %8s %10s" % ("word set", "(A)", "(B)", "universal"))
+    for name, r, n in (("36 candidate words", a36, 36), ("all 720 words", a720, 720)):
+        if r is None:
+            print("  %-22s   could not decompose" % name); continue
+        verdict = "(A) > (B)" if r[0] > r[1] else "(A) <= (B)  ORDERING FAILS"
+        print("  %-22s %7.1f%% %7.1f%% %8d   %s" % (name, r[0], r[1], r[2], verdict))
+    if a36 and a720:
+        print()
+        if a720[0] > a720[1] and not (a36[0] > a36[1]):
+            print("  -> The failure was an ARTEFACT of the 36-word set. On the full")
+            print("     grid the ordering holds: more admissible words give a better")
+            print("     best-fixed word, which is exactly the handicap predicted.")
+        elif a720[0] <= a720[1]:
+            print("  -> The failure is REAL. On the full grid adaptation still beats")
+            print("     the best fixed word on this device. The ordering claim is not")
+            print("     universal across device spread and the deck must say so.")
+        else:
+            print("  -> Ordering holds on both sets for this device.")
