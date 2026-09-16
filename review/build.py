@@ -244,7 +244,7 @@ FILLS = {
      "fixed pattern set.",
  11: "whether the setting has to change with the operating point at all. It "
      "does not: 2.6 % of baseline.",
- 12: "both effects in ONE cost function, showing the objectives genuinely "
+ 12: "both effects in one cost function, showing the objectives genuinely "
      "conflict (Pareto, slide 16).",
  13: "which field is worth scheduling. Only dead time, and only at light load; "
      "drive strength is worth 0.00 %.",
@@ -259,7 +259,7 @@ for row, ref in enumerate(CLOSEST, start=1):
     set_cell(tbl.cell(row, 3), ref.method, size=Pt(9))
     gap = [(ref.finding + "  ", False)]
     if ref.n in FILLS:
-        gap += [("WE FILL: ", True), (FILLS[ref.n], False)]
+        gap += [("We fill: ", True), (FILLS[ref.n], False)]
     set_cell(tbl.cell(row, 4), gap, size=Pt(9))
 # Delete every row past the last one we filled. The template ships six and
 # only four references are flagged as closest, so the slide had been carrying
@@ -630,7 +630,7 @@ set_body(con_shape, [
            "titled as one.", False)], level=0, sz=1600, spc=220, bullet=True),
     para([("Limits we state ourselves: ", True),
           ("no silicon measured; one device model underlies everything; and the "
-           "converter deck drives the switch node to 168 V on a 100 V bus \u2014 "
+           "converter deck drives the switch node to 168 V on a 100 V bus, "
            "84 % of the modelled device's rating, found by opening the waveform "
            "rather than reading the measured scalars.", False)],
          level=0, sz=1450, spc=0, bullet=True),
@@ -843,7 +843,7 @@ add_text(s_nov, 0.70, 1.38, 12.10, 0.80, [
            "Separating them needs the exhaustive search, which is why nobody has.", False)],
          level=0, sz=1250, spc=0, bullet=False)])
 
-NOV = [("(A)   Choose a better FIXED word",        "26.5 %", "no sensing · no LUT"),
+NOV = [("(A)   Choose a better fixed word",        "26.5 %", "no sensing · no LUT"),
        ("(B)   ADAPT it per operating point",      "2.6 %",  "needs all of it"),
        ("(B′)  …but ONE comparator captures 47 % of (B)", "1.2 %", "a threshold, not a LUT")]
 for i, (label, val, sub) in enumerate(NOV):
@@ -859,7 +859,7 @@ add_text(s_nov, 0.70, 5.92, 12.10, 1.10, [
     para([("So the full sense + ADC + lookup table is left justifying ", False),
           ("4.7 % of the total achievable gain", True),
           (" over a fixed word plus ONE comparator. Adaptation is 8.9 % of the gain; one "
-           "threshold, on LOAD CURRENT at 10 A, takes 47 % of that. Two comparators take "
+           "threshold, on load current at 10 A, takes 47 % of that. Two comparators take "
            "61 %, leaving 3.4 % — the corner worth isolating shares its bus, load and "
            "temperature with others, so one threshold cannot reach it.", False)],
          level=0, sz=1300, spc=130, bullet=False),
@@ -1264,16 +1264,16 @@ add_text(s_gap, 12.53, 7.05, 0.50, 0.30,
          [para([("7", False)], level=0, sz=1100, spc=0, bullet=False)])
 
 add_text(s_gap, 0.70, 1.35, 12.10, 1.00, [
-    para([("Every active-gate-driver paper reports ONE number: the improvement over a "
+    para([("Every active-gate-driver paper reports one number: the improvement over a "
            "conventional driver.", True)], level=0, sz=1500, spc=120, bullet=False),
     para([("That number bundles two effects that cost completely different hardware.",
            False)], level=0, sz=1300, spc=0, bullet=False)])
 
 GAPBOX = [
- ("Effect 1  —  a better FIXED setting",
+ ("Effect 1:  a better fixed setting",
   "Pick a better control word once, at design time. Costs nothing at run time: "
   "no sensor, no ADC, no lookup table, no controller.", "26.5 %", "of baseline"),
- ("Effect 2  —  ADAPTING per operating point",
+ ("Effect 2:  adapting per operating point",
   "Change the word as load, bus voltage and temperature move. This is what needs "
   "the sensing hardware the architecture is sold on.", "2.6 %", "of baseline"),
 ]
@@ -1286,18 +1286,18 @@ for i, (head, body, num, unit) in enumerate(GAPBOX):
     stat(s_gap, x + 4.20, 3.05, 1.70, num, unit, "")
 
 add_text(s_gap, 0.70, 4.95, 12.10, 2.10, [
-    para([("THE GAP: ", True),
+    para([("The gap. ", True),
           ("no published work separates them. Nobody reports how much of an active gate "
            "driver's benefit actually requires adaptation, because separating the two needs an "
            "exhaustive search of the control word at every corner — and nobody has run one.",
            False)], level=0, sz=1400, spc=170, bullet=False),
-    para([("WHY IT MATTERS: ", True),
+    para([("Why it matters. ", True),
           ("only Effect 2 justifies the sense + ADC + lookup table. If it is small, that "
            "hardware is mostly paying for something a design-time choice already delivers \u2014 "
            "a buy-or-not decision nobody has costed.", False)],
          level=0, sz=1400, spc=170, bullet=False),
-    para([("WHAT WE DO: ", True),
-          ("720 control words × 4 corners, exhaustively, in ngspice — then report the "
+    para([("What we do. ", True),
+          ("720 control words × 36 corners, exhaustively, in ngspice. Then report the "
            "two numbers separately instead of their sum.", False)],
          level=0, sz=1400, spc=0, bullet=False),
 ])
@@ -1333,7 +1333,7 @@ BPC = [
  ("Base paper, at its best setting", "+0.407 V", False,
   "Their seven-slice pattern alone already clears the 1.4 V threshold."),
  ("Ours, constant code, no clamp", "−0.249 V", False,
-  "FALSE TURN-ON. A constant code is worse than their staged pattern — their "
+  "False turn-on. A constant code is worse than their staged pattern — their "
   "contribution is real, and we reproduce it."),
  ("Ours, active Miller clamp on", "+0.570 V", False,
   "Only marginally past the base paper. The clamp alone is not the story."),

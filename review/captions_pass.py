@@ -217,9 +217,9 @@ try:
           u"over 36 operating points; the other 91.1 % comes from the fixed "
           u"word and needs no sensing. ", B),
          (u"Full sensing, ADC and lookup table justify 4.7 % of the total "
-          u"gain over a fixed word plus ONE comparator (LOAD CURRENT at 10 A, "
+          u"gain over a fixed word plus one comparator (load current at 10 A, "
           u"which takes 47 % of the adaptive gap), or 3.4 % over a fixed word "
-          u"plus TWO. One threshold cannot do better: ten distinct best words "
+          u"plus two. One threshold cannot do better: ten distinct best words "
           u"spread over the 36 corners, and bus, load and temperature each "
           u"disagree internally. The four-corner study named bus voltage at "
           u"75 V here; on the full grid the comparator is load current.", N)],
@@ -242,7 +242,7 @@ try:
               (u"System architecture, left to right: PWM command, FPGA "
                u"controller, segmented gate driver, power stage. The four "
                u"driver blocks are what this project designs. Only the dashed "
-               u"block needs sensing \u2014 and measuring what it is worth is "
+               u"block needs sensing, and measuring what it is worth is "
                u"the project's question.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("caption added: System Architecture")

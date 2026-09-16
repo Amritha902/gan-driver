@@ -7,7 +7,7 @@ B = True   # bold
 SLIDE4 = [
     ([("Problem Statement:", B)], 0),
     ([("When one GaN transistor switches, its fast voltage swing pushes charge into "
-       "the gate of the other transistor \u2014 the one that is supposed to stay OFF. "
+       "the gate of the other transistor, the one that is supposed to stay off. "
        "That gate rises to ", False),
       ("1.65 V, and only 1.4 V is needed to turn it on", B),
       (". Both devices conduct at once and the supply shorts through "
@@ -16,7 +16,7 @@ SLIDE4 = [
        "own slide.)", False)], 1),
     ([("Background & Significance:", B)], 0),
     ([("GaN half-bridges sit inside EV inverters and battery chargers. GaN is chosen "
-       "because it switches fast \u2014 and that speed is exactly what causes this fault.",
+       "because it switches fast, and that speed is exactly what causes this fault.",
        False)], 1),
     ([("Existing Solutions:", B)], 0),
     ([("Gate drivers that turn the device on in steps, clamp the off gate down, adjust "
@@ -39,14 +39,14 @@ SLIDE6 = [
     ([("Proposed Solution:", B)], 0),
     ([("A GaN buck converter driven by a ", False), ("segmented gate driver", B),
        (": 8 pull-up steps, 8 pull-down steps, an adjustable dead time, a Miller "
-        "clamp and a \u22122 V off rail \u2014 every one of them a setting we can "
+        "clamp and a \u22122 V off rail. Every one of them is a setting we can "
         "change and measure.", False)], 1),
     ([("How we approached it:", B)], 0),
     ([("1. Build the converter and check it converts.", B),
-      (" 100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W delivered, 97.7 % "
+      (" 100 V DC in, 48.6 V DC out at 4.88 A: 236.9 W delivered, 97.7 % "
        "efficient.", False)], 1),
     ([("2. Recreate the fault.", B),
-      (" At the fastest setting the gate that should be OFF reaches 1.65 V, "
+      (" At the fastest setting the gate that should be off reaches 1.65 V, "
        "against a 1.4 V turn-on threshold.", False)], 1),
     ([("3. Fix it one change at a time,", B),
       (" measuring each change on its own run, not all at once.", False)], 1),
@@ -146,13 +146,13 @@ SLIDE_RTL_SHORT = [
     ([("Three Verilog modules that produce exactly the 720 settings the SPICE model "
        "uses.", False)], 1),
     ([("Dead time is a ", False), ("live register", B), ("; drive strength is ", False),
-      ("fixed at power-up", B), (" \u2014 worth 5.45 % against 0.00 %.", False)], 1),
+      ("fixed at power-up", B), (", worth 5.45 % against 0.00 %.", False)], 1),
     ([("Eight checks pass in Icarus Verilog, safe reset included. A deliberately broken "
        "version is caught 221 times (sh rtl/mutate.sh).", False)], 1),
     ([("Built in Vivado 2024.1.2", B), (" on an xc7a35t FPGA: ", False),
-      ("20 LUTs, 20 flip-flops", B), (" \u2014 0.10 % of the chip. 200 MHz timing is ",
+      ("20 LUTs, 20 flip-flops", B), (", 0.10 % of the chip. 200 MHz timing is ",
        False), ("met, with 1.996 ns to spare", B), (".", False)], 1),
     ([("Timing is met where the logic runs. ", B),
       ("The paths that miss are chip-output paths, where the output pad alone "
-       "takes 3.49 ns of a 4 ns budget \u2014 pad delay, not logic.", False)], 1),
+       "takes 3.49 ns of a 4 ns budget: pad delay, not logic.", False)], 1),
 ]

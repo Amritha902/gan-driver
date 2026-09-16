@@ -22,7 +22,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 1 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Silicon MOSFET against GaN HEMT on the properties that govern switching. Device modelled: EPC2010C class, 200 V, 25 mΩ, Vth = 1.4 V (models/egan.lib).
+> Fig. 1 — Drawn diagram, not simulation output. Silicon MOSFET against GaN HEMT on the properties that govern switching. Device modelled: EPC2010C class, 200 V, 25 mΩ, Vth = 1.4 V (models/egan.lib).
 
 </details>
 
@@ -42,7 +42,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 2 — SIMULATED IN NGSPICE. Same buck converter, same job, only the device swapped. Rₓₛ(on) matched 25.0 mΩ GaN against 24.0 mΩ Si, each at its own rated gate drive, so conduction loss is equal by construction and what is left is switching, gate drive and the body-diode recovery GaN does not have. At 500 kHz GaN wastes 5.9 W against silicon's 17.3 W; the lead widens to 78 % at 1 MHz and 90 % at light load (scripts/si_vs_gan_sweep.py).
+> Fig. 2 — Simulated in ngspice. Same buck converter, same job, only the device swapped. Rₓₛ(on) matched 25.0 mΩ GaN against 24.0 mΩ Si, each at its own rated gate drive, so conduction loss is equal by construction and what is left is switching, gate drive and the body-diode recovery GaN does not have. At 500 kHz GaN wastes 5.9 W against silicon's 17.3 W; the lead widens to 78 % at 1 MHz and 90 % at light load (scripts/si_vs_gan_sweep.py).
 
 </details>
 
@@ -62,7 +62,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 3 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Three device properties and their consequence in a half-bridge: a 1.4 V threshold, 150 pF from drain to gate, and no body diode.
+> Fig. 3 — Drawn diagram, not simulation output. Three device properties and their consequence in a half-bridge: a 1.4 V threshold, 150 pF from drain to gate, and no body diode.
 
 </details>
 
@@ -82,7 +82,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 4 — SIMULATED IN NGSPICE. scripts/headtohead.py — same deck, same GaN, same parasitics; only the driver is swapped. We hold ONE fixed control word at all four corners; they are re-optimised at EVERY corner, which is more freedom than their own design has. Their margin falls +0.50 → +0.18 V from the mildest corner to the hottest and ours barely moves, because a clamp does not care how hot the device is. Our switch node also slews about twice as fast, so the margin is not bought with switching speed. AND WHAT THIS IS NOT: models/zhangdrv.lib is our implementation of their DESCRIBED scheme — their netlist is not published — run in our testbench with our parasitics. It is not 5.5–12.4× their measured result, and we do not claim it is.
+> Fig. 4 — Simulated in ngspice. scripts/headtohead.py: same deck, same GaN, same parasitics; only the driver is swapped. We hold one fixed control word at all four corners; they are re-optimised at every corner, which is more freedom than their own design has. Their margin falls +0.50 → +0.18 V from the mildest corner to the hottest and ours barely moves, because a clamp does not care how hot the device is. Our switch node also slews about twice as fast, so the margin is not bought with switching speed. One caveat: models/zhangdrv.lib is our implementation of the scheme as they (their netlist is not published), run in our testbench with our parasitics. It is not 5.5–12.4× their measured result, and we do not claim it is.
 
 </details>
 
@@ -102,7 +102,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 5 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. The six fields of the control word and the values swept over each. 6 × 2 × 3 × 5 × 2 × 2 = 720 settings, × 36 operating points = 25,920 transients.
+> Fig. 5 — Drawn diagram, not simulation output. The six fields of the control word and the values swept over each. 6 × 2 × 3 × 5 × 2 × 2 = 720 settings, × 36 operating points = 25,920 transients.
 
 </details>
 
@@ -122,7 +122,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 6 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Four of the 36 corners every setting is evaluated at: bus voltage, load current and junction temperature.
+> Fig. 6 — Drawn diagram, not simulation output. Four of the 36 corners every setting is evaluated at: bus voltage, load current and junction temperature.
 
 </details>
 
@@ -142,7 +142,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 7 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Converter-level output, and the eight quantities extracted from every transient. Definitions fixed in scripts/gansim.py before the sweeps ran.
+> Fig. 7 — Drawn diagram, not simulation output. Converter-level output, and the eight quantities extracted from every transient. Definitions fixed in scripts/gansim.py before the sweeps ran.
 
 </details>
 
@@ -162,7 +162,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 8 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Peak gate–source voltage on the off-state device against the 1.4 V threshold, three configurations. Margin is the threshold minus the peak; negative is a false turn-on.
+> Fig. 8 — Drawn diagram, not simulation output. Peak gate–source voltage on the off-state device against the 1.4 V threshold, three configurations. Margin is the threshold minus the peak; negative is a false turn-on.
 
 </details>
 
@@ -182,7 +182,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 9 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. One switching edge, followed through. Top row: the controller's decision. Bottom row: the circuit's response. Only the shaded diamond is decided at run time.
+> Fig. 9 — Drawn diagram, not simulation output. One switching edge, followed through. Top row: the controller's decision. Bottom row: the circuit's response. Only the shaded diamond is decided at run time.
 
 </details>
 
@@ -202,7 +202,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 10 — DRAWN AND SIMULATED IN LTSPICE. GaN synchronous buck converter, ltspice/BUCK_converter.asc. “Buck” means step-down: 100 V in, 48.6 V out. The two yellow blocks are the segmented gate drivers — the part this project designs. Around them: the 100 V supply with its power-loop parasitics, the two GaN HEMTs, the output filter and a 10 Ω load.
+> Fig. 10 — Drawn and simulated in LTspice. GaN synchronous buck converter, ltspice/BUCK_converter.asc. “Buck” means step-down: 100 V in, 48.6 V out. The two yellow blocks are the segmented gate drivers, the part this project designs. Around them: the 100 V supply with its power-loop parasitics, the two GaN HEMTs, the output filter and a 10 Ω load.
 
 </details>
 
@@ -222,7 +222,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 11 — A PROJECT FILE, TYPESET — NOT SIMULATION OUTPUT. Power stage of sim/buck.cir. ngspice reads the circuit as a netlist, not a schematic; it is the same converter the schematic draws. ngspice 48.56 V, LTspice 48.84 V.
+> Fig. 11 — A project file, typeset. Not simulation output. Power stage of sim/buck.cir. ngspice reads the circuit as a netlist, not a schematic; it is the same converter the schematic draws. ngspice 48.56 V, LTspice 48.84 V.
 
 </details>
 
@@ -242,7 +242,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 12 — DRAWN AND SIMULATED IN LTSPICE. Contents of models/segdrv.lib, drawn as ltspice/SEGDRV_inside.asc: eight pull-up slices from the +5 V rail to the gate, eight pull-down slices to the off rail, and the Miller clamp on its own 0.5 Ω path. It runs — the gate charges to 5.000 V.
+> Fig. 12 — Drawn and simulated in LTspice. Contents of models/segdrv.lib, drawn as ltspice/SEGDRV_inside.asc: eight pull-up slices from the +5 V rail to the gate, eight pull-down slices to the off rail, and the Miller clamp on its own 0.5 Ω path. It runs: the gate charges to 5.000 V.
 
 </details>
 
@@ -262,7 +262,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 13 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. One case end to end: the parameters set into sim/dpt.cir, the command, what the simulator wrote, and the window the measurement is taken over. Full load, 100 V / 10 A, no clamp: +1.6486 V against a 1.4 V threshold.
+> Fig. 13 — Drawn diagram, not simulation output. One case end to end: the parameters set into sim/dpt.cir, the command, what the simulator wrote, and the window the measurement is taken over. Full load, 100 V / 10 A, no clamp: +1.6486 V against a 1.4 V threshold.
 
 </details>
 
@@ -282,7 +282,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 14 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Method, in the order carried out. Steps 1–3 on one switching edge; steps 4–6 the study built on it.
+> Fig. 14 — Drawn diagram, not simulation output. Method, in the order carried out. Steps 1–3 on one switching edge; steps 4–6 the study built on it.
 
 </details>
 
@@ -302,7 +302,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 15 — DIAGRAM — DRAWN, NOT SIMULATION OUTPUT. Division of work between the two circuit simulators. All ≈ 35,000 transients are ngspice; LTspice provides an independent check of the crosstalk result.
+> Fig. 15 — Drawn diagram, not simulation output. Division of work between the two circuit simulators. All ≈ 35,000 transients are ngspice; LTspice provides an independent check of the crosstalk result.
 
 </details>
 
@@ -322,7 +322,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 17 — SIMULATED IN NGSPICE. GaN synchronous buck converter. (a) output charging from zero and settling; (b) three switching cycles; (c) power in against power out. 100 V DC in, 48.56 V DC out at 4.876 A, 97.70 % efficient.
+> Fig. 17 — Simulated in ngspice. GaN synchronous buck converter. (a) output charging from zero and settling; (b) three switching cycles; (c) power in against power out. 100 V DC in, 48.56 V DC out at 4.876 A, 97.70 % efficient.
 
 </details>
 
@@ -342,7 +342,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 18 — SIMULATED IN NGSPICE. (a) five settings at 100 V / 10 A, one ngspice run each; (b) dead-time sweep at two operating points. Cheapest dead time: 15 ns at full load, 5 ns at light load.
+> Fig. 18 — Simulated in ngspice. (a) five settings at 100 V / 10 A, one ngspice run each; (b) dead-time sweep at two operating points. Cheapest dead time: 15 ns at full load, 5 ns at light load.
 
 </details>
 
@@ -362,7 +362,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 19 — NGSPICE, ON SCREEN. scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, 97.70 % efficient. Peak switch node 115.4 V on a 100 V bus — 15.4 % overshoot, with bus decoupling. Without it: 168 V.
+> Fig. 19 — ngspice, on screen. scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, 97.70 % efficient. Peak switch node 115.4 V on a 100 V bus, 15.4 % overshoot, with bus decoupling. Without it: 168 V.
 
 </details>
 
@@ -382,7 +382,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 20 — NGSPICE, ON SCREEN. Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches +1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with −2 V rail: −1.1757 V, margin +2.5757 V, false_turn_on = 0.
+> Fig. 20 — ngspice, on screen. Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches +1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with −2 V rail: −1.1757 V, margin +2.5757 V, false_turn_on = 0.
 
 </details>
 
@@ -402,7 +402,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 21 — NGSPICE, ON SCREEN. scripts/cases.py, 13 runs. Part 1: the fix built one change at a time at 100 V / 10 A. Part 2: dead-time sweep at two operating points — cheapest is 15 ns at full load, 5 ns at light load.
+> Fig. 21 — ngspice, on screen. scripts/cases.py, 13 runs. Part 1: the fix built one change at a time at 100 V / 10 A. Part 2: dead-time sweep at two operating points: cheapest is 15 ns at full load, 5 ns at light load.
 
 </details>
 
@@ -422,7 +422,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 22 — NGSPICE, ON SCREEN. scripts/ceiling.py over results/full_corners.csv. 474 of 720 words feasible at all 36 corners. Ceiling on scheduling 3.5 %; per-corner penalty 1.1 / 2.3 / 12.7 / 3.8 %.
+> Fig. 22 — ngspice, on screen. scripts/ceiling.py over results/full_corners.csv. 474 of 720 words feasible at all 36 corners. Ceiling on scheduling 3.5 %; per-corner penalty 1.1 / 2.3 / 12.7 / 3.8 %.
 
 </details>
 
@@ -442,7 +442,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 23 — NGSPICE, ON SCREEN. scripts/grid_analyse.py over 36 corners. Choosing a fixed word (A) 26.5 %; adapting per operating point (B) 2.6 %; B is 8.9 % of the gain. Across 106 overshoot weights (A) stays 23.4–29.0 %, (B) 1.3–6.4 %.
+> Fig. 23 — ngspice, on screen. scripts/grid_analyse.py over 36 corners. Choosing a fixed word (A) 26.5 %; adapting per operating point (B) 2.6 %; B is 8.9 % of the gain. Across 106 overshoot weights (A) stays 23.4–29.0 %, (B) 1.3–6.4 %.
 
 </details>
 
@@ -462,7 +462,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 24 — ICARUS VERILOG OUTPUT. iverilog and vvp over rtl/seg_gate_ctrl.v and its testbench. Eight asserted properties, 591 individual assertions, 0 failures.
+> Fig. 24 — Icarus Verilog output. iverilog and vvp over rtl/seg_gate_ctrl.v and its testbench. Eight asserted properties, 591 individual assertions, 0 failures.
 
 </details>
 
@@ -482,7 +482,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 25 — VIVADO OUTPUT. Vivado 2024.1.2 on xc7a35t. 20 LUTs and 20 flip-flops strapped, 33 LUTs fully programmable; 200 MHz register-to-register met with 1.996 ns slack.
+> Fig. 25 — Vivado output. Vivado 2024.1.2 on xc7a35t. 20 LUTs and 20 flip-flops strapped, 33 LUTs fully programmable; 200 MHz register-to-register met with 1.996 ns slack.
 
 </details>
 
@@ -502,7 +502,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 26 — SIMULATED IN NGSPICE. Gate–source voltage of the off-state device at low-side turn-on, 100 V / 10 A. No clamp: +1.65 V against a 1.4 V threshold. Clamp and −2 V rail: −1.18 V, margin 2.576 V.
+> Fig. 26 — Simulated in ngspice. Gate–source voltage of the off-state device at low-side turn-on, 100 V / 10 A. No clamp: +1.65 V against a 1.4 V threshold. Clamp and −2 V rail: −1.18 V, margin 2.576 V.
 
 </details>
 
@@ -522,7 +522,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 27 — DRAWN AND SIMULATED IN LTSPICE. Switch node and off-state gate–source voltage, read from the LTspice .raw file. LTspice +1.647556 / −1.176857 V; ngspice +1.6486 / −1.1757 V on the same netlist.
+> Fig. 27 — Drawn and simulated in LTspice. Switch node and off-state gate–source voltage, read from the LTspice .raw file. LTspice +1.647556 / −1.176857 V; ngspice +1.6486 / −1.1757 V on the same netlist.
 
 </details>
 
@@ -542,7 +542,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 28 — SIMULATED IN NGSPICE. Power lost and peak switch-node voltage against pull-up slice count, measured on the running converter. Eight runs of sim/buck.cir; minimum loss at four slices.
+> Fig. 28 — Simulated in ngspice. Power lost and peak switch-node voltage against pull-up slice count, measured on the running converter. Eight runs of sim/buck.cir; minimum loss at four slices.
 
 </details>
 
@@ -562,7 +562,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 29 — SIMULATED IN NGSPICE. Cost of one fixed control word against the true per-corner optimum, four operating points, 2,880 transients. Penalty 1.1 / 2.3 / 12.7 / 3.8 %.
+> Fig. 29 — Simulated in ngspice. Cost of one fixed control word against the true per-corner optimum, four operating points, 2,880 transients. Penalty 1.1 / 2.3 / 12.7 / 3.8 %.
 
 </details>
 
@@ -582,7 +582,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 30 — SIMULATED IN NGSPICE. Ceiling on operating-point scheduling against power-loop inductance. Eight values, 7,200 transients. Scheduling pays only below about 2.5 nH.
+> Fig. 30 — Simulated in ngspice. Ceiling on operating-point scheduling against power-loop inductance. Eight values, 7,200 transients. Scheduling pays only below about 2.5 nH.
 
 </details>
 
@@ -602,7 +602,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 31 — ICARUS VERILOG OUTPUT. Icarus Verilog VCD of seg_gate_ctrl.v. The pull-up banks never overlap; the shaded interval is the dead time.
+> Fig. 31 — Icarus Verilog output. Icarus Verilog VCD of seg_gate_ctrl.v. The pull-up banks never overlap; the shaded interval is the dead time.
 
 </details>
 
@@ -622,7 +622,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Behavioural simulation. VIVADO OUTPUT. fails[31:0] = 0 — every asserted property holds in Vivado's own simulator, a third tool after Icarus and the mutation test.
+> Behavioural simulation. Vivado output. fails[31:0] = 0 — every asserted property holds in Vivado's own simulator, a third tool after Icarus and the mutation test.
 
 </details>
 
@@ -662,7 +662,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 32 — SIMULATED IN NGSPICE. sim/buck_closed.cir — the SAME power stage and the SAME segmented drivers, now regulated by a type-III loop and then disturbed on purpose. Closed loop 50.01 / 50.00 / 50.00 V through a 2× load step and a 100 → 120 V line step; worst error 0.01 % against open loop's 20.0 %. Load step recovers in 4 µs, line step in 22 µs. Ripple 0.25 %, efficiency 96.1 %, start-up overshoot 3.8 %.
+> Fig. 32 — Simulated in ngspice. sim/buck_closed.cir runs the same power stage and the same segmented drivers, now regulated by a type-III loop and then disturbed on purpose. Closed loop 50.01 / 50.00 / 50.00 V through a 2× load step and a 100 → 120 V line step; worst error 0.01 % against open loop's 20.0 %. Load step recovers in 4 µs, line step in 22 µs. Ripple 0.25 %, efficiency 96.1 %, start-up overshoot 3.8 %.
 
 </details>
 
@@ -682,7 +682,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 33 — SIMULATED IN NGSPICE. Two assumptions carry every margin in this deck, and each was replaced and re-run. scripts/silicon_check.py rebuilds the output stage in real SKY130 5 V transistors; scripts/capmodel_check.py swaps the junction diodes for a charge capacitance. The ordering survives both. Two things do not: the clamp ALONE gives +0.03 V on real devices rather than +0.57, and the no-clamp row changes SIGN between capacitance laws — so “the constant word causes false turn-on” is model-dependent, and we say so.
+> Fig. 33 — Simulated in ngspice. Two assumptions carry every margin in this deck, and each was replaced and re-run. scripts/silicon_check.py rebuilds the output stage in real SKY130 5 V transistors; scripts/capmodel_check.py swaps the junction diodes for a charge capacitance. The ordering survives both. Two things do not: the clamp on its own gives +0.03 V on real devices rather than +0.57, and the no-clamp row changes sign between capacitance laws — so “the constant word causes false turn-on” is model-dependent, and we say so.
 
 </details>
 

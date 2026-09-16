@@ -171,7 +171,7 @@ REFS = [
      "A Segmented Gate Driver for E-mode GaN HEMTs with Simple Driving Strength Pattern Control",
      "Proc. IEEE ISPSD, 2020, pp. 102–105",
      "Segmented output stage on E-mode GaN: 7 slices, pattern timing 0.5\u20135 ns, strength set by one external bias resistor",
-     "THE BASE PAPER. Same device, same architecture: E-mode GaN, segmented output stage, "
+     "Base paper. Same device, same architecture: E-mode GaN, segmented output stage, "
      "strength set by a pattern. Theirs is an ASIC with a fixed pattern set. We make every "
      "field programmable from an FPGA and price what the pattern space buys.",
      xplore="9170108", year="2020", base=True, closest=True,

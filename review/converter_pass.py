@@ -279,7 +279,7 @@ for _s in p.slides:
                       u"\u2014 236.9 W, 97.7 % efficient.", N)],
                     [(u"Picking the setting well: 26.5 %.   Changing it per "
                       u"operating point: 2.6 %.", N)],
-                    [(u"One comparator — LOAD CURRENT at 10 A — gets 47 % of "
+                    [(u"One comparator — load current at 10 A — gets 47 % of "
                       u"that 2.6 %; two comparators get 61 %.", N)],
                     [(u"What to build: ", B),
                      (u"one fixed setting plus one bus-voltage comparator \u2014 not "

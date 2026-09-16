@@ -154,7 +154,7 @@ NEW = [
  ("fig_segdrv_inside.png", u"Inside the segmented gate driver",
   u"Contents of models/segdrv.lib, drawn as ltspice/SEGDRV_inside.asc: eight "
   u"pull-up slices from the +5 V rail to the gate, eight pull-down slices to "
-  u"the off rail, and the Miller clamp on its own 0.5 \u03a9 path. It runs \u2014 "
+  u"the off rail, and the Miller clamp on its own 0.5 \u03a9 path. It runs: "
   u"the gate charges to 5.000 V."),
  ("fig_howrun.png", u"How we run ngspice",
   u"One case end to end: the parameters set into sim/dpt.cir, the command, "
@@ -214,7 +214,7 @@ TOOLOUT = [
  ("toolout/17-converter-power.png", u"Circuit simulation \u2014 the converter",
   u"scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A "
   u"in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, "
-  u"97.70 % efficient. Peak switch node 115.4 V on a 100 V bus — 15.4 % "
+  u"97.70 % efficient. Peak switch node 115.4 V on a 100 V bus, 15.4 % "
   u"overshoot, with bus decoupling. Without it: 168 V."),
  ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
   u"Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches "
@@ -222,7 +222,7 @@ TOOLOUT = [
   u"\u22122 V rail: \u22121.1757 V, margin +2.5757 V, false_turn_on = 0."),
  ("toolout/18-named-cases.png", u"Driver simulation \u2014 the segmented driver, case by case",
   u"scripts/cases.py, 13 runs. Part 1: the fix built one change at a time at "
-  u"100 V / 10 A. Part 2: dead-time sweep at two operating points \u2014 "
+  u"100 V / 10 A. Part 2: dead-time sweep at two operating points: "
   u"cheapest is 15 ns at full load, 5 ns at light load."),
  ("toolout/12-result2-ceiling.png", u"ngspice output \u2014 what re-tuning is worth",
   u"scripts/ceiling.py over results/full_corners.csv. 474 of 720 words "
@@ -263,7 +263,7 @@ if ci is not None:
         para([(u"@FIG@ ", B),
               (u"GaN synchronous buck converter, ltspice/BUCK_converter.asc. "
                u"\u201cBuck\u201d means step-down: 100 V in, 48.6 V out. The two "
-               u"yellow blocks are the segmented gate drivers \u2014 the part "
+               u"yellow blocks are the segmented gate drivers, the part "
                u"this project designs. Around them: the 100 V supply with its "
                u"power-loop parasitics, the two GaN HEMTs, the output filter "
                u"and a 10 \u03a9 load.", N)],
@@ -373,7 +373,7 @@ s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
 set_title(s, u"The goal, and whether this serves it")
 add_text(s, 0.70, 1.25, 12.10, 1.05, [
-    para([(u"THE GOAL.  ", B),
+    para([(u"The goal.  ", B),
           (u"Build a synchronous buck converter for an energy-storage system "
            u"out of GaN HEMTs, and make it work at the switching speed GaN is "
            u"bought for. Everything else in this deck exists to serve that "
@@ -395,7 +395,7 @@ add_text(s, 4.80, 2.35, 3.85, 0.38, [
 add_text(s, 4.80, 2.78, 3.85, 1.95, [
     para([(u"The same speed that wins is what breaks it. A 1.4 V threshold "
            u"and 150 pF of drain-to-gate capacitance mean the device that is "
-           u"supposed to be OFF gets pushed toward ON by its partner "
+           u"supposed to be off gets pushed toward on by its partner "
            u"switching.", N)], level=0, sz=1150, spc=120, bullet=False),
     para([(u"Measured: the off gate reaches 1.65 V against a 1.4 V "
            u"threshold. That is a shoot-through.", B)],
@@ -405,16 +405,16 @@ add_text(s, 8.90, 2.35, 3.90, 0.38, [
     para([(u"3.  What we build about it", B)], level=0, sz=1300, spc=0, bullet=False)])
 add_text(s, 8.90, 2.78, 3.90, 1.95, [
     para([(u"A segmented gate driver: 8 pull-up steps, 8 pull-down steps, an "
-           u"adjustable dead time, a Miller clamp and a −2 V off rail — "
+           u"adjustable dead time, a Miller clamp and a −2 V off rail, "
            u"driven by an FPGA, so every one of them is a setting that can be "
            u"changed and measured.", N)], level=0, sz=1150, spc=120, bullet=False),
     para([(u"Result: −0.249 V of margin becomes +2.576 V.", B)],
          level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 0.70, 4.92, 12.10, 1.90, [
-    para([(u"SO THE TEST OF PURPOSE IS NOT “does the converter run”.  ", B),
-          (u"It runs — 100 V in, 48.6 V out at 4.88 A, 97.7 % efficient, "
-           u"OPEN LOOP at a fixed duty, which is the deck the switching study "
+    para([(u"So the test is not whether the converter runs.  ", B),
+          (u"It runs: 100 V in, 48.6 V out at 4.88 A, 97.7 % efficient, "
+           u"open loop at a fixed duty, which is the deck the switching study "
            u"is measured on; the regulated version holds 50.0 V at 96.1 %. "
            u"Any textbook buck converter runs. The test is whether the "
            u"architecture we put around it answers the questions the "
@@ -438,19 +438,19 @@ add_text(s, 0.70, 1.22, 12.10, 0.42, [
 ROWS = [
     (u"Gap in the published work", u"What the architecture does",
      u"Evidence", u"Status"),
-    (u"Segmented drivers report one number. Nobody separates a better FIXED "
-     u"setting from live RE-TUNING.",
+    (u"Segmented drivers report one number. Nobody separates a better fixed "
+     u"setting from live re-tuning.",
      u"720 control words × 36 operating points, every combination run.",
      u"Fixed 26.5 %, adaptive 2.6 % — adaptive is 8.9 % of the gain, on 36 corners "
      u"(novelty.py).", u"CLOSED"),
-    (u"Nobody says how much CONTROLLER the adaptive part justifies.",
+    (u"Nobody says how much controller the adaptive part justifies.",
      u"A complexity ladder: constant word → one comparator → two "
      u"→ full lookup table.",
      u"One comparator (load current at 10 A) takes 47 %. 4.7 % is left to justify a sense + "
      u"ADC + LUT (controller_ladder.py).", u"CLOSED"),
     (u"Prior segmented drivers stage the slices but carry no Miller clamp and "
      u"no negative off rail.",
-     u"8 + 8 slices AND a clamp AND a −2 V off-bias, each measurable on "
+     u"8 + 8 slices plus a clamp plus a −2 V off-bias, each measurable on "
      u"its own.",
      u"Base paper at its best +0.407 V; ours +2.576 V — 6.3× "
      u"(basepaper_compare.py).", u"CLOSED"),
@@ -465,13 +465,13 @@ ROWS = [
      u"no integer in between.",
      u"Margins agree to 0.081 V, and it found a one-cycle dead-time error "
      u"(rtl_cosim.py).", u"CLOSED"),
-    (u"Whether a fitted schedule GENERALISES to an unseen operating point is "
+    (u"Whether a fitted schedule generalises to an unseen operating point is "
      u"never tested.",
      u"Leave-one-corner-out: fit the comparator on three corners, test on the "
      u"fourth.",
-     u"Identical to the global fixed word on ALL 36 held-out corners — nothing "
+     u"Identical to the global fixed word on all 36 held-out corners. Nothing "
      u"— and we say so.", u"ANSWERED, NEGATIVE"),
-    (u"Segmented-driver papers characterise one switching EDGE. The converter "
+    (u"Segmented-driver papers characterise one switching edge. The converter "
      u"is never closed-loop regulated.",
      u"A type-III loop around the same power stage and the same drivers, then "
      u"disturbed on purpose.",
@@ -480,11 +480,11 @@ ROWS = [
     (u"Segmented output stages are published as ideal switches. Whether the "
      u"result survives real devices is untested.",
      u"The same output stage rebuilt in SKY130 5 V transistors and re-run.",
-     u"Sign and ordering both survive — and the clamp ALONE turns out to give "
+     u"Sign and ordering both survive, but the clamp on its own turns out to give "
      u"only +0.031 V (silicon_check.py).", u"CLOSED"),
     (u"All of the above is simulation.",
      u"—",
-     u"No silicon measured. The DRIVER is now rebuilt on a real PDK; the GaN "
+     u"No silicon measured. The driver is now rebuilt on a real PDK; the GaN "
      u"model has no equivalent check.", u"OPEN → Review-III"),
 ]
 coloured = []
@@ -501,10 +501,10 @@ grid(s, 0.62, 1.74, 12.14, 4.62, coloured, widths=(30, 26, 32, 12),
      sizes=(10.0, 8.0))
 
 add_text(s, 0.70, 6.46, 11.70, 0.80, [
-    para([(u"DOES IT SERVE ITS PURPOSE?  ", B),
+    para([(u"Does it serve its purpose?  ", B),
           (u"Yes, for a simulation study, and that is what it is titled as. "
-           u"Seven gaps closed, one answered in the negative — which is a "
-           u"result, not a failure — and one that needs a bench. The "
+           u"Seven gaps closed, one answered in the negative, which is a "
+           u"result rather than a failure, and one that needs a bench. The "
            u"honest summary is that the architecture is finished and the "
            u"measurement of it on real silicon is not.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
@@ -517,14 +517,14 @@ strip(s)
 set_title(s, u"The architecture, end to end")
 
 add_text(s, 0.70, 1.22, 5.85, 0.38, [
-    para([(u"The gap we found in our OWN work", B)],
+    para([(u"The gap we found in our own work", B)],
          level=0, sz=1300, spc=0, bullet=False)])
 add_text(s, 0.70, 1.66, 5.85, 2.05, [
     para([(u"The controller was verified in Icarus. The power stage was "
            u"verified in ngspice. The two never touched.", N)],
          level=0, sz=1200, spc=140, bullet=False),
     para([(u"The FPGA emits eight thermometer-coded wires per bank. The SPICE "
-           u"driver took an INTEGER slice count. A fault in the decoder would "
+           u"driver took an integer slice count. A fault in the decoder would "
            u"have passed the Verilog bench and stayed invisible in every "
            u"figure ngspice produced.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
@@ -560,10 +560,10 @@ add_text(s, 0.70, 5.20, 12.10, 1.90, [
     para([(u"And it found a real bug, which is the whole argument for doing "
            u"it: ", B),
           (u"dead time is (dt_cycles + 1) × 5 ns. The counter loads and "
-           u"then counts down THROUGH zero, so 15 ns is 2 cycles, not the "
+           u"then counts down through zero, so 15 ns is 2 cycles, not the "
            u"obvious 15/5 = 3. Anyone mapping our swept dead-time grid onto "
            u"hardware by dividing by the clock period builds a driver that is "
-           u"one cycle slow at every operating point — and neither half "
+           u"one cycle slow at every operating point, and neither half "
            u"of the verification could have seen it alone.", N)],
          level=0, sz=1250, spc=0, bullet=False)])
 print("added: The architecture, end to end")
@@ -581,7 +581,7 @@ COMPLETION = [
     (u"The device choice justified against silicon", 8, True,
      u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 10, True,
-     u"zhangdrv.lib in our own deck; quoted at ITS best, +0.407 V"),
+     u"zhangdrv.lib in our own deck, quoted at their best, +0.407 V"),
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
     (u"The full study: 720 words × 4 corners", 12, True,
@@ -628,8 +628,8 @@ if wi is not None:
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
         para([(u"%d of 100 done. " % DONE, B),
               (u"Review-I's rubric asks for 50 %%. We are past it because this "
-               u"is a simulation study and the simulation half is finished — "
-               u"the remaining %d %% is place-and-route on a chosen board and "
+               u"is a simulation study and the simulation half is finished. "
+               u"The remaining %d %% is place-and-route on a chosen board and "
                u"a hardware half-bridge on a bench, and no amount of further "
                u"simulating will deliver either." % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
@@ -652,7 +652,7 @@ else:
 RESULT_SLIDES = [
  ("fig_closedloop.png", u"Closing the loop",
   u"The loop holds 50 V. Open loop walks to 60 V.",
-  u"sim/buck_closed.cir \u2014 the SAME power stage and the SAME segmented "
+  u"sim/buck_closed.cir runs the same power stage and the same segmented "
   u"drivers, now regulated by a type-III loop and then disturbed on purpose. "
   u"Closed loop 50.01 / 50.00 / 50.00 V through a 2\u00d7 load step and a "
   u"100 \u2192 120 V line step; worst error 0.01 % against open loop's 20.0 %. "
@@ -660,15 +660,15 @@ RESULT_SLIDES = [
   u"efficiency 96.1 %, start-up overshoot 3.8 %."),
  ("fig_headtohead.png", u"Head to head with the base paper",
   u"5.5\u00d7 to 12.4\u00d7, and the lead widens as the corner gets harder.",
-  u"scripts/headtohead.py \u2014 same deck, same GaN, same parasitics; only "
-  u"the driver is swapped. We hold ONE fixed control word at all four corners; "
-  u"they are re-optimised at EVERY corner, which is more freedom than their "
+  u"scripts/headtohead.py: same deck, same GaN, same parasitics; only "
+  u"the driver is swapped. We hold one fixed control word at all four corners; "
+  u"they are re-optimised at every corner, which is more freedom than their "
   u"own design has. Their margin falls +0.50 \u2192 +0.18 V from the mildest "
   u"corner to the hottest and ours barely moves, because a clamp does not care "
   u"how hot the device is. Our switch node also slews about twice as fast, so "
-  u"the margin is not bought with switching speed. AND WHAT THIS IS NOT: "
-  u"models/zhangdrv.lib is our implementation of their DESCRIBED scheme "
-  u"\u2014 their netlist is not published \u2014 run in our testbench with "
+  u"the margin is not bought with switching speed. One caveat: "
+  u"models/zhangdrv.lib is our implementation of the scheme as they "
+  u"(their netlist is not published), run in our testbench with "
   u"our parasitics. It is not 5.5\u201312.4\u00d7 their measured result, and "
   u"we do not claim it is."),
  ("fig_modeldep.png", u"Does the result depend on the model?",
@@ -677,8 +677,8 @@ RESULT_SLIDES = [
   u"re-run. scripts/silicon_check.py rebuilds the output stage in real SKY130 "
   u"5 V transistors; scripts/capmodel_check.py swaps the junction diodes for a "
   u"charge capacitance. The ordering survives both. Two things do not: the "
-  u"clamp ALONE gives +0.03 V on real devices rather than +0.57, and the "
-  u"no-clamp row changes SIGN between capacitance laws \u2014 so \u201cthe "
+  u"clamp on its own gives +0.03 V on real devices rather than +0.57, and the "
+  u"no-clamp row changes sign between capacitance laws \u2014 so \u201cthe "
   u"constant word causes false turn-on\u201d is model-dependent, and we say so."),
 ]
 for fname, title, lead, cap_text in RESULT_SLIDES:
@@ -711,7 +711,7 @@ COMPLETION = [
     (u"The device choice justified against silicon", 8, True,
      u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 10, True,
-     u"zhangdrv.lib in our own deck; quoted at ITS best, +0.407 V"),
+     u"zhangdrv.lib in our own deck, quoted at their best, +0.407 V"),
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
     (u"The full study: 720 words × 4 corners", 12, True,
@@ -758,8 +758,8 @@ if wi is not None:
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
         para([(u"%d of 100 done. " % DONE, B),
               (u"Review-I's rubric asks for 50 %%. We are past it because this "
-               u"is a simulation study and the simulation half is finished — "
-               u"the remaining %d %% is place-and-route on a chosen board and "
+               u"is a simulation study and the simulation half is finished. "
+               u"The remaining %d %% is place-and-route on a chosen board and "
                u"a hardware half-bridge on a bench, and no amount of further "
                u"simulating will deliver either." % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
@@ -777,7 +777,7 @@ strip(s)
 set_title(s, u"Closing the loop")
 
 add_text(s, 0.70, 1.20, 12.10, 0.80, [
-    para([(u"Every result so far was measured OPEN LOOP — the duty ratio was "
+    para([(u"Every result so far was measured open loop. The duty ratio was "
            u"a parameter and nothing moved while we measured. That is the right "
            u"instrument for a switching edge and the wrong description of a "
            u"converter: a storage system's pack voltage sags all day and its "
@@ -810,7 +810,7 @@ add_text(s, 0.70, 3.82, 5.85, 2.10, [
            u"V_in moved.", B)], level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 7.00, 3.44, 5.80, 0.34, [
-    para([(u"Two compensators that did NOT work", B)],
+    para([(u"Two compensators that did not work", B)],
          level=0, sz=1250, spc=0, bullet=False)])
 add_text(s, 7.00, 3.82, 5.80, 2.10, [
     para([(u"The first period-doubled: a 4 \u00b5s triangle on a 2 \u00b5s "
@@ -918,14 +918,14 @@ set_title(s, u"Head to head with the base paper")
 
 add_text(s, 0.70, 1.16, 12.10, 0.56, [
     para([(u"Same deck, same GaN, same power loop, same parasitics — only the "
-           u"driver is swapped. We hold ONE fixed word at all four corners. "
-           u"They are re-optimised at EVERY corner, which is more freedom than "
+           u"driver is swapped. We hold one fixed word at all four corners. "
+           u"They are re-optimised at every corner, which is more freedom than "
            u"their own design has.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 
 grid(s, 0.62, 1.80, 12.14, 1.55, [
     (u"crosstalk margin", u"base, as their paper builds it",
-     u"base, re-tuned at every corner", u"ours, ONE fixed word", u"vs their best"),
+     u"base, re-tuned at every corner", u"ours, one fixed word", u"vs their best"),
     ((u"50 V / 2 A / 25 \u00b0C", None, True), (u"+0.503 V", None, False),
      (u"+0.503 V", None, False), (u"+2.757 V", GREEN, True), (u"5.5\u00d7", None, True)),
     ((u"100 V / 10 A / 25 \u00b0C", None, True), (u"+0.407 V", None, False),
@@ -957,7 +957,7 @@ add_text(s, 7.00, 3.92, 5.80, 1.55, [
            u"form of the result.", B)], level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 0.70, 5.60, 11.70, 1.50, [
-    para([(u"What it costs, and what the claim is NOT. ", B),
+    para([(u"What it costs, and what we are not claiming. ", B),
           (u"Our turn-on energy is higher at three of four corners — the "
            u"\u22122 V rail deepens GaN's dead-time reverse drop, a penalty "
            u"this project already measures at 1.0\u20133.4 % of total loss. "
@@ -1158,13 +1158,13 @@ def tidy_geometry(prs):
 #
 # Four honest categories. The one that matters is the last: a figure that
 # explains something is not evidence of it, and the caption has to say so.
-P_SIM  = u"SIMULATED IN NGSPICE."
-P_SCR  = u"NGSPICE, ON SCREEN."
-P_RTL  = u"ICARUS VERILOG OUTPUT."
-P_VIV  = u"VIVADO OUTPUT."
-P_LT   = u"DRAWN AND SIMULATED IN LTSPICE."
-P_DRAW = u"DIAGRAM \u2014 DRAWN, NOT SIMULATION OUTPUT."
-P_FILE = u"A PROJECT FILE, TYPESET \u2014 NOT SIMULATION OUTPUT."
+P_SIM  = u"Simulated in ngspice."
+P_SCR  = u"ngspice, on screen."
+P_RTL  = u"Icarus Verilog output."
+P_VIV  = u"Vivado output."
+P_LT   = u"Drawn and simulated in LTspice."
+P_DRAW = u"Drawn diagram, not simulation output."
+P_FILE = u"A project file, typeset. Not simulation output."
 
 PROVENANCE = {
     # plotted from ngspice transient output

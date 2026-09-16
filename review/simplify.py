@@ -153,7 +153,7 @@ TIMES = u"×"
 EDITS = [
  # ---- the gap -------------------------------------------------------------
  (u"The gap this project fills", "TextBox 5", [
-   [(u"Every paper on these drivers reports ONE number: how much better it is than "
+   [(u"Every paper on these drivers reports one number: how much better it is than "
      u"a plain driver.", N)],
    [(u"That number hides two separate effects, and they cost very different hardware.", N)],
  ]),
@@ -166,13 +166,13 @@ EDITS = [
      u"that needs the sensing hardware.", N)],
  ]),
  (u"The gap this project fills", "TextBox 12", [
-   [(u"THE GAP: ", Y), (u"nobody separates them. No paper says how much of the benefit "
+   [(u"The gap. ", Y), (u"Nobody separates them. No paper says how much of the benefit "
      u"actually needs the re-tuning, because separating the two means running every "
      u"setting at every operating point " + EM + u" and nobody has done that.", N)],
-   [(u"WHY IT MATTERS: ", Y), (u"only Effect 2 pays for the sensor, ADC and lookup "
+   [(u"Why it matters. ", Y), (u"Only Effect 2 pays for the sensor, ADC and lookup "
      u"table. If it is small, that hardware is mostly buying something a design-time "
      u"choice already gives you.", N)],
-   [(u"WHAT WE DO: ", Y), (u"720 settings " + TIMES + u" 4 operating points, all of "
+   [(u"What we do. ", Y), (u"720 settings " + TIMES + u" 36 operating points, all of "
      u"them, in ngspice " + EM + u" then report the two numbers separately instead of "
      u"adding them together.", N)],
  ]),
@@ -200,7 +200,7 @@ EDITS = [
      u"best setting in their own stated range.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 11", [
-   [(u"FALSE TURN-ON. ", Y), (u"A constant code is worse than their staged one " + EM +
+   [(u"False turn-on. ", Y), (u"A constant code is worse than their staged one " + EM +
      u" their idea is real, and we reproduce it.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 14", [
@@ -211,7 +211,7 @@ EDITS = [
  ]),
  (u"We implemented the base paper", "TextBox 18", [
    [(u"What the comparison shows. ", Y),
-    (u"The base paper stages its slices over TIME and picks the pattern with one "
+    (u"The base paper stages its slices over time and picks the pattern with one "
      u"resistor; we add two things they do not have and make every field programmable. "
      u"Both clear the threshold " + EM + u" theirs works, and we quote it at its best "
      u"setting " + EM + u" but ours clears it by 6.3" + TIMES + u" more, and ours is "
@@ -264,11 +264,11 @@ EDITS = [
      u"table. Separating them means running every setting at every operating point.", N)],
  ]),
  (u"Result 3", "TextBox 5",
-  [[(u"(A)   Pick a better FIXED setting", Y)]]),
+  [[(u"(A)   Pick a better fixed setting", Y)]]),
  (u"Result 3", "TextBox 8",
-  [[(u"(B)   CHANGE it per operating point", Y)]]),
+  [[(u"(B)   Change it per operating point", Y)]]),
  (u"Result 3", "TextBox 11",
-  [[(u"(B′)  …but ONE comparator gets 46 % of (B)", Y)]]),
+  [[(u"(B′)  …but one comparator gets 46 % of (B)", Y)]]),
  (u"Result 3", "TextBox 14", [
    [(u"So the full sensor + ADC + lookup table is left justifying 7.2 % of the total "
      u"gain, over a fixed setting plus one comparator. Re-tuning is 13.4 % of the "
@@ -340,7 +340,7 @@ EDITS = [
  ]),
  (u"Result 1", "TextBox 7", [
    [(u"1.65 V", Y)],
-   [(u"peak on the gate that should be OFF", Y)],
+   [(u"peak on the gate that should be off", Y)],
    [(u"The threshold is 1.4 V " + EM + u" so it turns on by mistake", N)],
  ]),
  (u"Result 1", "TextBox 8", [
