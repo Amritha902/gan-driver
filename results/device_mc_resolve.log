@@ -1,0 +1,4 @@
+device 18: vth=1.367 bh=5.36 cgs=279p CJO=155p
+720 words x 4 corners = 2880 transients
+0 already done, 2880 to run
+    200/2880  70s  eta 934s  failed=0

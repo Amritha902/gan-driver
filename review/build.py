@@ -629,10 +629,18 @@ set_body(con_shape, [
           ("measure a hardware half-bridge. Until then this is a simulation study, and is "
            "titled as one.", False)], level=0, sz=1600, spc=220, bullet=True),
     para([("Limits we state ourselves: ", True),
-          ("no silicon measured; one device model underlies everything; and the "
-           "converter deck drives the switch node to 168 V on a 100 V bus, "
-           "84 % of the modelled device's rating, found by opening the waveform "
-           "rather than reading the measured scalars.", False)],
+          ("no silicon measured; and the converter deck drives the switch node to "
+           "168 V on a 100 V bus, 84 % of the modelled device's rating, found "
+           "by opening the waveform rather than reading the measured scalars.",
+           False)], level=0, sz=1450, spc=0, bullet=True),
+    para([("No longer a limit: ", True),
+          ("the device is now sampled, not assumed. 24 devices with threshold, "
+           "transconductance, C", False), ("GS", False), (" and C", False),
+          ("GD", False),
+          (" varied together. The shipped word stays safe on every one "
+           "(worst case +1.90 V), and choosing a better fixed word beats adapting "
+           "on every one. It remains one behavioural model form; its parameters "
+           "are no longer a single guess.", False)],
          level=0, sz=1450, spc=0, bullet=True),
 ])
 
@@ -766,8 +774,10 @@ NOTES = {
  19: ("35 s", "CORE. Close on what the data supports and what it now answers. Do NOT concede "
               "EMI as a limitation any more - it was tested: pricing it makes scheduling worth "
               "LESS, 5.95 % down to 0.15 %. State the remaining limits yourself instead: the "
-              "two EMI measures disagree about drive strength, no silicon has been measured, "
-              "and one device model underlies everything."),
+              "two EMI measures disagree about drive strength, and no silicon has been "
+              "measured. Do NOT concede the single device model any more either - 24 "
+              "devices were sampled with Vth, gm, Cgs and Cgd varied jointly, the shipped "
+              "word stays safe on every one, and the ordering survives on every one."),
  20: ("skip", "Reference list. Leave up during questions."),
  21: ("—",    "Thank you. Expect: 'why is the clamp worth more than scheduling?', 'have you run "
               "real silicon?' (no — Review-II), 'did Cadence actually run?' (no, and the deck "
