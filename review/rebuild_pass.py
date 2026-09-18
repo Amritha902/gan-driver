@@ -412,14 +412,18 @@ add_text(s, 8.90, 2.78, 3.90, 1.95, [
          level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 0.70, 4.92, 12.10, 1.90, [
-    para([(u"So the test is not whether the converter runs.  ", B),
-          (u"It runs: 100 V in, 48.6 V out at 4.88 A, 97.7 % efficient, "
-           u"open loop at a fixed duty, which is the deck the switching study "
-           u"is measured on; the regulated version holds 50.0 V at 96.1 %. "
-           u"Any textbook buck converter runs. The test is whether the "
-           u"architecture we put around it answers the questions the "
-           u"published work on these drivers leaves open, because that is the "
-           u"only part of this that is ours.", N)],
+    para([(u"Why the title says converter and the work says driver.  ", B),
+          (u"They are one claim, not two. The converter is what is being "
+           u"built; the gate driver is the one part of it we redesigned, "
+           u"because on GaN that is the part that decides whether the "
+           u"converter is buildable at the speed the device is bought for. "
+           u"Ours runs \u2014 100 V in, 48.6 V out at 4.88 A, 97.7 % "
+           u"efficient, open loop at a fixed duty, which is the deck the "
+           u"switching study is measured on; regulated, it holds 50.0 V at "
+           u"96.1 %. What a textbook buck converter will not do is survive "
+           u"its own switching edges at 500 kHz against a 1.4 V threshold. "
+           u"Every number in this deck is measured on the converter, not on "
+           u"a driver sitting by itself on a bench.", N)],
          level=0, sz=1250, spc=180, bullet=False),
     para([(u"The next slide is that question, gap by gap, with the evidence "
            u"for each.", B)], level=0, sz=1250, spc=0, bullet=False)])

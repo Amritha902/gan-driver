@@ -138,10 +138,22 @@ same number within 0.03 V.
 ### P: The title says "GaN Based Synchronous Buck Converter". Most of what
 ### you've described is a gate driver.
 
-**S:** That's a fair hit. The converter is real — it regulates 50 V through a
-2× load step and a 20 % line step at 0.01 % error — but it's the vehicle, not
-the contribution. If I were naming it again I'd put the driver in the title
-and the converter second.
+**S:** They're the same claim. The converter is what's being built — it
+regulates 50 V through a 2× load step and a 20 % line step at 0.01 % error —
+and the gate driver is the one part of it I redesigned, because on GaN that's
+the part that decides whether the converter is buildable at the speed the
+device is bought for. A silicon buck doesn't need this work; a GaN buck at
+500 kHz on a 1.4 V threshold does, which is why the driver is where the
+project spends its time. Every number in the deck is measured on the
+converter, not on a driver sitting by itself on a bench.
+
+### P: That sounds like a defence of the title rather than an answer.
+
+**S:** It is a defence of the title, and I'll stand on it. The alternative
+naming — putting the driver first — would describe the deliverable as a
+component and hide what it's a component of. The reason the crosstalk number
+matters at all is that it's the thing that stops a converter existing. Take
+the converter out of the title and the 1.65 V spike is a curiosity.
 
 ### P: What did opening the waveforms get you? You made a lot of noise about
 ### that.
@@ -194,8 +206,11 @@ it doesn't, I'd want to know why more than I'd want to be right.
    obtained, and it will read to some markers as "proved the thing isn't
    worth doing" rather than as engineering. That is partly a framing problem
    and partly true.
-3. **Scope drift in the title.** The project is named for a converter and
-   delivers a gate-driver study.
+3. **The title will draw the question.** It names a converter and most of the
+   deck is a gate driver. The answer holds — the driver is the part of the
+   converter that decides whether it is buildable at speed, and every number
+   is measured on the converter — but it has to be volunteered early, on the
+   goal slide, not dragged out under questioning.
 
 **What is genuinely above the bar:**
 
@@ -220,7 +235,9 @@ they're asked for, the upper half of that is reachable.
 1. One measured switching edge on real hardware. Even a single scope trace of
    the crosstalk spike against the simulated one changes the category of the
    work.
-2. Rename the project so the title matches the contribution.
+2. Say on the goal slide why the title is the converter and the work is the
+   driver, before anyone has to ask. It costs two sentences and removes the
+   easiest hit on the deck.
 3. Lead with the negative result as a design rule — "build the fixed word,
    skip the LUT, and here is the one corner where that costs you 14 %" —
    instead of as a percentage.

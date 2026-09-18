@@ -104,9 +104,13 @@ that should be off reaches **1.65 volts against a 1.4 volt threshold.**
 **What we build about it.** The segmented driver, the clamp, the minus two volt
 rail: **minus 0.249 volts becomes plus 2.576.**
 
-So the test of purpose is not "does the converter run." It runs, at 97.7
-percent. Any textbook buck converter runs. The test is whether the architecture
-around it answers what the literature leaves open.
+If anyone asks why the title says converter when most of this is a driver —
+they are one claim. The converter is what we are building. The gate driver is
+the one part of it we redesigned, because on GaN that is the part that decides
+whether the converter is buildable at the speed you bought the device for. Ours
+runs, at 97.7 percent. What a textbook buck converter will not do is survive
+its own switching edges at 500 kilohertz against a 1.4 volt threshold. Every
+number you are about to see is measured on the converter.
 
 ---
 

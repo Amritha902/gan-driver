@@ -113,10 +113,14 @@ GaN, where the device has no body diode and the trade changes.
 > "What we build about it: the segmented driver, with the clamp and the minus
 > two volt rail. Minus 0.249 volts of margin becomes plus 2.576."
 >
-> "So the test of purpose is not 'does the converter run'. It runs — 97.7
-> percent efficient. Any textbook buck converter runs. The test is whether the
-> architecture we put around it answers what the published work leaves open,
-> because that is the only part of this that is ours."
+> "One thing before the results, because it gets asked. The title says
+> converter and most of what follows is a gate driver. Those are one claim.
+> The converter is what we are building; the driver is the one part of it we
+> redesigned, because on GaN that is the part that decides whether the
+> converter is buildable at the speed the device is bought for. Ours runs —
+> 97.7 percent efficient. What a textbook buck converter will not do is
+> survive its own switching edges at 500 kilohertz against a 1.4 volt
+> threshold. Every number in this deck is measured on the converter."
 
 ---
 
