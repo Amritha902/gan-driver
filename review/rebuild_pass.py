@@ -412,18 +412,10 @@ add_text(s, 8.90, 2.78, 3.90, 1.95, [
          level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 0.70, 4.92, 12.10, 1.90, [
-    para([(u"Why the title says converter and the work says driver.  ", B),
-          (u"They are one claim, not two. The converter is what is being "
-           u"built; the gate driver is the one part of it we redesigned, "
-           u"because on GaN that is the part that decides whether the "
-           u"converter is buildable at the speed the device is bought for. "
-           u"Ours runs \u2014 100 V in, 48.6 V out at 4.88 A, 97.7 % "
-           u"efficient, open loop at a fixed duty, which is the deck the "
-           u"switching study is measured on; regulated, it holds 50.0 V at "
-           u"96.1 %. What a textbook buck converter will not do is survive "
-           u"its own switching edges at 500 kHz against a 1.4 V threshold. "
-           u"Every number in this deck is measured on the converter, not on "
-           u"a driver sitting by itself on a bench.", N)],
+    para([(u"Title says converter, work says driver \u2014 one claim.  ", B),
+          (u"On GaN the driver is the part that decides whether the "
+           u"converter is buildable at speed. Every number here is measured "
+           u"on the converter: 97.7 % open loop, 96.1 % regulated.", N)],
          level=0, sz=1250, spc=180, bullet=False),
     para([(u"The next slide is that question, gap by gap, with the evidence "
            u"for each.", B)], level=0, sz=1250, spc=0, bullet=False)])
