@@ -186,7 +186,11 @@ quit""" % ((t0, t1) * 6)
                       meas.strip())
     else:
         # three cycles from settled, at double-pulse resolution
-        t = re.sub(r"^\.param NCYC=.*$", ".param NCYC=3", t, flags=re.M)
+        # buck.cir writes ".param NCYC  = 150" with padding, so the pattern
+        # has to allow whitespace around the "=". Without \s* this silently
+        # matched nothing and every "3-cycle" edge run was the full 150
+        # cycles at a 0.02 ns step: 6.1 M samples, 390 MB, ~20 minutes each.
+        t = re.sub(r"^\.param NCYC\s*=.*$", ".param NCYC=3", t, flags=re.M)
         t = t.replace(".tran 0.2n {TSTOP} 0 2n uic",
                       ".tran 0.02n {TSTOP} 0 0.05n uic")
         t = t.replace("wrdata buck.dat v(vin) i(vsin) v(sw) v(out) i(vsout) v(lsg) v(hsg)",
