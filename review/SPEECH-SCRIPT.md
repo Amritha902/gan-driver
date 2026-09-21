@@ -75,6 +75,30 @@ GaN, where the device has no body diode and the trade changes.
 
 ---
 
+## NEW — GaN against silicon, measured (45 s) — **panel asked for this**
+
+The first Review-1 comment. Answer it with the table, not with adjectives.
+
+> "Same converter, same driver, same on-resistance class — only the device
+> changes. Latency from PWM to switch node: 2.8 nanoseconds on GaN, 17.6 on
+> silicon. The edge itself, 0.8 against 6.7. Power in the devices, 2.6 watts
+> against 8.6. Gate drive, 35 milliwatts against 1.5 watts — forty times.
+> Efficiency, 97.4 against 95.1."
+
+Then take the losing row yourself, before anyone asks.
+
+> "And the row where silicon wins. It doesn't overshoot; we do — 18 per cent
+> against minus 1.5. That isn't something we missed. Silicon's edge is nine
+> times slower, and that slowness is exactly what costs it six watts. Speed
+> and device stress are the same knob. Picking GaN is picking to manage the
+> stress, and this deck is how we manage it."
+
+If asked why the two are driven at different gate voltages: each at its own
+rated drive, 5 V and 10 V. A silicon MOSFET at 5 V is barely enhanced and
+would lose on a technicality instead of on physics.
+
+---
+
 ## 8 — THE GAP (60 s) — **core slide, do not rush**
 
 > "Every active gate driver paper reports one number: the improvement over a
@@ -228,6 +252,53 @@ cannot do.
 *If asked why it matters:* it is the difference between a design that has been
 verified and one whose two halves have each been verified against a different
 assumption.
+
+---
+
+## NEW — The two architectures, side by side (50 s) — **panel asked for this**
+
+Two slides, same grid, same block positions. Let the diagram do the work.
+
+> "This is Zhang's driver. Seven slices in two stages, and the pattern across
+> the edge is chosen by one bias resistor, fixed at design time. Two slots on
+> this diagram are empty, and that's why I'm showing it: no active clamp, no
+> negative off rail."
+
+Then the next slide, same layout.
+
+> "Same grid, same positions — so what changed is what you can see. The
+> output stage is theirs. The three green blocks are ours. Instead of a
+> resistor, seg_gate_ctrl.v on an FPGA: six fields, 720 words, re-writable at
+> run time. And the two empty slots fill — the active Miller clamp, and the
+> switchable minus two volt rail."
+
+The sentence to land:
+
+> "Their drive strength is decided before the chip exists and can never
+> change. Ours is a register write. That's what made a 720-word sweep
+> possible at all — and a resistor could never have told us that re-tuning
+> is worth only 2.6 per cent."
+
+---
+
+## NEW — Theirs and ours on six parameters (50 s) — **panel asked for this**
+
+Same converter, same GaN device, same output stage. Only the control swaps.
+
+> "Latency 2.8 against 4.0 nanoseconds. The edge 0.8 against 2.1 — two and a
+> half times faster. Power in the devices 2.6 watts against 2.9."
+
+Do not stop there. Two rows go against us and they are the credible part.
+
+> "Two rows go the other way. We spend thirteen per cent more gate power, and
+> we overshoot 18 per cent where they overshoot 3. Both for the same reason:
+> we switch faster. What that buys is the next slide — their crosstalk
+> margin is plus 0.4 volts, ours is plus 2.6."
+
+If asked whether the comparison is fair: their pattern step is a delayed copy
+of their own PWM, so it lands the same distance after turn-on every cycle,
+which is what their one-knob scheme does. Same devices, same parasitics, same
+solver options. The only thing that differs is the control.
 
 ---
 

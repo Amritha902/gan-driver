@@ -70,6 +70,26 @@ different jobs.
 
 ---
 
+## 3b · GaN against silicon — 35 s  *(2:05)*
+
+Before the gap, the question the panel asked first: why GaN at all.
+
+Same converter, same driver, same on-resistance class. Only the device
+changes. Six numbers, all from ngspice on the converter:
+
+**Latency, PWM to switch node: 2.8 nanoseconds against 17.6.** The edge
+itself: **0.8 against 6.7.** Power burnt in the devices: **2.6 watts against
+8.6.** Gate drive: **35 milliwatts against 1.5 watts** — forty times. And
+efficiency **97.4 against 95.1**.
+
+Now the honest row, and say it before they find it. **Silicon does not
+overshoot and we do — 18 per cent against minus 1.5.** That is not a defect
+we missed. Silicon's edge is nine times slower, and that same slowness is
+what costs it six watts. Speed and device stress are the same knob. Choosing
+GaN is choosing to manage the stress, and the rest of this deck is how.
+
+---
+
 ## 4 · The gap — 40 s  *(2:10)*
 
 Here are the two jobs.
@@ -290,6 +310,45 @@ slack.**
 
 This slide is here because the completion table weights the FPGA at 12 % of
 the project. Claiming that and showing nothing invites the obvious question.
+
+---
+
+## 16a1 · Their architecture — 25 s
+
+Zhang's driver, block by block. Seven slices in two stages, and the pattern
+across the edge chosen by **one bias resistor**, set once at design time.
+
+Two slots on this diagram are empty, and that is the point of showing it:
+**no active clamp, and no negative off rail.**
+
+---
+
+## 16a2 · Our architecture — 25 s
+
+Same diagram, same grid, same positions — so what changed is what you can
+see. The output stage is theirs. **Three blocks in green are ours.**
+
+Instead of a resistor, **`seg_gate_ctrl.v` on an FPGA: six fields, 720
+control words, re-writable at run time.** Then the two empty slots fill: the
+**active Miller clamp**, and the **switchable minus two volt rail.**
+
+Their strength is decided before the chip exists and can never change. Ours
+is a register write. That is what made a 720-word sweep possible at all — and
+a resistor could never have told us that re-tuning is worth only 2.6 per cent.
+
+---
+
+## 16a3 · Theirs and ours, measured — 35 s
+
+Same converter, same GaN device, same output stage. Only the control swapped.
+
+**Latency 2.8 against 4.0 nanoseconds. Edge 0.8 against 2.1 — two and a half
+times faster. Devices 2.6 watts against 2.9.**
+
+Two rows go against us, and I will take them in order. **We spend thirteen
+per cent more gate power**, and **we overshoot 18 per cent where they
+overshoot 3.** Both because we switch faster. What that buys is on the next
+slide: their crosstalk margin is plus 0.4 volts, ours is plus 2.6.
 
 ---
 

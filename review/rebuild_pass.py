@@ -574,28 +574,32 @@ print("added: The architecture, end to end")
 # done. Arguing with the weights is a real conversation; arguing with a bare
 # percentage is not.
 COMPLETION = [
-    (u"The converter itself, built and converting", 8, True,
+    (u"The converter itself, built and converting", 6, True,
      u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
     (u"The device choice justified against silicon", 8, True,
      u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
-    (u"The base paper implemented, not just cited", 10, True,
-     u"zhangdrv.lib in our own deck, quoted at their best, +0.407 V"),
+    (u"The base paper implemented, not just cited", 8, True,
+     u"zhangdrv.lib in our deck and in the converter — at 100 V only"),
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
-    (u"The full study: 720 words × 4 corners", 12, True,
-     u"60,533 transients over 36 corners; fixed 26.5 % vs adaptive 2.6 %"),
+    (u"The full study: 720 words × 4 corners", 8, True,
+     u"60,533 transients over 36 corners — all on dpt.cir, not the converter"),
     (u"How much controller that justifies", 8, True,
      u"ladder + leave-one-corner-out; two implementations agree"),
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
-    (u"Closed-loop regulation, disturbed on purpose", 8, True,
+    (u"Closed-loop regulation, disturbed on purpose", 6, True,
      u"type-III loop: 0.01 % error through a 2x load and a 20 % line step"),
     (u"Transistor-level output stage, on a real PDK", 7, True,
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
      u"Needs real package pins and an MMCM for the clock"),
+    (u"The converter swept across its own 50–200 V envelope", 10, False,
+     u"Every converter number here is at 100 V. Spot-checking 200 V found an "
+     u"undamped decoupling branch that shoot-throughs; fixed, but one sweep "
+     u"is not a study"),
     (u"A hardware half-bridge, measured", 7, False,
      u"Review-III. Until then this is a simulation study, and is titled as one"),
 ]
@@ -625,14 +629,15 @@ if wi is not None:
 
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
         para([(u"%d of 100 done. " % DONE, B),
-              (u"Review-I's rubric asks for 50 %%. We are past it because this "
-               u"is a simulation study and the simulation half is finished. "
-               u"The remaining %d %% is place-and-route on a chosen board and "
-               u"a hardware half-bridge on a bench, and no amount of further "
-               u"simulating will deliver either." % (100 - DONE), N)],
+              (u"Review-I's rubric asks for 50 %%. The remaining %d %%: the "
+               u"converter swept across the 50–200 V envelope it claims, "
+               u"place-and-route, and a hardware half-bridge. We owe the "
+               u"first. Simulating harder will not deliver the other two."
+               % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
-        para([(u"Stated plainly: the architecture is finished. The "
-               u"measurement of it on real silicon is not.", B)],
+        para([(u"Plainly: the architecture and the driver study are "
+               u"finished. The converter is characterised at 100 V only, "
+               u"and nothing is measured on silicon.", B)],
              level=0, sz=1250, spc=0, bullet=False)])
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
@@ -852,28 +857,32 @@ metric_slide(
 # done. Arguing with the weights is a real conversation; arguing with a bare
 # percentage is not.
 COMPLETION = [
-    (u"The converter itself, built and converting", 8, True,
+    (u"The converter itself, built and converting", 6, True,
      u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
     (u"The device choice justified against silicon", 8, True,
      u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
-    (u"The base paper implemented, not just cited", 10, True,
-     u"zhangdrv.lib in our own deck, quoted at their best, +0.407 V"),
+    (u"The base paper implemented, not just cited", 8, True,
+     u"zhangdrv.lib in our deck and in the converter — at 100 V only"),
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
-    (u"The full study: 720 words × 4 corners", 12, True,
-     u"60,533 transients over 36 corners; fixed 26.5 % vs adaptive 2.6 %"),
+    (u"The full study: 720 words × 4 corners", 8, True,
+     u"60,533 transients over 36 corners — all on dpt.cir, not the converter"),
     (u"How much controller that justifies", 8, True,
      u"ladder + leave-one-corner-out; two implementations agree"),
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
-    (u"Closed-loop regulation, disturbed on purpose", 8, True,
+    (u"Closed-loop regulation, disturbed on purpose", 6, True,
      u"type-III loop: 0.01 % error through a 2x load and a 20 % line step"),
     (u"Transistor-level output stage, on a real PDK", 7, True,
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
      u"Needs real package pins and an MMCM for the clock"),
+    (u"The converter swept across its own 50–200 V envelope", 10, False,
+     u"Every converter number here is at 100 V. Spot-checking 200 V found an "
+     u"undamped decoupling branch that shoot-throughs; fixed, but one sweep "
+     u"is not a study"),
     (u"A hardware half-bridge, measured", 7, False,
      u"Review-III. Until then this is a simulation study, and is titled as one"),
 ]
@@ -903,14 +912,15 @@ if wi is not None:
 
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
         para([(u"%d of 100 done. " % DONE, B),
-              (u"Review-I's rubric asks for 50 %%. We are past it because this "
-               u"is a simulation study and the simulation half is finished. "
-               u"The remaining %d %% is place-and-route on a chosen board and "
-               u"a hardware half-bridge on a bench, and no amount of further "
-               u"simulating will deliver either." % (100 - DONE), N)],
+              (u"Review-I's rubric asks for 50 %%. The remaining %d %%: the "
+               u"converter swept across the 50–200 V envelope it claims, "
+               u"place-and-route, and a hardware half-bridge. We owe the "
+               u"first. Simulating harder will not deliver the other two."
+               % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
-        para([(u"Stated plainly: the architecture is finished. The "
-               u"measurement of it on real silicon is not.", B)],
+        para([(u"Plainly: the architecture and the driver study are "
+               u"finished. The converter is characterised at 100 V only, "
+               u"and nothing is measured on silicon.", B)],
              level=0, sz=1250, spc=0, bullet=False)])
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
