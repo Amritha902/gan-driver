@@ -21,7 +21,7 @@
   (A) choosing a better fixed word                           26.5 % of baseline             novelty.py
   (B) adapting it per operating point                        2.6 % of baseline              novelty.py
   adaptation as a share of the total gain                    8.9 %                         novelty.py
-  captured by ONE real comparator (VBUS at 75 V)             47 % of (B)                    novelty.py
+  captured by ONE real comparator (ILOAD at 10 A)            47 % of (B)                    grid_analyse.py
   captured by TWO comparators (best 2-word split)            61 % of (B)                    novelty.py
   left for a full sense + ADC + LUT, over 1 comparator       4.7 % of the total gain        novelty.py
   left for a full sense + ADC + LUT, over 2 comparators      3.4 % of the total gain        novelty.py

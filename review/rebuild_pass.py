@@ -596,10 +596,10 @@ COMPLETION = [
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
      u"Needs real package pins and an MMCM for the clock"),
-    (u"The converter swept across its own 50–200 V envelope", 10, False,
-     u"Every converter number here is at 100 V. Spot-checking 200 V found an "
-     u"undamped decoupling branch that shoot-throughs; fixed, but one sweep "
-     u"is not a study"),
+    (u"The converter swept across its stated envelope", 10, True,
+     u"8 bus×load points: margin +2.14 to +2.61 V everywhere, and the "
+     u"envelope corrected to 50–150 V because a 200 V part cannot run a "
+     u"200 V bus"),
     (u"A hardware half-bridge, measured", 7, False,
      u"Review-III. Until then this is a simulation study, and is titled as one"),
 ]
@@ -629,15 +629,14 @@ if wi is not None:
 
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
         para([(u"%d of 100 done. " % DONE, B),
-              (u"Review-I's rubric asks for 50 %%. The remaining %d %%: the "
-               u"converter swept across the 50–200 V envelope it claims, "
-               u"place-and-route, and a hardware half-bridge. We owe the "
-               u"first. Simulating harder will not deliver the other two."
-               % (100 - DONE), N)],
+              (u"Review-I's rubric asks for 50 %%. The remaining %d %% is "
+               u"place-and-route on a chosen board and a hardware "
+               u"half-bridge on a bench. The simulation is finished, and "
+               u"simulating harder will not deliver either." % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
-        para([(u"Plainly: the architecture and the driver study are "
-               u"finished. The converter is characterised at 100 V only, "
-               u"and nothing is measured on silicon.", B)],
+        para([(u"Plainly: the simulation is finished, across the "
+               u"envelope and not just at one point. Nothing has been "
+               u"measured on silicon.", B)],
              level=0, sz=1250, spc=0, bullet=False)])
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
@@ -834,6 +833,57 @@ for _f, _t, _lead, _cap in (
     caption(sl, _cap, top=5.80, h=1.20)
     print("added: %s" % _t)
 
+# ---- slide: the converter across its own envelope -------------------------
+# The architecture slide claims a bus range. Until this sweep it was claimed
+# at one point. Reading the CSV here rather than typing the numbers means a
+# re-run that changes the answer changes the slide.
+_ENV = os.path.join(RES, "envelope_sweep.csv")
+if os.path.exists(_ENV):
+    with open(_ENV) as _fh:
+        _rows = list(_csv.DictReader(_fh))
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"The converter across its own envelope")
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(u"Every bus and load point, not just the one the headline "
+               u"is quoted at.", B)], level=0, sz=1450, spc=0, bullet=False)])
+    _hdr = [u"bus", u"load", u"peak v(sw)", u"overshoot",
+            u"gate, HS on", u"margin", u"efficiency", u"verdict"]
+    _tr = [_hdr]
+    for _r in _rows:
+        def _g(k, fmt, suf=u""):
+            try:
+                return (fmt % float(_r[k])) + suf
+            except (KeyError, TypeError, ValueError):
+                return u"n/a"
+        _ok = _r.get("safe") == "ok"
+        _tr.append([_r["vin"] + u" V", _r["iload"] + u" A",
+                    _g("peak_V", u"%.1f", u" V"), _g("ov_pct", u"%.1f", u" %"),
+                    _g("gate_V", u"%.2f", u" V"), _g("margin_V", u"%+.2f", u" V"),
+                    _g("eff_pct", u"%.2f", u" %"),
+                    (u"safe" if _ok else _r.get("safe", u"?"),
+                     NEWC if _ok else HOTC, True)])
+    grid(sl, 0.70, 1.70, 12.10, 3.55, _tr, widths=(9, 9, 14, 12, 14, 12, 13, 17),
+         sizes=(11.5, 11.5))
+    add_text(sl, 0.70, 5.44, 12.10, 1.25, [
+        para([(u"The margin column is the answer. ", B),
+              (u"It is the 1.4 V threshold minus the highest the OFF gate "
+               u"reaches while the other device is conducting, and it is "
+               u"positive at all eight points \u2014 +2.14 V at the worst. The "
+               u"off device stays off everywhere in the range.", N)],
+             level=0, sz=1150, spc=110, bullet=False),
+        para([(u"The two 200 V rows are not a driver failure. ", B),
+              (u"Their overshoot is the smallest in the sweep, 3.1 % and "
+               u"4.1 %. The problem is running a 200 V-rated part on a 200 V "
+               u"bus, where any overshoot at all exceeds the rating. So the "
+               u"envelope is stated as 50\u2013150 V on this device; 200 V "
+               u"needs a higher-rated part, not a different driver.", N)],
+             level=0, sz=1150, spc=0, bullet=False)])
+    print("added: The converter across its own envelope")
+else:
+    print("  MISSING: results/envelope_sweep.csv -- run scripts/envelope_sweep.py")
+
+
 metric_slide(
     u"Theirs and ours \u2014 six parameters, measured",
     u"Same converter, same GaN device, same output stage. Only the control changes.",
@@ -879,10 +929,10 @@ COMPLETION = [
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
      u"Needs real package pins and an MMCM for the clock"),
-    (u"The converter swept across its own 50–200 V envelope", 10, False,
-     u"Every converter number here is at 100 V. Spot-checking 200 V found an "
-     u"undamped decoupling branch that shoot-throughs; fixed, but one sweep "
-     u"is not a study"),
+    (u"The converter swept across its stated envelope", 10, True,
+     u"8 bus×load points: margin +2.14 to +2.61 V everywhere, and the "
+     u"envelope corrected to 50–150 V because a 200 V part cannot run a "
+     u"200 V bus"),
     (u"A hardware half-bridge, measured", 7, False,
      u"Review-III. Until then this is a simulation study, and is titled as one"),
 ]
@@ -912,15 +962,14 @@ if wi is not None:
 
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
         para([(u"%d of 100 done. " % DONE, B),
-              (u"Review-I's rubric asks for 50 %%. The remaining %d %%: the "
-               u"converter swept across the 50–200 V envelope it claims, "
-               u"place-and-route, and a hardware half-bridge. We owe the "
-               u"first. Simulating harder will not deliver the other two."
-               % (100 - DONE), N)],
+              (u"Review-I's rubric asks for 50 %%. The remaining %d %% is "
+               u"place-and-route on a chosen board and a hardware "
+               u"half-bridge on a bench. The simulation is finished, and "
+               u"simulating harder will not deliver either." % (100 - DONE), N)],
              level=0, sz=1250, spc=140, bullet=False),
-        para([(u"Plainly: the architecture and the driver study are "
-               u"finished. The converter is characterised at 100 V only, "
-               u"and nothing is measured on silicon.", B)],
+        para([(u"Plainly: the simulation is finished, across the "
+               u"envelope and not just at one point. Nothing has been "
+               u"measured on silicon.", B)],
              level=0, sz=1250, spc=0, bullet=False)])
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
@@ -1456,6 +1505,7 @@ ORDER = [
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
+    u"The converter across its own envelope",
     u"Head to head with the base paper",
     u"The closest published drivers",
     u"The gap this project fills",
@@ -1541,6 +1591,7 @@ SHORT = [
     u"Their architecture \u2014 the base paper",     # panel ask 3, prev slide
     u"Our architecture \u2014 same stage",           # panel ask 3, this slide
     u"Theirs and ours \u2014 six parameters",        # panel ask 4
+    u"The converter across its own envelope",       # the envelope, measured
     u"Head to head with the base paper",            # the comparison
     u"Closing the loop",                            # the converter regulates
     u"Does the result depend on the model?",

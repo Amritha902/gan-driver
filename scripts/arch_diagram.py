@@ -122,7 +122,7 @@ box(52.0, 16.0, 20.0, 8.0, "Off-bias mux", "0 V  /  −2 V")
 arrow(72.0, 50.0, 80.0, 50.0)
 box(80.0, 46.0, 15.0, 8.0, "GaN half-bridge", "high side + low side")
 box(80.0, 34.0, 15.0, 8.0, "L$_{loop}$ = 3 nH", "layout parasitic")
-box(80.0, 22.0, 15.0, 8.0, "Load", "2–10 A  ·  50–200 V")
+box(80.0, 22.0, 15.0, 8.0, "Load", "2–10 A  ·  50–150 V")
 
 SWX = 87.5
 line([(SWX, 46.0), (SWX, 44.5)])

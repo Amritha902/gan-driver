@@ -117,7 +117,7 @@ def power_stage(c, crosstalk_note):
     c.arrow(72.0, 50.0, 80.0, 50.0)
     c.box(80.0, 46.0, 15.0, 8.0, "GaN half-bridge", "high side + low side")
     c.box(80.0, 34.0, 15.0, 8.0, "L$_{loop}$ = 3 nH", "layout parasitic")
-    c.box(80.0, 22.0, 15.0, 8.0, "Load", "2–10 A  ·  50–200 V")
+    c.box(80.0, 22.0, 15.0, 8.0, "Load", "2–10 A  ·  50–150 V")
     swx = 87.5
     c.line([(swx, 46.0), (swx, 44.5)]); c.dot(swx, 44.5)
     c.tag(swx - 1.3, 44.5, "SW", color=INK, fs=8.2, ha="right", b=True)

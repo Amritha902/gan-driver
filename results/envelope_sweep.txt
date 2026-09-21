@@ -1,0 +1,20 @@
+
+  CONVERTER ENVELOPE SWEEP -- sim/buck.cir over its stated range
+  50-200 V bus, 2-10 A load, 500 kHz, 3 nH loop, damped decoupling.
+  Device is EPC2010C-class: 200 V rated. vth = 1.4 V.
+  margin = vth minus the low-side gate WHILE the high side conducts.
+  --------------------------------------------------------------------------------------------
+  bus    load   Rload    peak      overshoot gate      margin    eff      P_dev    verdict
+  50V    2A     12.5Ω    68.1V     36.1%     -0.98V    +2.38V    97.08%   0.74W    ok
+  50V    10A    2.5Ω     61.8V     23.6%     -1.12V    +2.52V    92.86%   3.80W    ok
+  100V   2A     25.0Ω    113.6V    13.6%     -1.16V    +2.56V    97.67%   1.55W    ok
+  100V   10A    5.0Ω     110.1V    10.1%     -1.21V    +2.61V    96.02%   5.35W    ok
+  150V   2A     37.5Ω    171.3V    14.2%     -0.86V    +2.26V    98.07%   2.07W    ok
+  150V   10A    7.5Ω     164.6V    9.8%      -1.09V    +2.49V    97.11%   6.94W    ok
+  200V   2A     50.0Ω    206.2V    3.1%      -1.09V    +2.49V    98.42%   2.25W    OVER-RATING
+  200V   10A    10.0Ω    208.2V    4.1%      -0.74V    +2.14V    97.65%   8.56W    OVER-RATING
+  --------------------------------------------------------------------------------------------
+  2 of 8 points NOT safe:
+    200 V / 2 A -- OVER-RATING
+    200 V / 10 A -- OVER-RATING
+
