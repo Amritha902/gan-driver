@@ -1,62 +1,73 @@
-# The shipped word fails at 200 V in the converter
+# RESOLVED — neither deck was lying; the decoupling network was undamped
 
-Found 2026-09-21, while answering the Review-1 panel's request for measured
-GaN-vs-silicon and theirs-vs-ours numbers. Recorded here because it is not
-yet resolved and it affects what may honestly be claimed.
+Opened 2026-09-21 when `buck.cir` at 200 V rang to 464 V while `dpt.cir` at
+the same bus said 207 V. Closed the same day. Kept because the way it was
+found is worth more than the fix.
 
-## What was measured
+## The disagreement
 
-`sim/buck.cir`, shipped control word, bus swept. Switch-node peak, edge
-resolved at a 0.02 ns step. Device is EPC2010C-class, **200 V rated**.
+| at a 200 V bus | `dpt.cir` | `buck.cir` |
+|---|---|---|
+| peak switch node | 207.3 V | **464.2 V** |
+| low-side gate, HS on | −1.97 V | **+11.78 V** (vth = 1.4 V) |
+| peak device current | — | **112 A** into a 10 A load |
 
-| bus | peak v(sw) | vs rating |
-|-----|-----------|-----------|
-| 100 V | 128.3 V | 72 V margin |
-| 150 V | 188.7 V | 11 V margin |
-| 200 V | **464.2 V** | **over by 264 V** |
+Same devices, same driver, same control word.
 
-Steady, not start-up: the per-cycle peak sits at ~465 V on every one of 150
-cycles. Fully resolved: 50 ps samples, smooth curve through the peak.
+## What it was not
 
-## It is our driver, not the rail and not the converter
+- **Not the edge being measured.** First hypothesis: `dpt.cir`'s metric is
+  `v(hsg) − v(sw)` over 2.015–2.10 µs, which starts at T4 — the *low-side*
+  turn-on, high side as victim. `buck.cir` fails the other way round. But
+  measuring `dpt.cir`'s low-side gate on the high-side edge gives −1.97 V at
+  every corner. It is clean on both edges. Hypothesis dead.
+- **Not the −2 V rail.** A 0 V rail gives 471 V, marginally worse.
+- **Not the output filter.** `LOUT` 22 µH → `dpt`'s 100 µH: 451 V.
+- **Not the dead time.** 15 ns → 30 ns: 462 V.
 
-| configuration at 200 V | peak |
-|---|---|
-| ours, shipped (−2 V rail) | 464.2 V |
-| ours, 0 V off rail | 470.7 V |
-| **base paper's driver** | **204.1 V** |
+## What it was
 
-## Mechanism
+The bus decoupling branch — `Ldec` 0.5 nH, `Cdec` 100 nF, `Rdec` **20 mΩ** —
+is a series L-C with Q ≈ 3.5 near 22 MHz. The switching edges pump it once a
+cycle. At 100 V the ringing is survivable. At 200 V it crosses the low-side
+threshold, and the 464 V is the shoot-through collapsing through the 3 nH
+loop.
 
-Low-side gate reaches **11.78 V** against a 1.4 V threshold while the high
-side is on — full false turn-on, not a near miss. Peak current **112 A**
-against a 10 A load. The 464 V is the inductive kick as that shoot-through
-collapses through the 3 nH loop.
+`dpt.cir` has no decoupling network. That is the entire reason it looked
+clean — not because it was right about the device, but because it was not
+modelling the thing that was wrong.
 
-Our word is NPU = NPD = 8 — every slice, the fastest edge available. Theirs
-stages 2-of-7 then the rest. Slower edge, less dv/dt, less Miller current
-into the off gate. Staging di/dt is what their segmented pattern is *for*.
+**That branch was added earlier in this project to fix a 168 V overshoot at
+100 V.** It did fix that. It was never damped and never checked at the top
+of the bus range.
 
-## The contradiction, unresolved
+## The fix: `Rdec` 20 mΩ → 1 Ω
 
-`headtohead.py` measures **+2.251 V** crosstalk margin for our word at
-200 V / 10 A / 125 C on `sim/dpt.cir`, and the deck says our lead widens as
-the corner hardens. `buck.cir` at 200 V says the opposite. Both cannot be
-right about the same device.
+|  | 100 V bus | 200 V bus |
+|---|---|---|
+| peak v(sw) | 128.3 → **118.0 V** | 464.2 → **208.2 V** |
+| LS gate while HS on | −0.27 → **−0.97 V** | +11.78 → **−0.74 V** |
+| margin to vth | +1.67 → **+2.37 V** | false turn-on → **+2.14 V** |
+| efficiency | 97.39 → **97.42 %** | |
+| device dissipation | 2.800 → **2.598 W** | |
 
-To check, in order:
-1. `dpt.cir` uses LLOAD = 100 µH; the converter uses 22 µH. Different
-   current slope through the dead time.
-2. `dpt.cir` measures one edge from a quiet start. The converter arrives at
-   each edge carrying the previous cycle's ringing.
-3. One of the two decks is wrong.
+Costs nothing, better on every axis, and at 200 V brings `buck.cir` to
+208.2 V against `dpt.cir`'s 207.3 V — **the two decks now agree to 1 V.**
 
-## What must not be claimed until this is resolved
+Q drops below 1 somewhere above 100 mΩ. 1 Ω is overdamped rather than
+critically damped, which is the right side to err on for a branch whose only
+job is to keep the bus stiff.
 
-- that the design is safe across the stated 50–200 V envelope
-- that our lead widens as the corner gets harder
+## What this changes elsewhere
 
-The 100 V results are unaffected — that is where the converter is
-characterised and where every headline number is measured.
+The apparent timestep sensitivity of the overshoot measurement (+4.1 points
+between a 0.2 ns and a 0.02 ns step) was mostly this ringing being aliased.
+Damped, it is +0.7 points. The −2 V rail is now the dominant term at +11.3
+points — the crosstalk margin is not free, and the deck says so.
 
-Reproduce: `python3 scripts/vbus_limit.py`
+## What may now be claimed
+
+Both. The 50–200 V envelope holds with the damped branch. The earlier
+instruction not to claim it is withdrawn.
+
+Reproduce: `python3 scripts/decoupling_damping.py`

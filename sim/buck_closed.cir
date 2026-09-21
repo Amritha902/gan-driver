@@ -209,7 +209,18 @@ Lloop  n1  hstop {LLOOP}
 * decoupling path would remove the quantity being swept.
 .param CDEC=100n
 .param LDEC=0.5n
-.param RDEC=20m
+* RDEC damps the decoupling branch, and the value matters more than it looks.
+* At 20m this network is a series L-C with Q ~ 3.5 at ~22 MHz, and the
+* switching edges pump it every cycle. At a 100 V bus that is survivable;
+* at 200 V it rings the switch node to 464 V, drives the low-side gate to
+* +11.78 V against a 1.4 V threshold and puts 112 A through a 10 A load.
+* sim/dpt.cir has no decoupling network, which is why the double-pulse deck
+* showed none of this and the two decks disagreed. At 1 ohm the branch is
+* damped, the two decks agree (208.2 V here against dpt.cir's 207.3 V), and
+* it is better at 100 V too: 118.0 V instead of 128.3, gate margin +2.37 V
+* instead of +1.67, efficiency 97.42 % instead of 97.39, device dissipation
+* 2.598 W instead of 2.800. See scripts/decoupling_damping.py.
+.param RDEC=1
 Ldec   hstop ndec1 {LDEC}
 Cdec   ndec1 ndec2 {CDEC}
 Rdec   ndec2 0     {RDEC}

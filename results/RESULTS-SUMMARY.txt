@@ -64,8 +64,10 @@
 
   THE CONVERTER'S OWN SWITCH NODE
   ───────────────────────────────────────────────────────────────────────────────────────────────────
-  peak switch node, shipped word, edge resolved                  128.3 V (28.3 % overshoot)     panel_metrics.py
-  same, 0 V off rail at a 0.2 ns step (the old 15.4 % figure)    117.2 V (17.2 % overshoot)     overshoot_audit.py
+  peak switch node, shipped word, edge resolved                  118.0 V (18.0 % overshoot)     panel_metrics.py
+  same, 0 V off rail (so the -2 V rail costs +11.3 points)       106.0 V ( 6.0 % overshoot)     overshoot_audit.py
+  same at a 200 V bus, after damping the decoupling branch       208.2 V ( 4.1 % overshoot)     decoupling_damping.py
+  same at 200 V BEFORE damping -- shoot-through, 112 A           464.2 V (132  % overshoot)     decoupling_damping.py
   peak switch node, same deck, WITHOUT decoupling                168.0 V (68 % overshoot)       output_audit.py
   -> 84 % of the 200 V device rating became 58 %; found by opening the waveform, not the scalars
 

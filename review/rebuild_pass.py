@@ -214,10 +214,10 @@ TOOLOUT = [
  ("toolout/17-converter-power.png", u"Circuit simulation \u2014 the converter",
   u"scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A "
   u"in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, "
-  u"97.70 % efficient. Peak switch node 128.3 V on a 100 V bus: 28.3 % "
-  u"overshoot, on the shipped word at a step that resolves the edge. The "
-  u"0 V rail at 0.2 ns reads 17.2 % \u2014 scripts/overshoot_audit.py. "
-  u"Without bus decoupling: 168 V."),
+  u"97.70 % efficient. Peak switch node 118.0 V on a 100 V bus: 18.0 % "
+  u"overshoot, on the shipped word at a step that resolves the edge. Most "
+  u"of it is the \u22122 V rail (+11.3 points) \u2014 the margin is not "
+  u"free. scripts/overshoot_audit.py."),
  ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
   u"Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches "
   u"+1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with "

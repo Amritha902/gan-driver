@@ -17,20 +17,25 @@ THE TWO CAUSES, AND WHAT EACH IS WORTH
      default. Our shipped control word runs the off rail at -2 V, which is
      what buys the crosstalk margin the whole project is about. A harder off
      bias turns the low side off faster, so di/dt through the 3 nH loop is
-     larger and the inductive kick is larger. Worth +6.9 points, averaged
-     over the two timesteps.
+     larger and the inductive kick is larger. Worth +11.3 points, averaged
+     over the two timesteps. This is now the dominant term.
 
   2. THE TIMESTEP.  A 0.2 ns step on an edge that completes in 0.82 ns has
      about four samples across it, and the peak falls between them. Resolving
-     the edge at 0.02 ns finds a peak the coarse run steps over. Worth +2.8
-     points at 0 V and +5.5 points at -2 V, so +4.1 averaged -- more at -2 V
-     because the edge there is faster, so the coarse grid misses more of it.
+     the edge at 0.02 ns finds a peak the coarse run steps over. Worth only
+     +0.7 points averaged, now that the decoupling branch is damped.
 
-  Neither is a small correction and they compound: 15.4 % becomes 28.3 %,
-  which on a 100 V bus is 128 V rather than 115 V against a 200 V-rated part.
-  At the 200 V corner the same fraction is 257 V, and that is the number that
-  decides whether the device survives, so it belongs in the deck as measured
-  rather than as the friendlier of two available figures.
+     It was +4.1 before that. What the coarse grid had been missing was not
+     the edge, it was the 22 MHz ringing of an undamped decoupling network,
+     aliased. Damping the branch (Rdec 20 mOhm -> 1 ohm, see
+     scripts/decoupling_damping.py) removed the ringing and the apparent
+     timestep sensitivity with it. A measurement that changes a lot with the
+     timestep is usually telling you something about the circuit, not about
+     the solver.
+
+  Together they take 15.4 % to 18.0 %, which on a 100 V bus is 118 V against
+  a 200 V-rated part. That belongs in the deck as measured rather than as the
+  friendlier of two available figures.
 
 WHAT IS STILL DIFFERENT AND IS NOT CHASED HERE
   bucksim.py runs 150 cycles from a cold start and averages the last 20; this

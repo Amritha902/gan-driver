@@ -9,18 +9,18 @@
   ------------------------------------------------------------------------------
                                   latency     edge P_device   P_gate      effovershoot
                                        ns       ns        W        W        %        %
-  GaN HEMT + our driver             2.71    0.82   2.800   0.035   97.39    28.3
-  Si MOSFET + our driver           17.23    7.56   8.925   1.490   95.03    -1.6
+  GaN HEMT + our driver             2.78    0.78   2.598   0.035   97.42    17.9
+  Si MOSFET + our driver           17.55    6.65   8.601   1.489   95.06    -1.5
   ------------------------------------------------------------------------------
-  difference                      -14.52   -6.74  -6.124  -1.455    2.36    29.9
+  difference                      -14.78   -5.87  -6.003  -1.454    2.36    19.4
 
   TABLE B -- our driver against the base paper's
   Same converter, same GaN device, same output stage. Control swapped.
   ------------------------------------------------------------------------------
                                   latency     edge P_device   P_gate      effovershoot
                                        ns       ns        W        W        %        %
-  GaN HEMT + our driver             2.71    0.82   2.800   0.035   97.39    28.3
-  GaN HEMT + base-paper driver      3.91    2.06   3.083   0.031   97.28     4.2
+  GaN HEMT + our driver             2.78    0.78   2.598   0.035   97.42    17.9
+  GaN HEMT + base-paper driver      4.04    2.06   2.928   0.031   97.31     2.9
   ------------------------------------------------------------------------------
-  difference                       -1.20   -1.24  -0.282   0.004    0.11    24.1
+  difference                       -1.27   -1.28  -0.330   0.004    0.11    15.0
 
