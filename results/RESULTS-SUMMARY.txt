@@ -64,7 +64,8 @@
 
   THE CONVERTER'S OWN SWITCH NODE
   ───────────────────────────────────────────────────────────────────────────────────────────────────
-  peak switch node, buck.cir, WITH bus decoupling                115.4 V (15.4 % overshoot)     bucksim.py
+  peak switch node, shipped word, edge resolved                  128.3 V (28.3 % overshoot)     panel_metrics.py
+  same, 0 V off rail at a 0.2 ns step (the old 15.4 % figure)    117.2 V (17.2 % overshoot)     overshoot_audit.py
   peak switch node, same deck, WITHOUT decoupling                168.0 V (68 % overshoot)       output_audit.py
   -> 84 % of the 200 V device rating became 58 %; found by opening the waveform, not the scalars
 
