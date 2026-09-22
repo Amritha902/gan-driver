@@ -218,6 +218,13 @@ TOOLOUT = [
   u"overshoot, on the shipped word at a step that resolves the edge. Most "
   u"of it is the \u22122 V rail (+11.3 points) \u2014 the margin is not "
   u"free. scripts/overshoot_audit.py."),
+ ("toolout/19-ngspice-listing.png", u"The circuit, as ngspice reports it",
+  u"ngspice cannot draw a schematic. It can say what it parsed, which is "
+  u"better evidence: a drawing is what somebody believes the circuit is, "
+  u"this is what was solved. Note rpu1\u2013rpu8 and rpd1\u2013rpd8 \u2014 the "
+  u"sixteen slices, switched in by {runit+(npu>=n?0:1e9)} \u2014 rclk the "
+  u"clamp, and rdec at 1 \u03a9, the damped value. "
+  u"scripts/netlist_listing.py regenerates it, so it cannot go stale."),
  ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
   u"Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches "
   u"+1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with "
@@ -1381,6 +1388,7 @@ PROVENANCE = {
     "fig_master_weight.png": P_SIM,
     # the simulator's own terminal, captured
     "17-converter-power.png": P_SCR, "01-ngspice-crosstalk.png": P_SCR,
+    "19-ngspice-listing.png": P_SCR,
     "18-named-cases.png": P_SCR, "12-result2-ceiling.png": P_SCR,
     "13-result3-split.png": P_SCR,
     # the other two tools
@@ -1526,6 +1534,7 @@ ORDER = [
     # The simulator's own terminal, captured. These were in the 20-slide cut
     # and NOT in the full deck, which is backwards -- the full deck is the one
     # a reviewer takes away, and it was the one with no raw tool output in it.
+    u"The circuit, as ngspice reports it",
     u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",
@@ -1582,6 +1591,7 @@ SHORT = [
     u"System Architecture",
     u"How it works — one use case",                # the master flowchart
     u"The circuit we simulate",
+    u"The circuit, as ngspice reports it",                                          # the netlist, from ngspice
     u"How we run ngspice",
     u"Demo — ngspice and LTspice",                 # the video
     u"Circuit simulation",

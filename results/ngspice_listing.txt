@@ -1,0 +1,206 @@
+ngspice -b sim/buck.cir  with the control block replaced by 'listing'
+This is the circuit as ngspice parsed it.
+
+.param vin=100
+.param d=0.5
+.param fsw=500k
+.param lout=22u
+.param cout=4.7u
+.param rload=10
+.param vdrv=5
+.param vneg=0
+.param npu_ls=8
+.param npd_ls=8
+.param npu_hs=8
+.param npd_hs=8
+.param dt=15n
+.param clken=1
+.param runit=8
+.param tj=25
+.param tr=0.5n
+.param lloop=3n
+.param ncyc=150
+.param cdec=100n
+.param ldec=0.5n
+.param rdec=1
+.param kt={1+0.009*(tj-25)}
+.param vth_t={1.4-0.0015*(tj-25)}
+.param tsw={1/fsw}
+.param vo={d*vin}
+.param bh_t={5.55/kt}
+.param ton={d*tsw-dt}
+.param tls={(1-d)*tsw-2*dt}
+.param tlsd={d*tsw+dt}
+.param io={vo/rload}
+.param tstop={ncyc*tsw}
+lgint g gi {lg}
+lsint s si {ls}
+rgint gi g2 {rg}
+cgs g2 si {cgs}
+rpu1 nu1 out {runit+(npu>=1?0:1e9)}
+rpu2 nu2 out {runit+(npu>=2?0:1e9)}
+rpu3 nu3 out {runit+(npu>=3?0:1e9)}
+rpu4 nu4 out {runit+(npu>=4?0:1e9)}
+rpu5 nu5 out {runit+(npu>=5?0:1e9)}
+rpu6 nu6 out {runit+(npu>=6?0:1e9)}
+rpu7 nu7 out {runit+(npu>=7?0:1e9)}
+rpu8 nu8 out {runit+(npu>=8?0:1e9)}
+rpd1 out nd1 {runit+(npd>=1?0:1e9)}
+rpd2 out nd2 {runit+(npd>=2?0:1e9)}
+rpd3 out nd3 {runit+(npd>=3?0:1e9)}
+rpd4 out nd4 {runit+(npd>=4?0:1e9)}
+rpd5 out nd5 {runit+(npd>=5?0:1e9)}
+rpd6 out nd6 {runit+(npd>=6?0:1e9)}
+rpd7 out nd7 {runit+(npd>=7?0:1e9)}
+rpd8 out nd8 {runit+(npd>=8?0:1e9)}
+rclk nclk vn {rclamp}
+vin vin 0 dc {vin}
+vsin vin bus dc 0
+rloop bus n1 0.3
+lloop n1 hstop {lloop}
+ldec hstop ndec1 {ldec}
+cdec ndec1 ndec2 {cdec}
+rdec ndec2 0 {rdec}
+vshs hstop hsd dc 0
+xhs hsd hsg sw egan {vth_t} {bh_t} 0.4 350p 0.3n 0.15n
+vsls sw lsd dc 0
+xls lsd lsg 0 egan {vth_t} {bh_t} 0.4 350p 0.3n 0.15n
+lo sw nlo {lout} ic=0
+vsout nlo out dc 0
+resr out nc 0.3
+co nc 0 {cout} ic=0
+rload out 0 {rload}
+vpwmhs pwmhs 0 pulse(0 1 0 {tr} {tr} {ton} {tsw})
+vpwmls pwmls 0 pulse(0 1 {tlsd} {tr} {tr} {tls} {tsw})
+vlsvp lsvp 0 dc {vdrv}
+vlsvn lsvn 0 dc {vneg}
+blspu lspu 0 v= v(pwmls)
+blspd lspd 0 v=   1.0000000000e+00 - v(pwmls)
+blsclk lsclk 0 v= ({clken}) * (   1.0000000000e+00 - v(pwmls) )
+xdrvls lspu lspd lsclk lsg lsvp lsvn 0 segdrv {npu_ls} {npd_ls} {runit} 0.5
+vhsvp hsvp sw dc {vdrv}
+vhsvn hsvn sw dc {vneg}
+bhspu hspu sw v= v(pwmhs)
+bhspd hspd sw v=   1.0000000000e+00 - v(pwmhs)
+bhsclk hsclkl sw v= ({clken}) * (   1.0000000000e+00 - v(pwmhs) )
+xdrvhs hspu hspd hsclkl hsg hsvp hsvn sw segdrv {npu_hs} {npd_hs} {runit} 0.5
+
+
+--- listing expand: subcircuits flattened ---
+
+    1 : gan synchronous buck converter: 100 v dc in, 50 v dc out, 250 w
+   78 : .model dgd d(is=1e-30 n=40 cjo=150p vj=1.0 m=0.65 fc=0.5)
+   79 : .model dds d(is=1e-30 n=40 cjo=800p vj=1.0 m=0.5 fc=0.5)
+  124 : .model swp sw(ron=0.01 roff=1e9 vt=0.5 vh=0.05)
+  173 : vin vin 0 dc    1.000000000000000e+02
+  174 : vsin vin bus dc 0
+  176 : rloop bus n1 0.3
+  180 : lloop n1 hstop    3.000000000000000e-09
+  221 : ldec hstop ndec1    5.000000000000000e-10
+  222 : cdec ndec1 ndec2    1.000000000000000e-07
+  223 : rdec ndec2 0    1.000000000000000e+00
+  224 : vshs hstop hsd dc 0
+   89 : l.xhs.lgint hsg xhs.gi   3.000000000000000e-10
+   90 : l.xhs.lsint sw xhs.si   1.500000000000000e-10
+   92 : r.xhs.rgint xhs.gi xhs.g2   4.000000000000000e-01
+   97 : b.xhs.bch hsd xhs.si i= (    5.550000000000000e+00    ) * ( (   5.0000000000e-01 * ( ( v(xhs.g2,xhs.si) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xhs.g2,xhs.si) - (    1.400000000000000e+00    ) ) * ( v(xhs.g2,xhs.si) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) * (   5.0000000000e-01 * ( ( v(xhs.g2,xhs.si) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xhs.g2,xhs.si) - (    1.400000000000000e+00    ) ) * ( v(xhs.g2,xhs.si) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) - (   5.0000000000e-01 * ( ( v(xhs.g2,hsd ) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xhs.g2,hsd ) - (    1.400000000000000e+00    ) ) * ( v(xhs.g2,hsd ) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) * (   5.0000000000e-01 * ( ( v(xhs.g2,hsd ) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xhs.g2,hsd ) - (    1.400000000000000e+00    ) ) * ( v(xhs.g2,hsd ) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) )
+   99 : c.xhs.cgs xhs.g2 xhs.si   3.500000000000000e-10
+  100 : d.xhs.dgd xhs.g2 hsd dgd
+  101 : d.xhs.dds xhs.si hsd dds
+  226 : vsls sw lsd dc 0
+   89 : l.xls.lgint lsg xls.gi   3.000000000000000e-10
+   90 : l.xls.lsint 0 xls.si   1.500000000000000e-10
+   92 : r.xls.rgint xls.gi xls.g2   4.000000000000000e-01
+   97 : b.xls.bch lsd xls.si i= (    5.550000000000000e+00    ) * ( (   5.0000000000e-01 * ( ( v(xls.g2,xls.si) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xls.g2,xls.si) - (    1.400000000000000e+00    ) ) * ( v(xls.g2,xls.si) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) * (   5.0000000000e-01 * ( ( v(xls.g2,xls.si) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xls.g2,xls.si) - (    1.400000000000000e+00    ) ) * ( v(xls.g2,xls.si) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) - (   5.0000000000e-01 * ( ( v(xls.g2,lsd ) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xls.g2,lsd ) - (    1.400000000000000e+00    ) ) * ( v(xls.g2,lsd ) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) * (   5.0000000000e-01 * ( ( v(xls.g2,lsd ) - (    1.400000000000000e+00    ) ) + sqrt ( ( v(xls.g2,lsd ) - (    1.400000000000000e+00    ) ) * ( v(xls.g2,lsd ) - (    1.400000000000000e+00    ) ) +   1.0000000000e-04 ) ) ) )
+   99 : c.xls.cgs xls.g2 xls.si   3.500000000000000e-10
+  100 : d.xls.dgd xls.g2 lsd dgd
+  101 : d.xls.dds xls.si lsd dds
+  229 : lo sw nlo    2.200000000000000e-05     ic=0
+  230 : vsout nlo out dc 0
+  231 : resr out nc 0.3
+  232 : co nc 0    4.700000000000000e-06     ic=0
+  233 : rload out 0    1.000000000000000e+01
+  237 : vpwmhs pwmhs 0 pulse(0 1 0    5.000000000000000e-10        5.000000000000000e-10        9.849999999999999e-07        2.000000000000000e-06    )
+  238 : vpwmls pwmls 0 pulse(0 1    1.015000000000000e-06        5.000000000000000e-10        5.000000000000000e-10        9.700000000000000e-07        2.000000000000000e-06    )
+  240 : vlsvp lsvp 0 dc    5.000000000000000e+00
+  241 : vlsvn lsvn 0 dc    0.000000000000000e+00
+  243 : blspu lspu 0 v= v(pwmls)
+  245 : blspd lspd 0 v=   1.0000000000e+00 - v(pwmls)
+  247 : blsclk lsclk 0 v= (    1.000000000000000e+00    ) * (   1.0000000000e+00 - v(pwmls) )
+  132 : s.xdrvls.spu1 lsvp xdrvls.nu1 lspu 0 swp
+  133 : r.xdrvls.rpu1 xdrvls.nu1 lsg   8.000000000000000e+00
+  134 : s.xdrvls.spu2 lsvp xdrvls.nu2 lspu 0 swp
+  135 : r.xdrvls.rpu2 xdrvls.nu2 lsg   8.000000000000000e+00
+  136 : s.xdrvls.spu3 lsvp xdrvls.nu3 lspu 0 swp
+  137 : r.xdrvls.rpu3 xdrvls.nu3 lsg   8.000000000000000e+00
+  138 : s.xdrvls.spu4 lsvp xdrvls.nu4 lspu 0 swp
+  139 : r.xdrvls.rpu4 xdrvls.nu4 lsg   8.000000000000000e+00
+  140 : s.xdrvls.spu5 lsvp xdrvls.nu5 lspu 0 swp
+  141 : r.xdrvls.rpu5 xdrvls.nu5 lsg   8.000000000000000e+00
+  142 : s.xdrvls.spu6 lsvp xdrvls.nu6 lspu 0 swp
+  143 : r.xdrvls.rpu6 xdrvls.nu6 lsg   8.000000000000000e+00
+  144 : s.xdrvls.spu7 lsvp xdrvls.nu7 lspu 0 swp
+  145 : r.xdrvls.rpu7 xdrvls.nu7 lsg   8.000000000000000e+00
+  146 : s.xdrvls.spu8 lsvp xdrvls.nu8 lspu 0 swp
+  147 : r.xdrvls.rpu8 xdrvls.nu8 lsg   8.000000000000000e+00
+  149 : s.xdrvls.spd1 xdrvls.nd1 lsvn lspd 0 swp
+  150 : r.xdrvls.rpd1 lsg xdrvls.nd1   8.000000000000000e+00
+  151 : s.xdrvls.spd2 xdrvls.nd2 lsvn lspd 0 swp
+  152 : r.xdrvls.rpd2 lsg xdrvls.nd2   8.000000000000000e+00
+  153 : s.xdrvls.spd3 xdrvls.nd3 lsvn lspd 0 swp
+  154 : r.xdrvls.rpd3 lsg xdrvls.nd3   8.000000000000000e+00
+  155 : s.xdrvls.spd4 xdrvls.nd4 lsvn lspd 0 swp
+  156 : r.xdrvls.rpd4 lsg xdrvls.nd4   8.000000000000000e+00
+  157 : s.xdrvls.spd5 xdrvls.nd5 lsvn lspd 0 swp
+  158 : r.xdrvls.rpd5 lsg xdrvls.nd5   8.000000000000000e+00
+  159 : s.xdrvls.spd6 xdrvls.nd6 lsvn lspd 0 swp
+  160 : r.xdrvls.rpd6 lsg xdrvls.nd6   8.000000000000000e+00
+  161 : s.xdrvls.spd7 xdrvls.nd7 lsvn lspd 0 swp
+  162 : r.xdrvls.rpd7 lsg xdrvls.nd7   8.000000000000000e+00
+  163 : s.xdrvls.spd8 xdrvls.nd8 lsvn lspd 0 swp
+  164 : r.xdrvls.rpd8 lsg xdrvls.nd8   8.000000000000000e+00
+  166 : s.xdrvls.sclk lsg xdrvls.nclk lsclk 0 swp
+  167 : r.xdrvls.rclk xdrvls.nclk lsvn   5.000000000000000e-01
+  250 : vhsvp hsvp sw dc    5.000000000000000e+00
+  251 : vhsvn hsvn sw dc    0.000000000000000e+00
+  253 : bhspu hspu sw v= v(pwmhs)
+  255 : bhspd hspd sw v=   1.0000000000e+00 - v(pwmhs)
+  257 : bhsclk hsclkl sw v= (    1.000000000000000e+00    ) * (   1.0000000000e+00 - v(pwmhs) )
+  132 : s.xdrvhs.spu1 hsvp xdrvhs.nu1 hspu sw swp
+  133 : r.xdrvhs.rpu1 xdrvhs.nu1 hsg   8.000000000000000e+00
+  134 : s.xdrvhs.spu2 hsvp xdrvhs.nu2 hspu sw swp
+  135 : r.xdrvhs.rpu2 xdrvhs.nu2 hsg   8.000000000000000e+00
+  136 : s.xdrvhs.spu3 hsvp xdrvhs.nu3 hspu sw swp
+  137 : r.xdrvhs.rpu3 xdrvhs.nu3 hsg   8.000000000000000e+00
+  138 : s.xdrvhs.spu4 hsvp xdrvhs.nu4 hspu sw swp
+  139 : r.xdrvhs.rpu4 xdrvhs.nu4 hsg   8.000000000000000e+00
+  140 : s.xdrvhs.spu5 hsvp xdrvhs.nu5 hspu sw swp
+  141 : r.xdrvhs.rpu5 xdrvhs.nu5 hsg   8.000000000000000e+00
+  142 : s.xdrvhs.spu6 hsvp xdrvhs.nu6 hspu sw swp
+  143 : r.xdrvhs.rpu6 xdrvhs.nu6 hsg   8.000000000000000e+00
+  144 : s.xdrvhs.spu7 hsvp xdrvhs.nu7 hspu sw swp
+  145 : r.xdrvhs.rpu7 xdrvhs.nu7 hsg   8.000000000000000e+00
+  146 : s.xdrvhs.spu8 hsvp xdrvhs.nu8 hspu sw swp
+  147 : r.xdrvhs.rpu8 xdrvhs.nu8 hsg   8.000000000000000e+00
+  149 : s.xdrvhs.spd1 xdrvhs.nd1 hsvn hspd sw swp
+  150 : r.xdrvhs.rpd1 hsg xdrvhs.nd1   8.000000000000000e+00
+  151 : s.xdrvhs.spd2 xdrvhs.nd2 hsvn hspd sw swp
+  152 : r.xdrvhs.rpd2 hsg xdrvhs.nd2   8.000000000000000e+00
+  153 : s.xdrvhs.spd3 xdrvhs.nd3 hsvn hspd sw swp
+  154 : r.xdrvhs.rpd3 hsg xdrvhs.nd3   8.000000000000000e+00
+  155 : s.xdrvhs.spd4 xdrvhs.nd4 hsvn hspd sw swp
+  156 : r.xdrvhs.rpd4 hsg xdrvhs.nd4   8.000000000000000e+00
+  157 : s.xdrvhs.spd5 xdrvhs.nd5 hsvn hspd sw swp
+  158 : r.xdrvhs.rpd5 hsg xdrvhs.nd5   8.000000000000000e+00
+  159 : s.xdrvhs.spd6 xdrvhs.nd6 hsvn hspd sw swp
+  160 : r.xdrvhs.rpd6 hsg xdrvhs.nd6   8.000000000000000e+00
+  161 : s.xdrvhs.spd7 xdrvhs.nd7 hsvn hspd sw swp
+  162 : r.xdrvhs.rpd7 hsg xdrvhs.nd7   8.000000000000000e+00
+  163 : s.xdrvhs.spd8 xdrvhs.nd8 hsvn hspd sw swp
+  164 : r.xdrvhs.rpd8 hsg xdrvhs.nd8   8.000000000000000e+00
+  166 : s.xdrvhs.sclk hsg xdrvhs.nclk hsclkl sw swp
+  167 : r.xdrvhs.rclk xdrvhs.nclk hsvn   5.000000000000000e-01
+  263 : .ic v(sw)=0 v(lsg)=    5.000000000000000e+00     v(hsg)=    0.000000000000000e+00     v(out)=0
+  264 : .tran 0.2n    3.000000000000000e-04     0 2n uic
+  260 : .options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
+  297 : .end
