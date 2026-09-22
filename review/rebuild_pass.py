@@ -812,6 +812,31 @@ metric_slide(
            u"slowness that costs it 6.1 W. Speed and device stress are the "
            u"same knob, and choosing GaN is choosing to manage the stress.")
 
+# ---- slide: the two architectures on one canvas ---------------------------
+# arch_compare.py gives a sheet each on consecutive slides, which works when
+# you can page between them. It does not answer "what exactly did you add"
+# at a glance, because the eye has to hold one sheet while looking at the
+# other. This is the same two architectures against six shared rows.
+if os.path.exists(os.path.join(RES, "fig_arch_sidebyside.png")):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Base paper and ours, side by side")
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(u"Six shared rows. A difference is a difference in one row, "
+               u"and nothing else moves.", B)],
+             level=0, sz=1450, spc=0, bullet=False)])
+    place(sl, "fig_arch_sidebyside.png", 1.62, 4.30)
+    caption(sl, u"Block counts and values are parsed from models/zhangdrv.lib "
+                u"and models/segdrv.lib, not restated from memory \u2014 if "
+                u"either library changes this figure changes with it. The one "
+                u"dotted row is the one they do not have. The red line is "
+                u"where our design loses, and it is on the slide for the same "
+                u"reason the rest of it is.", top=6.04, h=0.96)
+    print("added: Base paper and ours, side by side")
+else:
+    print("  MISSING: results/fig_arch_sidebyside.png -- run scripts/arch_sidebyside.py")
+
+
 _arch_note = (u"Drawn to the same grid: a block that exists in both sits in the "
               u"same place in both, so a missing block leaves a visible hole. "
               u"The drawing and models/zhangdrv.lib are the same claim \u2014 "
@@ -1408,6 +1433,7 @@ PROVENANCE = {
     # the numbers that go with them are on the two metric slides, which say
     # ngspice in their own captions
     "fig_arch_base.png": P_DRAW, "fig_arch_ours.png": P_DRAW,
+    "fig_arch_sidebyside.png": P_DRAW,
     "fig_arch_delta.png": P_DRAW,
     # not a diagram and not output: the deck's own netlist, set in type
     "fig_netlist.png": P_FILE,
@@ -1510,6 +1536,7 @@ ORDER = [
     # it never compared against, while the speech script talked the audience
     # through a slide that did not exist.
     u"We implemented the base paper",
+    u"Base paper and ours, side by side",
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
@@ -1598,6 +1625,7 @@ SHORT = [
     u"Crosstalk simulation",
     u"Driver simulation",
     u"FPGA Controller",                             # 12 % of the count
+    u"Base paper and ours, side by side",            # panel ask 3, at a glance
     u"Their architecture \u2014 the base paper",     # panel ask 3, prev slide
     u"Our architecture \u2014 same stage",           # panel ask 3, this slide
     u"Theirs and ours \u2014 six parameters",        # panel ask 4
