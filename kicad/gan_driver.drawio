@@ -1,0 +1,669 @@
+<mxfile host="app.diagrams.net" agent="gan-driver project" version="21.0.0">
+    <diagram name="Power stage" id="pow">
+      <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+        <root>
+          <mxCell id="pow-0"/>
+          <mxCell id="pow-1" parent="pow-0"/>
+        <mxCell id="pow-1" value="GaN synchronous buck converter - sim/buck.cir" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="pow-1">
+          <mxGeometry x="60" y="30" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-2" value="100 V in, 50.0 V out, 500kHz. Values read from the netlist; edit them here and they are yours to change." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="pow-1">
+          <mxGeometry x="60" y="60" width="1000" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-3" value="VIN" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="pow-1">
+          <mxGeometry x="66" y="124" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="100" y="150" as="sourcePoint"/>
+            <mxPoint x="220" y="150" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-5" value="Rloop  0.3 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="220" y="138" width="70" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="150" as="sourcePoint"/>
+            <mxPoint x="360" y="150" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-7" value="Lloop  3nH" style="shape=mxgraph.electrical.inductors.inductor_3;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=top;verticalAlign=bottom;align=center;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="360" y="136" width="70" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="150" as="sourcePoint"/>
+            <mxPoint x="700" y="150" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-9" value="hstop" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="pow-1">
+          <mxGeometry x="440" y="124" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="150" as="sourcePoint"/>
+            <mxPoint x="500" y="210" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-11" value="Ldec  0.5nH" style="shape=mxgraph.electrical.inductors.inductor_3;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=top;verticalAlign=bottom;align=center;fontSize=11;direction=north;" vertex="1" parent="pow-1">
+          <mxGeometry x="486" y="210" width="28" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="280" as="sourcePoint"/>
+            <mxPoint x="500" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-13" value="Cdec  100nF" style="shape=mxgraph.electrical.capacitors.capacitor_1;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="480" y="320" width="40" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="370" as="sourcePoint"/>
+            <mxPoint x="500" y="410" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-15" value="Rdec  1 Ω  (damping, not parasitic)" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="488" y="410" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="480" as="sourcePoint"/>
+            <mxPoint x="500" y="560" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-17" value="" style="shape=mxgraph.electrical.signal_sources.signal_ground;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;fontSize=10;" vertex="1" parent="pow-1">
+          <mxGeometry x="480" y="560" width="40" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="150" as="sourcePoint"/>
+            <mxPoint x="700" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-19" value="Qhs   eGaN HEMT" style="shape=mxgraph.electrical.transistors.mosfet_2;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;direction=north;labelPosition=right;align=left;spacingLeft=10;verticalAlign=middle;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="670" y="250" width="60" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-20" value="HSG" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="pow-1">
+          <mxGeometry x="570" y="275" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="285" as="sourcePoint"/>
+            <mxPoint x="670" y="285" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="320" as="sourcePoint"/>
+            <mxPoint x="700" y="400" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-23" value="SW" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="pow-1">
+          <mxGeometry x="716" y="372" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-24" value="Qls   eGaN HEMT" style="shape=mxgraph.electrical.transistors.mosfet_2;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;direction=north;labelPosition=right;align=left;spacingLeft=10;verticalAlign=middle;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="670" y="400" width="60" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-25" value="LSG" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="pow-1">
+          <mxGeometry x="570" y="425" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="435" as="sourcePoint"/>
+            <mxPoint x="670" y="435" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="470" as="sourcePoint"/>
+            <mxPoint x="700" y="560" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-28" value="" style="shape=mxgraph.electrical.signal_sources.signal_ground;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;fontSize=10;" vertex="1" parent="pow-1">
+          <mxGeometry x="680" y="560" width="40" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="390" as="sourcePoint"/>
+            <mxPoint x="900" y="390" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-30" value="Lo  22uH" style="shape=mxgraph.electrical.inductors.inductor_3;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=top;verticalAlign=bottom;align=center;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="900" y="376" width="80" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="980" y="390" as="sourcePoint"/>
+            <mxPoint x="1120" y="390" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-32" value="OUT" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="pow-1">
+          <mxGeometry x="1010" y="362" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1120" y="390" as="sourcePoint"/>
+            <mxPoint x="1120" y="430" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-34" value="Resr  0.3 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="1108" y="430" width="24" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1120" y="490" as="sourcePoint"/>
+            <mxPoint x="1120" y="520" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-36" value="Co  4.7uF" style="shape=mxgraph.electrical.capacitors.capacitor_1;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="1100" y="520" width="40" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1120" y="560" as="sourcePoint"/>
+            <mxPoint x="1120" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-38" value="" style="shape=mxgraph.electrical.signal_sources.signal_ground;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;fontSize=10;" vertex="1" parent="pow-1">
+          <mxGeometry x="1100" y="570" width="40" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1120" y="390" as="sourcePoint"/>
+            <mxPoint x="1300" y="390" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="390" as="sourcePoint"/>
+            <mxPoint x="1300" y="440" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-41" value="Rload  10 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="pow-1">
+          <mxGeometry x="1288" y="440" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="pow-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="510" as="sourcePoint"/>
+            <mxPoint x="1300" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pow-43" value="" style="shape=mxgraph.electrical.signal_sources.signal_ground;html=1;strokeWidth=2;strokeColor=#8B0000;fillColor=none;fontSize=10;" vertex="1" parent="pow-1">
+          <mxGeometry x="1280" y="570" width="40" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-44" value="Qhs / Qls are enhancement-mode GaN HEMTs - NO BODY DIODE, so reverse conduction during dead time costs Vth + |Voff| + I*Rds(on), not one diode drop." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="pow-1">
+          <mxGeometry x="60" y="640" width="1300" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-45" value="Rdec is a damping value. At 20 mOhm this branch rings near 22 MHz and drove the low-side gate to +11.8 V against a 1.4 V threshold at a 200 V bus." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="pow-1">
+          <mxGeometry x="60" y="668" width="1300" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="pow-46" value="Not drawn: Vsin, Vshs, Vsls, Vsout are 0 V sources in the netlist used only to sense current. They are measurement points, not components." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="pow-1">
+          <mxGeometry x="60" y="696" width="1300" height="24" as="geometry"/>
+        </mxCell>
+        </root>
+      </mxGraphModel>
+    </diagram>
+    <diagram name="Segmented driver" id="seg">
+      <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+        <root>
+          <mxCell id="seg-0"/>
+          <mxCell id="seg-1" parent="seg-0"/>
+        <mxCell id="seg-1" value="Segmented gate driver - models/segdrv.lib" style="text;html=1;align=left;verticalAlign=top;fontSize=20;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="seg-1">
+          <mxGeometry x="60" y="30" width="900" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-2" value="8 pull-up slices, 8 pull-down, active Miller clamp, selectable off rail." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="seg-1">
+          <mxGeometry x="60" y="60" width="1000" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-3" value="VP  (+5 V)" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="seg-1">
+          <mxGeometry x="50" y="122" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-4" value="OUT  (to HEMT gate)" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="seg-1">
+          <mxGeometry x="50" y="392" width="200" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-5" value="VN  (0 V or -2 V)" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="seg-1">
+          <mxGeometry x="50" y="698" width="160" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="100" y="150" as="sourcePoint"/>
+            <mxPoint x="1250" y="150" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="100" y="420" as="sourcePoint"/>
+            <mxPoint x="1250" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="100" y="690" as="sourcePoint"/>
+            <mxPoint x="1250" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="150" as="sourcePoint"/>
+            <mxPoint x="140" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-10" value="Spu1" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="125" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="250" as="sourcePoint"/>
+            <mxPoint x="140" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-12" value="Rpu1  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="128" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="360" as="sourcePoint"/>
+            <mxPoint x="140" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="150" as="sourcePoint"/>
+            <mxPoint x="270" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-15" value="Spu2" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="255" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="250" as="sourcePoint"/>
+            <mxPoint x="270" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-17" value="Rpu2  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="258" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="360" as="sourcePoint"/>
+            <mxPoint x="270" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="150" as="sourcePoint"/>
+            <mxPoint x="400" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-20" value="Spu3" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="385" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="250" as="sourcePoint"/>
+            <mxPoint x="400" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-22" value="Rpu3  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="388" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="360" as="sourcePoint"/>
+            <mxPoint x="400" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="150" as="sourcePoint"/>
+            <mxPoint x="530" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-25" value="Spu4" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="515" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="250" as="sourcePoint"/>
+            <mxPoint x="530" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-27" value="Rpu4  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="518" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="360" as="sourcePoint"/>
+            <mxPoint x="530" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="150" as="sourcePoint"/>
+            <mxPoint x="660" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-30" value="Spu5" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="645" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="250" as="sourcePoint"/>
+            <mxPoint x="660" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-32" value="Rpu5  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="648" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="360" as="sourcePoint"/>
+            <mxPoint x="660" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="150" as="sourcePoint"/>
+            <mxPoint x="790" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-35" value="Spu6" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="775" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="250" as="sourcePoint"/>
+            <mxPoint x="790" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-37" value="Rpu6  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="778" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="360" as="sourcePoint"/>
+            <mxPoint x="790" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="150" as="sourcePoint"/>
+            <mxPoint x="920" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-40" value="Spu7" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="905" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="250" as="sourcePoint"/>
+            <mxPoint x="920" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-42" value="Rpu7  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="908" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="360" as="sourcePoint"/>
+            <mxPoint x="920" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="150" as="sourcePoint"/>
+            <mxPoint x="1050" y="190" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-45" value="Spu8" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="1035" y="190" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="250" as="sourcePoint"/>
+            <mxPoint x="1050" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-47" value="Rpu8  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="1038" y="290" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="360" as="sourcePoint"/>
+            <mxPoint x="1050" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="420" as="sourcePoint"/>
+            <mxPoint x="140" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-50" value="Rpd1  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="128" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="530" as="sourcePoint"/>
+            <mxPoint x="140" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-52" value="Spd1" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="125" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="630" as="sourcePoint"/>
+            <mxPoint x="140" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="420" as="sourcePoint"/>
+            <mxPoint x="270" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-55" value="Rpd2  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="258" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="530" as="sourcePoint"/>
+            <mxPoint x="270" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-57" value="Spd2" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="255" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="630" as="sourcePoint"/>
+            <mxPoint x="270" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="420" as="sourcePoint"/>
+            <mxPoint x="400" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-60" value="Rpd3  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="388" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="530" as="sourcePoint"/>
+            <mxPoint x="400" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-62" value="Spd3" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="385" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="630" as="sourcePoint"/>
+            <mxPoint x="400" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="420" as="sourcePoint"/>
+            <mxPoint x="530" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-65" value="Rpd4  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="518" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="530" as="sourcePoint"/>
+            <mxPoint x="530" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-67" value="Spd4" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="515" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="630" as="sourcePoint"/>
+            <mxPoint x="530" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-69" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="420" as="sourcePoint"/>
+            <mxPoint x="660" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-70" value="Rpd5  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="648" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="530" as="sourcePoint"/>
+            <mxPoint x="660" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-72" value="Spd5" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="645" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-73" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="630" as="sourcePoint"/>
+            <mxPoint x="660" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="420" as="sourcePoint"/>
+            <mxPoint x="790" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-75" value="Rpd6  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="778" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-76" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="530" as="sourcePoint"/>
+            <mxPoint x="790" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-77" value="Spd6" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="775" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-78" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="790" y="630" as="sourcePoint"/>
+            <mxPoint x="790" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-79" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="420" as="sourcePoint"/>
+            <mxPoint x="920" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-80" value="Rpd7  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="908" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="530" as="sourcePoint"/>
+            <mxPoint x="920" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-82" value="Spd7" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="905" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-83" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="630" as="sourcePoint"/>
+            <mxPoint x="920" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-84" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="420" as="sourcePoint"/>
+            <mxPoint x="1050" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-85" value="Rpd8  8 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="1038" y="460" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-86" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="530" as="sourcePoint"/>
+            <mxPoint x="1050" y="570" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-87" value="Spd8" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="1035" y="570" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-88" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="630" as="sourcePoint"/>
+            <mxPoint x="1050" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-89" value="ACTIVE MILLER CLAMP - ours; the base paper has none" style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="seg-1">
+          <mxGeometry x="1170" y="360" width="420" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-90" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="420" as="sourcePoint"/>
+            <mxPoint x="1200" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-91" value="Sclk" style="shape=mxgraph.electrical.electro-mechanical.switch_normally_open;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;labelPosition=right;align=left;spacingLeft=6;verticalAlign=middle;fontSize=10;" vertex="1" parent="seg-1">
+          <mxGeometry x="1185" y="460" width="30" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="520" as="sourcePoint"/>
+            <mxPoint x="1200" y="560" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-93" value="Rclk  0.5 Ω" style="shape=mxgraph.electrical.resistors.resistor_2;html=1;direction=north;strokeWidth=2;strokeColor=#8B0000;fillColor=none;verticalLabelPosition=middle;verticalAlign=middle;labelPosition=right;align=left;spacingLeft=6;fontSize=11;" vertex="1" parent="seg-1">
+          <mxGeometry x="1188" y="560" width="24" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-94" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeWidth=2;strokeColor=#1F6F3F;" edge="1" parent="seg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="630" as="sourcePoint"/>
+            <mxPoint x="1200" y="690" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="seg-95" value="Each slice is a switch and a resistor, and the resistor carries the code. In the netlist: Rpu3 nu3 out {runit + (npu&amp;gt;=3 ? 0 : 1e9)}." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="seg-1">
+          <mxGeometry x="60" y="750" width="1400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-96" value="Ask for three or more slices and Rpu3 is 8 ohm, in circuit; ask for fewer and it becomes 1 Gohm - that slice switched out. Drive strength is how many of the 8 parallel paths are live." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="seg-1">
+          <mxGeometry x="60" y="778" width="1400" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="seg-97" value="The clamp is worth +0.82 V of crosstalk margin and the -2 V rail a further +2.01 V. The 8 slices - the part everyone builds - cost 0.00 % to freeze." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="seg-1">
+          <mxGeometry x="60" y="806" width="1400" height="24" as="geometry"/>
+        </mxCell>
+        </root>
+      </mxGraphModel>
+    </diagram>
+</mxfile>
