@@ -17,7 +17,7 @@ Symbol pin offsets (LTspice stock library):
     SEGDRV   pu(-32,32) pd(-32,64) clk(-32,96) out(160,64) vp(160,16)
              vn(160,112) ref(64,160)
 """
-import os
+import os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT  = os.path.join(ROOT, "ltspice", "BUCK_converter.asc")
@@ -48,6 +48,21 @@ sym("ind", 272, 240, InstName="Lloop", Value="{LLOOP}") # pins (288,256) (288,33
 w(288, 240, 288, 256)
 w(288, 336, 288, 384)
 flag(288, 352, "bus")
+
+# ------------------------------------------- damped bus decoupling branch --
+# This branch was added to sim/buck.cir after this schematic was first drawn,
+# and because the .param block below used to be hardcoded, the LTspice sheet
+# and the ngspice netlist quietly became different circuits. It is the branch
+# that shoot-throughed at a 200 V bus while Rdec was 20 mOhm, so leaving it
+# off the drawing would hide the most instructive part of the converter.
+sym("ind", 384, 432, InstName="Ldec", Value="{LDEC}")   # pins (400,448) (400,528)
+w(400, 384, 400, 448)
+sym("cap", 384, 544, InstName="Cdec", Value="{CDEC}")   # pins (400,544) (400,608)
+w(400, 528, 400, 544)
+sym("res", 384, 640, InstName="Rdec", Value="{RDEC}")   # pins (400,656) (400,736)
+w(400, 608, 400, 656)
+flag(400, 736, "0")
+txt(424, 520, ";damped bus decoupling - Rdec is a damping value, not a parasitic", 1)
 
 # ------------------------------------------------------------- half-bridge --
 # High-side EGAN at (560,416): d(608,384) g(528,464) s(608,544)
@@ -115,16 +130,30 @@ txt(1040, 716, ";10 ohm load - 48.6 V, 4.88 A out", 1)
 txt(112, 408, ";segmented gate driver", 1)
 txt(112, 664, ";segmented gate driver", 1)
 
+# The .param block is READ FROM sim/buck.cir rather than retyped here. It was
+# retyped once, and the moment the decoupling branch was added to the netlist
+# this schematic started describing a converter that no longer existed. A
+# drawing that cannot follow its own netlist is worse than no drawing, because
+# it is believed.
+def netlist_params():
+    src = os.path.join(ROOT, "sim", "buck.cir")
+    out = []
+    for line in open(src, encoding="utf-8"):
+        m = re.match(r"^(\.param\s+.+?)\s*(?:\$.*)?$", line.rstrip())
+        if m:
+            out.append(m.group(1).rstrip())
+    return "\n".join(out)
+
+
 DIRECTIVES = """.include egan.lib
 .include segdrv.lib
-.param VIN=100 D=0.5 FSW=500k
-.param LOUT=22u COUT=4.7u RLOAD=10
-.param VDRV=5 VNEG=-2 CLKEN=1
-.param NPU_LS=8 NPD_LS=8 NPU_HS=8 NPD_HS=8 RUNIT=8
-.param DT=15n TJ=25 LLOOP=3n
-.param KT={1+0.009*(TJ-25)} BH_T={5.55/KT} VTH_T={1.4-0.0015*(TJ-25)}
-.param TSW={1/FSW} TON={D*TSW-DT} TLS={(1-D)*TSW-2*DT} TLSD={D*TSW+DT} TR=0.5n
-.param VO={D*VIN} IO={VO/RLOAD}
+%s
+* ---- the shipped control word -------------------------------------------
+* sim/buck.cir defaults VNEG to 0 because the sweeps set it per run. Every
+* headline in this project is measured with the -2 V off rail engaged, so the
+* sheet states it explicitly rather than silently running a configuration the
+* results do not describe. A later .param wins in LTspice.
+.param VNEG=-2
 Vpwmhs pwmhs 0 PULSE(0 1 0 {TR} {TR} {TON} {TSW})
 Vpwmls pwmls 0 PULSE(0 1 {TLSD} {TR} {TR} {TLS} {TSW})
 Vlsvp lsvp 0 DC {VDRV}
@@ -141,7 +170,7 @@ Bhsclk hsclkl sw V={CLKEN*(1-v(pwmhs))}
 .options reltol=1e-3 abstol=1e-10 vntol=1e-6 chgtol=1e-15 gmin=1e-12
 .tran 0.2n 300u 0 2n uic
 .meas TRAN vout AVG V(out) FROM 280u TO 300u
-.meas TRAN iout AVG I(Rload) FROM 280u TO 300u"""
+.meas TRAN iout AVG I(Rload) FROM 280u TO 300u""" % netlist_params()
 
 y = 960
 for line in DIRECTIVES.splitlines():

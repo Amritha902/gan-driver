@@ -812,6 +812,55 @@ metric_slide(
            u"slowness that costs it 6.1 W. Speed and device stress are the "
            u"same knob, and choosing GaN is choosing to manage the stress.")
 
+# ---- slides: the circuits, as schematics ----------------------------------
+# The deck had block diagrams of the driver and a netlist listing, but no
+# schematic of it. "8 x pull-up slice" in a box is a claim; a sheet with
+# eight drawn branches is the circuit. All three are generated from the
+# netlist and the model files, so they cannot drift from what is simulated.
+_SCH = [
+    ("fig_sch_base.png",
+     u"Their driver, drawn \u2014 the reimplementation",
+     u"Zhang et al., ISPSD 2020, built as a schematic from our "
+     u"implementation of it.",
+     u"14 columns per bank, because their seven slices are split across two "
+     u"stages and each stage is its own branch. The stage-2 branches carry "
+     u"an extra series switch gated by the pattern step \u2014 that switch is "
+     u"their mechanism. Every resistor shows its own conditional, so the "
+     u"sheet can be checked against models/zhangdrv.lib line by line. No "
+     u"clamp branch, and the off rail is tied to its reference."),
+    ("fig_sch_ours.png",
+     u"Our driver, drawn \u2014 the same stage, improved",
+     u"models/segdrv.lib. Eight slices a bank, switching together, plus the "
+     u"two blocks they do not have.",
+     u"Each slice is a switch and a resistor, and the resistor carries the "
+     u"code: Rpu3 is 8 \u03a9 if the word asks for three or more slices and "
+     u"1 G\u03a9 if it does not. Drive strength is how many of the eight "
+     u"parallel paths are live. On the right, Sclk and Rclk \u2014 the active "
+     u"Miller clamp, pulling the gate to the off rail through 0.5 \u03a9."),
+    ("fig_sch_converter.png",
+     u"The converter, drawn",
+     u"sim/buck.cir as a schematic. Values read from the netlist at build "
+     u"time.",
+     u"Supply, power-loop R and L, the damped bus decoupling branch, the GaN "
+     u"half-bridge, output filter and load. Qhs and Qls are enhancement-mode "
+     u"GaN HEMTs with NO BODY DIODE \u2014 reverse conduction during dead time "
+     u"costs Vth + |Voff| + I\u00b7Rds(on), not one diode drop, and that is "
+     u"what sets the dead-time trade."),
+]
+for _f, _t, _lead, _cap in _SCH:
+    if not os.path.exists(os.path.join(RES, _f)):
+        print("  MISSING FIGURE: %s -- run scripts/kicad_previews.py" % _f)
+        continue
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, _t)
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(_lead, B)], level=0, sz=1450, spc=0, bullet=False)])
+    place(sl, _f, 1.60, 4.12)
+    caption(sl, _cap, top=5.84, h=1.16)
+    print("added: %s" % _t)
+
+
 # ---- slide: the two architectures on one canvas ---------------------------
 # arch_compare.py gives a sheet each on consecutive slides, which works when
 # you can page between them. It does not answer "what exactly did you add"
@@ -1496,6 +1545,10 @@ PROVENANCE = {
     # ngspice in their own captions
     "fig_arch_base.png": P_DRAW, "fig_arch_ours.png": P_DRAW,
     "fig_arch_sidebyside.png": P_DRAW,
+    # KiCad sheets: drawn circuits, generated from the netlist and the
+    # model files. Not simulation output, and not freehand either.
+    "fig_sch_converter.png": P_DRAW, "fig_sch_ours.png": P_DRAW,
+    "fig_sch_base.png": P_DRAW,
     "fig_arch_delta.png": P_DRAW,
     # not a diagram and not output: the deck's own netlist, set in type
     "fig_netlist.png": P_FILE,
@@ -1598,6 +1651,9 @@ ORDER = [
     # it never compared against, while the speech script talked the audience
     # through a slide that did not exist.
     u"We implemented the base paper",
+    u"Their driver, drawn \u2014 the reimplementation",
+    u"Our driver, drawn \u2014 the same stage",
+    u"The converter, drawn",
     u"Base paper and ours, side by side",
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
@@ -1688,6 +1744,8 @@ SHORT = [
     u"Crosstalk simulation",
     u"Driver simulation",
     u"FPGA Controller",                             # 12 % of the count
+    u"Their driver, drawn \u2014 the reimplementation",  # their circuit, built
+    u"Our driver, drawn \u2014 the same stage",         # ours, on top of it
     u"Base paper and ours, side by side",            # panel ask 3, at a glance
     u"Their architecture \u2014 the base paper",     # panel ask 3, prev slide
     u"Our architecture \u2014 same stage",           # panel ask 3, this slide
