@@ -302,6 +302,78 @@ solver options. The only thing that differs is the control.
 
 ---
 
+## NEW — The two architectures side by side (45 s)
+
+Put it up, then be quiet for two seconds. It is a slide people read.
+
+> "Six rows, the same rows on both sides. Their control source is one bias
+> resistor, fixed at fabrication. Ours is an FPGA — six fields, 720 words,
+> written at run time. Their drive strength is seven slices split two and
+> five; ours is eight and eight, thermometer coded."
+
+> "Then the row that is the whole point. Off-state hold: they have none. We
+> have an active Miller clamp. And their off rail is tied to its reference;
+> ours selects minus two volts."
+
+> "The power stage row is identical, deliberately. Same device, same
+> converter, same output stage. Only the control differs — which is why the
+> numbers underneath attribute to the control and to nothing else."
+
+Read the red line out loud. Do not let them find it.
+
+> "And where it costs us: thirteen per cent more gate power, and eighteen per
+> cent overshoot against their three."
+
+If asked whether the diagram matches the code: every count on it is parsed
+from models/zhangdrv.lib and models/segdrv.lib at build time. Change either
+library and the figure changes with it.
+
+---
+
+## NEW — The circuit as ngspice reports it (30 s)
+
+> "A drawing is what somebody believes the circuit is. This is what was
+> actually solved — ngspice's own listing, the circuit as it parsed it."
+
+> "rpu1 through rpu8, rpd1 through rpd8: the sixteen slices, each switched in
+> by that conditional — runit if the control word asks for it, one gigaohm if
+> it does not. rclk is the Miller clamp. That is the contribution as netlist,
+> rather than as a box with '8 slices' written in it."
+
+> "And rdec is one ohm, the damped value."
+
+If asked why not a schematic: ngspice has no schematic plotting, it is a
+simulator. There are KiCad sheets and a draw.io file in the repository for
+the drawn version; this slide is the authoritative one.
+
+---
+
+## NEW — The converter across its envelope (45 s) — **core slide**
+
+> "Every converter number in this project used to be taken at one hundred
+> volts. This is all eight bus and load points."
+
+> "The margin column is the answer: threshold minus the highest the off gate
+> reaches while the other device is conducting. Positive at every point, plus
+> 2.14 volts at the worst. The off device stays off across the range."
+
+Now take the two red rows before anyone asks.
+
+> "At a two hundred volt bus the peak exceeds the device rating. That is not
+> the driver failing — the overshoot there is the smallest in the whole
+> sweep, three and four per cent. It is that a two-hundred-volt-rated part
+> cannot run a two hundred volt bus, because any overshoot at all then
+> exceeds the rating. So the envelope is fifty to one hundred and fifty volts
+> on this device. Two hundred needs a higher-rated part, not a different
+> driver."
+
+If asked how it was found: we ran it, and the first attempt shoot-throughed
+at 464 V with 112 A through a 10 A load. The cause was a bus decoupling
+branch we had added ourselves to cure a different problem, left undamped.
+Damping it fixed the 200 V case and improved every metric at 100 V too.
+
+---
+
 ## NEW — Head to head with the base paper (60 s) — **core slide**
 
 > "Same deck, same GaN, same power loop, same parasitics. Only the driver is
@@ -398,6 +470,34 @@ it empirically and measured each step, and that is on the slide.
 *Limits to say yourself:* the predrivers in that stage are still behavioural,
 and there is no equivalent check on the GaN side — no open PDK ships a 200 V
 GaN HEMT, so that one model is still what everything rests on.
+
+---
+
+## NEW — The hardware, costed (45 s)
+
+This is the answer to "why is there no hardware". Do not apologise; answer.
+
+> "Three tiers. One, the FPGA on a real board — days; the constraints file
+> already targets the part, and it shows the slices toggling and the dead
+> time sweeping on silicon. Two, a GaN half-bridge evaluation board at
+> forty-eight volts, two to four weeks — that is the one that matters,
+> because it measures the off device's gate during the other one's turn-on,
+> which is our central claim. Three, our own eight-slice stage on a custom
+> board: months, Review-III."
+
+Then the part that shows the thinking rather than the wanting.
+
+> "Our edge is 0.78 nanoseconds. Seeing it needs about 450 megahertz of scope
+> bandwidth at minimum, realistically a gigahertz. And a ten-to-one probe with
+> a ground clip carries roughly ten nanohenries in its ground lead, which
+> manufactures ringing that is not in the circuit — a GaN gate has to be
+> probed with a short pigtail or coax, or the trace shows the probe rather
+> than the converter."
+
+> "And one fact: no commercial IC implements an eight-slice independently
+> controllable segmented driver. Tier three is eight single-channel drivers
+> in parallel, enabled per slice, summed through eight ohms — which is
+> exactly what our model file already describes."
 
 ---
 

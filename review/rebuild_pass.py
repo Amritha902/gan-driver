@@ -1254,6 +1254,68 @@ if i is not None:
     print("rebuilt: Where we are, and what is next")
 
 
+# ---- slide: the hardware, costed ------------------------------------------
+# "A hardware half-bridge, measured" is 7 of the 10 points outstanding, and
+# until now the deck said only that it was not done. A panel reads a bare
+# "future work: hardware" as an admission. A plan that names the board, the
+# bus voltage, what gets measured and what it costs reads as someone who
+# knows exactly what they would do next, which is a different answer to the
+# same question.
+sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(sl)
+set_title(sl, u"The hardware, costed")
+add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+    para([(u"7 of the 10 points outstanding. Not vague \u2014 three tiers, "
+           u"and we know which one is which.", B)],
+         level=0, sz=1450, spc=0, bullet=False)])
+
+_hw = [
+    [u"", u"What gets measured", u"Cost", u"Time", u"Status"],
+    [u"1.  FPGA on a real board",
+     u"The 8+8 slice outputs toggling and dead_time_gen.v sweeping "
+     u"5\u201335 ns, on silicon rather than in a report",
+     u"\u20b98\u201312k\nor a lab board",
+     u"days",
+     (u"nearest", NEWC, True)],
+    [u"2.  GaN half-bridge eval board, 48 V",
+     u"The OFF device's gate during the other's turn-on, with and without "
+     u"the \u22122 V rail \u2014 our central claim, on real silicon",
+     u"\u20b915\u201325k",
+     u"2\u20134 weeks",
+     (u"the one that matters", NEWC, True)],
+    [u"3.  The segmented driver itself",
+     u"Everything above, on our own 8-slice stage at 100 V / 500 kHz",
+     u"custom PCB,\nseveral spins",
+     u"months",
+     (u"Review-III", HOTC, True)],
+]
+grid(sl, 0.70, 1.72, 12.10, 2.65, _hw, widths=(21, 40, 13, 10, 16),
+     sizes=(11.5, 11.0))
+
+add_text(sl, 0.70, 4.56, 12.10, 2.10, [
+    para([(u"Two constraints we already know, because they decide whether "
+           u"tier 2 produces evidence or noise.", B)],
+         level=0, sz=1250, spc=170, bullet=False),
+    para([(u"Scope bandwidth. ", B),
+          (u"Our edge is 0.78 ns. Bandwidth needed is 0.35 / 0.78 ns \u2248 "
+           u"450 MHz to see the edge at all, realistically 1 GHz. On a 100 MHz "
+           u"teaching-lab scope the measurement would be of the scope.", N)],
+         level=0, sz=1200, spc=150, bullet=True),
+    para([(u"Probe grounding. ", B),
+          (u"A 10:1 probe with a ground clip carries roughly 10 nH in its "
+           u"ground lead, which manufactures ringing that is not in the "
+           u"circuit. A GaN gate has to be probed with a short pigtail or a "
+           u"coaxial connection, or the trace shows the probe.", N)],
+         level=0, sz=1200, spc=150, bullet=True),
+    para([(u"And one thing that is not a constraint but a fact: no commercial "
+           u"IC implements an 8-slice independently controllable segmented "
+           u"driver. Tier 3 is eight single-channel drivers in parallel, "
+           u"enabled per slice, summed through 8 \u03a9 \u2014 which is "
+           u"exactly what models/segdrv.lib already describes.", N)],
+         level=0, sz=1200, spc=0, bullet=False)])
+print("added: The hardware, costed")
+
+
 # ======================================================= geometry cleanup ==
 # Nine QA flags had been carried for weeks as a "known-good baseline, all
 # investigated false positives". Six of them were not false positives. They
@@ -1583,6 +1645,7 @@ ORDER = [
     u"Does the architecture close the gaps?",
     u"Work Completed",
     u"Where we are, and what is next",
+    u"The hardware, costed",
     u"Conclusion",
     u"References  (1–15)",
     u"References  (16–30)",
@@ -1634,6 +1697,7 @@ SHORT = [
     u"Closing the loop",                            # the converter regulates
     u"Does the result depend on the model?",
     u"Does the architecture close the gaps?",       # the reviewer's question
+    u"The hardware, costed",                        # answers "why no hardware"
     u"Work Completed",                             # completion
     u"References  (1–15)",
 ]
