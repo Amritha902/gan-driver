@@ -20,7 +20,7 @@ setting would have delivered anyway.
 We built a 6-field, 720-word segmented driver for a 100 V / 500 kHz
 synchronous buck converter, implemented the closest published driver
 (Zhang *et al.*, ISPSD 2020) in the same testbench, and searched the whole
-control-word space across 36 operating points — 60,533 transient
+control-word space across 36 operating points — 66,924 transient
 simulations in ngspice.
 
 Choosing a better **fixed** word is worth **26.5 %** of the baseline.
@@ -75,7 +75,7 @@ programmability earns its silicon.
 ### Contribution
 
 1. The full control-word space searched, not sampled: 720 words × 36
-   operating points, 60,533 transients.
+   operating points, 66,924 transients.
 2. A decomposition of the gain into the part a fixed word captures and the
    part that genuinely requires adaptation.
 3. A complexity ladder — constant word, one comparator, two comparators,

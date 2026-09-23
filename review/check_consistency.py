@@ -59,6 +59,21 @@ for v in sorted(spoken):
     if bare not in DTn:
         fails.append("speech quotes %-12s but the deck does not contain it" % ("'%s'" % vv))
 
+# The transient count used to be a literal here, and it rotted: the deck said
+# 60,533 for six weeks after the true figure had moved to 66,924, and this
+# check passed every time because it only compared the string on a slide to
+# the same string in RESULTS-SUMMARY. Text agreeing with text is not either
+# of them agreeing with the data. Now the number is read from the file that
+# scripts/count_transients.py derives from the result CSVs, so a stale count
+# fails the build instead of surviving it.
+_tc = os.path.join(ROOT, "results", "transient_count.value")
+if os.path.exists(_tc):
+    TRANSIENTS = int(open(_tc).read().strip())
+else:
+    TRANSIENTS = None
+    warns.append("results/transient_count.value missing -- run "
+                 "scripts/count_transients.py; the transient count is unverified")
+
 # ---- 2. headline results must match RESULTS-SUMMARY ------------------------
 HEADLINES = {
     "3.5 %":   "ceiling on scheduling (n = 36)",
@@ -66,15 +81,26 @@ HEADLINES = {
     "2.6 %":   "(B) adaptation (n = 36)",
     "8.9 %":   "adaptation share (n = 36)",
     "2.576":   "shipped margin",
-    "60533":   "transient count",
+    str(TRANSIENTS): "transient count",
 }
+# A number absent from BOTH used to pass silently, because the old logic only
+# fired when one side had it and the other did not. That is how a transient
+# count that had gone stale in every file at once survived: nothing disagreed
+# with anything, because nobody was claiming the right number anywhere.
+#
+# So absence is now a failure in its own right. Tested by hand: set
+# results/transient_count.value to a wrong number and this check fails, which
+# is the whole reason to have it.
 for num, what in HEADLINES.items():
     n = norm(num)
     in_deck, in_sum = n in DTn, n in SMn
     if in_deck and not in_sum:
         fails.append("%-8s (%s) is on a slide but NOT in RESULTS-SUMMARY" % (num, what))
-    if in_sum and not in_deck:
+    elif in_sum and not in_deck:
         warns.append("%-8s (%s) is in RESULTS-SUMMARY but not on any slide" % (num, what))
+    elif not in_deck and not in_sum:
+        fails.append("%-8s (%s) appears in NEITHER the deck nor RESULTS-SUMMARY "
+                     "-- the value it is derived from has moved" % (num, what))
 
 # ---- 3. every file the build references must exist -------------------------
 build = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "build.py"),

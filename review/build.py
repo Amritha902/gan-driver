@@ -472,7 +472,7 @@ s11 = S[17]
 retitle(s11, "Why the numbers hold")
 
 TILES = [
-    ("60,533", "transient simulations",
+    ("66,924", "transient simulations",
      "Every sweep, corner study, robustness run, loop-inductance and EMI sweep, start to finish."),
     ("720", "control words, searched in full",
      "At every corner — so each per-corner optimum is a true optimum, not the best of a shortlist."),
@@ -1216,7 +1216,7 @@ for _sh in list(s_ts.shapes):
 
 TECH = [
     ("ngspice 42", "every transient in the study",
-     "60,533 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 3.5 % ceiling"),
+     "66,924 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 3.5 % ceiling"),
     ("LTspice 24", "independent re-run of the shipped netlists",
      "1.6487 / 0.8282 / \u22121.1768 V \u2014 matches ngspice within 2 mV"),
     ("MATLAB Online", "independent re-analysis of the same CSVs",

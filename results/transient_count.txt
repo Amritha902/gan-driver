@@ -1,0 +1,31 @@
+
+  TRANSIENT COUNT -- derived from the result files, not typed
+  One row of a sweep CSV is one ngspice run. Two files run twice
+  per row (a power run and an edge run) and are marked x2.
+  --------------------------------------------------------------------------
+  full_grid.csv                    25911      720 control words x 36 operating points
+  robust.csv                       15839      robustness sweep
+  lloop_sweep.csv.gz                7192      loop-inductance sweep
+  robust_fix.csv                    5760      robustness re-run after the fix
+  device_mc_full_dev18.csv.gz       2879      device 18 re-run on the full grid
+  device_mc.csv                     3455      device Monte-Carlo, 24 devices
+  full_corners.csv                  2160      corner sweep
+  corners.csv                       1511      the original 4-corner study
+  emi_sweep.csv.gz                  1440      EMI sweep
+  sweep_nominal.csv                  720      720 words at the nominal corner
+  cases.csv                           13      named cases
+  buck_sweep.csv                       8      converter sweep
+  envelope_sweep.csv                   8  x2  envelope sweep: one power + one edge run per point
+  sky130_drive_strength.csv            8      SKY130 transistor-level characterisation
+  headtohead.csv                       6      head to head against the base paper
+  panel_metrics.csv                    3  x2  panel metrics: one power + one edge run per config
+  --------------------------------------------------------------------------
+  TOTAL  66924 transient simulations
+
+  Excluded, and why:
+    closedloop_wave.csv      4,000 time points of ONE run's waveform, not 4,000 runs
+    robust_all.csv           duplicate of robust.csv
+    sweep_matlab.csv         sweep_nominal.csv re-exported for MATLAB
+    full_grid.csv.gz         compressed copy of full_grid.csv
+    device_mc.csv.gz         compressed copy of device_mc.csv
+
