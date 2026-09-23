@@ -812,6 +812,33 @@ metric_slide(
            u"slowness that costs it 6.1 W. Speed and device stress are the "
            u"same knob, and choosing GaN is choosing to manage the stress.")
 
+# ---- slide: where we win and where we lose --------------------------------
+# The two comparison tables are complete but they are tables, and a table
+# makes a reader do the arithmetic to see which rows go which way. This is
+# the same six parameters as signed bars, so the shape of the result -- four
+# wins, two losses, both losses from the same cause -- is visible before a
+# single number is read.
+if os.path.exists(os.path.join(RES, "fig_winlose.png")):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Where we win, and where we lose")
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(u"Six parameters, both comparisons. Blue is better, red is "
+               u"worse, and the red bars are drawn at full length.", B)],
+             level=0, sz=1450, spc=0, bullet=False)])
+    place(sl, "fig_winlose.png", 1.60, 4.22)
+    caption(sl, u"Bars are a symmetric relative difference, bounded to "
+                u"\u00b1100 %, because the six parameters are in four different "
+                u"units \u2014 one axis, never two. Plain percentage change was "
+                u"tried first and was wrong: silicon's overshoot is \u22121.5 %, "
+                u"so dividing by a near-zero opposite-sign baseline put that row "
+                u"at \u22121284 %. Raw values under every bar. "
+                u"scripts/winlose_figure.py.", top=5.94, h=1.10)
+    print("added: Where we win, and where we lose")
+else:
+    print("  MISSING: results/fig_winlose.png -- run scripts/winlose_figure.py")
+
+
 # ---- slides: the circuits, as schematics ----------------------------------
 # The deck had block diagrams of the driver and a netlist listing, but no
 # schematic of it. "8 x pull-up slice" in a box is a claim; a sheet with
@@ -1544,6 +1571,7 @@ PROVENANCE = {
     # the numbers that go with them are on the two metric slides, which say
     # ngspice in their own captions
     "fig_arch_base.png": P_DRAW, "fig_arch_ours.png": P_DRAW,
+    "fig_winlose.png": P_SIM,
     "fig_arch_sidebyside.png": P_DRAW,
     # KiCad sheets: drawn circuits, generated from the netlist and the
     # model files. Not simulation output, and not freehand either.
@@ -1658,6 +1686,7 @@ ORDER = [
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
+    u"Where we win, and where we lose",
     u"The converter across its own envelope",
     u"Head to head with the base paper",
     u"The closest published drivers",
@@ -1750,6 +1779,7 @@ SHORT = [
     u"Their architecture \u2014 the base paper",     # panel ask 3, prev slide
     u"Our architecture \u2014 same stage",           # panel ask 3, this slide
     u"Theirs and ours \u2014 six parameters",        # panel ask 4
+    u"Where we win, and where we lose",             # the same, as a picture
     u"The converter across its own envelope",       # the envelope, measured
     u"Head to head with the base paper",            # the comparison
     u"Closing the loop",                            # the converter regulates
