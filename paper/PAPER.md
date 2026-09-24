@@ -66,7 +66,8 @@ same converter with only the device swapped:
 
 Silicon wins the last row, and it wins it for the same reason it loses the
 other five: its edge is nine times slower. Speed and device stress are one
-knob. Choosing GaN is choosing to manage the stress.
+knob. Choosing GaN is choosing to manage the stress. Figure 1 (left panel)
+shows the same six parameters as signed bars.
 
 The managing is done by the gate driver, and the published direction of
 travel is to make it programmable. The question nobody asks is whether the
@@ -161,6 +162,27 @@ Same converter, same device, same output stage; only the control changes.
 | Efficiency | **97.42 %** | 97.31 % |
 | Switch-node overshoot | 17.9 % | **2.9 %** |
 | Crosstalk margin | **+2.576 V** | +0.407 V |
+
+![Figure 1](figures/fig1_winlose.png)
+
+**Figure 1.** Per-parameter outcome for both comparisons. Left: GaN against
+silicon, same converter and same driver, only the device changed. Right: our
+driver against the base paper's, same converter and same device, only the
+control changed. Bars are a symmetric relative difference,
+(better − worse) / (|ours| + |theirs|), bounded to ±100 %; the six
+parameters are in four different units, so they are normalised rather than
+plotted against two axes. Raw values appear beneath every bar. Blue is
+better, red is worse, and the red bars are drawn at full length.
+
+A note on the normalisation, because the obvious choice is wrong here. Plain
+percentage change against the comparison value is undefined in practice when
+the comparison is near zero or of opposite sign: silicon's switch-node
+overshoot is −1.5 %, which places our overshoot row at −1284 % and,
+because that sets the axis, compresses the other five parameters to
+illegibility. The symmetric form divides by the sum of magnitudes instead. It
+is bounded, it survives a sign change, and a row that pins at −100 % is
+stating that it is as far the wrong way as the scale admits — the raw
+values beneath the bars say by how much in real units.
 
 Two rows go against us, and they go together: we switch 2.5× faster, so we
 spend 13 % more gate power and overshoot six times harder. They reduce
@@ -319,4 +341,5 @@ Every number regenerates from `results/RESULTS-SUMMARY.txt`, which names the
 script for each. The study grid is `results/full_grid.csv`; the decomposition
 is `scripts/novelty.py` and `scripts/grid_analyse.py`; the head-to-head is
 `scripts/headtohead.py` and `scripts/panel_metrics.py`; the decoupling
-finding is `scripts/decoupling_damping.py`.
+finding is `scripts/decoupling_damping.py`. Figure 1 is drawn by
+`scripts/winlose_figure.py` from `results/panel_metrics.csv`.
