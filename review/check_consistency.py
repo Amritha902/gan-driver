@@ -82,6 +82,15 @@ HEADLINES = {
     "8.9 %":   "adaptation share (n = 36)",
     "2.576":   "shipped margin",
     str(TRANSIENTS): "transient count",
+    # Added after the GaN-vs-silicon numbers moved and the speech script
+    # kept the old ones through a clean PASS. The guarded set only held
+    # what somebody had thought to add, so anything outside it could rot
+    # silently -- which is the same failure as the transient count, in a
+    # different file.
+    "6.2 W":   "GaN loss, shipped word",
+    "12.6 W":  "Si loss, shipped word",
+    "97.42":   "GaN efficiency",
+    "95.06":   "Si efficiency",
 }
 # A number absent from BOTH used to pass silently, because the old logic only
 # fired when one side had it and the other did not. That is how a transient

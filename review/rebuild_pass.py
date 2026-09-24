@@ -176,7 +176,7 @@ NEW = [
   u"matched 25.0 mΩ GaN against 24.0 mΩ Si, each at its own rated gate "
   u"drive, so conduction loss is equal by construction and what is left is "
   u"switching, gate drive and the body-diode recovery GaN does not have. At "
-  u"500 kHz GaN wastes 5.9 W against silicon's 17.3 W; the lead widens to 78 % "
+  u"500 kHz GaN wastes 6.2 W against silicon's 12.6 W; the lead widens to 78 % "
   u"at 1 MHz and 90 % at light load (scripts/si_vs_gan_sweep.py)."),
  ("fig_gan_2.png", u"Why the GaN HEMT causes the problem we solve",
   u"Three device properties and their consequence in a half-bridge: a 1.4 V "
@@ -392,7 +392,7 @@ add_text(s, 0.70, 2.35, 3.85, 0.38, [
     para([(u"1.  Why GaN at all", B)], level=0, sz=1300, spc=0, bullet=False)])
 add_text(s, 0.70, 2.78, 3.85, 1.95, [
     para([(u"Same converter, same job, only the device swapped. At 500 kHz "
-           u"GaN wastes 5.9 W against silicon's 17.3 W. The lead widens to "
+           u"GaN wastes 6.2 W against silicon's 12.6 W. The lead widens to "
            u"78 % at 1 MHz and 90 % at light load, and never turns back.", N)],
          level=0, sz=1150, spc=120, bullet=False),
     para([(u"Raising the frequency to shrink the magnetics is nearly free on "
@@ -584,7 +584,7 @@ COMPLETION = [
     (u"The converter itself, built and converting", 6, True,
      u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
     (u"The device choice justified against silicon", 8, True,
-     u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
+     u"6.2 W vs 12.6 W at 500 kHz, on the shipped word; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 8, True,
      u"zhangdrv.lib in our deck and in the converter — at 100 V only"),
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
@@ -1018,7 +1018,7 @@ COMPLETION = [
     (u"The converter itself, built and converting", 6, True,
      u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
     (u"The device choice justified against silicon", 8, True,
-     u"5.9 W vs 17.3 W at 500 kHz; 3 sweeps, 4 duty profiles"),
+     u"6.2 W vs 12.6 W at 500 kHz, on the shipped word; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 8, True,
      u"zhangdrv.lib in our deck and in the converter — at 100 V only"),
     (u"The segmented driver; the fault reproduced and fixed", 12, True,

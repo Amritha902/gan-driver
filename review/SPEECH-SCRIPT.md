@@ -126,7 +126,7 @@ would lose on a technicality instead of on physics.
 > make it work at the switching speed GaN is bought for."
 >
 > "Why GaN: same converter, same job, only the device swapped — at 500 kilohertz
-> GaN wastes 5.9 watts against silicon's 17.3, and the lead widens to
+> GaN wastes 6.2 watts against silicon's 12.6, and the lead widens to
 > seventy-eight percent at a megahertz and ninety percent at light load. It
 > never turns back."
 >

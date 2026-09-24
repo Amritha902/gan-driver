@@ -115,7 +115,7 @@ synchronous buck converter for an energy-storage system out of GaN HEMTs, and
 make it work at the switching speed GaN is bought for.**
 
 **Why GaN.** Same converter, only the device swapped: at 500 kilohertz GaN
-wastes **5.9 watts against silicon's 17.3**, and the lead widens to 78 percent
+wastes **6.2 watts against silicon's 12.6**, and the lead widens to 78 percent
 at a megahertz and 90 percent at light load. It never turns back.
 
 **What GaN costs you.** The same speed that wins is what breaks it — the device

@@ -41,6 +41,12 @@
   active Miller clamp, worth                                 9.7 – 12.2 %                   clampvalue.py
   price of crosstalk safety                                  ≤ 0.04 % of switching energy   safety_price.py
 
+  GaN vs Si, same converter, SHIPPED word (-2 V rail, clamp on)
+  ───────────────────────────────────────────────────────────────────────────────────────────────────
+  GaN loss / Si loss at 500 kHz                              6.2 W / 12.6 W  (51 % less)    si_vs_gan.py
+  GaN eff / Si eff                                           97.42 % / 95.06 %              si_vs_gan.py
+  (matches panel_metrics.py exactly: both now run the shipped word)
+
   WHERE THE ANSWER CHANGES
   ───────────────────────────────────────────────────────────────────────────────────────────────────
   ceiling across every device perturbation                   4.3 – 7.7 %                    robust_analyse.py

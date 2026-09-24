@@ -47,6 +47,24 @@ SRC  = open(os.path.join(SIM, "buck.cir")).read()
 NCYC, NMEAS = 40, 20     # cycles simulated, cycles averaged over
 
 
+def shipped(t):
+    """Engage the control word this project actually ships.
+
+    sim/buck.cir defaults VNEG to 0 because the sweeps set it per run. This
+    script never set it, so for six weeks it compared GaN against silicon
+    with the off rail at 0 V while every other measurement in the project --
+    panel_metrics.py, envelope_sweep.py, the headline margin -- used the
+    -2 V rail. Two silicon efficiencies then existed side by side, 93.4 %
+    here and 95.1 % there, with nothing on either to say they were different
+    configurations rather than a contradiction.
+
+    One configuration, one answer.
+    """
+    t = re.sub(r"^\.param CLKEN\s*=.*$", ".param CLKEN=1", t, flags=re.M)
+    t = re.sub(r"^\.param VNEG\s*=.*$",  ".param VNEG=-2", t, flags=re.M)
+    return t
+
+
 def make(device, ic_vout=None, ic_il=None, tstop=None, tm0=None, **over):
     t = SRC
     if device == "si":
@@ -113,6 +131,7 @@ def make(device, ic_vout=None, ic_il=None, tstop=None, tm0=None, **over):
             "meas tran vout_avg AVG v(out)  from=%.12g to=%.12g\n"
             "meas tran il_avg   AVG i(vsout) from=%.12g to=%.12g\n"
             "quit" % (vin, tm0, tstop, tm0, tstop, tm0, tstop, tm0, tstop))
+    t = shipped(t)
     return t.replace("\nquit", meas, 1)
 
 
