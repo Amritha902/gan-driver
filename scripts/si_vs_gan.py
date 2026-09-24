@@ -169,4 +169,32 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Write the results file as well as printing it. results/si_vs_gan.txt had
+    # been produced once by a shell redirect and nothing maintained it, so
+    # re-running this script left the file reporting numbers from a
+    # configuration the script no longer used. A results file no script owns
+    # is a results file that will go stale without anyone noticing.
+    import io as _io, sys as _sys
+
+    class _Tee(object):
+        def __init__(self, *streams):
+            self.streams = streams
+
+        def write(self, s):
+            for st in self.streams:
+                st.write(s)
+
+        def flush(self):
+            for st in self.streams:
+                st.flush()
+
+    _buf = _io.StringIO()
+    _stdout = _sys.stdout
+    _sys.stdout = _Tee(_stdout, _buf)
+    try:
+        main()
+    finally:
+        _sys.stdout = _stdout
+    _path = os.path.join(ROOT, "results", "si_vs_gan.txt")
+    open(_path, "w", encoding="utf-8").write(_buf.getvalue())
+    print("  written: results/si_vs_gan.txt")

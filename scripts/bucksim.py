@@ -15,7 +15,15 @@ CIR    = os.path.join(ROOT, "sim", "buck.cir")
 MODELS = os.path.join(ROOT, "models")
 
 DEFAULTS = dict(VIN=100, D=0.5, FSW="500k", LOUT="22u", COUT="4.7u", RLOAD=10,
-                VDRV=5, VNEG=0, NPU_LS=8, NPD_LS=8, NPU_HS=8, NPD_HS=8,
+                # VNEG is -2 because that is the control word this project
+                # ships and every other headline is measured on. It was 0,
+                # the netlist default, which meant the converter's own
+                # efficiency figure came from a 0 V off rail while the
+                # overshoot printed beside it in the same deck caption came
+                # from the -2 V rail. One sentence, two configurations.
+                # buck_sweep.py and overshoot_audit.py pass VNEG themselves,
+                # so neither is affected by this default.
+                VDRV=5, VNEG=-2, NPU_LS=8, NPD_LS=8, NPU_HS=8, NPD_HS=8,
                 DT="15n", CLKEN=1, RUNIT=8, TJ=25, NCYC=150)
 NAVG = 10
 

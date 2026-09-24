@@ -144,7 +144,7 @@ CAPTIONS = [
  (u"What we are building", "TextBox 5", cap(
    u"GaN synchronous buck converter. (a) output charging from zero and "
    u"settling; (b) three switching cycles; (c) power in against power out. "
-   u"100 V DC in, 48.56 V DC out at 4.876 A, 97.70 % efficient.")),
+   u"100 V DC in, 48.50 V DC out at 4.869 A, 97.50 % efficient.")),
 
  (u"How it works", "TextBox 5", cap(
    u"One switching edge, followed through. Top row: the controller's decision. "

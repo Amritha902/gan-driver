@@ -5,12 +5,12 @@
   Rds(on) matched: 25.0 mOhm GaN / 24.0 mOhm Si.
   --------------------------------------------------------------------
                   P_in     P_out      loss      eff     V_out
-  GaN HEMT     241.33 W   235.40 W     5.93 W   97.54 %    48.51 V
-  Si MOSFET    261.98 W   244.64 W    17.34 W   93.38 %    49.45 V
+  GaN HEMT     241.04 W   234.82 W     6.22 W   97.42 %    48.45 V
+  Si MOSFET    255.85 W   243.22 W    12.63 W   95.06 %    49.31 V
   --------------------------------------------------------------------
-  GaN wastes 11.41 W less: 5.93 W against 17.34 W, a 66 % reduction
-  Efficiency 97.54 % against 93.38 %, worth 4.16 points
-  Loss per watt delivered: 2.52 % against 7.09 %
+  GaN wastes 6.41 W less: 6.22 W against 12.63 W, a 51 % reduction
+  Efficiency 97.42 % against 95.06 %, worth 2.36 points
+  Loss per watt delivered: 2.65 % against 5.19 %
 
   NOTE, and say this if asked: the two do NOT deliver identical
   output power, because GaN's third-quadrant drop during dead time

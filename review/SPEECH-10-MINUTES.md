@@ -220,8 +220,8 @@ if she does, everything in it is also on the next six slides.)*
 
 ## 11 · Circuit simulation — the converter — 30 s  *(5:55)*
 
-This is the terminal. 100 volts and 2.426 amps in; **48.56 volts and 4.875 amps
-out**. 242.47 watts drawn, 236.89 delivered — **97.70 per cent efficient**.
+This is the terminal. 100 volts and 2.423 amps in; **48.50 volts and 4.869 amps
+out**. 242.33 watts drawn, 236.26 delivered — **97.50 per cent efficient**.
 Peak switch node **115.4 volts on a 100 volt bus** — fifteen per cent
 overshoot, with bus decoupling. Without it, 168.
 

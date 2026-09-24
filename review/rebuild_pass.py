@@ -13,8 +13,11 @@ the method, the tools, the demo, and only then the results.
 
 It also replaces the circuit diagram. The old one was drawn in matplotlib and
 looked like an illustration of a circuit rather than a circuit; the new one is
-ltspice/BUCK_converter.asc, a drawn schematic with real wires that simulates
-to 48.84 V against the netlist's 48.56 V.
+ltspice/BUCK_converter.asc, a drawn schematic with real wires. Its
+cross-check against the netlist is pending a re-run: the schematic gained the
+damped decoupling branch and now reads its parameters from buck.cir, so the
+48.84 V once quoted against the netlist's 48.56 V describes neither circuit as
+they now stand. ngspice alone gives 48.50 V on the shipped word.
 
 ORDER below is the whole specification: anything not named in it is dropped.
 """
@@ -162,8 +165,10 @@ NEW = [
   u"Full load, 100 V / 10 A, no clamp: +1.6486 V against a 1.4 V threshold."),
  ("fig_netlist.png", u"What ngspice runs",
   u"Power stage of sim/buck.cir. ngspice reads the circuit as a netlist, not "
-  u"a schematic; it is the same converter the schematic draws. ngspice "
-  u"48.56 V, LTspice 48.84 V."),
+  u"a schematic; it is the same converter the schematic draws. ngspice gives "
+  u"48.50 V on the shipped word. The LTspice cross-check is pending a re-run: "
+  u"its schematic gained the damped decoupling branch, so the previously "
+  u"quoted 48.84 V describes a circuit that no longer exists."),
  ("fig_method.png", u"How the work was run",
   u"Method, in the order carried out. Steps 1\u20133 on one switching edge; "
   u"steps 4\u20136 the study built on it."),
@@ -212,12 +217,12 @@ for fname, title, figtxt in NEW:
 # kind of claim. These slides carry the output as it was printed.
 TOOLOUT = [
  ("toolout/17-converter-power.png", u"Circuit simulation \u2014 the converter",
-  u"scripts/bucksim.py driving ngspice over sim/buck.cir. 100.0 V and 2.426 A "
-  u"in, 48.56 V and 4.876 A out: 242.47 W drawn, 236.89 W delivered, "
-  u"97.70 % efficient. Peak switch node 118.0 V on a 100 V bus: 18.0 % "
-  u"overshoot, on the shipped word at a step that resolves the edge. Most "
-  u"of it is the \u22122 V rail (+11.3 points) \u2014 the margin is not "
-  u"free. scripts/overshoot_audit.py."),
+  u"scripts/bucksim.py driving ngspice over sim/buck.cir, on the shipped "
+  u"word. 100.0 V and 2.423 A in, 48.50 V and 4.869 A out: 242.33 W drawn, "
+  u"236.26 W delivered, 97.50 % efficient. Peak switch node 115.1 V, 15.1 % "
+  u"overshoot at this deck's 0.2 ns step; resolving the edge at 0.02 ns gives "
+  u"18.0 %, of which the \u22122 V rail is +11.3 points \u2014 the margin is "
+  u"not free. scripts/overshoot_audit.py."),
  ("toolout/19-ngspice-listing.png", u"The circuit, as ngspice reports it",
   u"ngspice cannot draw a schematic. It can say what it parsed, which is "
   u"better evidence: a drawing is what somebody believes the circuit is, "
