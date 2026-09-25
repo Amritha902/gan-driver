@@ -14,8 +14,9 @@ the project is for.
 This pass fixes that.
 
   * the title becomes "GaN-Based Power Converter"
-  * a new slide, second in the deck, shows the converter running: 100 V DC in,
-    48.6 V DC out, 237 W into the load, 97.7 % efficient (sim/buck.cir)
+  * a new slide, second in the deck, shows the converter running on the
+    shipped word; its numbers come from converter_numbers.py, which reads
+    the shipped row of results/buck_sweep.csv (sim/buck.cir)
   * a new result slide shows the gate-driver setting moving converter-level
     quantities -- power lost and device stress -- in opposite directions,
     which is what makes the driver worth studying at all
@@ -23,6 +24,7 @@ This pass fixes that.
 
 Both figures come from ngspice runs of the converter, not from the test bench.
 """
+import converter_numbers as CN
 import os, sys, copy as _copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lxml import etree
@@ -198,10 +200,11 @@ set_title(s_cv, u"What we are building — the converter")
 place(s_cv, "fig_converter.png", top=1.22, height=4.85)
 add_text(s_cv, 0.55, 6.15, 12.25, 0.95, [
     para([(u"A GaN synchronous buck converter. ", B),
-          (u"100 V DC goes in; the two GaN transistors chop it at 500 kHz; the "
-           u"filter turns that back into DC. 48.6 V at 4.88 A comes out — "
-           u"236.9 W into the load from 242.5 W drawn, so 97.7 % of the power "
-           u"gets through. 5.8 W is lost in the transistors and the power loop.",
+          (u"%s DC goes in; the two GaN transistors chop it at 500 kHz; the "
+           u"filter turns that back into DC. %s at %s comes out — "
+           u"%s into the load from %s drawn, so %s of the power "
+           u"gets through. %.1f W is lost in the transistors and the power loop."
+           % (CN.VIN, CN.VOUT, CN.IOUT, CN.POUT, CN.PIN, CN.EFF, CN.V["loss"]),
            N)], level=0, sz=1250, spc=120, bullet=False),
     para([(u"The duty ratio is fixed at 0.5, which is what puts the output at half "
            u"the input. Command: ", N),
@@ -275,8 +278,9 @@ for _s in p.slides:
             if sh.has_text_frame and u"What the data supports" in sh.text_frame.text:
                 blocks = [
                     [(u"What the data supports", B)],
-                    [(u"The converter works: 100 V DC in, 48.6 V DC out at 4.88 A "
-                      u"\u2014 236.9 W, 97.7 % efficient.", N)],
+                    [(u"The converter works: %s DC in, %s DC out at %s "
+                      u"\u2014 %s, %s efficient."
+                      % (CN.VIN, CN.VOUT, CN.IOUT, CN.POUT, CN.EFF), N)],
                     [(u"Picking the setting well: 26.5 %.   Changing it per "
                       u"operating point: 2.6 %.", N)],
                     [(u"One comparator — load current at 10 A — gets 47 % of "

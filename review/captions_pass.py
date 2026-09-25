@@ -23,6 +23,7 @@ from lxml import etree
 from pptx import Presentation
 from pptx.util import Inches
 from fill import para, set_body, q
+import converter_numbers as CN
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
@@ -144,7 +145,8 @@ CAPTIONS = [
  (u"What we are building", "TextBox 5", cap(
    u"GaN synchronous buck converter. (a) output charging from zero and "
    u"settling; (b) three switching cycles; (c) power in against power out. "
-   u"100 V DC in, 48.50 V DC out at 4.869 A, 97.50 % efficient.")),
+   u"%s DC in, %s DC out at %s, %s efficient."
+   % (CN.VIN, CN.VOUT, CN.IOUT, CN.EFF))),
 
  (u"How it works", "TextBox 5", cap(
    u"One switching edge, followed through. Top row: the controller's decision. "

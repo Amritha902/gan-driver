@@ -28,6 +28,7 @@ from pptx import Presentation
 from pptx.util import Inches
 from fill import para, set_body, q
 from PIL import Image
+import converter_numbers as CN
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
@@ -235,15 +236,42 @@ for fname, title, figtxt in NEW:
 # real and the charts were honest, but a chart is a thing we drew, and this
 # project has already been accused of inventing its numbers. A terminal with
 # the tool's name, the machine's name and the number in it is a different
+import csv as _csv
+
+_PM = os.path.join(RES, "panel_metrics.csv")
+PM = {}
+if os.path.exists(_PM):
+    with open(_PM) as _fh:
+        for _r in _csv.DictReader(_fh):
+            PM[_r["config"]] = _r
+else:
+    print("  MISSING: results/panel_metrics.csv -- run scripts/panel_metrics.py")
+
+def _metric(cfg, key):
+    """One metric as a float, so prose can be derived from the same CSV the
+    table is."""
+    return float(PM[cfg][key])
+
+
 # kind of claim. These slides carry the output as it was printed.
+# The comparison tables are measured a different way from this run; the
+# caption says so rather than leaving two efficiencies on the deck unexplained.
+_EFF_TABLE = u"%.2f %%" % _metric("gan_ours", "eff_pct")
+
 TOOLOUT = [
  ("toolout/17-converter-power.png", u"Circuit simulation \u2014 the converter",
   u"scripts/bucksim.py driving ngspice over sim/buck.cir, on the shipped "
-  u"word. 100.0 V and 2.423 A in, 48.50 V and 4.869 A out: 242.33 W drawn, "
-  u"236.26 W delivered, 97.50 % efficient. Peak switch node 115.1 V, 15.1 % "
+  u"word. %s and %.3f A in, %s and %s out: %s drawn, "
+  u"%s delivered, %s efficient. Peak switch node %s, %s "
   u"overshoot at this deck's 0.2 ns step; resolving the edge at 0.02 ns gives "
+  % (CN.VIN, CN.V["Iin"], CN.VOUT, CN.IOUT, CN.PIN, CN.POUT, CN.EFF,
+     CN.SWPK, CN.OV) +
   u"18.0 %, of which the \u22122 V rail is +11.3 points \u2014 the margin is "
-  u"not free. scripts/overshoot_audit.py."),
+  u"not free. scripts/overshoot_audit.py. "
+  u"The two comparison tables read " + _EFF_TABLE + u" for this same word: "
+  u"those runs start pre-charged in steady state and average 20 cycles, this "
+  u"one starts from zero and averages 10. The gap is the start-up transient, "
+  u"not a disagreement."),
  ("toolout/19-ngspice-listing.png", u"The circuit, as ngspice reports it",
   u"ngspice cannot draw a schematic. It can say what it parsed, which is "
   u"better evidence: a drawing is what somebody believes the circuit is, "
@@ -290,20 +318,31 @@ if ci is not None:
     s = p.slides[ci]
     strip(s)
     set_title(s, u"The circuit we simulate")
-    # Full slide height. The side-by-side composite made the schematic 6.6 in
-    # wide; on its own it gets 8.2 in, which is the difference between a
-    # reviewer reading the component names and squinting at them.
-    place(s, "fig_circuit_ltspice.png", 1.16, 5.28)
+    # This was results/fig_circuit_ltspice.png, an LTspice screenshot taken on
+    # 11 September. ltspice/BUCK_converter.asc was corrected on 23 September --
+    # its .param block had been retyped rather than read, so the sheet carried
+    # no Ldec, Cdec or Rdec while sim/buck.cir did. The screenshot was never
+    # retaken, because rendering an .asc needs LTspice and there is none here.
+    # So the deck's own "the circuit we simulate" slide was showing a circuit
+    # without the decoupling branch -- the branch the whole 200 V finding turns
+    # on -- and captioned it with the superseded 48.6 V / 4.88 A output.
+    #
+    # scripts/kicad_schematic.py draws the same converter from sim/buck.cir at
+    # build time, decoupling branch included, so it cannot drift from the
+    # netlist. That is the sheet now.
+    place(s, "fig_sch_converter.png", 1.16, 5.28)
     add_text(s, 0.55, 6.58, 12.25, 0.60, [
         para([(u"@FIG@ ", B),
-              (u"GaN synchronous buck converter, ltspice/BUCK_converter.asc. "
-               u"\u201cBuck\u201d means step-down: 100 V in, 48.6 V out. The two "
-               u"yellow blocks are the segmented gate drivers, the part "
-               u"this project designs. Around them: the 100 V supply with its "
-               u"power-loop parasitics, the two GaN HEMTs, the output filter "
-               u"and a 10 \u03a9 load.", N)],
+              (u"GaN synchronous buck converter, drawn from sim/buck.cir by "
+               u"scripts/kicad_schematic.py \u2014 every value on it is read "
+               u"out of the netlist at build time. \u201cBuck\u201d means "
+               u"step-down: 100 V in, " + CN.VOUT + u" out. Left to right: the "
+               u"100 V supply with its power-loop R and L, the damped bus "
+               u"decoupling branch (Ldec, Cdec, Rdec at 1 \u03a9), the two GaN "
+               u"HEMTs whose gates the segmented drivers drive, the output "
+               u"filter and a 10 \u03a9 load.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
-    print("circuit slide replaced with the drawn LTspice schematic")
+    print("circuit slide now uses the netlist-drawn schematic")
 
 # ------------------------------------------------------------ demo video ---
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
@@ -311,7 +350,7 @@ strip(s)
 set_title(s, u"Demo — the driver, built and measured, on this machine")
 if os.path.exists(VIDEO):
     # 1600x900 -> 1.778. 9.60 in wide gives 5.40 in tall, centred on 13.33.
-    s.shapes.add_movie(VIDEO, Inches(1.87), Inches(1.30), Inches(9.60),
+    s.shapes.add_movie(VIDEO, Inches(1.87), Inches(1.18), Inches(9.60),
                        Inches(5.40),
                        poster_frame_image=os.path.join(HERE, "poster_full.png"),
                        mime_type="video/mp4")
@@ -332,7 +371,7 @@ caption(s,
         % (float(DEMO["peak_noclamp"]),
            ("%+.2f" % float(DEMO["peak_shipped"])).replace("-", MINUS),
            float(DEMO["duration_s"])),
-        top=6.90)
+        top=6.70)
 print("added: demo video slide")
 
 # ---------------------------------------------------- closing slide -------
@@ -456,7 +495,7 @@ add_text(s, 0.70, 4.92, 12.10, 1.90, [
     para([(u"Title says converter, work says driver \u2014 one claim.  ", B),
           (u"On GaN the driver is the part that decides whether the "
            u"converter is buildable at speed. Every number here is measured "
-           u"on the converter: 97.7 % open loop, 96.1 % regulated.", N)],
+           u"on the converter: %s open loop, 96.1 %% regulated." % CN.EFF, N)],
          level=0, sz=1250, spc=180, bullet=False),
     para([(u"The next slide is that question, gap by gap, with the evidence "
            u"for each.", B)], level=0, sz=1250, spc=0, bullet=False)])
@@ -614,7 +653,8 @@ print("added: The architecture, end to end")
 # percentage is not.
 COMPLETION = [
     (u"The converter itself, built and converting", 6, True,
-     u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
+     u"%s → %s at %s, %s efficient (buck.cir)"
+     % (CN.VIN, CN.VOUT, CN.IOUT, CN.EFF)),
     (u"The device choice justified against silicon", 8, True,
      u"6.2 W vs 12.6 W at 500 kHz, on the shipped word; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 8, True,
@@ -747,19 +787,8 @@ for fname, title, lead, cap_text in RESULT_SLIDES:
 # measured parameters. These four slides are that, and every number is read
 # out of results/panel_metrics.csv at build time rather than typed here, so a
 # slide cannot survive a re-run that changes the answer.
-import csv as _csv
-
 NEWC = _RGB(0x1b, 0x7f, 0x5f)     # this column wins the row
 HOTC = _RGB(0xB0, 0x00, 0x00)     # this column loses it
-
-_PM = os.path.join(RES, "panel_metrics.csv")
-PM = {}
-if os.path.exists(_PM):
-    with open(_PM) as _fh:
-        for _r in _csv.DictReader(_fh):
-            PM[_r["config"]] = _r
-else:
-    print("  MISSING: results/panel_metrics.csv -- run scripts/panel_metrics.py")
 
 _UNITS = [("latency_ns", u"Latency, PWM \u2192 switch node at 50 %", u"ns", "%.2f"),
           ("trans_ns",   u"Edge, 10 % \u2192 90 % of bus",            u"ns", "%.2f"),
@@ -799,6 +828,16 @@ def _verdict(cfg_a, cfg_b, key):
         return u"%+.2f pts" % d, (NEWC if d > 0 else HOTC)
     if a == 0 or b == 0:
         return u"%+.2f" % (a - b), None
+    if a * b < 0:
+        # Opposite signs: a ratio here is nonsense. GaN overshoots 17.9 % and
+        # silicon does not overshoot at all (-1.5 %), and dividing the two
+        # printed "-11.9x more", a negative multiplier. The same trap was
+        # already found and fixed in the win/lose figure; the table had kept
+        # it. State the gap in points, as panel_metrics.txt itself does.
+        d = a - b
+        lower_better = key in _BETTER_LOW
+        worse = (d > 0) if lower_better else (d < 0)
+        return u"%+.1f pts" % d, (HOTC if worse else NEWC)
     if abs(a) < abs(b):
         return u"%.1f\u00d7 less" % (b / a), NEWC
     return u"%.1f\u00d7 more" % (a / b), HOTC
@@ -896,15 +935,9 @@ _SCH = [
      u"1 G\u03a9 if it does not. Drive strength is how many of the eight "
      u"parallel paths are live. On the right, Sclk and Rclk \u2014 the active "
      u"Miller clamp, pulling the gate to the off rail through 0.5 \u03a9."),
-    ("fig_sch_converter.png",
-     u"The converter, drawn",
-     u"sim/buck.cir as a schematic. Values read from the netlist at build "
-     u"time.",
-     u"Supply, power-loop R and L, the damped bus decoupling branch, the GaN "
-     u"half-bridge, output filter and load. Qhs and Qls are enhancement-mode "
-     u"GaN HEMTs with NO BODY DIODE \u2014 reverse conduction during dead time "
-     u"costs Vth + |Voff| + I\u00b7Rds(on), not one diode drop, and that is "
-     u"what sets the dead-time trade."),
+    # "The converter, drawn" used to live here as a separate backup slide.
+    # It is now the main "circuit we simulate" slide, so keeping it here put
+    # the same figure on two slides of the same deck.
 ]
 for _f, _t, _lead, _cap in _SCH:
     if not os.path.exists(os.path.join(RES, _f)):
@@ -1034,10 +1067,18 @@ metric_slide(
     u"control scheme and nothing else. Their pattern step is a delayed copy of "
     u"their own PWM, so it lands the same distance after turn-on on every "
     u"cycle, which is what their one-knob scheme does.",
-    caveat=u"The last two rows are ours to answer. We spend 13 % more gate "
-           u"power and we overshoot 24 points harder, because we switch "
-           u"faster. That buys 1.2 ns of latency, 0.28 W in the devices and "
-           u"the crosstalk margin on the next slide.")
+    # Derived from the same CSV the table above is built from. It used to be
+    # written out by hand and said "24 points harder" and "0.28 W" against a
+    # table reading 15.0 and 0.330 -- the prose had been left behind by a
+    # re-run.
+    caveat=u"The last two rows are ours to answer. We spend %.0f %% more gate "
+           u"power and we overshoot %.0f points harder, because we switch "
+           u"faster. That buys %.1f ns of latency, %.2f W in the devices and "
+           u"the crosstalk margin on the next slide."
+           % (100.0 * (_metric("gan_ours", "p_gate_W") / _metric("gan_base", "p_gate_W") - 1.0),
+              _metric("gan_ours", "ov_pct")    - _metric("gan_base", "ov_pct"),
+              _metric("gan_base", "latency_ns") - _metric("gan_ours", "latency_ns"),
+              _metric("gan_base", "p_dev_W")   - _metric("gan_ours", "p_dev_W")))
 
 
 # ---- slide: how much of the project this is, and how that was counted ------
@@ -1048,7 +1089,8 @@ metric_slide(
 # percentage is not.
 COMPLETION = [
     (u"The converter itself, built and converting", 6, True,
-     u"100 V → 48.6 V at 4.88 A, 97.7 % efficient (buck.cir)"),
+     u"%s → %s at %s, %s efficient (buck.cir)"
+     % (CN.VIN, CN.VOUT, CN.IOUT, CN.EFF)),
     (u"The device choice justified against silicon", 8, True,
      u"6.2 W vs 12.6 W at 500 kHz, on the shipped word; 3 sweeps, 4 duty profiles"),
     (u"The base paper implemented, not just cited", 8, True,
@@ -1750,7 +1792,6 @@ ORDER = [
     u"We implemented the base paper",
     u"Their driver, drawn \u2014 the reimplementation",
     u"Our driver, drawn \u2014 the same stage",
-    u"The converter, drawn",
     u"Base paper and ours, side by side",
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",

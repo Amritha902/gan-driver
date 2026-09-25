@@ -15,7 +15,7 @@ Run it after ANY edit to build.py, content.py, refs.py or the speech script:
 
 Exit status is non-zero if anything fails, so it can gate a commit.
 """
-import os, re, sys, glob
+import os, sys, re, sys, glob
 from pptx import Presentation
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -110,6 +110,42 @@ for num, what in HEADLINES.items():
     elif not in_deck and not in_sum:
         fails.append("%-8s (%s) appears in NEITHER the deck nor RESULTS-SUMMARY "
                      "-- the value it is derived from has moved" % (num, what))
+
+# ---- 2b. the converter's own headline, and the values it replaced ----------
+# Slides 6, 7, 14 and 31 all quote "the converter". They disagreed for two
+# weeks: an audit on 24 Sep corrected slide 14 to the shipped off rail and
+# left the other three at the 8 Sep figures, and this check passed the whole
+# time because nothing guarded them. They all read converter_numbers.py now,
+# and these assertions are what stops them drifting apart again.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import converter_numbers as _CN
+except Exception as _e:                                   # pragma: no cover
+    fails.append("converter_numbers.py will not import: %s" % _e)
+else:
+    for _val, _what in ((_CN.EFF,  "converter efficiency"),
+                        (_CN.POUT, "power delivered"),
+                        (_CN.VOUT, "output voltage")):
+        _n = norm(_val)
+        if _n not in DTn:
+            fails.append("%-9s (%s) is what buck_sweep.csv says, but it is on "
+                         "no slide" % (_val, _what))
+        if _n not in SMn:
+            fails.append("%-9s (%s) is what buck_sweep.csv says, but it is not "
+                         "in RESULTS-SUMMARY" % (_val, _what))
+
+# Values a correction has retired. If one comes back, something was rebuilt
+# from a stale source or retyped from an old slide.
+RETIRED = {
+    "236.9 W": "superseded converter output (8 Sep, wrong off rail)",
+    "242.5 W": "superseded converter input (8 Sep, wrong off rail)",
+    "24 points": "superseded overshoot gap on the base-paper table (was 15.0)",
+    "-11.8": "opposite-sign ratio on the silicon table (now +19.4 pts)",
+    "-11.9": "opposite-sign ratio on the silicon table (now +19.4 pts)",
+}
+for _bad, _why in RETIRED.items():
+    if norm(_bad) in DTn:
+        fails.append("%-10s is back on a slide -- %s" % (_bad, _why))
 
 # ---- 3. every file the build references must exist -------------------------
 build = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "build.py"),

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Content for the Review-1 deck. Every number here is produced by a script in
 gan-driver/scripts/ and recorded in results/FINDINGS.md."""
+import converter_numbers as CN
 
 B = True   # bold
 
@@ -43,8 +44,8 @@ SLIDE6 = [
         "change and measure.", False)], 1),
     ([("How we approached it:", B)], 0),
     ([("1. Build the converter and check it converts.", B),
-      (" 100 V DC in, 48.6 V DC out at 4.88 A: 236.9 W delivered, 97.7 % "
-       "efficient.", False)], 1),
+      (" %s DC in, %s DC out at %s: %s delivered, %s "
+       "efficient." % (CN.VIN, CN.VOUT, CN.IOUT, CN.POUT, CN.EFF), False)], 1),
     ([("2. Recreate the fault.", B),
       (" At the fastest setting the gate that should be off reaches 1.65 V, "
        "against a 1.4 V turn-on threshold.", False)], 1),
@@ -62,8 +63,9 @@ SLIDE6 = [
 
 SLIDE7 = [
     ([("The converter is built and it runs.", B)], 0),
-    ([("100 V DC in, 48.6 V DC out at 4.88 A \u2014 236.9 W into the load from "
-       "242.5 W drawn, 97.7 % efficient.", False)], 1),
+    ([("%s DC in, %s DC out at %s \u2014 %s into the load from "
+       "%s drawn, %s efficient."
+       % (CN.VIN, CN.VOUT, CN.IOUT, CN.POUT, CN.PIN, CN.EFF), False)], 1),
     ([("The fault is reproduced, and fixed.", B)], 0),
     ([("The off gate reaches 1.65 V against a 1.4 V threshold. With the clamp "
        "and the \u22122 V rail: 2.58 V of margin.", False)], 1),
