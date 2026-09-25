@@ -1,0 +1,14 @@
+
+  FEASIBLE CONTROL WORDS AT THE NOMINAL CORNER
+  From results/sweep_nominal.csv -- ngspice output, not MATLAB.
+  A word is feasible when the OFF gate stays below the 1.4 V
+  threshold while the other device switches.
+  --------------------------------------------------------------
+  words swept                         720
+  feasible  (Vgs_spur <  1.4 V)       504    70.0 %
+  false turn-on (Vgs_spur >= 1.4 V)   216    30.0 %
+  --------------------------------------------------------------
+
+  Previously attributed to gan_analysis.m. Same answer, from the
+  simulator that produced the data.
+

@@ -1,3 +1,20 @@
+%% ------------------------------------------------------------------
+%% NOT REQUIRED. Kept as a record, not as a dependency.
+%%
+%% Nothing in the deck, the paper or RESULTS-SUMMARY.txt depends on this
+%% file any more. Its one surviving claim -- 504 of 720 control words
+%% feasible at the nominal corner, 70 %% -- is now derived by
+%% scripts/feasible_words.py directly from results/sweep_nominal.csv,
+%% which is ngspice's own output. It reproduces exactly.
+%%
+%% That matters because MATLAB is the one tool in this project a reviewer
+%% cannot be shown: it is not installed in the build environment and there
+%% is no Octave either. Every number in the project now comes from a tool
+%% that can be re-run on demand -- ngspice, Icarus Verilog, Vivado or yosys.
+%%
+%% No figure generated from this file appears on any slide.
+%% ------------------------------------------------------------------
+
 %% GAN_ANALYSIS  Analysis of the segmented GaN gate-driver sweep.
 %
 %  Put this file and sweep_matlab.csv in the same folder, then run:

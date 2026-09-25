@@ -36,7 +36,28 @@ DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
 # -- a path on the machine the project started on -- so on every checkout since
 # the split the demo slide has been built with NO VIDEO IN IT, while its own
 # caption said "2 min. Click to play." A panel would have clicked on nothing.
-VIDEO = os.path.join(HERE, "..", "proof", "DEMO-VIDEO.mp4")
+#
+# It was proof/DEMO-VIDEO.mp4, a screen recording of proof/DEMO.sh made on
+# 11 Sep. DEMO.sh re-runs the real pipeline, so the recording was honest when
+# it was made -- but sim/buck.cir was corrected on 21 Sep (the undamped bus
+# decoupling branch), and a recording cannot re-derive itself. It therefore
+# shows converter numbers the rest of the deck no longer claims.
+#
+# results/demo_full.mp4 is rebuilt by scripts/demo_video.py on every run: it
+# reads models/segdrv.lib off disk, runs ngspice twice, plots those runs, and
+# computes the peaks it prints. It cannot go stale without the build failing.
+# The 2-minute walkthrough stays in the repo and is offered in the notes.
+# The 2-minute walkthrough stays in the repo and is offered in SPEECH-SCRIPT.md
+# under "if they ask to see more", rather than played from the deck.
+VIDEO = os.path.join(RES, "demo_full.mp4")
+
+# Measurements and length come from the sidecar demo_video.py writes, so this
+# caption cannot drift from the file it describes.
+DEMO = {}
+for _ln in open(os.path.join(RES, "demo_full.txt")):
+    if _ln.startswith("#") or not _ln.split(): continue
+    _k, _v = _ln.split(None, 1)
+    DEMO[_k] = _v.strip()
 
 p = Presentation(DECK)
 B, N = True, False
@@ -287,11 +308,12 @@ if ci is not None:
 # ------------------------------------------------------------ demo video ---
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
-set_title(s, u"Demo — ngspice and LTspice, running")
+set_title(s, u"Demo — the driver, built and measured, on this machine")
 if os.path.exists(VIDEO):
-    s.shapes.add_movie(VIDEO, Inches(1.55), Inches(1.30), Inches(10.2),
-                       Inches(4.55),
-                       poster_frame_image=os.path.join(HERE, "poster_demo.png"),
+    # 1600x900 -> 1.778. 9.60 in wide gives 5.40 in tall, centred on 13.33.
+    s.shapes.add_movie(VIDEO, Inches(1.87), Inches(1.30), Inches(9.60),
+                       Inches(5.40),
+                       poster_frame_image=os.path.join(HERE, "poster_full.png"),
                        mime_type="video/mp4")
     print("demo video embedded: %s (%.1f MB)"
           % (os.path.basename(VIDEO), os.path.getsize(VIDEO) / 1048576.0))
@@ -302,10 +324,15 @@ else:
                      "empty while its caption promises one. Fix the path or "
                      "remove the slide." % VIDEO)
 caption(s,
-        u"Demo recording: the converter in ngspice, the crosstalk fault and "
-        u"its fix, the named cases, the Verilog controller, and LTspice "
-        u"running the schematic. 2 min. Click to play.",
-        top=6.18)
+        u"models/segdrv.lib as it is on disk, ngspice run twice on sim/dpt.cir, "
+        u"the waveforms those two runs produced, and the measurement: "
+        u"%+.2f V without the clamp against a 1.4 V threshold, %s V with it. "
+        u"%.0f s. Click to play. Rebuilt by scripts/demo_video.py, so every "
+        u"number on screen is computed, not captioned."
+        % (float(DEMO["peak_noclamp"]),
+           ("%+.2f" % float(DEMO["peak_shipped"])).replace("-", MINUS),
+           float(DEMO["duration_s"])),
+        top=6.90)
 print("added: demo video slide")
 
 # ---------------------------------------------------- closing slide -------
@@ -1744,7 +1771,7 @@ ORDER = [
     u"How we run ngspice",
     u"How the work was run",
     u"Which tool did what",
-    u"Demo — ngspice and LTspice",
+    u"Demo — the driver, built and measured",
     u"What we are building — the converter",
     u"The cases we ran",
     # The simulator's own terminal, captured. These were in the 20-slide cut
@@ -1810,7 +1837,7 @@ SHORT = [
     u"The circuit we simulate",
     u"The circuit, as ngspice reports it",                                          # the netlist, from ngspice
     u"How we run ngspice",
-    u"Demo — ngspice and LTspice",                 # the video
+    u"Demo — the driver, built and measured",                 # the video
     u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",

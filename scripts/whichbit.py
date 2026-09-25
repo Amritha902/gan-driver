@@ -31,7 +31,14 @@ def load(fn, tag=None):
     return out
 
 
-def main(w_ov=0.05, guard=0.0):
+def penalties(w_ov=0.05, guard=0.0):
+    """Cost of freezing each control field, as a percentage of the cost when
+    every field is free to adapt per corner.
+
+    Returns (reference_cost, rows) where rows is one (field, penalty, value)
+    per field in F order, and penalty is None when no single value of that
+    field is feasible in every corner.
+    """
     rows = load("sweep_nominal.csv", "100V_10A_25C") + load("full_corners.csv")
     cost = lambda r: r["E_tot"] * 1e6 + w_ov * r["ov_pct"]
     corners = sorted({r["corner"] for r in rows})
@@ -41,9 +48,6 @@ def main(w_ov=0.05, guard=0.0):
     best = {c: min((r for r in feas if r["corner"] == c), key=cost) for c in corners}
     c_free = sum(cost(best[c]) for c in corners) / len(corners)
 
-    print("Cost of freezing each control field, guard band %.1f V.\n" % guard)
-    print("  Reference: every field free to adapt per corner -> mean cost %.3f\n" % c_free)
-    print("  %-22s %-16s %10s   %s" % ("field frozen", "frozen value", "penalty", "worth scheduling?"))
     out = []
     for f in F:
         vals = sorted({r[f] for r in feas}, key=str)
@@ -61,6 +65,27 @@ def main(w_ov=0.05, guard=0.0):
             pen = 100 * (cc - c_free) / c_free
             if bestpen is None or pen < bestpen:
                 bestpen, bestval = pen, v
+        out.append((f, bestpen, bestval))
+    return c_free, out
+
+
+def freeze_cost(field, w_ov=0.05, guard=0.0):
+    """The freeze penalty for one field, so other scripts can quote it
+    without re-deriving it by hand."""
+    for f, pen, _ in penalties(w_ov, guard)[1]:
+        if f == field:
+            return pen
+    raise KeyError(field)
+
+
+def main(w_ov=0.05, guard=0.0):
+    c_free, rows = penalties(w_ov, guard)
+
+    print("Cost of freezing each control field, guard band %.1f V.\n" % guard)
+    print("  Reference: every field free to adapt per corner -> mean cost %.3f\n" % c_free)
+    print("  %-22s %-16s %10s   %s" % ("field frozen", "frozen value", "penalty", "worth scheduling?"))
+    out = []
+    for f, bestpen, bestval in rows:
         if bestpen is None:
             print("  %-22s %-16s %10s" % (NICE[f], "-", "no value works")); continue
         out.append((f, bestpen))

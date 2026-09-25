@@ -683,16 +683,42 @@ the contribution.
 
 ## 25 — DEMO (45 s)
 
-The clip runs **22 s**. Play it and stay quiet for the first five seconds —
-the switch node falling is the whole setup, and narrating over it just
-competes with the picture. The peak labels only appear once each trace
-reaches its peak, so nothing on screen contradicts you before it happens.
+The clip runs **27 s** and has four parts. Play it and stay quiet — it is
+paced to be read, and narrating over it competes with the screen. Say one
+sentence going in and one coming out.
 
-> "This is real captured ngspice output, not an animation. Watch the high-side
-> gate. On the left, the fastest drive with no clamp — the gate is pushed
-> above the threshold line and the device turns on when it shouldn't. On the
-> right, same word, clamp on and −2 V off-bias — the same event now sits two
-> and a half volts below threshold."
+Going in:
+
+> "Everything on this slide is built by one script. It opens the driver model,
+> runs ngspice twice, plots what those two runs produced, and measures the
+> peaks it prints. Nothing on screen is typed in by hand."
+
+What the four parts are, if you need to point at them:
+
+1. **The code** — `models/segdrv.lib`, the real file, with its line numbers.
+   The eight pull-up and eight pull-down slices and the Miller clamp. The
+   repeated middle slices are folded away with a marker; the ones shown are
+   slices 1, 2 and 8 of each bank.
+2. **The run** — ngspice's own terminal output, twice: once with no clamp and
+   a 0 V off rail, once with the clamp on and −2 V. Same deck, two settings.
+3. **The waveforms** — top is the switch node collapsing from 100 V; that
+   slew is the cause. Bottom is the OFF device's gate for both runs against
+   the 1.4 V threshold line.
+4. **The finding** — the two peaks, measured.
+
+Coming out:
+
+> "Left to itself the gate reaches **+1.65 V**, above the 1.4 V threshold — the
+> device turns on when it must not. With the clamp and the negative rail it
+> peaks at **−1.18 V**, a 2.58 V margin. Same circuit, same control word; only
+> the clamp and the off-bias differ."
+
+**If they ask to see more than this.** `proof/DEMO-VIDEO.mp4` is a two-minute
+screen recording of `proof/DEMO.sh` — the converter in ngspice, the named
+cases, the Verilog controller and LTspice running the schematic. Say plainly
+that it was recorded on 11 September, before `sim/buck.cir`'s bus-decoupling
+branch was damped, so its converter numbers predate the ones in this deck;
+`cd proof && zsh DEMO.sh` re-runs and re-records it live.
 
 ---
 

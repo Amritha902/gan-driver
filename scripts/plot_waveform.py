@@ -11,7 +11,7 @@ side, PWM commands a change, both sides go off for exactly dt_cycles, then
 the high side comes on. That interval is the dead time, and it is the one
 field the study found worth scheduling.
 """
-import os, re, sys
+import os, re, shutil, subprocess, sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -24,6 +24,34 @@ _DEFAULT_VCD = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fi
                             "rtl", "seg_gate_ctrl.vcd")
 VCD  = sys.argv[1] if len(sys.argv) > 1 else _DEFAULT_VCD
 OUT  = os.path.join(ROOT, "results", "fig_rtl_waveform.png")
+
+
+def build_vcd():
+    """Run Icarus so the figure is the current RTL's, not a stale checkout's.
+
+    rtl/*.vcd is gitignored, so on a fresh clone the dump does not exist at
+    all and this script used to die on FileNotFoundError.  Building it here
+    makes the figure derive from the Verilog rather than from whatever
+    happened to be left in the working tree.
+    """
+    rtl = os.path.join(ROOT, "rtl")
+    if not shutil.which("iverilog"):
+        if os.path.exists(VCD):
+            sys.stderr.write("iverilog not found; using the existing %s\n"
+                             % os.path.relpath(VCD, ROOT))
+            return
+        raise SystemExit(
+            "iverilog not found and %s does not exist (rtl/*.vcd is gitignored).\n"
+            "Install Icarus Verilog, or pass a .raw-style VCD path as argv[1]."
+            % os.path.relpath(VCD, ROOT))
+    exe = "/tmp/plotwave_tb"
+    src = ["seg_gate_ctrl_tb.v", "seg_gate_ctrl.v", "dead_time_gen.v",
+           "thermo_decode.v"]
+    r = subprocess.run(["iverilog", "-g2012", "-o", exe] + src,
+                       cwd=rtl, capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit("iverilog failed:\n" + r.stderr[:800])
+    subprocess.run(["vvp", exe], cwd=rtl, capture_output=True, text=True)
 
 
 def parse_vcd(path):
@@ -69,6 +97,10 @@ def level_at(sig, t):
         else: break
     return v
 
+
+# Only regenerate the dump we own; an explicit path on argv is taken as given.
+if len(sys.argv) <= 1:
+    build_vcd()
 
 ids, series, scale = parse_vcd(VCD)
 SIGNALS = [("clk", "clk"), ("pwm", "pwm_in"), ("in_dt", "dead time"),

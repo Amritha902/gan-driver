@@ -1,0 +1,8 @@
+# written by scripts/demo_video.py -- do not edit by hand
+frames      668
+fps         25
+duration_s  26.7
+peak_noclamp +1.649
+peak_shipped -1.176
+margin       +2.576
+npu_freeze_pct 0.00
