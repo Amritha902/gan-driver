@@ -32,7 +32,7 @@ import converter_numbers as CN
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
-DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
+DECK = os.path.join(HERE, "Review2_GaN_Segmented_Gate_Driver.pptx")
 # IN the repository, not next to it. This was "~/GAN_MAIN/PROOF/DEMO-VIDEO.mp4"
 # -- a path on the machine the project started on -- so on every checkout since
 # the split the demo slide has been built with NO VIDEO IN IT, while its own
@@ -707,8 +707,11 @@ if wi is not None:
          sizes=(10.0, 9.0))
 
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
+        # The rubric sentence used to read "Review-I's rubric asks for 50 %".
+        # This deck is presented at Review-II, and quoting the previous
+        # review's threshold to this panel is worse than quoting none.
         para([(u"%d of 100 done. " % DONE, B),
-              (u"Review-I's rubric asks for 50 %%. The remaining %d %% is "
+              (u"The remaining %d %% is "
                u"place-and-route on a chosen board and a hardware "
                u"half-bridge on a bench. The simulation is finished, and "
                u"simulating harder will not deliver either." % (100 - DONE), N)],
@@ -1143,8 +1146,11 @@ if wi is not None:
          sizes=(10.0, 9.0))
 
     add_text(s, 0.70, 6.34, 11.70, 0.90, [
+        # The rubric sentence used to read "Review-I's rubric asks for 50 %".
+        # This deck is presented at Review-II, and quoting the previous
+        # review's threshold to this panel is worse than quoting none.
         para([(u"%d of 100 done. " % DONE, B),
-              (u"Review-I's rubric asks for 50 %%. The remaining %d %% is "
+              (u"The remaining %d %% is "
                u"place-and-route on a chosen board and a hardware "
                u"half-bridge on a bench. The simulation is finished, and "
                u"simulating harder will not deliver either." % (100 - DONE), N)],
@@ -1776,7 +1782,12 @@ ORDER = [
     # text as "School of" further down. A "Slide 1" entry here matched
     # nothing and printed MISSING on every single run, which is one more
     # line teaching a reader to skim the output.
-    u"School of", u"Review-I",
+    u"School of",
+    # The institute's Review-I rubric slide (5 Marks, 5 %, "Focus: 50 % Work
+    # Completion", the mark split-up) came straight out of template_ext.pptx.
+    # This deck is presented at Review-II and there is no Review-II rubric in
+    # the repository, so the slide is dropped rather than shown stating the
+    # previous review's marking scheme to this panel.
     u"Problem Statement",
     u"The goal, and whether this serves it",
     u"Aim, and how we approached it",
@@ -2003,6 +2014,6 @@ def write(idxs, path, what):
           % (what, len(idxs), removed, fixed, os.path.basename(path)))
 
 
-write(short_idx, os.path.join(HERE, "GaN_Review1_PRESENT.pptx"), "PRESENT")
-write(full_idx,  os.path.join(HERE, "GaN_Review1_BACKUP.pptx"),  "BACKUP")
+write(short_idx, os.path.join(HERE, "GaN_Review2_PRESENT.pptx"), "PRESENT")
+write(full_idx,  os.path.join(HERE, "GaN_Review2_BACKUP.pptx"),  "BACKUP")
 write(full_idx,  DECK, "FULL")

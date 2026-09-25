@@ -27,7 +27,7 @@ from pptx import Presentation
 from pptx.util import Inches
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DECK = os.path.join(ROOT, "review", "Review1_GaN_Segmented_Gate_Driver.pptx")
+DECK = os.path.join(ROOT, "review", "Review2_GaN_Segmented_Gate_Driver.pptx")
 OUT  = os.path.join(ROOT, "review", "FIGURES-EXPLAINED.md")
 
 E = {}

@@ -143,7 +143,7 @@ def render(slide, n, W, H):
     return img
 
 def main():
-    prs = Presentation("Review1_GaN_Segmented_Gate_Driver.pptx")
+    prs = Presentation("Review2_GaN_Segmented_Gate_Driver.pptx")
     W = prs.slide_width / EMU
     H = prs.slide_height / EMU
     os.makedirs(OUT, exist_ok=True)

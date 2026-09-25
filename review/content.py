@@ -83,16 +83,16 @@ SLIDE7 = [
 
 SLIDE7B = [
     ([("Where we are", B)], 0),
-    ([("Review-I is done. ", B),
+    ([("Review-I and II are done. ", B),
       ("The converter is built and converting, the crosstalk fault is "
        "reproduced and fixed, the named cases have been run, and the FPGA "
        "controller is written and verified.", False)], 1),
     ([("What we aim to do next", B)], 0),
-    ([("Review-II \u2014 close the loop.", B),
-      (" Add a feedback controller so the output holds its value when the load "
-       "changes, then re-run the driver-setting study with the loop closed.",
-       False)], 1),
-    ([("Review-III \u2014 settle the light-load question.", B),
+    ([("The loop is closed.", B),
+      (" A type-III controller holds the output through a 2\u00d7 load step and "
+       "a 100 \u2192 120 V line step, and the driver-setting study has been "
+       "re-run with it closed.", False)], 1),
+    ([("Review-III \u2014 hardware, and the light-load question.", B),
       (" The cheapest dead time is 15 ns at full load and 5 ns at light load. "
        "Run the converter at both and measure what a two-setting controller "
        "actually saves against one fixed setting \u2014 that is the number the "

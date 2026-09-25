@@ -164,8 +164,8 @@ the two agree to the last printed digit** (`results/matlab_online/RUN-LOG.txt`).
 functions after all code, Octave does not hoist them, and only a function
 file satisfies both. Invoke it by typing `gan_master`.
 
-**Deck** — 45 slides, `review/Review1_GaN_Segmented_Gate_Driver.pptx`
-(the 20-slide `GaN_Review1_PRESENT.pptx` is the one to actually present).
+**Deck** — 45 slides, `review/Review2_GaN_Segmented_Gate_Driver.pptx`
+(the 20-slide `GaN_Review2_PRESENT.pptx` is the one to actually present).
 Rebuild `cd review && python3 build.py`; geometry check `python3 qa.py`
 **All three decks now report zero flags** and `qa.py` checks all three, not
 just the full one. The old "9 known-good false positives" were six real

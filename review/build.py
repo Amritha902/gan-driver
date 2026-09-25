@@ -11,7 +11,7 @@ import content
 
 RES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
 SRC = "template_ext.pptx"
-OUT = "Review1_GaN_Segmented_Gate_Driver.pptx"
+OUT = "Review2_GaN_Segmented_Gate_Driver.pptx"
 
 # ---- text-fit estimate (no renderer available in this environment) ---------
 # Calibri average advance is ~0.478 em for mixed-case prose; 0.50 is used here
@@ -1518,10 +1518,31 @@ p.save(OUT)
 print("section dividers inserted; deck now %d slides" % len(S))
 
 
-# ---------------- review date --------------------------------------------
-# template_ext.pptx carries 02.09.2026 on slides 2 and 3. The review moved to
-# the 9th. Both are Wednesdays, so the day name on slide 2 stays correct.
-REVIEW_DATE_OLD, REVIEW_DATE_NEW = "02.09.2026", "09.09.2026"
+# ---------------- which review, and when ---------------------------------
+# template_ext.pptx is the institute's REVIEW-I template: it carries
+# "Review-I" and 02.09.2026 on slides 2 and 3. This deck is presented at
+# Review-II, so both the label and the date have to move, and the day name
+# with them -- 02.09 and 09.09 were Wednesdays, 30.09.2026 is a Tuesday, so
+# a blind date substitution would have left "30.09.2026 (Wednesday)" on a
+# slide the guide signs.
+# The day name is DERIVED from the date, never typed. It was typed once --
+# "30.09.2026 (Tuesday)" -- and 30.09.2026 is a Wednesday, on the one slide
+# in the deck that a human signs.
+import datetime as _dt
+
+REVIEW_NO_OLD,   REVIEW_NO_NEW   = "Review-I", "Review-II"
+REVIEW_DATE_OLD, REVIEW_DATE_NEW = "02.09.2026", "30.09.2026"
+_d, _m, _y = (int(x) for x in REVIEW_DATE_NEW.split("."))
+REVIEW_DAY_OLD = "(Wednesday)"
+REVIEW_DAY_NEW = "(%s)" % _dt.date(_y, _m, _d).strftime("%A")
+
+# Longest first: replacing "Review-I" before "Review-III" would turn
+# "Review-III" into "Review-III" via "Review-II" + "I". Ordering the pairs
+# this way, and skipping any run that already names a later review, keeps
+# the roadmap slides intact.
+_SUBS = [(REVIEW_DATE_OLD, REVIEW_DATE_NEW),
+         (REVIEW_DAY_OLD,  REVIEW_DAY_NEW),
+         (REVIEW_NO_OLD,   REVIEW_NO_NEW)]
 dhits = 0
 for sl in S:
     for sh in sl.shapes:
@@ -1529,10 +1550,16 @@ for sl in S:
             continue
         for pa in sh.text_frame.paragraphs:
             for r in pa.runs:
-                if REVIEW_DATE_OLD in r.text:
-                    r.text = r.text.replace(REVIEW_DATE_OLD, REVIEW_DATE_NEW)
+                if "Review-II" in r.text or "Review-III" in r.text:
+                    continue          # already a later review; leave it alone
+                before = r.text
+                for a, b in _SUBS:
+                    if a in r.text:
+                        r.text = r.text.replace(a, b)
+                if r.text != before:
                     dhits += 1
-print("review date set to %s in %d run(s)" % (REVIEW_DATE_NEW, dhits))
+print("review set to %s, %s %s in %d run(s)"
+      % (REVIEW_NO_NEW, REVIEW_DATE_NEW, REVIEW_DAY_NEW, dhits))
 
 # Split the references LAST. Run earlier, four further slides were inserted
 # between the two halves -- the deck shipped with References (16-30) at slide

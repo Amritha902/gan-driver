@@ -26,7 +26,7 @@ from fill import para, set_body, q
 import converter_numbers as CN
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DECK = os.path.join(HERE, "Review1_GaN_Segmented_Gate_Driver.pptx")
+DECK = os.path.join(HERE, "Review2_GaN_Segmented_Gate_Driver.pptx")
 
 TITLE = u"GaN Based Synchronous Buck Converter with an Improved Gate Driver"
 

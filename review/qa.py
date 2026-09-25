@@ -22,13 +22,13 @@ def contains(outer, inner, pad=0.02):
             inner[1] + inner[3] <= outer[1] + outer[3] + pad)
 
 
-# All three decks, not just the full one. GaN_Review1_PRESENT.pptx is the
+# All three decks, not just the full one. GaN_Review2_PRESENT.pptx is the
 # file that actually goes on the projector, and for weeks it was the one deck
 # nothing checked.
 import sys as _sys
-DECKS = ["Review1_GaN_Segmented_Gate_Driver.pptx",
-         "GaN_Review1_PRESENT.pptx",
-         "GaN_Review1_BACKUP.pptx"]
+DECKS = ["Review2_GaN_Segmented_Gate_Driver.pptx",
+         "GaN_Review2_PRESENT.pptx",
+         "GaN_Review2_BACKUP.pptx"]
 problems = []
 for _deck in DECKS:
     p = Presentation(_deck)

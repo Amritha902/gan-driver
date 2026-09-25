@@ -594,7 +594,7 @@ Fixed generally rather than per-slide. `rebuild_pass.py` gained a final
 geometry pass that keeps text off the page number and out from under pictures;
 `qa.py` learned that text inside a blank panel is a layout, not a collision;
 and `qa.py` now checks **all three** output decks rather than only the full
-one — it had never checked `GaN_Review1_PRESENT.pptx`, the file that actually
+one — it had never checked `GaN_Review2_PRESENT.pptx`, the file that actually
 goes on the projector, and doing so immediately found a tenth defect, a
 caption overlapping a figure by 0.07 in.
 

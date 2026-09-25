@@ -20,7 +20,7 @@ from pptx import Presentation
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DECK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                    "Review1_GaN_Segmented_Gate_Driver.pptx")
+                    "Review2_GaN_Segmented_Gate_Driver.pptx")
 SPEECH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SPEECH-SCRIPT.md")
 SUMMARY = os.path.join(ROOT, "results", "RESULTS-SUMMARY.txt")
 

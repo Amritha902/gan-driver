@@ -1,4 +1,4 @@
-# Review-I speech script — 29 slides, ~10 minutes
+# Review-II speech script — 32 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 9 min 30 s,
 which leaves slack in a 10-minute slot because you will talk faster than this
@@ -784,7 +784,7 @@ same thing as 2.6 % of baseline: 3.9 divided by 74.9.
 **"Is this simulated or measured?"**
 Entirely simulation, in ngspice, with a behavioural GaN model validated
 against datasheet values — R_DS(on) 26.0 mΩ against a 25 mΩ target. Hardware
-is the next phase. Say it plainly; it's a Review-I project.
+is the next phase. Say it plainly; it's a Review-II project and the hardware is Review-III.
 
 **"Why not just slow it down?"**
 That's the trivial fix and it discards the switching-loss benefit of GaN. The
