@@ -1335,6 +1335,43 @@ if i is not None:
     print("rebuilt: Where we are, and what is next")
 
 
+# ---- the two references slides say which role each list plays -------------
+# An audit found 19 of the 30 references are never cited in the body: the
+# cited set is 1-13 (minus 2 and 9), and 14-30 appear nowhere else. That is
+# NOT padding -- the survey was deliberately widened to 30 on 4 September,
+# with every entry kept only where the publisher record carried a real author
+# list. But a panel that asks "where do you use [22]?" is entitled to an
+# answer, and the slide did not give one. Now it does, in a line.
+for _t, _note in (
+    (u"References  (1\u201315)",
+     u"The papers this design engages with directly. [10] is the base paper, "
+     u"reimplemented in models/zhangdrv.lib and measured against throughout."),
+    (u"References  (16\u201330)",
+     u"The wider survey: read and recorded, not cited in the slides above. "
+     u"Kept only where the publisher record carried a real author list."),
+):
+    _i = index_of(_t)
+    if _i is None:
+        continue
+    _sl = p.slides[_i]
+    # Both slides already carry an EMPTY text box just above the page number.
+    # Fill it rather than adding another one on top: a new box at 6.52 in
+    # overlapped that empty one and qa flagged it, which is the check doing
+    # exactly its job.
+    _box = None
+    for _sh in _sl.shapes:
+        if (_sh.has_text_frame and not _sh.text_frame.text.strip()
+                and _sh.top is not None and 5.9 * 914400 < _sh.top < 6.9 * 914400):
+            _box = _sh
+            break
+    if _box is None:
+        add_text(_sl, 0.70, 6.40, 12.10, 0.38, [
+            para([(_note, N)], level=0, sz=1050, spc=0, bullet=False)])
+    else:
+        set_body(_box, [para([(_note, N)], level=0, sz=1050, spc=0, bullet=False)])
+    print("noted: %s" % _t)
+
+
 # ---- slide: the hardware, costed ------------------------------------------
 # "A hardware half-bridge, measured" is 7 of the 10 points outstanding, and
 # until now the deck said only that it was not done. A panel reads a bare

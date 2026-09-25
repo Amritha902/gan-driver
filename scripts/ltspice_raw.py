@@ -65,6 +65,14 @@ def read(path):
 
 if __name__ == "__main__":
     import sys
+    if len(sys.argv) < 2:
+        # Was an IndexError, which reads like a crash rather than a usage
+        # message. LTspice .raw files are gitignored (binary, large), so a
+        # fresh clone has none and running this bare is the normal mistake.
+        print("usage: python3 scripts/ltspice_raw.py <file.raw>")
+        print("  LTspice .raw waveforms are not committed (see .gitignore).")
+        print("  Produce one by running an ltspice/*.asc in LTspice first.")
+        raise SystemExit(2)
     d = read(sys.argv[1])
     print("%d variables, %d points" % (len(d), len(list(d.values())[0])))
     for k in list(d)[:12]:

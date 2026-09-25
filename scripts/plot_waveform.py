@@ -17,7 +17,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-VCD  = sys.argv[1] if len(sys.argv) > 1 else "/tmp/seg_gate_ctrl.vcd"
+# The default was /tmp/seg_gate_ctrl.vcd, which nothing writes: the Icarus
+# testbench dumps into rtl/ beside itself. So this script failed out of the box
+# for anyone who had run the testbench exactly as documented.
+_DEFAULT_VCD = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            "rtl", "seg_gate_ctrl.vcd")
+VCD  = sys.argv[1] if len(sys.argv) > 1 else _DEFAULT_VCD
 OUT  = os.path.join(ROOT, "results", "fig_rtl_waveform.png")
 
 

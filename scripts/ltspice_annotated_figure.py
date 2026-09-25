@@ -9,6 +9,25 @@ the device turns on, and this is the number.
 Data comes from the .raw files LTspice wrote, read by ltspice_raw.py -- not
 from an ngspice re-run that happens to agree.
 """
+
+# PREREQUISITE, and it is not optional.
+#
+# This reads ltspice/A_design_no_clamp_FAILS.raw. LTspice .raw waveform files
+# are binary and large, so .gitignore excludes them -- a fresh clone has none
+# and this script fails with FileNotFoundError, which is what an audit of
+# every script found it doing.
+#
+# results/fig_ltspice_annotated.png in this repository was generated when that
+# .raw existed on the author's machine. It CANNOT be regenerated from a clone
+# alone. To rebuild it:
+#
+#   1. open ltspice/A_design_no_clamp_FAILS.asc in LTspice and run it
+#   2. LTspice writes the .raw beside the .asc
+#   3. python3 scripts/ltspice_annotated_figure.py
+#
+# The figure is real output, not a drawing; it just depends on a file this
+# repository deliberately does not carry.
+
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
