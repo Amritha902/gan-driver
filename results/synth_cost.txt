@@ -1,3 +1,34 @@
 Hardware cost of programmability (generic gates, not Xilinx LUTs):
   seg_gate_ctrl          cells  371   flip-flops  32   comb gates  334
   seg_gate_ctrl_top      cells  129   flip-flops  24   comb gates   99
+
+----------------------------------------------------------------------
+PROVENANCE, recorded 25 September during an audit of this file.
+
+These two rows were produced by an EARLIER version of scripts/synth_cost.sh
+that ran yosys's generic `synth` pass. The script has since been rewritten to
+run `synth_xilinx -family xc7`, which maps to real Artix-7 primitives and
+reports LUTs and FFs -- a different quantity from the generic cell counts
+above. The file was never regenerated when the script changed, so the numbers
+here and the numbers the script now produces are not the same measurement.
+
+The 65 % figure quoted from these rows -- (371 - 129) / 371 = 65.2 % -- is
+arithmetic on generic gate counts. It is a fair statement of how much logic
+strapping the control word removes. It is NOT a LUT saving on a real part,
+and it should not be described as one.
+
+NOT RE-VERIFIED HERE, AND WHY. This container has no native yosys, only the
+wasm build (yowasp-yosys). Both `synth` and `synth_xilinx` reach the ABC
+technology-mapping pass and do not return, so `stat` never runs and no cell
+count can be produced in this environment. Regenerating these numbers needs a
+machine with a native yosys:
+
+    sh scripts/synth_cost.sh
+
+Until that is run, treat the rows above as a September measurement of a
+quantity the current script no longer reports, not as a current result.
+
+A separate and INDEPENDENT measurement does exist for the real part, from
+Vivado rather than yosys, and it is verified: 20 Slice LUTs and 20 Slice
+Registers on xc7a35tcpg236-1, from rtl/vivado/build/utilization_synth.rpt.
+That is the number to quote for fabric cost.
