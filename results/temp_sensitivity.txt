@@ -1,0 +1,21 @@
+
+  TEMPERATURE-COEFFICIENT SENSITIVITY
+  Corner 200 V / 10 A / 125 C. Both derating slopes are our choice, not
+  a fit; this asks how much the hot-corner lead depends on them.
+
+    transconductance slope  0.009/K x0.50   ours +2.197 V   theirs +0.242 V   ratio   9.1x
+                                 x0.75   ours +2.221 V   theirs +0.209 V   ratio  10.6x
+                                 x1.00   ours +2.251 V   theirs +0.181 V   ratio  12.4x
+                                 x1.25   ours +2.282 V   theirs +0.151 V   ratio  15.1x
+                                 x1.50   ours +2.314 V   theirs +0.114 V   ratio  20.3x
+
+    threshold slope  0.0015 V/K  x0.50   ours +2.342 V   theirs +0.217 V   ratio  10.8x
+                                 x0.75   ours +2.297 V   theirs +0.200 V   ratio  11.5x
+                                 x1.00   ours +2.251 V   theirs +0.181 V   ratio  12.4x
+                                 x1.25   ours +2.207 V   theirs +0.161 V   ratio  13.7x
+                                 x1.50   ours +2.162 V   theirs +0.140 V   ratio  15.4x
+
+  wrote /home/user/amritha902/gan-driver/results/fig_temp_sensitivity.png
+  lead across every perturbation: 9.1-20.3x (shipped 12.4x)
+  -> the hot-corner lead is not an artefact of the exact slopes. It is
+     still not a datasheet fit, and that remains the honest caveat.

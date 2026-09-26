@@ -987,6 +987,47 @@ else:
     print("  MISSING FIGURE: %s -- run scripts/three_way_figure.py" % _TW)
 
 
+# ---- slides: the two sweeps that answer the model objections --------------
+_SWEEP = [
+    ("fig_voff_tradeoff.png",
+     u"What the negative rail costs",
+     u"V_off swept 0 to \u22125 V at two loads. Margin against dead-time energy.",
+     u"The \u22122 V rail was chosen from the crosstalk side alone, and this is "
+     u"the other side of that choice. An E-mode GaN HEMT has no body diode, so "
+     u"during dead time it conducts in the third quadrant at roughly "
+     u"V_th + |V_off| + I\u00b7R_ds(on) \u2014 every volt of off-bias is paid "
+     u"on every dead-time interval. Margin rises at a flat 1 V per volt "
+     u"throughout. The cost does not: at 10 A it is 0.004 \u00b5J/V just above "
+     u"\u22122 V and 0.246 \u00b5J/V just below, sixty times steeper. "
+     u"\u22122 V sits on the knee, which is a result rather than a "
+     u"justification. scripts/voff_sweep.py."),
+
+    ("fig_temp_sensitivity.png",
+     u"Does the hot-corner lead rest on two typed-in numbers?",
+     u"Both derating slopes perturbed \u00b150 %, hot corner re-run for both drivers.",
+     u"sim/dpt.cir derates the device through KT = 1 + 0.009\u00b7(TJ\u221225) "
+     u"and V_th = 1.4 \u2212 0.0015\u00b7(TJ\u221225). Neither is a datasheet "
+     u"fit \u2014 there is no vendor model in the repository to fit against, and "
+     u"that is remaining work, not a result. What can be shown is whether the "
+     u"lead is manufactured by their exact values, and it is not: across "
+     u"\u00b150 % on either slope the lead runs 9.1\u201320.3\u00d7 against "
+     u"12.4\u00d7 as shipped. Our margin barely moves; theirs collapses either "
+     u"way. scripts/temp_sensitivity.py."),
+]
+for _f, _t, _lead, _cap in _SWEEP:
+    if not os.path.exists(os.path.join(RES, _f)):
+        print("  MISSING FIGURE: %s" % _f)
+        continue
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, _t)
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(_lead, B)], level=0, sz=1450, spc=0, bullet=False)])
+    place(sl, _f, 1.60, 4.02)
+    caption(sl, _cap, top=5.76, h=1.30)
+    print("added: %s" % _t)
+
+
 # ---- slides: is the headline robust to how we computed it? ----------------
 # Four questions a panel asks about the decomposition, answered off the same
 # 36-corner grid by scripts/grid_robustness.py. Backup material: they exist to
@@ -1749,6 +1790,7 @@ PROVENANCE = {
     # Re-analysis of results/full_grid.csv -- the transients are ngspice's,
     # the figures are what scripts/grid_robustness.py makes of them.
     "fig_three_way.png": P_SIM,
+    "fig_voff_tradeoff.png": P_SIM, "fig_temp_sensitivity.png": P_SIM,
     "fig_wov_sensitivity.png": P_SIM, "fig_corner_penalty.png": P_SIM,
     "fig_fixed_vs_optimum.png": P_SIM, "fig_grid_subsample.png": P_SIM,
     # plotted from ngspice transient output
@@ -1906,6 +1948,8 @@ ORDER = [
     u"The distribution behind the 2.6 %",
     u"The optimum moves. The cost of ignoring it does not.",
     u"Is the 36-corner grid dense enough?",
+    u"What the negative rail costs",
+    u"Does the hot-corner lead rest on two typed-in numbers?",
     u"Head to head with the base paper",
     u"The closest published drivers",
     u"The gap this project fills",
