@@ -956,6 +956,62 @@ for _f, _t, _lead, _cap in _SCH:
     print("added: %s" % _t)
 
 
+# ---- slides: is the headline robust to how we computed it? ----------------
+# Four questions a panel asks about the decomposition, answered off the same
+# 36-corner grid by scripts/grid_robustness.py. Backup material: they exist to
+# be turned to when challenged, not presented unprompted.
+_ROB = [
+    ("fig_wov_sensitivity.png",
+     u"Does the answer depend on the weight we chose?",
+     u"cost = E_tot + W_OV \u00b7 ov_pct, swept over two orders of magnitude.",
+     u"The honest answer is two-part, and the second part is the one to say. "
+     u"(B) ranges 8.3\u201323.1 % of the gain across the sweep, so the 8.9 % "
+     u"headline IS weight-dependent \u2014 weight overshoot harder and "
+     u"adapting matters more, which is physical, because overshoot is what "
+     u"varies most across corners. What does not move: the fixed word takes at "
+     u"least 77 % of the gain at every weight tried. scripts/grid_robustness.py."),
+
+    ("fig_corner_penalty.png",
+     u"The distribution behind the 2.6 %",
+     u"What one fixed word costs at each of the 36 corners, sorted.",
+     u"2.6 % is a mean over these 36 bars and the mean alone is not the whole "
+     u"truth: the median is 1.9 %, but 10 of 36 corners cost more than 5 % and "
+     u"the worst \u2014 200 V / 2 A / 125 \u00b0C \u2014 costs 16.5 %. That "
+     u"corner is also outside the 50\u2013150 V envelope this device is rated "
+     u"for. Quote the distribution, not the mean."),
+
+    ("fig_fixed_vs_optimum.png",
+     u"The optimum moves. The cost of ignoring it does not.",
+     u"Per-corner best word against the one fixed word, all 36 corners.",
+     u"Ten distinct words win across the 36 corners, so the optimum genuinely "
+     u"moves \u2014 and that is the objection this slide answers. The two "
+     u"curves sit on top of each other anyway: the shaded gap between them IS "
+     u"the adaptive gain, 2.6 % of the baseline. Segmentation still shapes the "
+     u"edge; it just does not need to be scheduled."),
+
+    ("fig_grid_subsample.png",
+     u"Is the 36-corner grid dense enough?",
+     u"The split re-estimated on 250 random corner subsets at each size.",
+     u"At four corners the estimate scatters over 0\u201323 %, which is why the "
+     u"earlier n = 4 study reported a different share; by 27 it sits on the "
+     u"full-grid answer. Stated precisely: this tests stability under "
+     u"COARSENING and is evidence the grid is dense enough. It cannot prove a "
+     u"finer grid would agree \u2014 that needs new transients."),
+]
+for _f, _t, _lead, _cap in _ROB:
+    if not os.path.exists(os.path.join(RES, _f)):
+        print("  MISSING FIGURE: %s -- run scripts/grid_robustness.py" % _f)
+        continue
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, _t)
+    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
+        para([(_lead, B)], level=0, sz=1450, spc=0, bullet=False)])
+    place(sl, _f, 1.60, 4.12)
+    caption(sl, _cap, top=5.84, h=1.16)
+    print("added: %s" % _t)
+
+
 # ---- slide: the two architectures on one canvas ---------------------------
 # arch_compare.py gives a sheet each on consecutive slides, which works when
 # you can page between them. It does not answer "what exactly did you add"
@@ -1659,6 +1715,10 @@ P_DRAW = u"Drawn diagram, not simulation output."
 P_FILE = u"A project file, typeset. Not simulation output."
 
 PROVENANCE = {
+    # Re-analysis of results/full_grid.csv -- the transients are ngspice's,
+    # the figures are what scripts/grid_robustness.py makes of them.
+    "fig_wov_sensitivity.png": P_SIM, "fig_corner_penalty.png": P_SIM,
+    "fig_fixed_vs_optimum.png": P_SIM, "fig_grid_subsample.png": P_SIM,
     # plotted from ngspice transient output
     "fig_si_vs_gan.png": P_SIM, "fig_headtohead.png": P_SIM,
     "fig_closedloop.png": P_SIM, "fig_modeldep.png": P_SIM,
@@ -1809,6 +1869,10 @@ ORDER = [
     u"Theirs and ours \u2014 six parameters",
     u"Where we win, and where we lose",
     u"The converter across its own envelope",
+    u"Does the answer depend on the weight we chose?",
+    u"The distribution behind the 2.6 %",
+    u"The optimum moves. The cost of ignoring it does not.",
+    u"Is the 36-corner grid dense enough?",
     u"Head to head with the base paper",
     u"The closest published drivers",
     u"The gap this project fills",

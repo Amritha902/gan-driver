@@ -1,0 +1,45 @@
+
+  GRID ROBUSTNESS -- re-analysis of results/full_grid.csv
+  36 corners x 720 words. No new transients.
+
+  1. THE OVERSHOOT WEIGHT
+     W_OV         (A) %     (B) % B share %
+     0.00         28.99      3.91     11.88
+     0.01         25.00      4.52     15.32
+     0.02         25.05      3.68     12.82
+     0.05         26.45      2.57      8.86   <- shipped
+     0.10         26.68      2.43      8.35
+     0.20         26.99      3.33     10.98
+     0.50         26.51      5.47     17.10
+     1.00         26.16      7.84     23.07
+     -> (B) ranges 8.3-23.1 %, so the 8.9 % headline IS weight-
+        dependent: weight overshoot heavily and adaptation matters more,
+        which is physical -- overshoot is what varies most across corners.
+        What survives every weight: the fixed word takes at least 77 % of
+        the gain. Claim that, not the 8.9 %.
+
+  2. THE DISTRIBUTION BEHIND THE MEAN
+     per-corner cost of the fixed word, n = 36
+     min 0.01 | 25% 1.12 | median 1.87 | 75% 5.20 | max 16.52  [%]
+     corners above 5 %: 10 of 36   worst: 200V_2A_125C
+     -> quote the distribution, not the mean. The mean is honest; the
+        mean ALONE is not.
+
+  3. THE OPTIMUM MOVES, THE COST DOES NOT
+     words feasible at every corner : 467 of 720
+     best fixed word                : 8, 8, 1, 15n, 1, 0
+     (A) 26.45 %   (B) 2.57 %   B share 8.86 %
+     -> the gap between the two curves IS B. Drawing it stops the
+        'but the optimum moves' objection from landing.
+
+  4. DOES THE ANSWER DEPEND ON WHICH CORNERS?
+     all 36 corners: B share = 8.86 %
+      4 corners, 250 subsets: median 6.25 %  (0.00 - 22.61)
+      9 corners, 250 subsets: median 8.34 %  (2.73 - 16.23)
+     18 corners, 250 subsets: median 8.76 %  (4.69 - 13.74)
+     27 corners, 250 subsets: median 8.99 %  (6.26 - 10.77)
+     -> the estimate settles: 4 corners scatter over 0-23 %, 27 corners
+        sit on the full-grid answer. This is why the n = 4 study reported
+        a different share, and why 36 is the one to quote. Evidence the
+        grid is dense enough, NOT proof a finer one would agree.
+
