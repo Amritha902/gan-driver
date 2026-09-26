@@ -155,9 +155,17 @@ and do not assert the component combination.
 **The repository is public.** `github.com/Amritha902/gan-driver` reports
 `"visibility": "public"` on the GitHub API. It was created on 2 September
 2026 and contains the full method, the model files, the complete results and
-a draft of the paper. GitHub does not expose when a repository's visibility
-last changed, so the date public disclosure began cannot be established from
-the repository itself — only that it is public now.
+a draft of the paper.
+
+**Establishing the date disclosure began is the first practical task**, and it
+is not visible through the API. Two places to look, in order:
+
+1. `github.com/Amritha902/gan-driver/activity` — the repository's Activity
+   feed logs visibility changes ("made this repository public") with a date.
+   Only the owner sees the full feed. If no such entry exists, the repository
+   was created public and the date is **2 September 2026**.
+2. GitHub Support can confirm the change in writing if the feed has aged out,
+   which is worth having if a filing depends on the date.
 
 A public repository describing the invention is a public disclosure. What
 that costs depends on jurisdiction, and none of the following is legal
