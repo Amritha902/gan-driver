@@ -92,8 +92,11 @@ programmability earns its silicon.
 
 `sim/buck.cir`: 100 V → 50 V synchronous buck, 500 kHz, 22 µH / 4.7 µF
 output filter, 3 nH power-loop inductance, damped bus decoupling. Devices are
-an EPC2010C-class E-mode GaN model (200 V, ~25 mΩ, V_th 1.4 V) with
-charge-based (`Q=`) drain-gate capacitance.
+an EPC2010C-class E-mode GaN model (200 V, ~25 mΩ, V_th 1.4 V) whose
+drain-gate capacitance is a reverse-biased junction diode
+(`models/egan.lib`, `CJO=150p`, `M=0.65`). The charge-based (`Q=`)
+formulation is the *alternative* model, `models/egan_c.lib`, used only by
+the robustness check in §IV.
 
 Every number in this paper is measured on the converter, not on a driver in
 isolation.
@@ -185,7 +188,7 @@ stating that it is as far the wrong way as the scale admits — the raw
 values beneath the bars say by how much in real units.
 
 Two rows go against us, and they go together: we switch 2.5× faster, so we
-spend 13 % more gate power and overshoot six times harder. They reduce
+spend 11 % more gate power and overshoot six times harder. They reduce
 crosstalk by slowing the edge; we keep the edge and hold the gate down. The
 margin is not bought with switching speed, and the overshoot is the price.
 
@@ -272,8 +275,9 @@ point and measured at none. It now says what was measured.
 
 - **Device spread.** 24 devices with V_th, transconductance, C_GS and C_J
   varied jointly: worst-case margin **+1.895 V**, 0 of 24 false turn-on.
-- **Capacitance law.** Behavioural `C=` against charge-based `Q=`: the
-  ordering survives both.
+- **Capacitance law.** Junction-diode capacitance (`models/egan.lib`, the
+  model every number in this paper is measured on) against the charge-based
+  `Q=` formulation (`models/egan_c.lib`): the ordering survives both.
 - **Transistor level.** SKY130 open-PDK output stage: sign and ordering of
   the result both survive.
 - **Loop inductance.** The 3 nH figure is our choice, and the conclusion is
@@ -319,8 +323,8 @@ inferences in the model file.
 Segmented gate drive for GaN works, and this paper is not an argument against
 building it. It is an argument against a specific and popular next step.
 
-Of the gain available from controlling drive strength digitally, **89 % is
-had by choosing one good fixed word**. The remaining 11 % is most of the
+Of the gain available from controlling drive strength digitally, **91 % is
+had by choosing one good fixed word**. The remaining 8.9 % is most of the
 engineering: sensing, conversion, a lookup table, and 65 % more controller
 logic. One comparator recovers about half of that remainder for almost
 nothing.

@@ -137,6 +137,7 @@ else:
 # Values a correction has retired. If one comes back, something was rebuilt
 # from a stale source or retyped from an old slide.
 RETIRED = {
+    "60,533": "superseded transient count (the derived figure is 66,924)",
     "236.9 W": "superseded converter output (8 Sep, wrong off rail)",
     "242.5 W": "superseded converter input (8 Sep, wrong off rail)",
     "24 points": "superseded overshoot gap on the base-paper table (was 15.0)",
@@ -146,6 +147,38 @@ RETIRED = {
 for _bad, _why in RETIRED.items():
     if norm(_bad) in DTn:
         fails.append("%-10s is back on a slide -- %s" % (_bad, _why))
+
+# ---- 2c. the paper and the patent disclosure -------------------------------
+# These were never scanned. The deck's transient count was corrected to 66,924
+# and both paper/ documents kept 60,533 -- the patent disclosure carried it
+# twice, including in the evidence list a filing would rest on. A document
+# nothing checks is a document that rots, and these two are the ones that
+# leave the building.
+PAPERS = {
+    "paper/PAPER.md": None,
+    "paper/PATENT-DISCLOSURE.md": None,
+}
+for _rel in list(PAPERS):
+    _abs = os.path.join(ROOT, _rel)
+    PAPERS[_rel] = norm(open(_abs, encoding="utf-8").read()) if os.path.exists(_abs) else None
+    if PAPERS[_rel] is None:
+        warns.append("%s is missing" % _rel)
+
+# Values that must be right wherever they appear at all.
+DERIVED = {}
+if TRANSIENTS:
+    DERIVED[str(TRANSIENTS)] = "transient count"
+
+for _rel, _txt in PAPERS.items():
+    if _txt is None:
+        continue
+    for _val, _what in DERIVED.items():
+        if norm(_val) not in _txt:
+            fails.append("%-26s does not carry the derived %s (%s)"
+                         % (_rel, _what, _val))
+    for _bad, _why in RETIRED.items():
+        if norm(_bad) in _txt:
+            fails.append("%-26s still contains %s -- %s" % (_rel, _bad, _why))
 
 # ---- 3. every file the build references must exist -------------------------
 build = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "build.py"),

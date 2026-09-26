@@ -58,7 +58,7 @@ the central obstacle to a claim (see §8).
    (0 V / −2 V) — giving a **720-word** control space.
 3. An FPGA controller (`seg_gate_ctrl.v`) emitting the word; 20 LUTs / 20 FF
    on an Artix-7, 200 MHz register-to-register with 1.996 ns slack.
-4. An exhaustive characterisation: 720 words × 36 operating points, 60,533
+4. An exhaustive characterisation: 720 words × 36 operating points, 66,924
    transients.
 
 ## 5. The finding the claims would rest on
@@ -107,7 +107,7 @@ controller of bounded size.
 All reproducible from the repository; `results/RESULTS-SUMMARY.txt` names the
 generating script for every number.
 
-- 60,533 transients, 36 operating points, ngspice 42
+- 66,924 transients, 36 operating points, ngspice 42
 - device Monte-Carlo, 24 jointly varied devices: worst margin +1.895 V, 0/24
   false turn-on
 - SKY130 transistor-level output stage: sign and ordering survive
@@ -147,6 +147,37 @@ and do not assert the component combination.
 
 ## 9. Disclosure status
 
-Not disclosed publicly. The repository is private. No conference submission
-has been made. Filing before any publication remains possible; **that order
-matters and should be decided before the paper is submitted anywhere.**
+> **This section previously read "Not disclosed publicly. The repository is
+> private." That is false, and it is the premise the filing advice below used
+> to rest on. Raise this with the IP cell before anything else in this
+> document is acted on.**
+
+**The repository is public.** `github.com/Amritha902/gan-driver` reports
+`"visibility": "public"` on the GitHub API. It was created on 2 September
+2026 and contains the full method, the model files, the complete results and
+a draft of the paper. GitHub does not expose when a repository's visibility
+last changed, so the date public disclosure began cannot be established from
+the repository itself — only that it is public now.
+
+A public repository describing the invention is a public disclosure. What
+that costs depends on jurisdiction, and none of the following is legal
+advice — it is the set of questions to put to counsel:
+
+- **India** (Patents Act 1970, ss. 29–34): the grace provisions are narrow
+  and specific. General prior publication is not among them.
+- **EPO**: absolute novelty. There is no general grace period.
+- **US** (35 U.S.C. §102(b)(1)): a one-year grace period runs from the
+  inventor's own disclosure, so a US filing may still be available if the
+  disclosure date is within a year — which makes establishing that date the
+  first practical task.
+
+No conference submission has been made. That is no longer the operative
+question: **the repository, not the paper, is the disclosure that matters,
+and it is already out.** The remaining decisions are whether a filing is
+still available in any jurisdiction the institute cares about, and whether
+to make the repository private now — which does not undo a disclosure, but
+does stop it widening.
+
+This does not change §8's recommendation to publish rather than file. It
+changes the reason: publishing first is no longer a choice being made, it is
+a description of what has already happened.
