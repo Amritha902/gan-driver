@@ -956,6 +956,37 @@ for _f, _t, _lead, _cap in _SCH:
     print("added: %s" % _t)
 
 
+# ---- slide: all three on one sheet ----------------------------------------
+# The panel asked for latency and device power compared across silicon, the
+# base paper and ours. winlose_figure.py answers that as two PAIRWISE
+# comparisons, which is right for "how much better, and where do we lose" and
+# wrong for "put the three side by side" -- silicon and the base paper never
+# share a panel there, so they cannot be read against each other at all.
+_TW = "fig_three_way.png"
+if os.path.exists(os.path.join(RES, _TW)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Silicon, the base paper, and ours \u2014 six parameters")
+    add_text(sl, 0.70, 1.10, 12.10, 0.40, [
+        para([(u"Column 1 \u2192 2 changes only the device. Column 2 \u2192 3 "
+               u"changes only the control.", B)],
+             level=0, sz=1400, spc=0, bullet=False)])
+    place(sl, _TW, 1.52, 4.50)
+    caption(sl,
+            u"Latency 17.55 \u2192 4.04 \u2192 2.78 ns and device power "
+            u"8.60 \u2192 2.93 \u2192 2.60 W, left to right. The device swap "
+            u"buys most of it; the control swap buys the rest. Overshoot is the "
+            u"row that runs the other way, and it runs that way for the same "
+            u"reason the other five do not: silicon does not overshoot because "
+            u"its edge is nine times slower, and that slowness is what costs it "
+            u"6.0 W. Speed and device stress are one knob. "
+            u"scripts/three_way_figure.py, from results/panel_metrics.csv.",
+            top=6.22, h=1.10)
+    print("added: Silicon, the base paper, and ours")
+else:
+    print("  MISSING FIGURE: %s -- run scripts/three_way_figure.py" % _TW)
+
+
 # ---- slides: is the headline robust to how we computed it? ----------------
 # Four questions a panel asks about the decomposition, answered off the same
 # 36-corner grid by scripts/grid_robustness.py. Backup material: they exist to
@@ -1717,6 +1748,7 @@ P_FILE = u"A project file, typeset. Not simulation output."
 PROVENANCE = {
     # Re-analysis of results/full_grid.csv -- the transients are ngspice's,
     # the figures are what scripts/grid_robustness.py makes of them.
+    "fig_three_way.png": P_SIM,
     "fig_wov_sensitivity.png": P_SIM, "fig_corner_penalty.png": P_SIM,
     "fig_fixed_vs_optimum.png": P_SIM, "fig_grid_subsample.png": P_SIM,
     # plotted from ngspice transient output
@@ -1868,6 +1900,7 @@ ORDER = [
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
     u"Where we win, and where we lose",
+    u"Silicon, the base paper, and ours \u2014 six parameters",
     u"The converter across its own envelope",
     u"Does the answer depend on the weight we chose?",
     u"The distribution behind the 2.6 %",
@@ -1965,6 +1998,7 @@ SHORT = [
     u"Our architecture \u2014 same stage",           # panel ask 3, this slide
     u"Theirs and ours \u2014 six parameters",        # panel ask 4
     u"Where we win, and where we lose",             # the same, as a picture
+    u"Silicon, the base paper, and ours \u2014 six parameters",
     u"The converter across its own envelope",       # the envelope, measured
     u"Head to head with the base paper",            # the comparison
     u"Closing the loop",                            # the converter regulates
