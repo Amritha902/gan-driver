@@ -139,6 +139,8 @@ else:
 RETIRED = {
     "60,533": "superseded transient count (the derived figure is 66,924)",
     "+1.895 V": "one Monte-Carlo run quoted as the worst case; the worst is +1.267 V",
+    "open loop's 20.0 %": "closed-loop comparison rounded up; closedloop.txt says 16.65 %",
+    "walks to 60 V": "open loop reaches 58.33 V, not 60",
     "236.9 W": "superseded converter output (8 Sep, wrong off rail)",
     "242.5 W": "superseded converter input (8 Sep, wrong off rail)",
     "24 points": "superseded overshoot gap on the base-paper table (was 15.0)",
@@ -184,6 +186,27 @@ if os.path.exists(_mc):
     if _rows:
         _worst = min(float(r["margin"]) for r in _rows)
         DERIVED["+%.3f V" % _worst] = "Monte-Carlo worst-case margin"
+
+# Slide 28 quoted 0.01 % / 20.0 % / 60 V where the run says 0.02 / 16.65 /
+# 58.33. All three rounded the flattering way and nothing re-derived them.
+#
+# These are DECK claims. Neither paper document discusses the closed loop, so
+# requiring them there would fail honestly-silent files -- which is what the
+# first version of this check did.
+DERIVED_DECK = {}
+try:
+    import closedloop_numbers as _CL
+except Exception:
+    warns.append("closedloop_numbers.py will not import")
+else:
+    DERIVED_DECK["%.2f %%" % _CL.ERR_C] = "closed-loop worst error"
+    DERIVED_DECK["%.2f %%" % _CL.ERR_O] = "open-loop worst error"
+    DERIVED_DECK["%.1f V" % _CL.LINE_O] = "open loop after the line step"
+
+for _val, _what in DERIVED_DECK.items():
+    if norm(_val) not in DTn:
+        fails.append("%-9s (%s) is what closedloop.txt says, but it is on no "
+                     "slide" % (_val, _what))
 
 for _rel, _txt in PAPERS.items():
     if _txt is None:

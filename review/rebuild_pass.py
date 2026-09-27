@@ -29,6 +29,7 @@ from pptx.util import Inches
 from fill import para, set_body, q
 from PIL import Image
 import converter_numbers as CN
+import closedloop_numbers as CL
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
@@ -551,8 +552,8 @@ ROWS = [
      u"is never closed-loop regulated.",
      u"A type-III loop around the same power stage and the same drivers, then "
      u"disturbed on purpose.",
-     u"0.01 % error through a 2× load step and a 20 % line step; open loop "
-     u"walks to 60 V (closedloop.py).", u"CLOSED"),
+     u"%.2f %% error through a 2\u00d7 load step and a 20 %% line step; open "
+     u"loop walks to %.1f V (closedloop.py)." % (CL.ERR_C, CL.LINE_O), u"CLOSED"),
     (u"Segmented output stages are published as ideal switches. Whether the "
      u"result survives real devices is untested.",
      u"The same output stage rebuilt in SKY130 5 V transistors and re-run.",
@@ -670,7 +671,8 @@ COMPLETION = [
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
     (u"Closed-loop regulation, disturbed on purpose", 6, True,
-     u"type-III loop: 0.01 % error through a 2x load and a 20 % line step"),
+     u"type-III loop: %.2f %% error through a 2x load and a 20 %% line step"
+     % CL.ERR_C),
     (u"Transistor-level output stage, on a real PDK", 7, True,
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
@@ -745,11 +747,12 @@ else:
 # from results/, so a figure cannot drift from the run that made it.
 RESULT_SLIDES = [
  ("fig_closedloop.png", u"Closing the loop",
-  u"The loop holds 50 V. Open loop walks to 60 V.",
+  u"The loop holds 50 V. Open loop walks to %.1f V." % CL.LINE_O,
   u"sim/buck_closed.cir runs the same power stage and the same segmented "
   u"drivers, now regulated by a type-III loop and then disturbed on purpose. "
   u"Closed loop 50.01 / 50.00 / 50.00 V through a 2\u00d7 load step and a "
-  u"100 \u2192 120 V line step; worst error 0.01 % against open loop's 20.0 %. "
+  u"100 \u2192 120 V line step; worst error %.2f %% against open loop's "
+  u"%.2f %%. " % (CL.ERR_C, CL.ERR_O) +
   u"Load step recovers in 4 \u00b5s, line step in 22 \u00b5s. Ripple 0.25 %, "
   u"efficiency 96.1 %, start-up overshoot 3.8 %."),
  ("fig_headtohead.png", u"Head to head with the base paper",
@@ -1247,7 +1250,8 @@ COMPLETION = [
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
     (u"Closed-loop regulation, disturbed on purpose", 6, True,
-     u"type-III loop: 0.01 % error through a 2x load and a 20 % line step"),
+     u"type-III loop: %.2f %% error through a 2x load and a 20 %% line step"
+     % CL.ERR_C),
     (u"Transistor-level output stage, on a real PDK", 7, True,
      u"SKY130 5 V devices: sign and ordering of the result both survive"),
     (u"Place-and-route on a chosen board", 3, False,
@@ -1330,7 +1334,7 @@ grid(s, 1.30, 2.14, 10.70, 1.10, [
      u"after 100 \u2192 120 V line step", u"worst error"),
     ((u"closed loop", None, True), (u"50.02 V", GREEN, True),
      (u"50.00 V", GREEN, True), (u"50.00 V", GREEN, True),
-     (u"0.01 %", GREEN, True)),
+     (u"%.2f %%" % CL.ERR_C, GREEN, True)),
     ((u"open loop", None, True), (u"51.03 V", None, False),
      (u"50.15 V", None, False), (u"58.33 V", AMBER, True),
      (u"16.7 %", AMBER, True)),
