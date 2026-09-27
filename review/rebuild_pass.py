@@ -684,6 +684,9 @@ COMPLETION = [
 ]
 DONE = sum(w for _, w, d, _ in COMPLETION if d)
 NDONE = sum(1 for _, _, d, _ in COMPLETION if d)
+# Read the hardware row's own weight rather than typing 7 into the prose --
+# change the table and the sentence follows.
+HW_WEIGHT = next(w for t, w, _, _ in COMPLETION if "hardware half-bridge" in t)
 assert sum(w for _, w, _, _ in COMPLETION) == 100
 
 wi = index_of(u"Work Completed")
@@ -710,15 +713,22 @@ if wi is not None:
         # The rubric sentence used to read "Review-I's rubric asks for 50 %".
         # This deck is presented at Review-II, and quoting the previous
         # review's threshold to this panel is worse than quoting none.
-        para([(u"%d of 100 done. " % DONE, B),
-              (u"The remaining %d %% is "
-               u"place-and-route on a chosen board and a hardware "
-               u"half-bridge on a bench. The simulation is finished, and "
-               u"simulating harder will not deliver either." % (100 - DONE), N)],
+        # Lead with what is finished and what the remainder needs, THEN the
+        # number. A percentage stated first sounds like a claim about how
+        # close we are; stated second it reads as an accounting of work.
+        para([(u"The simulation study is complete. ", B),
+              (u"What remains needs a bench: place-and-route on a chosen "
+               u"board, and one measured half-bridge. Simulating harder will "
+               u"not deliver either.", N)],
+             level=0, sz=1300, spc=150, bullet=False),
+        para([(u"%d of 100 by the count above. " % DONE, B),
+              (u"The weights are on this slide because we would rather they "
+               u"were argued with than discovered. Score the hardware higher "
+               u"than %d and the number falls \u2014 that is a fair reading, "
+               u"and it is the one we cannot answer without a bench."
+               % HW_WEIGHT, N)],
              level=0, sz=1250, spc=140, bullet=False),
-        para([(u"Plainly: the simulation is finished, across the "
-               u"envelope and not just at one point. Nothing has been "
-               u"measured on silicon.", B)],
+        para([(u"Nothing has been measured on silicon.", B)],
              level=0, sz=1250, spc=0, bullet=False)])
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
@@ -1251,6 +1261,9 @@ COMPLETION = [
 ]
 DONE = sum(w for _, w, d, _ in COMPLETION if d)
 NDONE = sum(1 for _, _, d, _ in COMPLETION if d)
+# Read the hardware row's own weight rather than typing 7 into the prose --
+# change the table and the sentence follows.
+HW_WEIGHT = next(w for t, w, _, _ in COMPLETION if "hardware half-bridge" in t)
 assert sum(w for _, w, _, _ in COMPLETION) == 100
 
 wi = index_of(u"Work Completed")
@@ -1277,15 +1290,22 @@ if wi is not None:
         # The rubric sentence used to read "Review-I's rubric asks for 50 %".
         # This deck is presented at Review-II, and quoting the previous
         # review's threshold to this panel is worse than quoting none.
-        para([(u"%d of 100 done. " % DONE, B),
-              (u"The remaining %d %% is "
-               u"place-and-route on a chosen board and a hardware "
-               u"half-bridge on a bench. The simulation is finished, and "
-               u"simulating harder will not deliver either." % (100 - DONE), N)],
+        # Lead with what is finished and what the remainder needs, THEN the
+        # number. A percentage stated first sounds like a claim about how
+        # close we are; stated second it reads as an accounting of work.
+        para([(u"The simulation study is complete. ", B),
+              (u"What remains needs a bench: place-and-route on a chosen "
+               u"board, and one measured half-bridge. Simulating harder will "
+               u"not deliver either.", N)],
+             level=0, sz=1300, spc=150, bullet=False),
+        para([(u"%d of 100 by the count above. " % DONE, B),
+              (u"The weights are on this slide because we would rather they "
+               u"were argued with than discovered. Score the hardware higher "
+               u"than %d and the number falls \u2014 that is a fair reading, "
+               u"and it is the one we cannot answer without a bench."
+               % HW_WEIGHT, N)],
              level=0, sz=1250, spc=140, bullet=False),
-        para([(u"Plainly: the simulation is finished, across the "
-               u"envelope and not just at one point. Nothing has been "
-               u"measured on silicon.", B)],
+        para([(u"Nothing has been measured on silicon.", B)],
              level=0, sz=1250, spc=0, bullet=False)])
     print("rebuilt: Work Completed — %d %%" % DONE)
 else:
