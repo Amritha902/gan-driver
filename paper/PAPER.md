@@ -274,7 +274,12 @@ point and measured at none. It now says what was measured.
 ## IV. Robustness
 
 - **Device spread.** 24 devices with V_th, transconductance, C_GS and C_J
-  varied jointly: worst-case margin **+1.895 V**, 0 of 24 false turn-on.
+  varied jointly, on the shipped configuration (clamp on, −2 V rail, 8 + 8
+  slices) across four corners — 384 runs: worst-case margin **+1.267 V**
+  (device 19 at 200 V / 2 A / 125 °C), median +2.103 V, **0 of 384** false
+  turn-on. The Monte-Carlo grid sweeps dead time over 5–35 ns and does not
+  include the shipped 15 ns, so this is the shipped output stage rather than
+  the shipped word exactly.
 - **Capacitance law.** Junction-diode capacitance (`models/egan.lib`, the
   model every number in this paper is measured on) against the charge-based
   `Q=` formulation (`models/egan_c.lib`): the ordering survives both.

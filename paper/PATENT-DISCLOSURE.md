@@ -108,8 +108,9 @@ All reproducible from the repository; `results/RESULTS-SUMMARY.txt` names the
 generating script for every number.
 
 - 66,924 transients, 36 operating points, ngspice 42
-- device Monte-Carlo, 24 jointly varied devices: worst margin +1.895 V, 0/24
-  false turn-on
+- device Monte-Carlo, 24 jointly varied devices on the shipped configuration
+  across four corners, 384 runs: worst margin +1.267 V, median +2.103 V,
+  0 of 384 false turn-on
 - SKY130 transistor-level output stage: sign and ordering survive
 - converter envelope sweep, 8 bus × load points: margin +2.14 to +2.61 V
 - RTL synthesised in Vivado 2024.1 with timing met

@@ -138,6 +138,7 @@ else:
 # from a stale source or retyped from an old slide.
 RETIRED = {
     "60,533": "superseded transient count (the derived figure is 66,924)",
+    "+1.895 V": "one Monte-Carlo run quoted as the worst case; the worst is +1.267 V",
     "236.9 W": "superseded converter output (8 Sep, wrong off rail)",
     "242.5 W": "superseded converter input (8 Sep, wrong off rail)",
     "24 points": "superseded overshoot gap on the base-paper table (was 15.0)",
@@ -168,6 +169,21 @@ for _rel in list(PAPERS):
 DERIVED = {}
 if TRANSIENTS:
     DERIVED[str(TRANSIENTS)] = "transient count"
+
+# The Monte-Carlo worst case was quoted as +1.895 V in both paper documents.
+# That is one run -- device 6 at 200 V / 10 A / 125 C -- not the worst of the
+# 384. The real worst is +1.267 V. Nothing re-derived it, so nothing caught
+# it. Derive it here from the CSV the claim is about.
+_mc = os.path.join(ROOT, "results", "device_mc.csv")
+if os.path.exists(_mc):
+    import csv as _csv2
+    _rows = [r for r in _csv2.DictReader(open(_mc))
+             if r.get("CLKEN") == "1" and r.get("VNEG") not in (None, "")
+             and float(r["VNEG"]) == -2.0
+             and r.get("NPU_LS") == "8" and r.get("NPD_LS") == "8"]
+    if _rows:
+        _worst = min(float(r["margin"]) for r in _rows)
+        DERIVED["+%.3f V" % _worst] = "Monte-Carlo worst-case margin"
 
 for _rel, _txt in PAPERS.items():
     if _txt is None:
