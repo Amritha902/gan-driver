@@ -6,8 +6,10 @@
 #
 #     bash proof/PREFLIGHT.sh
 #
-# Checks everything proof/LIVE-SIM.sh needs, then actually runs it once and
-# times it. Exits non-zero if anything would fail in the room.
+# Checks everything the two live scripts need -- proof/LIVE-SIM.sh (the
+# double-pulse bench) and proof/LIVE-BUCK.sh (the converter) -- then actually
+# runs both once and times them. Exits non-zero if anything would fail in
+# the room.
 # ---------------------------------------------------------------------------
 set -u
 cd "$(dirname "$0")/.."
@@ -47,23 +49,46 @@ for f in sim/dpt.cir models/egan.lib models/segdrv.lib scripts/gansim.py \
   [ -f "$f" ] && ok "$f" || bad "$f is missing from this checkout"
 done
 
-if [ "$FAIL" -eq 0 ]; then
+# the converter needs its netlist, its runner, and the two result files the
+# on-screen comparison is read from -- a missing CSV there is a crash in the
+# room, not a missing number.
+for f in sim/buck.cir scripts/bucksim.py scripts/live_buck.py \
+         review/converter_numbers.py results/buck_sweep.csv \
+         results/panel_metrics.csv; do
+  [ -f "$f" ] && ok "$f" || bad "$f is missing from this checkout"
+done
+
+# rehearse( label, script, budget_seconds, grep-pattern )
+rehearse() {
   echo
-  echo "  running proof/LIVE-SIM.sh once, as a rehearsal ..."
+  echo "  running $1 once, as a rehearsal ..."
   S=$(date +%s)
-  if python3 scripts/live_demo.py --no-plot >/tmp/preflight.out 2>&1; then
+  if python3 "$2" --no-plot >/tmp/preflight.out 2>&1; then
     E=$(date +%s)
-    grep -E "OFF gate|margin, shipped|wall clock" /tmp/preflight.out | sed 's/^/    /'
-    ok "live demo completed in $((E-S)) s"
-    [ $((E-S)) -gt 30 ] && note "slower than expected -- run it once more before the review"
+    grep -E "$4" /tmp/preflight.out | sed 's/^/    /'
+    ok "$1 completed in $((E-S)) s"
+    [ $((E-S)) -gt "$3" ] && note "slower than expected -- run it once more before the review"
   else
-    bad "the live demo did not complete"; sed 's/^/    /' /tmp/preflight.out | tail -5
+    bad "$1 did not complete"; sed 's/^/    /' /tmp/preflight.out | tail -5
   fi
+  # A run that finishes but disagrees with the deck is the failure this is
+  # for. live_buck.py prints DIFFERS on any row that has drifted.
+  if grep -q DIFFERS /tmp/preflight.out; then
+    bad "$1 measured something the slides do not say -- see the DIFFERS rows"
+    grep DIFFERS /tmp/preflight.out | sed 's/^/    /'
+  fi
+}
+
+if [ "$FAIL" -eq 0 ]; then
+  rehearse "proof/LIVE-SIM.sh"  scripts/live_demo.py 30 \
+           "OFF gate|margin, shipped|wall clock"
+  rehearse "proof/LIVE-BUCK.sh" scripts/live_buck.py 60 \
+           "efficiency|switch node peaks|wall clock|DIFFERS|match"
 fi
 
 echo "  ------------------------------------------------------------"
 if [ "$FAIL" -eq 0 ]; then
-  echo "  READY. proof/LIVE-SIM.sh will run in the room."
+  echo "  READY. proof/LIVE-SIM.sh and proof/LIVE-BUCK.sh will run in the room."
 else
   echo "  NOT READY. Fix the FAIL lines above, then run this again."
 fi

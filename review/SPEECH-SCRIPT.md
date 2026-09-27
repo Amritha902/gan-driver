@@ -757,6 +757,61 @@ not in front of a panel.
 
 ---
 
+## 25c — OR RUN THE CONVERTER (20 s, or 40 s if they say yes)
+
+25b runs the double-pulse bench: one switching edge, which is where the
+crosstalk result is measured. A bench is not a converter — it never delivers
+power to a load — and a reviewer who has followed this far will ask whether
+the thing actually works. This is the answer, and it also runs live.
+
+> "That was the test bench. If you want to see the converter itself, I can
+> run it now — 100 volts in, 48.5 out, 236 watts into a 10 ohm load, for 150
+> switching cycles. About twenty seconds."
+
+**If they say yes.** `bash proof/LIVE-BUCK.sh` from the repository root. It
+runs the shipped word, then the same converter with the fix switched off,
+and prints both beside what the slides claim. One sentence while it solves:
+
+> "Same devices, same drivers, same netlist as the bench. Now switching
+> continuously into an output filter, which is the part a bench cannot show."
+
+Then read the table: **48.50 V** out at **236.26 W**, **97.49 %** efficient,
+every row marked *match*. The waveform it opens has four panels — the output
+starting up and settling, the switch node chopping at 500 kHz, the gate drive
+with the −2 V rail visible under it, and the inductor current triangle,
+2.25 A of ripple on 4.87 A.
+
+**The question this invites, and the answer.** The second run — clamp off,
+0 V rail — comes out *more* efficient: 97.73 % against 97.49 %. Say it before
+they do.
+
+> "Yes. The safety costs 0.24 points, about 0.57 watts. That is the trade,
+> and it is the reason the double-pulse result matters: without it you are
+> paying nothing and getting a device that turns on when it should not."
+
+If pressed on where the 0.57 W goes, about 0.22 W of it is arithmetic you can
+do at the board: GaN has no body diode, so during dead time the off device
+conducts in its third quadrant at V_th + |V_off| + I·R_ds(on). Dropping the
+off rail from 0 V to −2 V adds 2 V to that, for the 45 ns of dead time in
+every 2 µs period, at 4.87 A — 2 × 4.87 × 45/2000 = 0.22 W. The rest is the
+clamp's own switching and the edge it changes. Do not claim more than that;
+the measured figure is 0.57 W and only part of it is accounted for.
+
+**The overshoot number.** The screen says 15.1 %. The GaN-versus-silicon
+table says 17.9 %. Same operating point, different instrument, and the script
+says so on screen: `panel_metrics.py` re-runs three settled cycles at a
+0.02 ns step to resolve the edge, where this run uses the sweep's 0.2 ns step.
+If they catch it, you have already answered it.
+
+**If it will not start**, `results/buck_recording.mp4` is the same command
+recorded, with the real fifteen-second pause in it. Same rule as 25b: play it,
+say what it is, move on.
+
+**Before the review**, `bash proof/PREFLIGHT.sh` rehearses both scripts and
+fails if either measures something the slides do not say.
+
+---
+
 ## 26 — Conclusion and next steps (40 s)
 
 > "Choosing the setting well matters enormously — roughly fivefold in

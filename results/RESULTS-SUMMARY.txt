@@ -76,6 +76,23 @@
   output                                                     48.50 V, 4.869 A  (236.26 W)   buck_sweep.py
   efficiency, clamp on, −2 V rail, all eight slices           97.49 %                          buck_sweep.py
   -> quoted on slides 6, 7, 14 and 31; all four read converter_numbers.py
+  -> the same run, live, is proof/LIVE-BUCK.sh -- about 15 s of ngspice
+
+  WHAT THE CROSSTALK FIX COSTS THE CONVERTER
+  ─────────────────────────────────────────────────────────────────────────────────────────
+  efficiency, clamp on, -2 V rail  (shipped)                 97.49 %                        buck_sweep.csv
+  efficiency, clamp off, 0 V rail  (unsafe)                  97.73 %                        buck_sweep.csv
+  the price of the fix                                       0.24 points  (0.570 W)         live_buck.py
+  of which third-quadrant conduction, on paper               0.22 W  (2 V x 4.869 A         45 ns dead time
+                                                             x 45 ns / 2 us)                per 2 us period
+  -> the rest is the clamp's own switching. Do not claim the whole 0.57 W.
+
+  THE CONVERTER'S OUTPUT, AS THE LIVE RUN DRAWS IT
+  ─────────────────────────────────────────────────────────────────────────────────────────
+  output ripple, open loop                                   729 mV  (1.50 %)               buck_sweep.csv
+  inductor current ripple                                    2.25 A on 4.87 A mean          live_buck.py
+  (textbook check: (Vin-Vout)*D*Tsw/L = 51.5*0.5*2u/22u      = 2.34 A, against 2.25 A
+   measured -- the difference is the resistive drops)
 
   THE CONVERTER'S OWN SWITCH NODE
   ───────────────────────────────────────────────────────────────────────────────────────────────────

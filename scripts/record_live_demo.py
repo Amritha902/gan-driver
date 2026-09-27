@@ -16,9 +16,10 @@ were emitted, and the recording replays them at those times -- including the
 3.7 s pause while ngspice solves, which is the part a sceptic is watching
 for. Nothing is sped up.
 
-    python3 scripts/record_live_demo.py
+    python3 scripts/record_live_demo.py           the double-pulse bench
+    python3 scripts/record_live_demo.py --buck    the converter
 
-Writes results/live_demo_recording.mp4.
+Writes results/live_demo_recording.mp4, or results/buck_recording.mp4.
 """
 import os
 import subprocess
@@ -30,7 +31,17 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(ROOT, "results")
-OUT = os.path.join(RES, "live_demo_recording.mp4")
+# Which demo this run records. The two are the same recording job over a
+# different command, so they share every frame-drawing routine below; only
+# the script, the header line, the closing still and the output file differ.
+BUCK = "--buck" in sys.argv
+TARGET = dict(
+    script="live_buck.py" if BUCK else "live_demo.py",
+    header="$ bash proof/%s" % ("LIVE-BUCK.sh" if BUCK else "LIVE-SIM.sh"),
+    still="buck_run.png" if BUCK else "live_run.png",
+    out="buck_recording.mp4" if BUCK else "live_demo_recording.mp4",
+)
+OUT = os.path.join(RES, TARGET["out"])
 
 W, H, FPS = 1600, 900, 25
 BG, INK, DIM = (12, 12, 12), (232, 232, 228), (128, 128, 122)
@@ -53,6 +64,12 @@ F, FB = mono(21), mono(21, True)
 
 def colour_for(line):
     s = line.strip()
+    if "DIFFERS" in s:
+        return RED
+    if "match" in s or "efficiency" in s:
+        return GRN
+    if "costs" in s and "points" in s:
+        return BLU
     if "SHOOT-THROUGH" in s or s.startswith("(a)"):
         return RED if "SHOOT" in s else YEL
     if "SAFE" in s or s.startswith("(b)"):
@@ -69,7 +86,8 @@ def capture():
     """Run the demo, keeping each line with the second it appeared."""
     print("  running the live demo and timing its output ...")
     t0 = time.time()
-    p = subprocess.Popen([sys.executable, os.path.join(ROOT, "scripts", "live_demo.py")],
+    p = subprocess.Popen([sys.executable,
+                          os.path.join(ROOT, "scripts", TARGET["script"])],
                          cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          text=True, bufsize=1,
                          env=dict(os.environ, NO_COLOR="1", PYTHONUNBUFFERED="1"))
@@ -90,7 +108,7 @@ def frames_for(lines, total):
         t = k / float(FPS)
         im = Image.new("RGB", (W, H), BG)
         d = ImageDraw.Draw(im)
-        d.text((PAD, 26), "$ bash proof/LIVE-SIM.sh", font=head, fill=GRN)
+        d.text((PAD, 26), TARGET["header"], font=head, fill=GRN)
         d.text((W - PAD - 190, 32), "%5.1f s" % min(t, total), font=F, fill=DIM)
         y = 82
         for ts, ln in lines:
@@ -98,7 +116,8 @@ def frames_for(lines, total):
                 break
             if y > H - PAD:
                 break
-            d.text((PAD, y), ln[:104], font=FB if "SHOOT" in ln or "SAFE" in ln else F,
+            d.text((PAD, y), ln[:110],
+                   font=FB if ("SHOOT" in ln or "SAFE" in ln or "DIFFERS" in ln) else F,
                    fill=colour_for(ln))
             y += LH
         # a cursor while the run is still going
@@ -110,7 +129,7 @@ def frames_for(lines, total):
 
 def plot_frames(secs=5.0):
     """End on the waveform the run just drew."""
-    p = os.path.join(RES, "live_run.png")
+    p = os.path.join(RES, TARGET["still"])
     if not os.path.exists(p):
         return []
     im = Image.open(p).convert("RGB")

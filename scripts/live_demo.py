@@ -59,7 +59,10 @@ def main():
     # `ngspice -v` prints a banner of asterisks first; the version line is
     # the one that actually contains "ngspice-".
     ver = subprocess.run(["ngspice", "-v"], capture_output=True, text=True)
-    ver = next((l.strip() for l in (ver.stdout + ver.stderr).split("\n")
+    # `ngspice -v` opens with a banner of asterisks; the version line is the
+    # one containing "ngspice-", and it still carries its own "** " prefix.
+    ver = next((l.strip().lstrip("*").strip()
+                for l in (ver.stdout + ver.stderr).split("\n")
                 if "ngspice-" in l), "ngspice (version not reported)")[:48]
     say("  machine  %s        %s" % (host, time.strftime("%Y-%m-%d %H:%M:%S")))
     say("  spice    %s" % ver)
