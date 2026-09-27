@@ -2051,6 +2051,7 @@ SHORT = [
     u"The hardware, costed",                        # answers "why no hardware"
     u"Work Completed",                             # completion
     u"References  (1–15)",
+    u"Thank you",                                 # do not end the talk on a reference list
 ]
 
 
