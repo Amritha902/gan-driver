@@ -7,8 +7,13 @@ every chance to pick the take. This runs the same two simulations live, on
 whatever machine is in the room, and puts the numbers it just measured next
 to the numbers on the slide.
 
-    python3 scripts/live_demo.py            both runs, ~5 s, writes a plot
+    python3 scripts/live_demo.py            both runs, ~10 s, writes a plot
     python3 scripts/live_demo.py --no-plot  numbers only, for a terminal
+    python3 scripts/live_demo.py --deck     also writes the deck's figure,
+                                            titled by what it shows rather
+                                            than by the clock -- a stale
+                                            timestamp on a slide that claims
+                                            "live" argues against itself
 
 It is deliberately two runs of ONE circuit file. sim/dpt.cir is not modified
 between them -- only the two control parameters the whole project is about:
@@ -44,6 +49,7 @@ def say(s=""):
 
 def main():
     plot = "--no-plot" not in sys.argv
+    deck = "--deck" in sys.argv
     import gansim
 
     say()
@@ -126,7 +132,9 @@ def main():
 
     ax1.plot(raws["bad"][0], raws["bad"][1], color=RED, lw=1.8)
     ax1.set_ylabel("switch node V(sw)  [V]", color=MUTED, fontsize=10)
-    ax1.set_title("Simulated on this machine at %s" % time.strftime("%H:%M:%S"),
+    ax1.set_title("What `bash proof/LIVE-SIM.sh` draws, in about ten seconds"
+                  if deck else
+                  "Simulated on this machine at %s" % time.strftime("%H:%M:%S"),
                   color=INK, fontsize=13, weight="bold", loc="left", pad=10)
 
     ax2.plot(raws["bad"][0], raws["bad"][2], color=RED, lw=1.8,
@@ -151,7 +159,7 @@ def main():
                  color=BLUE, fontsize=10, weight="bold")
     ax2.set_ylim(min(raws["good"][2]) - 0.7, max(raws["bad"][2]) + 0.6)
 
-    out = os.path.join(RES, "live_run.png")
+    out = os.path.join(RES, "fig_live_sim.png" if deck else "live_run.png")
     fig.savefig(out, dpi=150, bbox_inches="tight", facecolor=SURF)
     plt.close(fig)
     say("  wrote %s" % out)

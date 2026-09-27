@@ -722,6 +722,32 @@ branch was damped, so its converter numbers predate the ones in this deck;
 
 ---
 
+## 25b — OR WE CAN RUN IT NOW (20 s, or 30 s if they say yes)
+
+This slide exists to be offered, not read. Say it and then stop talking.
+
+> "Everything you have just seen was recorded. If you would rather not take a
+> recording's word for it, I can run the same two simulations on this machine
+> now — it takes about ten seconds."
+
+**If they say yes.** `bash proof/LIVE-SIM.sh` from the repository root. It
+prints what it measures beside what the slide claims, then opens the
+waveforms. Say one sentence while it runs:
+
+> "Two runs of the same circuit file. The only things changing between them
+> are the Miller clamp and the off rail — everything else is held."
+
+Then read the two rows off the screen and stop. **1.649 V** against the
+deck's 1.65, **2.576 V** margin against the deck's 2.576.
+
+**If they say no**, you have still made the offer, which is most of the value.
+
+**Do not** run it if the machine is not the one you tested on. Check ngspice
+is on PATH before the review; the script checks too, and fails politely, but
+not in front of a panel.
+
+---
+
 ## 26 — Conclusion and next steps (40 s)
 
 > "Choosing the setting well matters enormously — roughly fivefold in

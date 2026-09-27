@@ -969,6 +969,35 @@ for _f, _t, _lead, _cap in _SCH:
     print("added: %s" % _t)
 
 
+# ---- slide: run it in the room --------------------------------------------
+# The demo slide plays a recording, and a recording answers none of what a
+# sceptic asks: it was made elsewhere, at some other time, by someone who
+# could pick the take. This slide is the offer to run it instead.
+_LS = "fig_live_sim.png"
+if os.path.exists(os.path.join(RES, _LS)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Or we can run it now")
+    add_text(sl, 0.70, 1.10, 12.10, 0.44, [
+        para([(u"bash proof/LIVE-SIM.sh", B),
+              (u"   \u2014 two ngspice transients, about ten seconds, on "
+               u"whatever machine is in this room.", N)],
+             level=0, sz=1400, spc=0, bullet=False)])
+    place(sl, _LS, 1.62, 3.88)
+    caption(sl,
+            u"Two runs of ONE circuit file. Between them only CLKEN (the "
+            u"Miller clamp) and VNEG (the gate off rail) change, so nothing "
+            u"else can be moving. It prints what it measured beside what "
+            u"these slides claim \u2014 OFF gate 1.649 V against the deck's "
+            u"1.65, margin 2.576 V against the deck's 2.576 \u2014 then draws "
+            u"the waveforms those two runs produced. 3.8 s of that is "
+            u"ngspice; the rest is drawing. scripts/live_demo.py.",
+            top=5.66, h=1.30)
+    print("added: Or we can run it now")
+else:
+    print("  MISSING FIGURE: %s -- run scripts/live_demo.py --deck" % _LS)
+
+
 # ---- slide: all three on one sheet ----------------------------------------
 # The panel asked for latency and device power compared across silicon, the
 # base paper and ours. winlose_figure.py answers that as two PAIRWISE
@@ -1813,7 +1842,7 @@ P_FILE = u"A project file, typeset. Not simulation output."
 PROVENANCE = {
     # Re-analysis of results/full_grid.csv -- the transients are ngspice's,
     # the figures are what scripts/grid_robustness.py makes of them.
-    "fig_three_way.png": P_SIM,
+    "fig_three_way.png": P_SIM, "fig_live_sim.png": P_SIM,
     "fig_voff_tradeoff.png": P_SIM, "fig_temp_sensitivity.png": P_SIM,
     "fig_wov_sensitivity.png": P_SIM, "fig_corner_penalty.png": P_SIM,
     "fig_fixed_vs_optimum.png": P_SIM, "fig_grid_subsample.png": P_SIM,
@@ -1989,6 +2018,7 @@ ORDER = [
     u"How the work was run",
     u"Which tool did what",
     u"Demo — the driver, built and measured",
+    u"Or we can run it now",
     u"What we are building — the converter",
     u"The cases we ran",
     # The simulator's own terminal, captured. These were in the 20-slide cut
@@ -2055,6 +2085,7 @@ SHORT = [
     u"The circuit, as ngspice reports it",                                          # the netlist, from ngspice
     u"How we run ngspice",
     u"Demo — the driver, built and measured",                 # the video
+    u"Or we can run it now",
     u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",
