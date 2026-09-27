@@ -1,0 +1,20 @@
+
+  WAVEFORM ANATOMY -- sim/dpt.cir, the commutation edge
+
+  THE AGGRESSOR   switch node V(sw)
+    starts at                        106.0 V
+    falls 90% -> 10% in               2.90 ns
+    mean slew over that fall            29 V/ns
+    peak slew (0.2 ns window)          124 V/ns
+    -> this dv/dt drives i = C_GD * dv/dt into the OFF device's gate
+
+  THE VICTIM      OFF-device gate V(gs)
+                            rests at  peaks at      LIFT
+    no clamp, 0 V rail       +0.005 V   +1.649 V   +1.643 V
+    clamp on, -2 V rail      -1.941 V   -1.176 V   +0.765 V
+
+    offset from the rail            -1.946 V
+    lift removed by the clamp       -0.879 V  (1.643 -> 0.765)
+    -> the rail lowers where it starts; the clamp shortens the lift.
+       Two mechanisms, not one, and they are separately measurable.
+

@@ -30,6 +30,7 @@ from fill import para, set_body, q
 from PIL import Image
 import converter_numbers as CN
 import closedloop_numbers as CL
+import waveform_numbers as WF
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES  = os.path.join(HERE, "..", "results")
@@ -281,9 +282,17 @@ TOOLOUT = [
   u"clamp, and rdec at 1 \u03a9, the damped value. "
   u"scripts/netlist_listing.py regenerates it, so it cannot go stale."),
  ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
-  u"Two runs of sim/dpt.cir. Fastest drive, no clamp, 0 V rail: gate reaches "
-  u"+1.6486 V against a 1.400 V threshold, false_turn_on = 1. Clamp on with "
-  u"\u22122 V rail: \u22121.1757 V, margin +2.5757 V, false_turn_on = 0."),
+  u"Two runs of sim/dpt.cir. TOP: the switch node falls from %.0f V in %.2f ns, "
+  u"peaking at %.0f V/ns \u2014 that dv/dt drives i = C_GD\u00b7dv/dt into the OFF "
+  u"device's gate, and is the cause. BOTTOM: that gate. Without the clamp it rests "
+  u"at %+.3f V, is lifted %+.3f V and peaks at %+.3f V, past the 1.4 V threshold "
+  u"\u2014 false_turn_on = 1. With the clamp and the \u22122 V rail it rests at "
+  u"%+.3f V, is lifted only %+.3f V and peaks at %+.3f V \u2014 false_turn_on = 0. "
+  u"The two fixes are not one mechanism: the rail moves where the gate STARTS, "
+  u"the clamp shortens the LIFT by giving the injected charge a 0.5 \u03a9 path out. "
+  u"scripts/waveform_anatomy.py."
+  % (WF.VBUS, WF.FALL_NS, WF.SLEW_PK, WF.REST_BAD, WF.LIFT_BAD, WF.PEAK_BAD,
+     WF.REST_GOOD, WF.LIFT_GOOD, WF.PEAK_GOOD)),
  ("toolout/18-named-cases.png", u"Driver simulation \u2014 the segmented driver, case by case",
   u"scripts/cases.py, 13 runs. Part 1: the fix built one change at a time at "
   u"100 V / 10 A. Part 2: dead-time sweep at two operating points: "
@@ -1017,6 +1026,34 @@ if os.path.exists(os.path.join(RES, _LS)):
     print("added: Or we can run it now")
 else:
     print("  MISSING FIGURE: %s -- run scripts/live_demo.py --deck" % _LS)
+
+
+# ---- slide: latency and device power, on their own ------------------------
+# The panel named these two. They are one row each in the six-parameter tables
+# and one panel each in the three-way sheet -- which is not an answer to a
+# question that was asked about two.
+_LP = "fig_latency_power.png"
+if os.path.exists(os.path.join(RES, _LP)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Latency and device power \u2014 the two you asked for")
+    add_text(sl, 0.70, 1.10, 12.10, 0.40, [
+        para([(u"Same converter, same device class. Silicon \u2192 base paper "
+               u"changes the device; base paper \u2192 ours changes the control.",
+               B)], level=0, sz=1400, spc=0, bullet=False)])
+    place(sl, _LP, 1.80, 4.10)
+    caption(sl,
+            u"Latency 17.55 \u2192 4.04 \u2192 2.78 ns and device power "
+            u"8.60 \u2192 2.93 \u2192 2.60 W. Against silicon that is 6.3\u00d7 "
+            u"and 3.3\u00d7; against the base paper's control on the same GaN "
+            u"device, 1.5\u00d7 and 1.1\u00d7. The device swap buys most of it "
+            u"and the control swap buys the rest \u2014 which is the honest "
+            u"shape of the result. Same file the tables read, "
+            u"results/panel_metrics.csv. scripts/latency_power_figure.py.",
+            top=6.10, h=1.05)
+    print("added: Latency and device power")
+else:
+    print("  MISSING FIGURE: %s -- run scripts/latency_power_figure.py" % _LP)
 
 
 # ---- slide: all three on one sheet ----------------------------------------
@@ -1864,6 +1901,7 @@ PROVENANCE = {
     # Re-analysis of results/full_grid.csv -- the transients are ngspice's,
     # the figures are what scripts/grid_robustness.py makes of them.
     "fig_three_way.png": P_SIM, "fig_live_sim.png": P_SIM,
+    "fig_latency_power.png": P_SIM,
     "fig_voff_tradeoff.png": P_SIM, "fig_temp_sensitivity.png": P_SIM,
     "fig_wov_sensitivity.png": P_SIM, "fig_corner_penalty.png": P_SIM,
     "fig_fixed_vs_optimum.png": P_SIM, "fig_grid_subsample.png": P_SIM,
@@ -2003,6 +2041,7 @@ ORDER = [
     u"Why GaN and not silicon",
     u"Why the GaN HEMT causes",
     u"GaN against silicon \u2014 six parameters",
+    u"Latency and device power — the two you asked for",
     u"The base paper we build on",
     # build.py creates this slide and simplify.py writes its text, but it was
     # never named here -- so ORDER dropped it and the deck cited a base paper
@@ -2097,6 +2136,7 @@ SHORT = [
     u"Problem Statement",                          # problem
     u"The closest published drivers",         # literature, BASE tagged
     u"GaN against silicon \u2014 six parameters",   # panel ask 1
+    u"Latency and device power — the two you asked for",
     u"The gap this project fills",
     u"The goal, and whether this serves it",
     u"Aim, and how we approached it",              # solution, method, scope, tools
