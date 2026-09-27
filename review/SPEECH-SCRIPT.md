@@ -742,6 +742,15 @@ deck's 1.65, **2.576 V** margin against the deck's 2.576.
 
 **If they say no**, you have still made the offer, which is most of the value.
 
+**If it will not start**, do not debug. The left-hand pane on this slide is a
+recording of the same command, made on a machine where it did run, with the
+real pauses in it -- ngspice takes about two seconds per transient and the
+recording does not hide that. Play it and say so:
+
+> "That is the same command, recorded. The pauses are ngspice solving."
+
+Then move on. A presenter who reaches for a terminal twice has lost the room.
+
 **Do not** run it if the machine is not the one you tested on. Check ngspice
 is on PATH before the review; the script checks too, and fails politely, but
 not in front of a panel.

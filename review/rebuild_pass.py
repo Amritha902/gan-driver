@@ -983,7 +983,28 @@ if os.path.exists(os.path.join(RES, _LS)):
               (u"   \u2014 two ngspice transients, about ten seconds, on "
                u"whatever machine is in this room.", N)],
              level=0, sz=1400, spc=0, bullet=False)])
-    place(sl, _LS, 1.62, 3.88)
+    # The recording of this same command goes beside the waveform: a laptop
+    # in a review room is not a controlled environment, and if the live run
+    # will not start the presenter should play the SAME thing rather than
+    # explain a different artefact. place() centres a single image, so this
+    # lays the pair out by hand.
+    _REC = os.path.join(RES, "live_demo_recording.mp4")
+    if os.path.exists(_REC):
+        sl.shapes.add_movie(_REC, Inches(0.85), Inches(1.80), Inches(5.50),
+                            Inches(3.09),
+                            poster_frame_image=os.path.join(HERE, "poster_live.png"),
+                            mime_type="video/mp4")
+        _pw, _ph = Image.open(os.path.join(RES, _LS)).size
+        sl.shapes.add_picture(os.path.join(RES, _LS), Inches(7.45), Inches(1.80),
+                              height=Inches(3.09))
+        add_text(sl, 0.85, 4.98, 5.50, 0.34, [
+            para([(u"the recording, if the room will not cooperate", N)],
+                 level=0, sz=1150, spc=0, bullet=False)])
+        add_text(sl, 7.45, 4.98, 5.00, 0.34, [
+            para([(u"what it draws when it does", N)],
+                 level=0, sz=1150, spc=0, bullet=False)])
+    else:
+        place(sl, _LS, 1.62, 3.88)
     caption(sl,
             u"Two runs of ONE circuit file. Between them only CLKEN (the "
             u"Miller clamp) and VNEG (the gate off rail) change, so nothing "
@@ -992,7 +1013,7 @@ if os.path.exists(os.path.join(RES, _LS)):
             u"1.65, margin 2.576 V against the deck's 2.576 \u2014 then draws "
             u"the waveforms those two runs produced. 3.8 s of that is "
             u"ngspice; the rest is drawing. scripts/live_demo.py.",
-            top=5.66, h=1.30)
+            top=5.44, h=1.40)
     print("added: Or we can run it now")
 else:
     print("  MISSING FIGURE: %s -- run scripts/live_demo.py --deck" % _LS)
