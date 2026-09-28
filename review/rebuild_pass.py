@@ -21,7 +21,7 @@ they now stand. ngspice alone gives 48.50 V on the shipped word.
 
 ORDER below is the whole specification: anything not named in it is dropped.
 """
-import os, sys, copy as _copy
+import os, sys, copy as _copy, subprocess
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lxml import etree
 from pptx import Presentation
@@ -362,6 +362,119 @@ if ci is not None:
                u"filter and a 10 \u03a9 load.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("circuit slide now uses the netlist-drawn schematic")
+
+# ------------------------------------------------ the novelty, on the circuit ---
+# "Three blocks added" is an architecture claim. This is the same claim on the
+# circuit: their sheet and ours, both screen captures of KiCad, with the two
+# things ours has ringed and the one thing theirs says about its own rail
+# ringed as well. A reviewer asking "show me where the novelty actually is"
+# should be answered with a picture, not a sentence.
+_NC = "fig_novelty_circuit.png"
+if os.path.exists(os.path.join(RES, _NC)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Where the novelty is, on the circuit")
+    add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+        para([(u"Two things ours has that theirs does not, ringed on the "
+               u"schematics both were generated into.", B)],
+             level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, _NC, 1.56, 4.62)
+    caption(sl,
+            u"Top, theirs: seven slices a bank in two stages, and a rail their "
+            u"own sheet labels \u201ctied to ref \u2014 NO negative rail\u201d. "
+            u"Bottom, ours: the same output stage, plus the active Miller clamp "
+            u"(one switch and a 0.5 \u03a9 resistor) and an off rail selectable "
+            u"to \u22122 V. The clamp alone is worth +0.82 V of crosstalk "
+            u"margin and the rail a further +2.01 V; together \u22120.249 V "
+            u"becomes +2.576 V. Annotated screen captures of KiCad 7.0.11, not "
+            u"redrawings \u2014 and not a size comparison, because the two "
+            u"sheets open at different zoom.", top=6.36, h=1.10)
+    print("added: Where the novelty is, on the circuit")
+else:
+    print("  MISSING: results/%s -- run scripts/novelty_circuit.py" % _NC)
+
+
+
+# ------------------------------------------------- how the numbers were made ---
+# Every comparison in this deck is "same setup, one thing changed". That is
+# the whole basis for reading a difference as caused by the change, and until
+# now it was asserted in passing on several slides rather than stated once,
+# precisely, with the environment named. A reviewer who does not believe the
+# setup was identical has no reason to believe any number that follows.
+_ENV = {}
+try:
+    _ng = subprocess.run(["ngspice", "-v"], capture_output=True, text=True)
+    _ENV["ngspice"] = next((l.strip().lstrip("*").strip().split(":")[0].strip()
+                            for l in (_ng.stdout + _ng.stderr).split("\n")
+                            if "ngspice-" in l), "ngspice")
+except Exception:
+    _ENV["ngspice"] = "ngspice-42"
+try:
+    _kc = subprocess.run(["kicad-cli", "version"], capture_output=True, text=True)
+    _ENV["kicad"] = (_kc.stdout + _kc.stderr).strip().split()[0][:12]
+except Exception:
+    _ENV["kicad"] = "7.0.11"
+
+sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(sl)
+set_title(sl, u"How every number on these slides was made")
+add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+    para([(u"Every comparison is the same file with one thing changed. "
+           u"Here is exactly what is held and exactly what moves.", B)],
+         level=0, sz=1300, spc=0, bullet=False)])
+
+_HELD = [
+    (u"the netlist", u"sim/dpt.cir, byte for byte \u2014 not a copy, not a variant"),
+    (u"the device", u"models/egan.lib on both sides, same V\u209c\u2095, same "
+                    u"R\u2091\u209b(on), same C\u2089\u2091"),
+    (u"the parasitics", u"3 nH power loop, 0.3 \u03a9 loop resistance, same "
+                        u"gate inductance"),
+    (u"the operating point", u"100 V bus, 10 A load, 25 \u00b0C junction"),
+    (u"the solver", u"same timestep, same options, same initial conditions"),
+]
+_CHANGED = [
+    (u"theirs vs ours", u"the driver subcircuit, and nothing else: "
+                        u"models/zhangdrv.lib \u2194 models/segdrv.lib"),
+    (u"GaN vs silicon", u"the device model only, R\u2091\u209b(on) matched at "
+                        u"the 25 m\u03a9 class"),
+    (u"clamp on/off", u"one parameter, CLKEN; off rail, one parameter, VNEG"),
+]
+_y = 1.62
+add_text(sl, 0.70, _y, 5.90, 0.34, [
+    para([(u"HELD IDENTICAL", B)], level=0, sz=1250, spc=0, bullet=False)])
+add_text(sl, 6.90, _y, 5.90, 0.34, [
+    para([(u"THE ONE THING THAT MOVES", B)], level=0, sz=1250, spc=0,
+         bullet=False)])
+_y += 0.44
+for _i in range(max(len(_HELD), len(_CHANGED))):
+    if _i < len(_HELD):
+        add_text(sl, 0.70, _y, 5.90, 0.62, [
+            para([(_HELD[_i][0] + u"   ", B), (_HELD[_i][1], N)],
+                 level=0, sz=1120, spc=0, bullet=False)])
+    if _i < len(_CHANGED):
+        add_text(sl, 6.90, _y, 5.90, 0.62, [
+            para([(_CHANGED[_i][0] + u"   ", B), (_CHANGED[_i][1], N)],
+                 level=0, sz=1120, spc=0, bullet=False)])
+    _y += 0.70
+add_text(sl, 0.70, _y + 0.10, 12.10, 0.40, [
+    para([(u"WHERE IT RAN   ", B),
+          (u"%s and KiCad %s on a Debian container, headless, no hardware "
+           u"in the loop. Both are open source; there is no licensed tool "
+           u"and no vendor model anywhere in this project."
+           % (_ENV["ngspice"], _ENV["kicad"]), N)],
+         level=0, sz=1120, spc=0, bullet=False)])
+caption(sl,
+        u"Their driver is additionally given a freedom its own paper does not "
+        u"have: scripts/headtohead.py searches both of its controls at every "
+        u"corner and it is run at the setting that search finds best FOR IT, "
+        u"read out of results/headtohead.txt. Ours runs one fixed control word "
+        u"at every corner. Any remaining difference is the driver. "
+        u"results/RESULTS-SUMMARY.txt names the script behind each number, and "
+        u"review/check_consistency.py fails the build if a slide and the data "
+        u"disagree.", top=6.44, h=1.02)
+print("added: How every number on these slides was made")
+
+
 
 # -------------------------------------------------- the pair of demo films ---
 # demo_review2.mp4 ends by overlaying both drivers on one axis, which is the
@@ -1276,24 +1389,27 @@ for _f, _t, _lead, _cap in _ROB:
 # you can page between them. It does not answer "what exactly did you add"
 # at a glance, because the eye has to hold one sheet while looking at the
 # other. This is the same two architectures against six shared rows.
-if os.path.exists(os.path.join(RES, "fig_arch_sidebyside.png")):
+if os.path.exists(os.path.join(RES, "fig_arch_delta.png")):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Base paper and ours, side by side")
-    add_text(sl, 0.70, 1.14, 12.10, 0.40, [
-        para([(u"Six shared rows. A difference is a difference in one row, "
-               u"and nothing else moves.", B)],
-             level=0, sz=1450, spc=0, bullet=False)])
-    place(sl, "fig_arch_sidebyside.png", 1.62, 4.30)
-    caption(sl, u"Block counts and values are parsed from models/zhangdrv.lib "
-                u"and models/segdrv.lib, not restated from memory \u2014 if "
-                u"either library changes this figure changes with it. The one "
-                u"dotted row is the one they do not have. The red line is "
-                u"where our design loses, and it is on the slide for the same "
-                u"reason the rest of it is.", top=6.04, h=0.96)
-    print("added: Base paper and ours, side by side")
+    set_title(sl, u"What we add that they do not have")
+    add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+        para([(u"Same command, same segmented output stage, same power stage. "
+               u"Three blocks added — in green.", B)],
+             level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, "fig_arch_delta.png", 1.48, 4.72)
+    caption(sl,
+            u"Top row is theirs: one analogue bias resistor set at design time, "
+            u"no clamp, off rail at 0 V — and the crosstalk path with "
+            u"nothing holding the OFF gate down. Bottom row is ours: the same "
+            u"output stage, plus a digital controller re-writable at run time, "
+            u"an always-on active Miller clamp, and an off-bias mux that "
+            u"selects −2 V. Block counts and values are parsed from "
+            u"models/zhangdrv.lib and models/segdrv.lib, so if either library "
+            u"changes this figure changes with it.", top=6.26, h=1.08)
+    print("added: What we add that they do not have")
 else:
-    print("  MISSING: results/fig_arch_sidebyside.png -- run scripts/arch_sidebyside.py")
+    print("  MISSING: results/fig_arch_delta.png -- run scripts/arch_compare.py")
 
 
 _arch_note = (u"Drawn to the same grid: a block that exists in both sits in the "
@@ -2028,6 +2144,9 @@ PROVENANCE = {
     "fig_sch_converter.png": P_DRAW, "fig_sch_ours.png": P_DRAW,
     "fig_sch_base.png": P_DRAW,
     "fig_arch_delta.png": P_DRAW,
+    "fig_novelty_circuit.png": (u"Annotated screen captures of KiCad 7.0.11 "
+                                u"on the two generated sheets; "
+                                u"scripts/novelty_circuit.py"),
     # not a diagram and not output: the deck's own netlist, set in type
     "fig_netlist.png": P_FILE,
     "fig_circuit.png": P_DRAW, "pareto_matlab.png": P_DRAW,
@@ -2137,7 +2256,9 @@ ORDER = [
     u"We implemented the base paper",
     u"Their driver, drawn \u2014 the reimplementation",
     u"Our driver, drawn \u2014 the same stage",
-    u"Base paper and ours, side by side",
+    u"What we add that they do not have",      # architecture, in green
+    u"Where the novelty is, on the circuit",    # the same claim, ringed
+    u"How every number on these slides was made",   # the method, stated once
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
@@ -2174,7 +2295,6 @@ ORDER = [
     # and NOT in the full deck, which is backwards -- the full deck is the one
     # a reviewer takes away, and it was the one with no raw tool output in it.
     u"The circuit, as ngspice reports it",
-    u"Circuit simulation",
     u"Crosstalk simulation",
     u"Driver simulation",
     u"ngspice output — what re-tuning is worth",
@@ -2192,7 +2312,6 @@ ORDER = [
     u"The architecture, end to end",
     u"Closing the loop",
     u"Does the result depend on the model?",
-    u"Does the architecture close the gaps?",
     u"Work Completed",
     u"Where we are, and what is next",
     u"The hardware, costed",
@@ -2249,17 +2368,17 @@ SHORT = [
     u"Aim, and how we approached it",
     u"System Architecture",
     u"The circuit we simulate",
-    u"Base paper and ours, side by side",      # the whole architecture story
+    u"What we add that they do not have",      # the novelty, in the blocks
+    u"Where the novelty is, on the circuit",   # the novelty, ringed on the sheets
+    u"How every number on these slides was made",   # the method, stated once
     u"The base paper, simulated",              # theirs, alone
     u"Ours, simulated",                        # ours, same axes
     u"Demo \u2014 the driver, built and measured",
     u"Or we can run it now",                   # the live offer
     u"Crosstalk simulation",                   # the fault and the fix
-    u"Circuit simulation",                     # the converter delivering
     u"Silicon, the base paper, and ours",      # all three, six parameters
     u"Latency and device power",               # the panel asked for these two
     u"Head to head with the base paper",       # four corners, 5.5x to 12.4x
-    u"Does the architecture close the gaps?",
     u"Work Completed",
     u"References",
     u"Thank you",
