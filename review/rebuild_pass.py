@@ -375,20 +375,23 @@ if os.path.exists(os.path.join(RES, _NC)):
     strip(sl)
     set_title(sl, u"Where the novelty is, on the circuit")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
-        para([(u"Two things ours has that theirs does not, ringed on the "
-               u"schematics both were generated into.", B)],
+        para([(u"The converter on top; underneath it, what sits behind its two "
+               u"gates in their design and in ours.", B)],
              level=0, sz=1300, spc=0, bullet=False)])
-    place(sl, _NC, 1.56, 4.62)
+    place(sl, _NC, 1.50, 4.74)
     caption(sl,
-            u"Top, theirs: seven slices a bank in two stages, and a rail their "
-            u"own sheet labels \u201ctied to ref \u2014 NO negative rail\u201d. "
-            u"Bottom, ours: the same output stage, plus the active Miller clamp "
-            u"(one switch and a 0.5 \u03a9 resistor) and an off rail selectable "
-            u"to \u22122 V. The clamp alone is worth +0.82 V of crosstalk "
-            u"margin and the rail a further +2.01 V; together \u22120.249 V "
-            u"becomes +2.576 V. Annotated screen captures of KiCad 7.0.11, not "
-            u"redrawings \u2014 and not a size comparison, because the two "
-            u"sheets open at different zoom.", top=6.36, h=1.10)
+            u"Top: sim/buck.cir, with the two gates of the half-bridge "
+            u"ringed \u2014 HSG and LSG are what a gate driver drives, and "
+            u"everything below is what sits behind them. Bottom left, theirs: "
+            u"seven slices a bank in two stages, and a rail their own sheet "
+            u"labels \u201ctied to ref \u2014 NO negative rail\u201d. Bottom "
+            u"right, ours: the same eight-slice output stage, plus the active "
+            u"Miller clamp and an off rail selectable to \u22122 V. The clamp "
+            u"is worth +0.82 V of crosstalk margin and the rail +2.01 V; "
+            u"together \u22120.249 V becomes +2.576 V. Annotated screen "
+            u"captures of KiCad 7.0.11, not redrawings, and not a size "
+            u"comparison \u2014 the three sheets open at different zoom.",
+            top=6.40, h=1.06)
     print("added: Where the novelty is, on the circuit")
 else:
     print("  MISSING: results/%s -- run scripts/novelty_circuit.py" % _NC)
