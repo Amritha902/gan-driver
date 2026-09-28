@@ -683,9 +683,9 @@ the contribution.
 
 ## 25 — DEMO (1 min 40 s)
 
-The film runs **84 s** and is four things: the circuit, the tools, the output,
-and the comparison. Play it and stay quiet. One sentence going in, one coming
-out.
+The film runs **94 s** and is four things: the circuit, the tools, the output,
+and the comparison. Play it and stay quiet — it carries its own captions,
+so nothing needs saying over it. One sentence going in, one coming out.
 
 Going in:
 
@@ -696,14 +696,15 @@ Going in:
 
 The four parts:
 
-1. **The implementation** — the converter and the gate driver as schematics,
-   with a detail on the active Miller clamp. The base paper has no such path.
+1. **The implementation** — KiCad itself, on screen, with the sheet open.
+   The whole window first (toolbars and all), then in to the half-bridge, then
+   the driver sheet and in to the active Miller clamp.
 2. **The software** — KiCad drew the sheets; ngspice-42 ran them. The device
-   model, the driver model and the base paper's driver are all named on
-   screen, then the simulator's own terminal output.
+   model, our driver and the base paper's are all named, then the simulator's
+   own terminal output.
 3. **The output** — the switch-node edge and the gate it lifts, with the
    threshold, the peak and the margin arrowed on the plot. Then the converter
-   delivering power, with its readings arrowed the same way.
+   delivering power, arrowed the same way.
 4. **Theirs and ours** — both drivers on the same bench at the same corner,
    overlaid, then the margin at four corners and what the change costs.
 

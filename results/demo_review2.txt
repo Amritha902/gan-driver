@@ -1,8 +1,10 @@
 # written by scripts/demo_review2.py -- do not edit by hand
-frames        2110
+frames        2357
 fps           25
-duration_s    84.4
+duration_s    94.3
 parts         4
+kicad         7.0.11
+ngspice       ngspice-42
 ours_peak     -1.1759
 ours_margin   +2.5759
 base_peak     +0.9928

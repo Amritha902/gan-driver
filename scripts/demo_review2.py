@@ -1,39 +1,47 @@
 # -*- coding: utf-8 -*-
 """demo_review2.py -- the demo film: implementation, tools, output, comparison.
 
+    python3 scripts/record_kicad.py     # once, or after the sheets change
     python3 scripts/demo_review2.py
 
-FOUR PARTS, AND NOTHING ELSE
-  1  THE IMPLEMENTATION   the circuit, as a schematic
+FOUR PARTS
+  1  THE IMPLEMENTATION   the circuit, in KiCad, on screen
   2  THE SOFTWARE         what drew it and what ran it, named and versioned
   3  THE OUTPUT           the waveforms, with the thing to look at pointed at
-  4  THEIRS AND OURS      the base paper's driver and this one, measured
-                          side by side on the same bench, same corner
+  4  THEIRS AND OURS      the base paper's driver and this one, measured on
+                          the same bench at the same corner
 
-  An earlier cut opened with the problem, typed the netlists on and closed on
-  seven result cards. That is a talk, not a demo. This is the demo: what was
-  built, what it was built with, what came out, and how it compares.
+HOW IT IS SHOT
+  The schematic shots are screen captures of eeschema with the sheet open --
+  the application, its toolbars, its hierarchy pane -- made by
+  scripts/record_kicad.py on a virtual X display. The film moves a crop across
+  those frames to go from the whole window to the half-bridge to the clamp.
+  That is an edit over real pixels: nothing in this container can drive the
+  GUI, so nothing pretends a session took place.
 
-WHAT IS REAL
-  The schematics are the KiCad sheets in kicad/, drawn from the netlists.
-  The simulator version is read from ngspice itself while the film builds.
-  Every waveform is a run made during the build -- three of them: our driver
-  on the double-pulse bench, the base paper's driver on the SAME bench at the
-  same corner, and the converter delivering power.
-  Every number annotated on a plot was measured from the trace under it.
+  The ngspice pane is not a screen capture, and does not claim to be: there is
+  no terminal emulator here. It is the simulator's real stdout, captured while
+  the film builds, typeset.
+
+  Every frame carries a subtitle band. The film is played without anyone
+  talking over it, so what the viewer needs to understand has to be on screen.
+
+WHAT IS MEASURED WHILE IT BUILDS
+  Three ngspice runs: our driver on the double-pulse bench, the base paper's
+  driver on the SAME bench at the same corner, and the converter delivering
+  power. Every annotated number was measured from the trace it points at.
 
 THE BASE PAPER
   Zhang, Yu, Leng, Cui, Deng, Ng, ISPSD 2020. models/zhangdrv.lib is that
-  driver: segmented, but with no active Miller clamp and no negative off
-  rail. scripts/headtohead.py searched its two controls at each corner and
-  this film runs it at the setting that search found BEST for it, read from
-  results/headtohead.txt -- so the comparison is against their driver at its
-  own best, not at a setting chosen to lose.
+  driver: segmented, with no active Miller clamp and no negative off rail.
+  scripts/headtohead.py searched its two controls at each corner, and the film
+  runs it at the setting that search found BEST for it, read out of
+  results/headtohead.txt -- not a setting chosen here.
 
 ENCODING
   Raw RGB frames streamed to the static ffmpeg from imageio-ffmpeg. Frames are
-  not accumulated: at 1600x900x3 a list of them runs the machine out of memory
-  long before the film ends.
+  never accumulated: at 1600x900x3 a list of them exhausts memory long before
+  the film ends, which is how the first build died.
 """
 import csv
 import io
@@ -101,122 +109,141 @@ def chapter(d, n, title):
     d.text((60, 40), "%d" % n, font=F_H2, fill=FAINT)
     d.text((100, 44), title, font=F_H3, fill=BLU)
 
-
-# ------------------------------------------------------------------ data --
-def run_dpt(clken, vneg, tag):
-    """One real ngspice run of the double-pulse bench."""
-    src = open(os.path.join(SIM, "dpt.cir")).read()
-    src = re.sub(r"^\.param CLKEN=.*$", ".param CLKEN=%d" % clken, src, flags=re.M)
-    src = re.sub(r"^\.param VNEG=.*$", ".param VNEG=%d" % vneg, src, flags=re.M)
-    dat = "/tmp/dr2_%s.dat" % tag
-    src = src.replace("wrdata out.dat", "wrdata %s" % dat)
-    cir = "/tmp/dr2_%s.cir" % tag
-    open(cir, "w").write(src)
-    r = subprocess.run(["ngspice", "-b", cir], capture_output=True, text=True,
-                       cwd=SIM, timeout=1800)
-    d = np.loadtxt(dat)
-    t, vsw, vhsg = d[:, 0], d[:, 1], d[:, 7]
-    m = (t >= T0) & (t <= T1)
-    return r.stdout, t[m] * 1e9, vsw[m], (vhsg - vsw)[m]
+# ------------------------------------------------------------ presentation --
+# Every frame is the same two bands: the picture, and a subtitle strip under
+# it. The strip is not decoration -- the film is played without a presenter
+# talking over it, so whatever the viewer is supposed to understand about the
+# frame has to be on the frame.
+CH = H - 96                                   # picture height; the rest is the strip
 
 
-# ----------------------------------------------------------------- acts ---
-def act_title(frames, secs=4.0):
-    for k in range(int(FPS * secs)):
-        im = blank()
-        d = ImageDraw.Draw(im)
-        a = min(1.0, k / (FPS * 0.8))
-
-        def c(col):
-            return tuple(int(x * a) for x in col)
-
-        d.text((90, 250), "GaN Synchronous Buck Converter", font=F_H1, fill=c(INK))
-        d.text((90, 315), "with an Improved Gate Driver", font=F_H1, fill=c(INK))
-        d.text((90, 420), "the circuit  \u00b7  the tools  \u00b7  the output  "
-                          "\u00b7  theirs and ours", font=F_H2, fill=c(BLU))
-        d.text((90, 800), "SENSE, VIT Chennai  \u00b7  Review-II",
-               font=F_CAP, fill=c(MUT))
-        frames.append(im)
-
-
-def act_sheet(frames, n, chap, png, title, caption_line, crop, zoom=None,
-              zoom_caption=None, secs=5.0, zoom_secs=5.0):
-    """A KiCad sheet, then a detail of it."""
-    def show(box, cap, dur):
-        src = Image.open(os.path.join(RES, png)).convert("RGB").crop(box)
-        sc = min((W - 120) / float(src.width), (H - 300) / float(src.height))
-        src = src.resize((int(src.width * sc), int(src.height * sc)), Image.LANCZOS)
-        im = blank()
-        d = ImageDraw.Draw(im)
-        chapter(d, n, chap)
-        d.text((60, 92), title, font=F_H2, fill=INK)
-        d.text((60, 134), caption_line, font=F_SM, fill=MUT)
-        im.paste(src, ((W - src.width) // 2, 190))
-        d = ImageDraw.Draw(im)
-        d.text((60, H - 78), cap, font=F_CAP, fill=BLU)
-        frames.append(im)
-        hold(frames, dur)
-
-    show(crop, "the whole sheet \u2014 every value on it is read out of the "
-               "netlist at build time", secs)
-    if zoom:
-        show(zoom, zoom_caption, zoom_secs)
-
-
-def act_software(frames, ngspice_version, secs=7.0):
-    """Name the tools. This is the question the film exists to answer."""
-    im = blank()
+def band(im, text, colour=INK):
     d = ImageDraw.Draw(im)
-    chapter(d, 2, "the software")
-    d.text((90, 180), "What drew it, and what ran it", font=F_H1, fill=INK)
-    rows = [
-        ("the schematic", "KiCad", "kicad/gan_buck.kicad_sch, "
-                                   "kicad/gan_segdrv.kicad_sch", BLU),
-        ("the simulation", ngspice_version, "ngspice -b sim/dpt.cir   "
-                                            "ngspice -b sim/buck.cir", GRN),
-        ("the device model", "models/egan.lib", "eGaN HEMT, junction-diode "
-                                                "C_GD, temperature-derated", INK),
-        ("the driver model", "models/segdrv.lib", "8 pull-up + 8 pull-down "
-                                                  "slices, clamp, off rail", INK),
-        ("the base paper's driver", "models/zhangdrv.lib", "Zhang et al., "
-                                                           "ISPSD 2020", YEL),
-    ]
-    y = 300
-    for lab, name, detail, col in rows:
-        d.text((90, y), lab, font=F_SM, fill=FAINT)
-        d.text((90, y + 24), name, font=F_H3, fill=col)
-        d.text((560, y + 26), detail, font=F_CODE, fill=MUT)
-        y += 96
-    d.text((90, H - 110), "No schematic capture tool was used to make a picture "
-                          "of something else: the sheets and the netlists "
-                          "describe the same circuit.", font=F_CAP, fill=MUT)
-    frames.append(im)
-    hold(frames, secs)
+    d.rectangle([0, CH, W, H], fill=(9, 9, 11))
+    d.rectangle([0, CH, W, CH + 1], fill=(48, 48, 54))
+    if not text:
+        return im
+    words, lines, cur = text.split(), [], ""
+    for w in words:
+        t = (cur + " " + w).strip()
+        if d.textlength(t, font=F_CAP) > W - 180:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = t
+    lines.append(cur)
+    lines = lines[:2]
+    y = CH + (96 - len(lines) * 30) // 2
+    for ln in lines:
+        d.text(((W - d.textlength(ln, font=F_CAP)) // 2, y), ln,
+               font=F_CAP, fill=colour)
+        y += 30
+    return im
 
 
-def act_terminal(frames, n, chap, cmd, out, title, note=None, keep=18):
-    lines = [l.rstrip() for l in out.splitlines() if l.strip()][:keep]
-    base = blank()
-    d = ImageDraw.Draw(base)
-    chapter(d, n, chap)
-    d.text((60, 92), title, font=F_H2, fill=INK)
-    if note:
-        d.text((60, 134), note, font=F_SM, fill=MUT)
-    d.text((60, 190), "$ " + cmd, font=F_CODE_B, fill=GRN)
-    frames.append(base.copy())
-    hold(frames, 1.0)
-    y0 = 240
-    for k in range(1, len(lines) + 1):
-        im = base.copy()
+def _ease(u):
+    return u * u * (3.0 - 2.0 * u)
+
+
+def _box(img, cx, cy, w):
+    """A crop box of the picture's aspect, centred on (cx, cy), clamped."""
+    h = w * CH / float(W)
+    w = min(w, img.width)
+    h = min(h, img.height)
+    x = min(max(cx - w / 2.0, 0), img.width - w)
+    y = min(max(cy - h / 2.0, 0), img.height - h)
+    return (x, y, x + w, y + h)
+
+
+def establish(frames, img, secs, sub=None, stamp=None):
+    """The whole application window, letterboxed, nothing cropped away.
+
+    camera() fills the picture band, which means a 16:9 capture loses its top
+    and bottom -- the toolbars and the status bar, which are the evidence that
+    this is the program and not an export of it. The opening shot of each
+    sheet fits instead of fills.
+    """
+    sc = min(W / float(img.width), CH / float(img.height))
+    shot = img.resize((int(img.width * sc), int(img.height * sc)), Image.LANCZOS)
+    im = blank()
+    im.paste(shot, ((W - shot.width) // 2, (CH - shot.height) // 2))
+    if stamp:
         d = ImageDraw.Draw(im)
-        y = y0
-        for ln in lines[:k]:
-            col = YEL if ("vspur" in ln.lower() or "margin" in ln.lower()) else INK
-            d.text((60, y), ln[:108], font=F_CODE, fill=col)
-            y += 25
-        for _ in range(max(1, int(FPS * 0.05))):
-            frames.append(im)
-    hold(frames, 1.5)
+        tw = d.textlength(stamp, font=F_SM)
+        d.rectangle([W - tw - 40, 18, W - 16, 48], fill=(9, 9, 11))
+        d.text((W - tw - 28, 24), stamp, font=F_SM, fill=(150, 150, 146))
+    band(im, sub)
+    n = max(2, int(FPS * 0.45))
+    for k in range(n):
+        frames.append(Image.blend(blank(), im, _ease((k + 1) / float(n))))
+    for _ in range(int(FPS * max(0.0, secs - 0.45))):
+        frames.append(im.copy())
+
+
+
+def camera(frames, img, a, b, secs, sub=None, stamp=None):
+    """Move across a still. a and b are (cx, cy, width) in source pixels.
+
+    The KiCad frames are screen captures of a window nothing in this container
+    can drive -- no zoom, no scroll, no menu opened on camera. Moving the crop
+    is how the film looks at different parts of them. It is an edit over real
+    pixels, not a re-enactment of a session that never happened.
+    """
+    n = max(2, int(FPS * secs))
+    for k in range(n):
+        u = _ease(k / float(n - 1))
+        box = tuple(p + (q - p) * u for p, q in zip(_box(img, *a), _box(img, *b)))
+        crop = img.crop(tuple(int(round(v)) for v in box)).resize((W, CH),
+                                                                  Image.LANCZOS)
+        im = blank()
+        im.paste(crop, (0, 0))
+        if stamp:
+            d = ImageDraw.Draw(im)
+            tw = d.textlength(stamp, font=F_SM)
+            d.rectangle([W - tw - 40, 18, W - 16, 48], fill=(9, 9, 11))
+            d.text((W - tw - 28, 24), stamp, font=F_SM, fill=(150, 150, 146))
+        band(im, sub)
+        frames.append(im)
+
+
+def dissolve(frames, secs=0.55):
+    """Hold the last frame, then let the next act cut in over it."""
+    if frames[-1] is None:
+        return
+    a = frames[-1]
+    n = max(2, int(FPS * secs))
+    for k in range(n):
+        frames.append(Image.blend(a, blank(), _ease((k + 1) / float(n))))
+
+
+def fig_frame(fig, sub=None):
+    """A matplotlib figure, drawn into the picture band with a subtitle."""
+    fig.canvas.draw()
+    buf = np.asarray(fig.canvas.buffer_rgba())[:, :, :3]
+    im = blank()
+    im.paste(Image.fromarray(buf).resize((W, CH)), (0, 0))
+    return band(im, sub)
+
+
+def newfig():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig = plt.figure(figsize=(W / 100.0, CH / 100.0), dpi=100)
+    fig.patch.set_facecolor("#0e0e10")
+    return plt, fig
+
+
+def card(frames, secs, draw_fn, sub=None, fade_in=0.5):
+    """A drawn card, faded up from black, held, with its subtitle."""
+    im = blank()
+    draw_fn(ImageDraw.Draw(im))
+    band(im, sub)
+    n = max(2, int(FPS * fade_in))
+    for k in range(n):
+        frames.append(Image.blend(blank(), im, _ease((k + 1) / float(n))))
+    for _ in range(int(FPS * max(0.0, secs - fade_in))):
+        frames.append(im.copy())
 
 
 def _dark_axes(ax):
@@ -230,137 +257,190 @@ def _dark_axes(ax):
 ARROW = dict(arrowstyle="-|>", lw=1.6, shrinkA=0, shrinkB=5)
 
 
-def act_output(frames, t, sw, vgs, peak, secs=11.0):
-    """Our own output, with each thing worth looking at pointed at."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+# ----------------------------------------------------------------- scenes ---
+def scene_title(frames, secs=4.0):
+    def draw(d):
+        d.text((90, 250), "GaN Synchronous Buck Converter", font=F_H1, fill=INK)
+        d.text((90, 315), "with an Improved Gate Driver", font=F_H1, fill=INK)
+        d.text((90, 430), "the circuit  ·  the software  ·  the output  "
+                          "·  theirs and ours", font=F_H2, fill=BLU)
+        d.text((90, 640), "SENSE, VIT Chennai  ·  Review-II", font=F_CAP, fill=MUT)
+    card(frames, secs, draw,
+         "Everything after this is the real thing: the application on screen, "
+         "the simulator's own output, and runs made while the film was built.")
+    dissolve(frames)
+
+
+def scene_kicad(frames, png, stamp, opening, moves):
+    img = Image.open(os.path.join(RES, png)).convert("RGB")
+    establish(frames, img, opening[0], sub=opening[1], stamp=stamp)
+    for a, b, secs, sub in moves:
+        camera(frames, img, a, b, secs, sub=sub, stamp=stamp)
+    dissolve(frames)
+
+
+def scene_software(frames, ver, secs=7.5):
+    rows = [("the schematic", "KiCad %s" % ver[1], "the window you just watched", BLU),
+            ("the simulation", ver[0], "ngspice -b sim/dpt.cir    "
+                                       "ngspice -b sim/buck.cir", GRN),
+            ("the device", "models/egan.lib", "eGaN HEMT, junction-diode C_GD, "
+                                              "temperature-derated", INK),
+            ("our driver", "models/segdrv.lib", "8 pull-up + 8 pull-down slices, "
+                                                "clamp, off rail", INK),
+            ("their driver", "models/zhangdrv.lib", "Zhang et al., ISPSD 2020", YEL)]
+
+    def draw(d):
+        d.text((90, 120), "What drew it, and what ran it", font=F_H1, fill=INK)
+        y = 250
+        for lab, name, detail, col in rows:
+            d.text((90, y), lab, font=F_SM, fill=FAINT)
+            d.text((90, y + 24), name, font=F_H3, fill=col)
+            d.text((560, y + 26), detail, font=F_CODE, fill=MUT)
+            y += 92
+    card(frames, secs, draw,
+         "Two programs and four model files. Nothing here is a drawing of "
+         "something else — the sheet and the netlist describe one circuit.")
+    dissolve(frames)
+
+
+def scene_terminal(frames, cmd, out, sub, keep=16):
+    lines = [l.rstrip() for l in out.splitlines() if l.strip()][:keep]
+    base = blank()
+    d = ImageDraw.Draw(base)
+    d.text((60, 70), "the simulator, running", font=F_H2, fill=INK)
+    d.text((60, 118), "ngspice's own output, captured while this film was "
+                      "being built", font=F_SM, fill=MUT)
+    d.text((60, 178), "$ " + cmd, font=F_CODE_B, fill=GRN)
+    band(base, sub)
+    frames.append(base.copy())
+    for _ in range(int(FPS * 1.0)):
+        frames.append(base.copy())
+    for k in range(1, len(lines) + 1):
+        im = base.copy()
+        dd = ImageDraw.Draw(im)
+        y = 228
+        for ln in lines[:k]:
+            col = YEL if ("vspur" in ln.lower() or "margin" in ln.lower()) else INK
+            dd.text((60, y), ln[:108], font=F_CODE, fill=col)
+            y += 25
+        for _ in range(max(1, int(FPS * 0.055))):
+            frames.append(im)
+    for _ in range(int(FPS * 1.4)):
+        frames.append(frames[-1].copy())
+    dissolve(frames)
+
+
+def scene_output(frames, t, sw, vgs, peak, secs=12.0):
+    plt, _ = newfig()
     n = len(t)
     total, held = int(FPS * secs), int(FPS * 5.0)
     sweep = total - held
-    i_edge = int(np.argmin(np.gradient(sw)))          # the fastest fall
+    i_edge = int(np.argmin(np.gradient(sw)))
     i_peak = int(np.argmax(vgs))
     for k in range(total):
         done = k >= sweep
         j = n if done else max(2, int(n * (k + 1) / float(sweep)))
-        fig = plt.figure(figsize=(W / 100.0, H / 100.0), dpi=100)
-        fig.patch.set_facecolor("#0e0e10")
-        gs = fig.add_gridspec(2, 1, height_ratios=[1, 1.2], hspace=0.40,
-                              left=0.085, right=0.955, top=0.84, bottom=0.10)
+        _, fig = newfig()
+        gs = fig.add_gridspec(2, 1, height_ratios=[1, 1.2], hspace=0.42,
+                              left=0.085, right=0.955, top=0.84, bottom=0.12)
         ax1, ax2 = fig.add_subplot(gs[0]), fig.add_subplot(gs[1])
         for ax in (ax1, ax2):
             _dark_axes(ax)
             ax.set_xlim(0, t[-1])
-
         ax1.plot(t[:j], sw[:j], color="#e26058", lw=2.0)
         ax1.set_ylim(-18, 132)
         ax1.set_ylabel("switch node  V(sw)   [V]", color="#e8e8e6", fontsize=12)
-        ax1.set_title("3 \u2014 the output, and what to look at in it",
-                      color="#6ca8ee", fontsize=16, fontweight="bold",
-                      loc="left", pad=14)
-
+        ax1.set_title("the output, and what to look at in it", color="#6ca8ee",
+                      fontsize=16, fontweight="bold", loc="left", pad=14)
         ax2.plot(t[:j], vgs[:j], color="#6ed696", lw=2.4)
         ax2.axhline(VTH, color="#ebbe5a", lw=1.6, ls="--")
         ax2.set_ylim(-2.9, 2.4)
         ax2.set_ylabel("OFF device gate  V(gs)   [V]", color="#e8e8e6", fontsize=12)
-        ax2.set_xlabel("time from the switching edge   [ns]",
-                       color="#e8e8e6", fontsize=12)
-
+        ax2.set_xlabel("time from the switching edge   [ns]", color="#e8e8e6",
+                       fontsize=12)
         if done:
-            ax1.annotate("the bus collapses here \u2014 this edge is the cause",
-                         xy=(t[i_edge], sw[i_edge]), xytext=(t[-1] * 0.36, 108),
+            ax1.annotate("the bus collapses here — this edge is the cause",
+                         xy=(t[i_edge], sw[i_edge]), xytext=(t[-1] * 0.36, 110),
                          color="#e26058", fontsize=13, fontweight="bold",
                          arrowprops=dict(color="#e26058", **ARROW))
             ax2.annotate("worst the gate reaches: %s V"
                          % ("%+.3f" % peak).replace("-", "−"),
-                         xy=(t[i_peak], vgs[i_peak]),
-                         xytext=(t[-1] * 0.40, 1.15),
+                         xy=(t[i_peak], vgs[i_peak]), xytext=(t[-1] * 0.38, 0.45),
                          color="#6ed696", fontsize=13, fontweight="bold",
                          arrowprops=dict(color="#6ed696", **ARROW))
-            ax2.annotate("threshold 1.400 V \u2014 above this the device "
-                         "turns itself on",
-                         xy=(t[-1] * 0.10, VTH), xytext=(t[-1] * 0.10, 1.85),
-                         color="#ebbe5a", fontsize=13, fontweight="bold",
+            ax2.annotate("threshold 1.400 V — above this the device turns "
+                         "itself on", xy=(t[-1] * 0.10, VTH),
+                         xytext=(t[-1] * 0.10, 1.85), color="#ebbe5a",
+                         fontsize=13, fontweight="bold",
                          arrowprops=dict(color="#ebbe5a", **ARROW))
-            # the bracket measures a height, not a moment, so it goes
-            # where the trace is quiet -- on the peak its arrow crossed
-            # the peak label's own arrow
             xm = t[-1] * 0.82
             ax2.annotate("", xy=(xm, VTH), xytext=(xm, peak),
-                         arrowprops=dict(arrowstyle="<->", color="#e8e8e6",
-                                         lw=1.6))
+                         arrowprops=dict(arrowstyle="<->", color="#e8e8e6", lw=1.6))
             ax2.text(xm - t[-1] * 0.015, (VTH + peak) / 2.0,
                      "%.3f V of margin" % (VTH - peak), color="#e8e8e6",
                      fontsize=13, fontweight="bold", ha="right", va="center")
-        fig.canvas.draw()
-        frames.append(Image.fromarray(
-            np.asarray(fig.canvas.buffer_rgba())[:, :, :3]).resize((W, H)))
+        frames.append(fig_frame(
+            fig, "The edge on top is the cause. Under it is the other "
+                 "device's gate: it has to stay below 1.400 V, and it "
+                 "clears that by %.3f V." % (VTH - peak)))
         plt.close(fig)
+    dissolve(frames)
 
 
-def act_buck_output(frames, d, m, secs=11.0):
-    """The converter's output, with the readings pointed at."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+def scene_converter(frames, d, m, secs=11.0):
+    plt, _ = newfig()
     t, vsw, vout, il = d[:, 0], d[:, 5], d[:, 7], d[:, 9]
     tsw = 1.0 / 500e3
     win = t >= t[-1] - 3 * tsw
     tw = (t[win] - t[win][0]) * 1e6
     vsw_w, il_w = vsw[win], il[win]
-    n_full, n_win = len(t), len(tw)
-    total, held = int(FPS * secs), int(FPS * 5.0)
+    nf, nw = len(t), len(tw)
+    total, held = int(FPS * secs), int(FPS * 4.5)
     sweep = total - held
     for k in range(total):
         done = k >= sweep
         f = 1.0 if done else (k + 1) / float(sweep)
-        jf, jw = (n_full, n_win) if done else (max(2, int(n_full * f)),
-                                               max(2, int(n_win * f)))
-        fig = plt.figure(figsize=(W / 100.0, H / 100.0), dpi=100)
-        fig.patch.set_facecolor("#0e0e10")
-        gs = fig.add_gridspec(2, 2, hspace=0.46, wspace=0.22,
-                              left=0.075, right=0.965, top=0.84, bottom=0.10)
+        jf, jw = (nf, nw) if done else (max(2, int(nf * f)), max(2, int(nw * f)))
+        _, fig = newfig()
+        gs = fig.add_gridspec(2, 2, hspace=0.50, wspace=0.22, left=0.075,
+                              right=0.965, top=0.83, bottom=0.12)
         ax1, ax2 = fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1])
         ax3, ax4 = fig.add_subplot(gs[1, 0]), fig.add_subplot(gs[1, 1])
         for ax in (ax1, ax2, ax3, ax4):
             _dark_axes(ax)
-
         ax1.plot(t[:jf] * 1e6, vout[:jf], color="#6ca8ee", lw=1.8)
         ax1.axhline(m["Vout"], color="#ebbe5a", lw=1.3, ls="--")
         ax1.set_xlim(0, t[-1] * 1e6)
         ax1.set_ylim(-4, 82)
-        ax1.set_title("output voltage, whole run", color="#e8e8e6",
-                      fontsize=13, fontweight="bold", loc="left", pad=8)
+        ax1.set_title("output voltage, whole run", color="#e8e8e6", fontsize=13,
+                      fontweight="bold", loc="left", pad=8)
         ax1.set_ylabel("V(out)  [V]", color="#e8e8e6", fontsize=11)
         ax1.set_xlabel("time  [us]", color="#9a9a96", fontsize=10.5)
         if done:
             ax1.annotate("settles at %.2f V" % m["Vout"],
                          xy=(t[-1] * 1e6 * 0.78, m["Vout"]),
-                         xytext=(t[-1] * 1e6 * 0.30, 70),
-                         color="#ebbe5a", fontsize=12, fontweight="bold",
+                         xytext=(t[-1] * 1e6 * 0.28, 70), color="#ebbe5a",
+                         fontsize=12, fontweight="bold",
                          arrowprops=dict(color="#ebbe5a", **ARROW))
-
         ax2.plot(tw[:jw], vsw_w[:jw], color="#e26058", lw=1.4)
         ax2.axhline(m["Vin"], color="#9a9a96", lw=1.0, ls=(0, (4, 4)))
         ax2.set_xlim(0, tw[-1])
-        ax2.set_ylim(-14, m["sw_pk"] + 22)
+        ax2.set_ylim(-14, m["sw_pk"] + 24)
         ax2.set_title("switch node, three settled cycles", color="#e8e8e6",
                       fontsize=13, fontweight="bold", loc="left", pad=8)
         ax2.set_ylabel("V(sw)  [V]", color="#e8e8e6", fontsize=11)
         ax2.set_xlabel("time  [us]", color="#9a9a96", fontsize=10.5)
         if done:
             ip = int(np.argmax(vsw_w))
-            ax2.annotate("peaks %.1f V on a %.0f V bus"
-                         % (m["sw_pk"], m["Vin"]),
-                         xy=(tw[ip], vsw_w[ip]), xytext=(tw[-1] * 0.30,
-                                                         m["sw_pk"] + 14),
+            ax2.annotate("peaks %.1f V on a %.0f V bus" % (m["sw_pk"], m["Vin"]),
+                         xy=(tw[ip], vsw_w[ip]),
+                         xytext=(tw[-1] * 0.26, m["sw_pk"] + 15),
                          color="#e26058", fontsize=12, fontweight="bold",
                          arrowprops=dict(color="#e26058", **ARROW))
-
         ax3.plot(tw[:jw], il_w[:jw], color="#6ed696", lw=1.6)
         ax3.axhline(m["Iout"], color="#ebbe5a", lw=1.3, ls="--")
         ax3.set_xlim(0, tw[-1])
-        ax3.set_ylim(3.0, 7.0)
+        ax3.set_ylim(3.0, 7.2)
         ax3.set_title("inductor current", color="#e8e8e6", fontsize=13,
                       fontweight="bold", loc="left", pad=8)
         ax3.set_ylabel("I(L)  [A]", color="#e8e8e6", fontsize=11)
@@ -369,39 +449,36 @@ def act_buck_output(frames, d, m, secs=11.0):
             ax3.annotate("%.2f A ripple on %.2f A"
                          % (float(il_w.max() - il_w.min()), m["Iout"]),
                          xy=(tw[int(np.argmax(il_w))], float(il_w.max())),
-                         xytext=(tw[-1] * 0.34, 6.6),
-                         color="#6ed696", fontsize=12, fontweight="bold",
+                         xytext=(tw[-1] * 0.30, 6.8), color="#6ed696",
+                         fontsize=12, fontweight="bold",
                          arrowprops=dict(color="#6ed696", **ARROW))
-
         ax4.axis("off")
-        rows = [("in", "%.0f V x %.3f A = %.2f W"
-                 % (m["Vin"], m["Iin"], m["Pin"]), "#e8e8e6"),
+        rows = [("in", "%.0f V x %.3f A = %.2f W" % (m["Vin"], m["Iin"], m["Pin"]),
+                 "#e8e8e6"),
                 ("out", "%.2f V x %.3f A = %.2f W"
                  % (m["Vout"], m["Iout"], m["Pout"]), "#e8e8e6"),
                 ("efficiency", "%.2f %%" % m["eff"], "#6ed696"),
                 ("loss", "%.3f W" % m["loss"], "#e8e8e6")]
-        for i, (lab, val, col) in enumerate(rows[:len(rows) if done
-                                                 else int(len(rows) * f)]):
-            yy = 0.86 - i * 0.24
+        for i, (lab, val, col) in enumerate(
+                rows[:len(rows) if done else max(1, int(len(rows) * f) + 1)]):
+            yy = 0.84 - i * 0.24
             ax4.text(0.0, yy, lab, color="#9a9a96", fontsize=12,
                      transform=ax4.transAxes)
             ax4.text(0.0, yy - 0.10, val, color=col, fontsize=16,
                      fontweight="bold", transform=ax4.transAxes)
-        fig.suptitle("3 \u2014 the converter's output, delivering power",
-                     color="#6ca8ee", fontsize=16, fontweight="bold",
-                     x=0.075, ha="left", y=0.95)
-        fig.canvas.draw()
-        frames.append(Image.fromarray(
-            np.asarray(fig.canvas.buffer_rgba())[:, :, :3]).resize((W, H)))
+        fig.suptitle("the converter's output, delivering power", color="#6ca8ee",
+                     fontsize=16, fontweight="bold", x=0.075, ha="left", y=0.94)
+        frames.append(fig_frame(
+            fig, "The same drivers, now switching continuously into a filter and "
+                 "a 10 ohm load: %.0f V in, %.2f V out, %.2f %% efficient."
+                 % (m["Vin"], m["Vout"], m["eff"])))
         plt.close(fig)
+    dissolve(frames)
 
 
-def act_versus(frames, t, vgs_base, vgs_ours, pk_base, pk_ours, setting,
-               secs=12.0):
-    """Their driver and ours, on the same bench, at the same corner."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+def scene_versus(frames, t, vgs_base, vgs_ours, pk_base, pk_ours, setting,
+                 secs=13.0):
+    plt, _ = newfig()
     n = len(t)
     total, held = int(FPS * secs), int(FPS * 6.0)
     sweep = total - held
@@ -409,114 +486,106 @@ def act_versus(frames, t, vgs_base, vgs_ours, pk_base, pk_ours, setting,
     for k in range(total):
         done = k >= sweep
         j = n if done else max(2, int(n * (k + 1) / float(sweep)))
-        fig = plt.figure(figsize=(W / 100.0, H / 100.0), dpi=100)
-        fig.patch.set_facecolor("#0e0e10")
-        ax = fig.add_axes([0.085, 0.115, 0.875, 0.70])
+        _, fig = newfig()
+        ax = fig.add_axes([0.085, 0.135, 0.875, 0.665])
         _dark_axes(ax)
         ax.set_xlim(0, t[-1])
         ax.set_ylim(-2.9, 2.4)
         ax.plot(t[:j], vgs_base[:j], color="#ebbe5a", lw=2.4,
                 label="base paper's driver  (%s)" % setting)
         ax.plot(t[:j], vgs_ours[:j], color="#6ed696", lw=2.4,
-                label="ours  (clamp on, \u22122 V off rail)")
+                label="ours  (clamp on, −2 V off rail)")
         ax.axhline(VTH, color="#e26058", lw=1.8, ls="--")
         ax.set_ylabel("OFF device gate  V(gs)   [V]", color="#e8e8e6", fontsize=13)
-        ax.set_xlabel("time from the switching edge   [ns]",
-                      color="#e8e8e6", fontsize=13)
+        ax.set_xlabel("time from the switching edge   [ns]", color="#e8e8e6",
+                      fontsize=13)
         leg = ax.legend(loc="upper right", fontsize=12.5, framealpha=0.0)
         for tx in leg.get_texts():
             tx.set_color("#e8e8e6")
-        fig.text(0.085, 0.925, "4 \u2014 their driver and ours, same bench, "
-                               "same corner", color="#6ca8ee", fontsize=16,
-                 fontweight="bold")
-        fig.text(0.085, 0.882, "sim/dpt.cir verbatim at 100 V, 10 A, 25 \u00b0C. "
+        fig.text(0.085, 0.915, "their driver and ours, same bench, same corner",
+                 color="#6ca8ee", fontsize=16, fontweight="bold")
+        fig.text(0.085, 0.868, "sim/dpt.cir verbatim at 100 V, 10 A, 25 °C. "
                                "Only the driver subcircuit is swapped.",
                  color="#8a8a85", fontsize=11.5)
         if done:
-            ax.annotate("theirs peaks %+.3f V \u2014 %.3f V of margin left"
-                        % (pk_base, VTH - pk_base),
-                        xy=(t[ib], vgs_base[ib]), xytext=(t[-1] * 0.30, 1.85),
-                        color="#ebbe5a", fontsize=13.5, fontweight="bold",
+            ax.annotate("theirs peaks %+.3f V — %.3f V of margin left"
+                        % (pk_base, VTH - pk_base), xy=(t[ib], vgs_base[ib]),
+                        xytext=(t[-1] * 0.30, 1.85), color="#ebbe5a",
+                        fontsize=13.5, fontweight="bold",
                         arrowprops=dict(color="#ebbe5a", **ARROW))
             ax.annotate("ours peaks %s V — %.3f V of margin"
                         % (("%+.3f" % pk_ours).replace("-", "−"),
-                           VTH - pk_ours),
-                        xy=(t[io_], vgs_ours[io_]), xytext=(t[-1] * 0.26, -2.55),
-                        color="#6ed696", fontsize=13.5, fontweight="bold",
+                           VTH - pk_ours), xy=(t[io_], vgs_ours[io_]),
+                        xytext=(t[-1] * 0.26, -2.55), color="#6ed696",
+                        fontsize=13.5, fontweight="bold",
                         arrowprops=dict(color="#6ed696", **ARROW))
             ax.annotate("threshold 1.400 V", xy=(t[-1] * 0.035, VTH),
                         xytext=(t[-1] * 0.035, 2.05), color="#e26058",
                         fontsize=12.5, fontweight="bold",
                         arrowprops=dict(color="#e26058", **ARROW))
-        fig.canvas.draw()
-        frames.append(Image.fromarray(
-            np.asarray(fig.canvas.buffer_rgba())[:, :, :3]).resize((W, H)))
+        frames.append(fig_frame(
+            fig, "Same netlist, same device, same corner — only the driver "
+                 "changes. Theirs ends up %.3f V under the threshold; ours "
+                 "%.3f V." % (VTH - pk_base, VTH - pk_ours)))
         plt.close(fig)
+    dissolve(frames)
 
 
-def act_versus_table(frames, corners, lat, pdev, secs=10.0):
-    """The same comparison across the envelope, and on what it costs."""
-    im = blank()
-    d = ImageDraw.Draw(im)
-    chapter(d, 4, "theirs and ours")
-    d.text((60, 92), "Crosstalk margin at four corners", font=F_H2, fill=INK)
-    d.text((60, 134), "Their driver re-optimised at EVERY corner; ours is one "
-                      "fixed control word at all four. scripts/headtohead.py",
-           font=F_SM, fill=MUT)
-    y = 210
-    d.text((90, y), "corner", font=F_SM, fill=FAINT)
-    d.text((470, y), "base paper", font=F_SM, fill=FAINT)
-    d.text((740, y), "ours", font=F_SM, fill=FAINT)
-    d.text((980, y), "times more margin", font=F_SM, fill=FAINT)
-    d.text((980, y + 20), "(from the unrounded margins)",
-           font=F_SM, fill=FAINT)
-    y += 36
-    for name, b, o, ratio in corners:
-        d.text((90, y), name, font=F_CODE, fill=INK)
-        d.text((470, y), "%+.3f V" % b, font=F_CODE, fill=YEL)
-        d.text((740, y), "%+.3f V" % o, font=F_CODE, fill=GRN)
-        d.text((980, y), "%.1f×" % ratio, font=F_CODE_B, fill=INK)
-        y += 40
-    y += 34
-    d.rectangle([90, y, W - 90, y + 1], fill=FAINT)
-    y += 30
-    d.text((60 + 30, y), "and what it costs, same converter, same GaN device",
-           font=F_H3, fill=INK)
-    y += 46
-    for lab, b, o, unit, fmt in (
-            ("propagation latency", lat[0], lat[1], "ns", "%.2f"),
-            ("device dissipation", pdev[0], pdev[1], "W", "%.3f")):
-        d.text((90, y), lab, font=F_CODE, fill=MUT)
-        d.text((470, y), (fmt + " %s") % (b, unit), font=F_CODE, fill=YEL)
-        d.text((740, y), (fmt + " %s") % (o, unit), font=F_CODE, fill=GRN)
-        d.text((980, y), ("−" + fmt + " %s") % (b - o, unit),
-               font=F_CODE_B, fill=INK)
-        y += 40
-    d.text((90, H - 96), "results/headtohead.txt  \u00b7  results/panel_metrics.csv",
-           font=F_CODE, fill=BLU)
-    frames.append(im)
-    hold(frames, secs)
+def scene_table(frames, corners, lat, pdev, secs=9.5):
+    def draw(d):
+        d.text((60, 62), "Crosstalk margin at four corners", font=F_H2, fill=INK)
+        d.text((60, 110), "Their driver re-optimised at EVERY corner; ours is "
+                          "one fixed control word at all four.", font=F_SM, fill=MUT)
+        y = 180
+        for lab, x in (("corner", 90), ("base paper", 470), ("ours", 740),
+                       ("ours / theirs", 980)):
+            d.text((x, y), lab, font=F_SM, fill=FAINT)
+        y += 34
+        for name, b, o, ratio in corners:
+            d.text((90, y), name, font=F_CODE, fill=INK)
+            d.text((470, y), "%+.3f V" % b, font=F_CODE, fill=YEL)
+            d.text((740, y), "%+.3f V" % o, font=F_CODE, fill=GRN)
+            d.text((980, y), "%.1f×" % ratio, font=F_CODE_B, fill=INK)
+            y += 38
+        y += 26
+        d.rectangle([90, y, W - 90, y + 1], fill=FAINT)
+        y += 26
+        d.text((90, y), "and what it costs, same converter, same GaN device",
+               font=F_H3, fill=INK)
+        y += 44
+        for lab, b, o, unit, fmt in (
+                ("propagation latency", lat[0], lat[1], "ns", "%.2f"),
+                ("device dissipation", pdev[0], pdev[1], "W", "%.3f")):
+            d.text((90, y), lab, font=F_CODE, fill=MUT)
+            d.text((470, y), (fmt + " %s") % (b, unit), font=F_CODE, fill=YEL)
+            d.text((740, y), (fmt + " %s") % (o, unit), font=F_CODE, fill=GRN)
+            d.text((980, y), ("−" + fmt + " %s") % (b - o, unit),
+                   font=F_CODE_B, fill=INK)
+            y += 38
+        d.text((90, CH - 46), "results/headtohead.txt   ·   "
+                              "results/panel_metrics.csv", font=F_CODE, fill=BLU)
+    card(frames, secs, draw,
+         "Ratios from the unrounded margins. Their driver is given a freedom "
+         "their paper does not have — a new setting at every corner — "
+         "and still trails at all four.")
+    dissolve(frames)
 
 
-def act_close(frames, secs=6.0):
-    im = blank()
-    d = ImageDraw.Draw(im)
-    d.text((90, 250), "All of it regenerates", font=F_H1, fill=INK)
-    rows = [("this film", "python3 scripts/demo_review2.py"),
-            ("run it live", "bash proof/LIVE-SIM.sh   \u00b7   "
-                            "bash proof/LIVE-BUCK.sh"),
-            ("the schematics", "KiCad \u2192 python3 scripts/kicad_previews.py"),
-            ("every number", "results/RESULTS-SUMMARY.txt names its script")]
-    y = 380
-    for lab, cmd in rows:
-        d.text((90, y), lab, font=F_CAP, fill=MUT)
-        d.text((440, y), cmd, font=F_CODE, fill=GRN)
-        y += 56
-    d.text((90, 790), "github.com/Amritha902/gan-driver", font=F_CAP, fill=BLU)
-    frames.append(im)
-    hold(frames, secs)
-
-
+def scene_close(frames, secs=5.5):
+    def draw(d):
+        d.text((90, 180), "All of it regenerates", font=F_H1, fill=INK)
+        rows = [("this film", "python3 scripts/demo_review2.py"),
+                ("the KiCad capture", "python3 scripts/record_kicad.py"),
+                ("run it live", "bash proof/LIVE-SIM.sh    "
+                                "bash proof/LIVE-BUCK.sh"),
+                ("every number", "results/RESULTS-SUMMARY.txt names its script")]
+        y = 310
+        for lab, cmd in rows:
+            d.text((90, y), lab, font=F_CAP, fill=MUT)
+            d.text((470, y), cmd, font=F_CODE, fill=GRN)
+            y += 54
+        d.text((90, 640), "github.com/Amritha902/gan-driver", font=F_CAP, fill=BLU)
+    card(frames, secs, draw, "")
 # ------------------------------------------------------------------ data --
 def _run(netlist, tag):
     """Run one prepared deck and return (stdout, t_ns, v_sw, v_gs)."""
@@ -584,7 +653,6 @@ def panel_pair(field):
             csv.DictReader(io.open(os.path.join(RES, "panel_metrics.csv")))}
     return float(rows["gan_base"][field]), float(rows["gan_ours"][field])
 
-
 # ----------------------------------------------------------------- main ---
 class Sink(object):
     """An ffmpeg pipe that behaves enough like the frame list it replaces.
@@ -628,19 +696,26 @@ class Sink(object):
 
 
 
+def kicad_version():
+    out = subprocess.run(["kicad-cli", "version"], capture_output=True, text=True)
+    return (out.stdout + out.stderr).strip().split()[0][:12] or "7.0"
+
+
 def main():
     import bucksim
     sys.path.insert(0, os.path.join(ROOT, "scripts"))
     import headtohead as H
 
+    for png in ("kicad_buck.png", "kicad_segdrv.png"):
+        if not os.path.exists(os.path.join(RES, png)):
+            raise SystemExit("results/%s missing -- run "
+                             "scripts/record_kicad.py first" % png)
+
     ver = subprocess.run(["ngspice", "-v"], capture_output=True, text=True)
-    ver = next((l.strip().lstrip("*").strip()
-                for l in (ver.stdout + ver.stderr).split("\n")
-if "ngspice-" in l), "ngspice")
-    # `ngspice -v` prints "ngspice-42 : Circuit level simulation program".
-    # The whole banner overran into the command column on the tools card,
-    # so keep the part that is the version.
-    ver = ver.split(":")[0].strip()[:24]
+    ng = next((l.strip().lstrip("*").strip()
+               for l in (ver.stdout + ver.stderr).split("\n")
+               if "ngspice-" in l), "ngspice").split(":")[0].strip()[:24]
+    kv = kicad_version()
 
     nseg, tstep = base_setting()
     setting = "nseg=%d, tstep=%s" % (nseg, tstep)
@@ -664,45 +739,50 @@ if "ngspice-" in l), "ngspice")
           % (bm["Vout"], bm["Pout"], bm["eff"]))
 
     frames = Sink(OUT)
-    act_title(frames)
+    scene_title(frames)
     frames[-1].save(POSTER)
 
-    # 1 -- the implementation
-    act_sheet(frames, 1, "the implementation", "fig_sch_converter.png",
-              "The converter: 100 V in, 48.5 V out, 236 W into 10 ohm",
-              "kicad/gan_buck.kicad_sch, drawn in KiCad from sim/buck.cir",
-              crop=(150, 40, 2150, 1010),
-              zoom=(900, 480, 2150, 1010),
-              zoom_caption="the half-bridge and its output filter \u2014 "
-                           "22 uH, 4.7 uF, 10 ohm load")
-    act_sheet(frames, 1, "the implementation", "fig_sch_ours.png",
-              "The gate driver we built",
-              "kicad/gan_segdrv.kicad_sch, drawn in KiCad from "
-              "models/segdrv.lib",
-              crop=(150, 30, 1800, 1100),
-              zoom=(1380, 610, 1805, 1095),
-              zoom_caption="the active Miller clamp \u2014 one switch and a "
-                           "0.5 ohm resistor across the gate. The base paper "
-                           "has no such path.")
+    stamp = "screen capture · KiCad %s" % kv
+    # (centre x, centre y, crop width) in the 1600x900 capture. The wide shot
+    # is the whole window, so the toolbars and the hierarchy pane are in it --
+    # that is the point of the shot.
+    scene_kicad(frames, "kicad_buck.png", stamp,
+                (3.0, "This is KiCad, open on kicad/gan_buck.kicad_sch \u2014 the "
+                      "converter we simulate. Toolbars and all: the application, "
+                      "not a picture of one."),
+                [((1250, 540, 1800), (1250, 540, 1700), 4.6,
+                  "100 V in, 48.5 V out at 500 kHz. Every value on the sheet is "
+                  "read out of the netlist when it is drawn."),
+                 ((1250, 540, 1700), (1430, 580, 1050), 4.6,
+                  "The half-bridge: two GaN HEMTs, the damped bus decoupling "
+                  "branch to their left, the output filter and the load to "
+                  "their right.")])
+    scene_kicad(frames, "kicad_segdrv.png", stamp,
+                (2.8, "The same application on kicad/gan_segdrv.kicad_sch \u2014 "
+                      "the gate driver we built."),
+                [((1150, 560, 1700), (1130, 560, 1350), 4.6,
+                  "Eight pull-up slices from the +5 V rail to the gate, eight "
+                  "pull-down slices to the off rail. The drive strength is how "
+                  "many are live."),
+                 ((1130, 560, 1350), (1480, 690, 980), 4.8,
+                  "On the right, the active Miller clamp: one switch and a 0.5 "
+                  "ohm resistor across the gate. The base paper has no such "
+                  "path.")])
 
-    # 2 -- the software
-    act_software(frames, ver)
-    act_terminal(frames, 2, "the software",
-                 "ngspice -b dpt.cir      # our driver, 100 V / 10 A / 25 \u00b0C",
-                 out_ours, "the simulator, running",
-                 note="this is ngspice's own stdout, captured while the film "
-                      "was being built")
 
-    # 3 -- the output
-    act_output(frames, t, sw, vgs_ours, pk_ours)
-    act_buck_output(frames, bd, bm)
+    scene_software(frames, (ng, kv))
+    scene_terminal(frames,
+                   "ngspice -b dpt.cir      # our driver, 100 V / 10 A / 25 °C",
+                   out_ours,
+                   "No transcript and no re-enactment — this is what the "
+                   "simulator printed while the film was being assembled.")
 
-    # 4 -- theirs and ours
-    act_versus(frames, t, vgs_base, vgs_ours, pk_base, pk_ours, setting)
-    act_versus_table(frames, corner_rows(), panel_pair("latency_ns"),
-                     panel_pair("p_dev_W"))
-
-    act_close(frames)
+    scene_output(frames, t, sw, vgs_ours, pk_ours)
+    scene_converter(frames, bd, bm)
+    scene_versus(frames, t, vgs_base, vgs_ours, pk_base, pk_ours, setting)
+    scene_table(frames, corner_rows(), panel_pair("latency_ns"),
+                panel_pair("p_dev_W"))
+    scene_close(frames)
 
     with io.open(SIDE, "w", encoding="utf-8") as fh:
         fh.write(u"# written by scripts/demo_review2.py -- do not edit by hand\n")
@@ -710,6 +790,8 @@ if "ngspice-" in l), "ngspice")
         fh.write(u"fps           %d\n" % FPS)
         fh.write(u"duration_s    %.1f\n" % (len(frames) / float(FPS)))
         fh.write(u"parts         4\n")
+        fh.write(u"kicad         %s\n" % kv)
+        fh.write(u"ngspice       %s\n" % ng)
         fh.write(u"ours_peak     %+.4f\n" % pk_ours)
         fh.write(u"ours_margin   %+.4f\n" % (VTH - pk_ours))
         fh.write(u"base_peak     %+.4f\n" % pk_base)
@@ -721,8 +803,8 @@ if "ngspice-" in l), "ngspice")
     print("  sidecar: %s" % SIDE)
     print("  poster:  %s" % POSTER)
 
-    n = len(frames)
-    print("  %d frames, %.1f s at %d fps" % (n, n / float(FPS), FPS))
+    nf = len(frames)
+    print("  %d frames, %.1f s at %d fps" % (nf, nf / float(FPS), FPS))
     rc = frames.close()
     print("  %s: %s  (%.1f MB)"
           % ("written" if rc == 0 else "ffmpeg FAILED", OUT,
