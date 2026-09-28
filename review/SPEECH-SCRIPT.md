@@ -681,6 +681,36 @@ the contribution.
 
 ---
 
+## 24b — THEIRS, THEN OURS (1 min 20 s for the pair)
+
+Two films, 35 s each, played back to back. Do not talk over either. One line
+before the first, one line between them, one line after the second.
+
+Before the first:
+
+> "This is the base paper's driver, in KiCad, then in the simulator, then its
+> output. Their own best setting at this corner."
+
+Between them:
+
+> "Same bench, same corner, same axes. Only the driver changes."
+
+After the second:
+
+> "Their gate gets to **0.407 V** of the threshold. Ours stops **2.576 V**
+> short of it."
+
+**The one thing to say if anyone squints at the two plots.** Say it without
+being asked, because it is the thing that makes the pair mean anything:
+
+> "Both plots are on fixed axes — set in the script, not autoscaled. If they
+> were autoscaled they would look equally dramatic and tell you nothing."
+
+**If they ask why theirs is not simply failing.** It is not, at this corner,
+and do not overclaim. Theirs stays under the threshold at 100 V and 25 °C.
+The gap opens where it matters: at 200 V and 125 °C theirs has 0.181 V and
+ours 2.251 V, which is the four-corner table two slides later.
+
 ## 25 — DEMO (1 min 40 s)
 
 The film runs **99 s** and is four things: the circuit, the tools, the output,

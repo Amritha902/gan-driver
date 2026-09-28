@@ -137,7 +137,8 @@ def film(out_path, who, tag, png, moves, run, colour, note):
     frames = D.Sink(out_path)
     stamp = "screen capture \u00b7 KiCad %s" % D.kicad_version()
     D.scene_kicad(frames, png, stamp,
-                  (3.2, "%s \u2014 the circuit, in KiCad." % who), moves)
+                  (3.2, "%s \u2014 the circuit, in KiCad." % who), moves,
+                  poster=os.path.splitext(out_path)[0] + "_poster.png")
     D.scene_terminal(frames,
                      "ngspice -b dpt.cir      # %s, 100 V / 10 A / 25 \u00b0C" % tag,
                      run["stdout"], "The simulator's own output, captured while "
@@ -210,6 +211,10 @@ def main():
         fh.write(u"ours_peak    %+.4f\n" % pk_ours)
         fh.write(u"ours_margin  %+.4f\n" % (VTH - pk_ours))
         fh.write(u"ratio        %.2f\n" % ((VTH - pk_ours) / (VTH - pk_base)))
+        # the deck quotes the setting their driver ran at, so it travels
+        # with the numbers rather than being retyped on a slide
+        fh.write(u"base_nseg    %d\n" % nseg)
+        fh.write(u"base_tstep   %s\n" % tstep)
     print("  sidecar: %s" % side)
     return rc1 or rc2
 

@@ -363,6 +363,75 @@ if ci is not None:
              level=0, sz=1150, spc=0, bullet=False)])
     print("circuit slide now uses the netlist-drawn schematic")
 
+# -------------------------------------------------- the pair of demo films ---
+# demo_review2.mp4 ends by overlaying both drivers on one axis, which is the
+# summary. These two introduce them: the same four beats -- KiCad sheet,
+# simulator, waveform, reading -- run over each driver on its own, so the
+# panel meets theirs and ours separately before seeing them together.
+#
+# Both films fix their axis limits as constants rather than autoscaling, and
+# say so on screen, so flicking between the two slides reads a difference in
+# where the trace sits and not a difference in zoom.
+PAIR = {}
+_ps = os.path.join(RES, "demo_pair.txt")
+if os.path.exists(_ps):
+    for _ln in open(_ps):
+        if _ln.startswith("#") or not _ln.split():
+            continue
+        _k, _v = _ln.split(None, 1)
+        PAIR[_k] = _v.strip()
+
+for _mp4, _poster, _title, _lead, _cap in (
+    ("demo_basepaper.mp4", "demo_basepaper_poster.png",
+     u"The base paper, simulated \u2014 their driver, their result",
+     u"models/zhangdrv.lib on sim/dpt.cir. Seven slices per bank in two "
+     u"stages, no clamp branch, no negative off rail.",
+     u"Their circuit in KiCad, ngspice running it, and the waveform it "
+     u"produced. The OFF device's gate peaks at %s V against a 1.400 V "
+     u"threshold \u2014 %s V of margin. Run at nseg=%s, tstep=%s, the setting "
+     u"scripts/headtohead.py found BEST for their driver at this corner, read "
+     u"from results/headtohead.txt rather than chosen by us: their own paper "
+     u"sets one bias resistor once at design time and gets no per-corner "
+     u"choice at all. %s s. Click to play."),
+    ("demo_ours.mp4", "demo_ours_poster.png",
+     u"Ours, simulated \u2014 same bench, same corner, same axes",
+     u"models/segdrv.lib on the same sim/dpt.cir. Eight slices per bank, "
+     u"active Miller clamp, \u22122 V off rail.",
+     u"The same four beats over our driver. The gate peaks at %s V \u2014 "
+     u"%s V of margin, %s\u00d7 theirs. One fixed control word, the same one "
+     u"used at every corner in the study, not re-tuned for this run. The "
+     u"plot axes are identical to the previous slide's and fixed in the "
+     u"script, so the two can be compared by eye. %s s. Click to play."),
+):
+    _path = os.path.join(RES, _mp4)
+    _pp = os.path.join(RES, _poster)
+    if not (os.path.exists(_path) and os.path.exists(_pp)):
+        print("  MISSING: %s -- run scripts/demo_pair.py" % _mp4)
+        continue
+    s = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(s)
+    set_title(s, _title)
+    add_text(s, 0.70, 1.06, 12.10, 0.44, [
+        para([(_lead, B)], level=0, sz=1300, spc=0, bullet=False)])
+    # 8.40 x 4.72 in (16:9), centred, ending at 6.30 -- these captions name
+    # the setting, both margins and the shared axes, and at 9.00 x 5.06 the
+    # text ran off the bottom of the slide.
+    s.shapes.add_movie(_path, Inches(2.465), Inches(1.58), Inches(8.40),
+                       Inches(4.72), poster_frame_image=_pp,
+                       mime_type="video/mp4")
+    _base = ("%+.3f" % float(PAIR["base_peak"])).replace("-", MINUS)
+    _ours = ("%+.3f" % float(PAIR["ours_peak"])).replace("-", MINUS)
+    if "basepaper" in _mp4:
+        _txt = _cap % (_base, "%.3f" % float(PAIR["base_margin"]),
+                       PAIR["base_nseg"], PAIR["base_tstep"], "35")
+    else:
+        _txt = _cap % (_ours, "%.3f" % float(PAIR["ours_margin"]),
+                       "%.1f" % float(PAIR["ratio"]), "35")
+    caption(s, _txt, top=6.40, h=1.06)
+    print("added: %s" % _title)
+
+
+
 # ------------------------------------------------------------ demo video ---
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
@@ -2095,6 +2164,8 @@ ORDER = [
     u"How we run ngspice",
     u"How the work was run",
     u"Which tool did what",
+    u"The base paper, simulated",          # theirs, on its own
+    u"Ours, simulated",                    # ours, same axes
     u"Demo — the driver, built and measured",
     u"Or we can run it now",
     u"What we are building — the converter",
@@ -2163,6 +2234,8 @@ SHORT = [
     u"The circuit we simulate",
     u"The circuit, as ngspice reports it",                                          # the netlist, from ngspice
     u"How we run ngspice",
+    u"The base paper, simulated",          # theirs, on its own
+    u"Ours, simulated",                    # ours, same axes
     u"Demo — the driver, built and measured",                 # the video
     u"Or we can run it now",
     u"Circuit simulation",
