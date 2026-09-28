@@ -715,6 +715,25 @@ point: `scripts/kicad_schematic.py`, `kicad_driver_sheet.py` and
 show RDEC at 20 mOhm. KiCad then opens and renders them, which is what the film
 captures.
 
+**If they point at the switch symbol and say "that is a MOSFET".** They are
+right about the symbol and it does not affect the result. Say it in this order,
+and do not get defensive — the sheet already says it in its own note, which is
+on screen in the film:
+
+> "KiCad ships no GaN HEMT symbol, so the sheet uses an n-channel enhancement
+> MOSFET symbol — the same substitution EPC make in their own datasheets. The
+> symbol is a drawing convention. What is simulated is `models/egan.lib`, which
+> has **no body diode**: reverse conduction during dead time costs
+> V_th + |V_off| + I·R_ds(on), not one diode drop."
+
+That distinction is not cosmetic, and it is worth saying why: the absence of a
+body diode is what makes the −2 V off rail cost something. A silicon part
+would freewheel through its body diode at about 0.7 V; this one drops
+V_th + |V_off| + I·R_ds(on) instead, which is why dropping the off rail from
+0 V to −2 V costs the converter 0.24 efficiency points. The symbol is
+borrowed; the physics in the model is not.
+
+
 Coming out:
 
 > "Their driver leaves **0.407 V** of margin below the threshold. Ours leaves
