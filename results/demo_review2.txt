@@ -1,0 +1,12 @@
+# written by scripts/demo_review2.py -- do not edit by hand
+frames        2574
+fps           25
+duration_s    103.0
+chapters      9
+peak_noclamp  +1.6488
+peak_shipped  -1.1759
+margin        +2.5759
+conv_vout     48.4967
+conv_pout     236.2580
+conv_eff      97.4945
+result_cards  7

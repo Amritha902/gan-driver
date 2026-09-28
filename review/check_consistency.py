@@ -50,10 +50,14 @@ DTn, SPn, SMn = norm(DT), norm(SP), norm(SM)
 
 # ---- 1. numbers the speech quotes that the deck does not contain -----------
 # Only bolded figures: those are the ones the presenter says out loud.
-spoken = set(re.findall(r"\*\*([+-]?\d[\d.]*\s*(?:%|V|nH|ns|µJ|cells)?)\*\*", SP))
+# "s" was not in this list, so a duration the presenter says out loud --
+# "the film runs 103 s" -- was checked against nothing. A bolded figure
+# is a figure the speaker commits to; the units it carries should not
+# decide whether anyone checks it.
+spoken = set(re.findall(r"\*\*([+-]?\d[\d.]*\s*(?:%|V|W|A|nH|ns|s|µJ|cells)?)\*\*", SP))
 for v in sorted(spoken):
     vv = norm(v).strip()
-    bare = re.sub(r"\s*(%|V|nH|ns|µJ|cells)$", "", vv).strip()
+    bare = re.sub(r"\s*(%|V|W|A|nH|ns|s|µJ|cells)$", "", vv).strip()
     if not bare or bare in ("1", "2", "3", "4", "5", "8"):
         continue
     if bare not in DTn:

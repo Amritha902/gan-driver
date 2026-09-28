@@ -30,6 +30,7 @@ ENCODING
   Raw RGB frames piped to the static ffmpeg that ships with imageio-ffmpeg,
   so the script does not depend on a system ffmpeg.
 """
+import io
 import csv
 import os
 import re
@@ -43,6 +44,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SIM = os.path.join(ROOT, "sim")
 RES = os.path.join(ROOT, "results")
 OUT = os.path.join(RES, "demo_review2.mp4")
+SIDE = os.path.join(RES, "demo_review2.txt")
+POSTER = os.path.join(ROOT, "review", "poster_review2.png")
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 sys.path.insert(0, os.path.join(ROOT, "review"))
 
@@ -639,6 +642,9 @@ def main():
 
     frames = Sink(OUT)
     act_title(frames)
+    # The deck needs a still to show before the film is clicked. Take it
+    # from the film itself, so the two cannot show different things.
+    frames[-1].save(POSTER)
 
     act_statement(frames, 1, "the problem",
                   "A GaN half-bridge can turn itself on",
@@ -721,6 +727,27 @@ def main():
     act_results(frames, 9, "every result", headline_cards(VTH - pk_bad, VTH - pk_good))
 
     act_close(frames)
+
+    # Sidecar, the same contract demo_video.py has: the deck reads its
+    # caption's numbers from here rather than carrying them, so a caption
+    # that disagrees with the film it describes cannot ship.
+    with io.open(SIDE, "w", encoding="utf-8") as fh:
+        fh.write(u"# written by scripts/demo_review2.py -- do not edit by hand\n")
+        fh.write(u"frames        %d\n" % len(frames))
+        fh.write(u"fps           %d\n" % FPS)
+        fh.write(u"duration_s    %.1f\n" % (len(frames) / float(FPS)))
+        fh.write(u"chapters      9\n")
+        fh.write(u"peak_noclamp  %+.4f\n" % pk_bad)
+        fh.write(u"peak_shipped  %+.4f\n" % pk_good)
+        fh.write(u"margin        %+.4f\n" % (VTH - pk_good))
+        fh.write(u"conv_vout     %.4f\n" % bm["Vout"])
+        fh.write(u"conv_pout     %.4f\n" % bm["Pout"])
+        fh.write(u"conv_eff      %.4f\n" % bm["eff"])
+        fh.write(u"result_cards  %d\n" % len(headline_cards(VTH - pk_bad,
+                                                             VTH - pk_good)))
+    print("  sidecar: %s" % SIDE)
+    print("  poster:  %s" % POSTER)
+
 
     n = len(frames)
     print("  %d frames, %.1f s at %d fps" % (n, n / float(FPS), FPS))

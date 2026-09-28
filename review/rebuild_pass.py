@@ -46,18 +46,25 @@ DECK = os.path.join(HERE, "Review2_GaN_Segmented_Gate_Driver.pptx")
 # decoupling branch), and a recording cannot re-derive itself. It therefore
 # shows converter numbers the rest of the deck no longer claims.
 #
-# results/demo_full.mp4 is rebuilt by scripts/demo_video.py on every run: it
-# reads models/segdrv.lib off disk, runs ngspice twice, plots those runs, and
-# computes the peaks it prints. It cannot go stale without the build failing.
-# The 2-minute walkthrough stays in the repo and is offered in the notes.
-# The 2-minute walkthrough stays in the repo and is offered in SPEECH-SCRIPT.md
-# under "if they ask to see more", rather than played from the deck.
-VIDEO = os.path.join(RES, "demo_full.mp4")
+# results/demo_review2.mp4 is rebuilt by scripts/demo_review2.py on every
+# run. It reads sim/dpt.cir and sim/buck.cir off disk, shows the KiCad sheets
+# drawn from them, runs ngspice three times, plots those runs, and closes on
+# seven result cards that each read their number from the file named on the
+# card. It cannot go stale without the build failing.
+#
+# It replaced results/demo_full.mp4 on this slide on 28 Sep. That film showed
+# the driver model, one run and the crosstalk waveform -- a third of the
+# project, with no circuit and no converter in it, so a viewer saw a terminal
+# and two traces and took the rest on trust. demo_full.mp4 stays in the repo
+# and demo_video.py still builds it; it is simply not what this slide plays.
+# The 2-minute pipeline walkthrough stays in the repo and is offered in
+# SPEECH-SCRIPT.md under "if they ask to see more", rather than played here.
+VIDEO = os.path.join(RES, "demo_review2.mp4")
 
 # Measurements and length come from the sidecar demo_video.py writes, so this
 # caption cannot drift from the file it describes.
 DEMO = {}
-for _ln in open(os.path.join(RES, "demo_full.txt")):
+for _ln in open(os.path.join(RES, "demo_review2.txt")):
     if _ln.startswith("#") or not _ln.split(): continue
     _k, _v = _ln.split(None, 1)
     DEMO[_k] = _v.strip()
@@ -359,10 +366,13 @@ s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
 set_title(s, u"Demo — the driver, built and measured, on this machine")
 if os.path.exists(VIDEO):
-    # 1600x900 -> 1.778. 9.60 in wide gives 5.40 in tall, centred on 13.33.
-    s.shapes.add_movie(VIDEO, Inches(1.87), Inches(1.18), Inches(9.60),
-                       Inches(5.40),
-                       poster_frame_image=os.path.join(HERE, "poster_full.png"),
+    # 1600x900 -> 1.778. 9.00 in wide gives 5.06 in tall, centred on the
+    # 13.33 in slide, ending at 6.16 -- the film's caption names the bench
+    # and the converter both, and at the old 9.60 x 5.40 it overflowed the
+    # slide rather than wrapping inside it.
+    s.shapes.add_movie(VIDEO, Inches(2.165), Inches(1.10), Inches(9.00),
+                       Inches(5.06),
+                       poster_frame_image=os.path.join(HERE, "poster_review2.png"),
                        mime_type="video/mp4")
     print("demo video embedded: %s (%.1f MB)"
           % (os.path.basename(VIDEO), os.path.getsize(VIDEO) / 1048576.0))
@@ -373,15 +383,21 @@ else:
                      "empty while its caption promises one. Fix the path or "
                      "remove the slide." % VIDEO)
 caption(s,
-        u"models/segdrv.lib as it is on disk, ngspice run twice on sim/dpt.cir, "
-        u"the waveforms those two runs produced, and the measurement: "
-        u"%+.2f V without the clamp against a 1.4 V threshold, %s V with it. "
-        u"%.0f s. Click to play. Rebuilt by scripts/demo_video.py, so every "
-        u"number on screen is computed, not captioned."
-        % (float(DEMO["peak_noclamp"]),
+        u"Nine chapters, %.0f s, click to play. The netlists as they are on "
+        u"disk, the KiCad sheets drawn from them, ngspice's own output from "
+        u"three runs made while the film was built, the waveforms those runs "
+        u"produced, and %s result cards — each printing the file its "
+        u"number came from. The bench: %+.2f V on the OFF gate without the "
+        u"clamp against a 1.4 V threshold, %s V with it. The converter: "
+        u"%.2f V out at %.2f W, %.2f %% efficient. Rebuilt by "
+        u"scripts/demo_review2.py, so every number on screen is computed, "
+        u"not captioned."
+        % (float(DEMO["duration_s"]), DEMO["result_cards"],
+           float(DEMO["peak_noclamp"]),
            ("%+.2f" % float(DEMO["peak_shipped"])).replace("-", MINUS),
-           float(DEMO["duration_s"])),
-        top=6.70)
+           float(DEMO["conv_vout"]), float(DEMO["conv_pout"]),
+           float(DEMO["conv_eff"])),
+        top=6.26, h=1.18)
 print("added: demo video slide")
 
 # ---------------------------------------------------- closing slide -------
