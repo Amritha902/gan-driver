@@ -1,0 +1,6 @@
+# written by scripts/demo_pair.py -- do not edit by hand
+base_peak    +0.9928
+base_margin  +0.4072
+ours_peak    -1.1759
+ours_margin  +2.5759
+ratio        6.33
