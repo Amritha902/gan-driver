@@ -745,6 +745,21 @@ The four parts:
 4. **Theirs and ours** — both drivers on the same bench at the same corner,
    overlaid, then the margin at four corners and what the change costs.
 
+**If they ask whether the driver is actually connected to the converter.**
+It is, in both senses, and the hierarchy pane on screen proves the second one:
+
+> "In the netlist it always was — `sim/buck.cir` includes `models/segdrv.lib`
+> and instantiates it twice, so every number in this deck comes from a run with
+> the driver in the loop. And in the schematic it is a hierarchical sub-sheet,
+> placed twice, high side and low side. That pane on the left is the hierarchy:
+> Root, then the two drivers. Descend into either and you are looking at the
+> eight slices and the clamp."
+
+Worth saying plainly if it comes up: **until 28 September it was only true in
+the netlist.** The drawing had HSG and LSG as net labels and a note saying they
+came from the driver, which is exactly the gap a reviewer should catch. It was
+closed by making the sub-sheet real, not by rewording the note.
+
 **If they ask whether the schematics were drawn by hand.** No, and that is the
 point: `scripts/kicad_schematic.py`, `kicad_driver_sheet.py` and
 `kicad_basepaper_sheet.py` generate the `.kicad_sch` files from `sim/buck.cir`,

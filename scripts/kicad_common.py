@@ -76,6 +76,7 @@ class Sheet(object):
     def __init__(self, title, comment, paper="A3"):
         self.uuid, self.title, self.comment, self.paper = U(), title, comment, paper
         self.parts, self.wires, self.labels, self.texts = [], [], [], []
+        self.sheets = []
         self.used = set()
 
     def place(self, lib_id, ref, value, x, y, rot=0, vx=None, vy=None, hide_val=False):
@@ -122,6 +123,47 @@ class Sheet(object):
                           '(justify left top)) (uuid "%s"))'
                           % (txt.replace('"', "'"), x, y, size, size, U()))
 
+    def subsheet(self, name, filename, x, y, w, h, pins):
+        """A hierarchical sheet instance -- a real sub-schematic, not a box.
+
+        This is what makes the driver part of the converter drawing rather
+        than a separate sheet the reader has to wire up mentally. The
+        simulation was always integrated (sim/buck.cir includes segdrv.lib
+        and instantiates it twice); only the drawing was not.
+
+        `pins` is a list of (name, kind, side, offset) where side is "L" or
+        "R" and offset is measured down from the sheet's top edge. KiCad
+        wants a pin's angle to point INTO the sheet body, so a pin on the
+        left edge is at 180 and one on the right at 0 -- getting that
+        backwards puts the stub inside the box where no wire can reach it.
+        """
+        self.sheets.append(dict(name=name, file=filename, x=x, y=y,
+                                w=w, h=h, pins=pins))
+        out = {}
+        body = ['  (sheet (at %s %s) (size %s %s)' % (x, y, w, h),
+                '    (stroke (width 0.1524) (type solid))',
+                '    (fill (color 0 0 0 0.0000))',
+                '    (uuid "%s")' % U(),
+                '    (property "Sheetname" "%s" (at %s %s 0) '
+                '(effects (font (size 1.4 1.4)) (justify left bottom)))'
+                % (name, x, y - 0.8),
+                '    (property "Sheetfile" "%s" (at %s %s 0) '
+                '(effects (font (size 1.2 1.2)) (justify left top)))'
+                % (filename, x, y + h + 0.8)]
+        for nm, kind, side, off in pins:
+            px = x if side == "L" else x + w
+            py = y + off
+            body.append('    (pin "%s" %s (at %s %s %d) '
+                        '(effects (font (size 1.2 1.2)) (justify %s)) (uuid "%s"))'
+                        % (nm, kind, px, py, 180 if side == "L" else 0,
+                           "right" if side == "L" else "left", U()))
+            out[nm] = (px, py)
+        body.append('    (instances (project "p" (path "/%s" (page "%d"))))'
+                    % (self.uuid, len(self.sheets) + 1))
+        body.append('  )')
+        self.parts.append("\n".join(body))
+        return out
+
     def save(self, path, needed):
         libs = "\n".join("    " + lift(l, n) for l, n in needed)
         sch = '''(kicad_sch (version 20230121) (generator gan_driver_project)
@@ -139,11 +181,13 @@ class Sheet(object):
 %s
 %s
 %s
-  (sheet_instances (path "/" (page "1")))
+  (sheet_instances (path "/" (page "1"))%s)
 )
 ''' % (self.uuid, self.paper, self.title, self.comment, libs,
        "\n".join(self.wires), "\n".join(self.parts),
-       "\n".join(self.labels), "\n".join(self.texts))
+       "\n".join(self.labels), "\n".join(self.texts),
+       "".join('\n    (path "/%s" (page "%d"))'
+               % (self.uuid, i + 2) for i in range(len(self.sheets))))
         d = os.path.dirname(path)
         if d and not os.path.isdir(d):
             os.makedirs(d)

@@ -752,15 +752,17 @@ def main():
     # that is the point of the shot.
     scene_kicad(frames, "kicad_buck.png", stamp,
                 (3.0, "This is KiCad, open on kicad/gan_buck.kicad_sch \u2014 the "
-                      "converter we simulate. Toolbars and all: the application, "
-                      "not a picture of one."),
-                [((1250, 540, 1800), (1250, 540, 1700), 4.6,
-                  "100 V in, 48.5 V out at 500 kHz. Every value on the sheet is "
-                  "read out of the netlist when it is drawn."),
-                 ((1250, 540, 1700), (1430, 580, 1050), 4.6,
-                  "The half-bridge: two GaN HEMTs, the damped bus decoupling "
-                  "branch to their left, the output filter and the load to "
-                  "their right.")],
+                      "converter we simulate. Look at the hierarchy pane on the "
+                      "left: the gate driver is a sub-sheet of it."),
+                [((1250, 570, 1900), (1250, 570, 1780), 4.6,
+                  "100 V in, 48.5 V out at 500 kHz. Every value on the sheet "
+                  "is read out of the netlist when it is drawn."),
+                 # retuned once the driver became a sub-sheet: the half-bridge
+                 # moved right, and the left of the sheet is now the driver
+                 ((1250, 570, 1780), (1050, 500, 1020), 4.8,
+                  "And the driver is not beside this drawing, it is in it "
+                  "\u2014 placed twice, high side and low side, wired to the "
+                  "two gates of the half-bridge.")],
                 poster=POSTER)
     scene_kicad(frames, "kicad_segdrv.png", stamp,
                 (2.8, "The same application on kicad/gan_segdrv.kicad_sch \u2014 "

@@ -185,6 +185,44 @@ def junction(x, y):
 
 
 SHEET_UUID = U()
+SUBSHEETS = []
+
+
+def subsheet(name, filename, x, y, w, h, pins):
+    """A hierarchical sheet instance -- a real sub-schematic, not a box.
+
+    `pins` is (name, kind, side, offset-from-the-top-edge); side is "L" or
+    "R". A pin's angle must point INTO the sheet body, so left-edge pins are
+    at 180 and right-edge pins at 0 -- reversed, the stub lands inside the
+    box where no wire can reach it.
+    """
+    out = {}
+    body = ['  (sheet (at %s %s) (size %s %s)' % (x, y, w, h),
+            '    (stroke (width 0.1524) (type solid))',
+            '    (fill (color 0 0 0 0.0000))',
+            '    (uuid "%s")' % U(),
+            '    (property "Sheetname" "%s" (at %s %s 0) '
+            '(effects (font (size 1.5 1.5)) (justify left bottom)))'
+            % (name, x, y - 0.9),
+            '    (property "Sheetfile" "%s" (at %s %s 0) '
+            '(effects (font (size 1.2 1.2)) (justify left top)))'
+            % (filename, x, y + h + 0.9)]
+    for nm, kind, side, off in pins:
+        px = x if side == "L" else x + w
+        py = y + off
+        body.append('    (pin "%s" %s (at %s %s %d) '
+                    '(effects (font (size 1.3 1.3)) (justify %s)) (uuid "%s"))'
+                    % (nm, kind, px, py, 180 if side == "L" else 0,
+                       "right" if side == "L" else "left", U()))
+        out[nm] = (px, py)
+    SUBSHEETS.append(name)
+    body.append('    (instances (project "gan_buck" (path "/%s" (page "%d"))))'
+                % (SHEET_UUID, len(SUBSHEETS) + 1))
+    body.append('  )')
+    parts.append("\n".join(body))
+    return out
+
+
 
 # ============================== THE CIRCUIT ==============================
 # Layout mirrors the signal path in sim/buck.cir, left to right: supply,
@@ -231,6 +269,44 @@ hop((147, 130), pin("Device:Q_NMOS_DGS", 160, 130, 0, "G"))
 place("power:GND", "#PWR02", "GND", SWX, 145)
 hop(pin("Device:Q_NMOS_DGS", 160, 130, 0, "S"), (SWX, 145))
 
+# ---- the two gate drivers, as hierarchical sub-sheets ----------------
+# The drawing used to stop at the two gate NET LABELS and a note saying they
+# "come from the segmented gate driver". The simulation was never like that:
+# sim/buck.cir includes models/segdrv.lib and instantiates it twice, so the
+# driver has always been part of the circuit that produced every number. Only
+# the schematic was separate, and a reviewer reading the sheet was entitled to
+# say the driver was not connected to anything.
+#
+# gan_segdrv.kicad_sch is now instantiated here twice, high side and low side,
+# with sheet pins for the rails, the control word and the gate. Descend into
+# either one in eeschema and the eight slices and the clamp are underneath.
+#
+# ROUTING NOTE, because it is not free choice: the decoupling branch occupies
+# x = 120 continuously from y = 60 to y = 115, so a horizontal run between the
+# drivers and the gates cannot cross at any y in that band. The high-side feed
+# therefore drops to y = 122, crosses there, and comes back up at x = 138.
+DRV_PINS = [("VP", "input", "L", 8), ("VN", "input", "L", 15),
+            ("CTRL", "input", "L", 22), ("GATE", "output", "R", 13)]
+
+hs = subsheet("Gate driver - high side", "gan_segdrv.kicad_sch",
+                 58, 76, 40, 26, DRV_PINS)
+ls_ = subsheet("Gate driver - low side", "gan_segdrv.kicad_sch",
+                  58, 130, 40, 26, DRV_PINS)
+
+for s_, tag in ((hs, "hs"), (ls_, "ls")):
+    for nm, lab in (("VP", "+5 V"), ("VN", "0 / -2 V"), ("CTRL", "seg_gate_ctrl.v")):
+        x, y = s_[nm]
+        hop((x, y), (x - 14, y))
+        label(lab, x - 30, y - 1.4)
+
+# high side: down, across under the decoupling column, back up to the gate
+hx, hy = hs["GATE"]
+hop((hx, hy), (104, hy), (104, 122), (138, 122), (138, 90), (147, 90))
+# low side: the band below y = 115 is clear, so this one runs straight across
+lx, ly = ls_["GATE"]
+hop((lx, ly), (140, ly), (140, 130), (147, 130))
+
+
 # ---- output filter and load ----
 hop((SWX, SWY), (191.19, SWY))
 place("Device:L", "Lo", val("LOUT", "22u", "H"), 195, SWY, 90)
@@ -262,8 +338,8 @@ text("Vth + |Voff| + I*Rds(on), not one diode drop. This sets the dead-time trad
 text("Ldec / Cdec / Rdec is the bus decoupling. Rdec = 1 ohm is a damping value,", 36, 180, 1.7)
 text("not a parasitic: at 20 mOhm this branch rings at ~22 MHz and drove the", 36, 184, 1.7)
 text("low-side gate to +11.8 V against a 1.4 V threshold at a 200 V bus.", 36, 188, 1.7)
-text("HSG / LSG come from the segmented gate driver (8 pull-up + 8 pull-down", 36, 196, 1.7)
-text("slices, active Miller clamp, -2 V off rail) driven by seg_gate_ctrl.v.", 36, 200, 1.7)
+text("HSG / LSG are driven by the two hierarchical sheets on the left: the", 36, 196, 1.7)
+text("same gan_segdrv.kicad_sch, placed twice. Descend into either to see them.", 36, 200, 1.7)
 text("Not drawn: Vsin, Vshs, Vsls, Vsout are 0 V sources in the netlist used", 36, 208, 1.7)
 text("only to sense current. They are measurement points, not components.", 36, 212, 1.7)
 
@@ -284,10 +360,12 @@ sch = '''(kicad_sch (version 20230121) (generator gan_driver_project)
 %s
 %s
 %s
-  (sheet_instances (path "/" (page "1")))
+  (sheet_instances (path "/" (page "1"))%s)
 )
 ''' % (SHEET_UUID, libs, "\n".join(wires), "\n".join(parts),
-       "\n".join(labels), "\n".join(texts))
+       "\n".join(labels), "\n".join(texts),
+       "".join('\n    (path "/%s" (page "%d"))'
+               % (SHEET_UUID, n + 2) for n in range(len(SUBSHEETS))))
 
 if not os.path.isdir(OUT):
     os.makedirs(OUT)

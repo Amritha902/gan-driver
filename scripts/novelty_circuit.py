@@ -47,8 +47,10 @@ GRN, RED, BLU = (20, 122, 88), (198, 58, 52), (32, 92, 176)
 PAD = 34
 
 # (capture, crop box in the 2560x1440 screen grab)
-# starts left of VIN so the 100 V source the header claims is in shot
-CONV = ("kicad_buck.png", (600, 355, 1900, 705))
+# wide and tall enough to hold both driver sub-sheets as well as the
+# half-bridge -- the point of this panel is now that the driver is IN the
+# converter drawing, not beside it
+CONV = ("kicad_buck.png", (575, 385, 1900, 785))
 THEIRS = ("kicad_zhangdrv.png", (490, 230, 2120, 1150))
 OURS = ("kicad_segdrv.png", (490, 240, 1760, 900))
 
@@ -56,8 +58,11 @@ OURS = ("kicad_segdrv.png", (490, 240, 1760, 900))
 # Measured off the rendered figure and converted back through the crop and
 # scale, not guessed: the first pair sat about 80 capture-pixels high and
 # ringed empty sheet just above each label.
-CONV_HSG = (1068, 443, 1200, 497)        # the HSG net label on the buck sheet
-CONV_LSG = (1068, 602, 1200, 656)        # the LSG net label
+# the two hierarchical sheet instances, as eeschema draws them
+# Wide enough to enclose the sheet NAME above the box and the Sheetfile
+# line below it; drawn tight to the body, the ring struck through both.
+CONV_HS = (700, 386, 932, 545)           # "Gate driver - high side"
+CONV_LS = (700, 610, 932, 775)           # "Gate driver - low side"
 THEIR_RAIL = (505, 1068, 840, 1128)      # "VN (tied to ref - NO negative rail)"
 OUR_CLAMP = (1495, 555, 1700, 800)       # the Sclk + Rclk column
 OUR_RAIL = (505, 800, 900, 860)          # "VN (off rail: 0 V or -2 V)"
@@ -119,12 +124,13 @@ def main():
     # inside the word "CONVERTER"
     d.text((PAD + d.textlength("THE CONVERTER", font=F_H) + 26, y + 12),
            u"sim/buck.cir  \u00b7  100 V in, 48.5 V out at 500 kHz into 10 \u03a9 "
-           u"\u00b7  what these two drivers are FOR", font=F_S, fill=MUT)
+           u"\u00b7  the driver is IN it, placed twice", font=F_S, fill=MUT)
     y += head_h
     im.paste(c, (PAD, y))
-    ring(region(CONV_HSG, sc_c, crop_c, PAD, y), BLU,
-         u"HSG \u2014 high-side gate", below=False)
-    ring(region(CONV_LSG, sc_c, crop_c, PAD, y), BLU, u"LSG \u2014 low-side gate")
+    ring(region(CONV_HS, sc_c, crop_c, PAD, y), BLU,
+         u"the gate driver, high side", below=False)
+    ring(region(CONV_LS, sc_c, crop_c, PAD, y), BLU,
+         u"and again, low side \u2014 the same sheet both times", below=False)
     y += c.height + gap
 
     lx, rx = PAD, PAD + cw + 30
