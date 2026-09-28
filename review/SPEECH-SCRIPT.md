@@ -683,7 +683,7 @@ the contribution.
 
 ## 25 — DEMO (1 min 40 s)
 
-The film runs **94 s** and is four things: the circuit, the tools, the output,
+The film runs **99 s** and is four things: the circuit, the tools, the output,
 and the comparison. Play it and stay quiet — it carries its own captions,
 so nothing needs saying over it. One sentence going in, one coming out.
 
@@ -697,16 +697,23 @@ Going in:
 The four parts:
 
 1. **The implementation** — KiCad itself, on screen, with the sheet open.
-   The whole window first (toolbars and all), then in to the half-bridge, then
-   the driver sheet and in to the active Miller clamp.
+   The converter, then our driver in to the active Miller clamp, then the base
+   paper's driver in the same application: fourteen columns instead of eight,
+   no clamp branch, VN tied to the local reference.
 2. **The software** — KiCad drew the sheets; ngspice-42 ran them. The device
-   model, our driver and the base paper's are all named, then the simulator's
-   own terminal output.
+   model, our driver and theirs are all named, then the simulator's own output.
 3. **The output** — the switch-node edge and the gate it lifts, with the
    threshold, the peak and the margin arrowed on the plot. Then the converter
    delivering power, arrowed the same way.
 4. **Theirs and ours** — both drivers on the same bench at the same corner,
    overlaid, then the margin at four corners and what the change costs.
+
+**If they ask whether the schematics were drawn by hand.** No, and that is the
+point: `scripts/kicad_schematic.py`, `kicad_driver_sheet.py` and
+`kicad_basepaper_sheet.py` generate the `.kicad_sch` files from `sim/buck.cir`,
+`models/segdrv.lib` and `models/zhangdrv.lib`. A hand-drawn sheet would still
+show RDEC at 20 mOhm. KiCad then opens and renders them, which is what the film
+captures.
 
 Coming out:
 

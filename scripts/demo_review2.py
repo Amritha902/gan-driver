@@ -258,25 +258,28 @@ ARROW = dict(arrowstyle="-|>", lw=1.6, shrinkA=0, shrinkB=5)
 
 
 # ----------------------------------------------------------------- scenes ---
-def scene_title(frames, secs=4.0):
-    def draw(d):
-        d.text((90, 250), "GaN Synchronous Buck Converter", font=F_H1, fill=INK)
-        d.text((90, 315), "with an Improved Gate Driver", font=F_H1, fill=INK)
-        d.text((90, 430), "the circuit  ·  the software  ·  the output  "
-                          "·  theirs and ours", font=F_H2, fill=BLU)
-        d.text((90, 640), "SENSE, VIT Chennai  ·  Review-II", font=F_CAP, fill=MUT)
-    card(frames, secs, draw,
-         "Everything after this is the real thing: the application on screen, "
-         "the simulator's own output, and runs made while the film was built.")
-    dissolve(frames)
-
-
-def scene_kicad(frames, png, stamp, opening, moves):
+def scene_kicad(frames, png, stamp, opening, moves, poster=None):
     img = Image.open(os.path.join(RES, png)).convert("RGB")
     establish(frames, img, opening[0], sub=opening[1], stamp=stamp)
+    if poster:
+        # Save the ESTABLISHING frame, not whatever is last. The poster used
+        # to be taken after the whole scene, which ends in a dissolve -- so
+        # the deck's demo slide showed a black rectangle until it was clicked.
+        save_poster(frames[-1], poster)
     for a, b, secs, sub in moves:
         camera(frames, img, a, b, secs, sub=sub, stamp=stamp)
     dissolve(frames)
+
+
+def save_poster(im, path):
+    """The still the deck shows before the film is played."""
+    im.save(path)
+    lum = float(np.asarray(im.convert("L")).mean())
+    if lum < 40:
+        raise SystemExit("poster frame is almost black (mean luminance %.0f) "
+                         "-- the demo slide would show a black rectangle. "
+                         "It is being taken from the wrong frame." % lum)
+    print("  poster:  %s   (mean luminance %.0f)" % (path, lum))
 
 
 def scene_software(frames, ver, secs=7.5):
@@ -387,7 +390,7 @@ def scene_output(frames, t, sw, vgs, peak, secs=12.0):
     dissolve(frames)
 
 
-def scene_converter(frames, d, m, secs=11.0):
+def scene_converter(frames, d, m, secs=9.5):
     plt, _ = newfig()
     t, vsw, vout, il = d[:, 0], d[:, 5], d[:, 7], d[:, 9]
     tsw = 1.0 / 500e3
@@ -477,7 +480,7 @@ def scene_converter(frames, d, m, secs=11.0):
 
 
 def scene_versus(frames, t, vgs_base, vgs_ours, pk_base, pk_ours, setting,
-                 secs=13.0):
+                 secs=11.5):
     plt, _ = newfig()
     n = len(t)
     total, held = int(FPS * secs), int(FPS * 6.0)
@@ -739,8 +742,9 @@ def main():
           % (bm["Vout"], bm["Pout"], bm["eff"]))
 
     frames = Sink(OUT)
-    scene_title(frames)
-    frames[-1].save(POSTER)
+    # No title card. A demo that opens on its own name spends its first
+    # seconds telling the room what the slide behind it already says.
+    # The first thing on screen is the circuit.
 
     stamp = "screen capture · KiCad %s" % kv
     # (centre x, centre y, crop width) in the 1600x900 capture. The wide shot
@@ -756,7 +760,8 @@ def main():
                  ((1250, 540, 1700), (1430, 580, 1050), 4.6,
                   "The half-bridge: two GaN HEMTs, the damped bus decoupling "
                   "branch to their left, the output filter and the load to "
-                  "their right.")])
+                  "their right.")],
+                poster=POSTER)
     scene_kicad(frames, "kicad_segdrv.png", stamp,
                 (2.8, "The same application on kicad/gan_segdrv.kicad_sch \u2014 "
                       "the gate driver we built."),
@@ -768,6 +773,23 @@ def main():
                   "On the right, the active Miller clamp: one switch and a 0.5 "
                   "ohm resistor across the gate. The base paper has no such "
                   "path.")])
+
+
+    # Their driver is not described, it is shown. kicad/gan_zhangdrv.kicad_sch
+    # is generated from models/zhangdrv.lib by scripts/kicad_basepaper_sheet.py,
+    # exactly as ours is generated from models/segdrv.lib -- so the two sheets
+    # are comparable rather than one being a drawing and the other a claim.
+    scene_kicad(frames, "kicad_zhangdrv.png", stamp,
+                (3.0, "And the base paper's driver, in the same application. "
+                      "Zhang et al., ISPSD 2020 \u2014 our reimplementation of "
+                      "it, from their paper."),
+                [((1280, 660, 1950), (1280, 620, 1750), 4.4,
+                  "Seven slices per bank, engaged in two stages rather than one "
+                  "\u2014 fourteen columns where ours has eight."),
+                 ((1280, 620, 1750), (1500, 900, 1300), 4.8,
+                  "And what is not here: no clamp column, and VN tied to the "
+                  "local reference \u2014 no negative off rail. That absence is "
+                  "the comparison.")])
 
 
     scene_software(frames, (ng, kv))
@@ -801,7 +823,6 @@ def main():
         fh.write(u"conv_pout     %.4f\n" % bm["Pout"])
         fh.write(u"conv_eff      %.4f\n" % bm["eff"])
     print("  sidecar: %s" % SIDE)
-    print("  poster:  %s" % POSTER)
 
     nf = len(frames)
     print("  %d frames, %.1f s at %d fps" % (nf, nf / float(FPS), FPS))

@@ -47,7 +47,12 @@ DISPLAY = ":94"
 SETTLE = 24.0          # eeschema takes ~20 s to paint on this machine
 
 SHEETS = [("gan_buck.kicad_sch", "kicad_buck.png"),
-          ("gan_segdrv.kicad_sch", "kicad_segdrv.png")]
+          ("gan_segdrv.kicad_sch", "kicad_segdrv.png"),
+          # The base paper's driver has a sheet of its own, generated from
+          # models/zhangdrv.lib the same way ours is generated from
+          # models/segdrv.lib. The film compares the two drivers, so it shows
+          # both sheets in the same application rather than describing theirs.
+          ("gan_zhangdrv.kicad_sch", "kicad_zhangdrv.png")]
 
 
 def ffmpeg():

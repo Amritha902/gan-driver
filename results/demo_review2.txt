@@ -1,7 +1,7 @@
 # written by scripts/demo_review2.py -- do not edit by hand
-frames        2357
+frames        2486
 fps           25
-duration_s    94.3
+duration_s    99.4
 parts         4
 kicad         7.0.11
 ngspice       ngspice-42
