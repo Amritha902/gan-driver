@@ -1,0 +1,30 @@
+  DEMO AUDIT -- every claim the films make, against its source
+  --------------------------------------------------------------------------------------
+  claim                                             on screen      in source
+  ok   film: ours margin                               2.5759         2.5760   results/headtohead.txt
+  ok   film: base margin                               0.4072         0.4070   results/headtohead.txt
+  ok   film: base setting                      nseg=2 tstep=4 nseg=2 tstep=4   results/headtohead.txt
+  ok   film: stated duration                          99.7000        99.7200   the mp4 itself
+  ok   film: ngspice version                       ngspice-42     ngspice-42   the tool
+  ok   film: KiCad version                             7.0.11         7.0.11   the tool
+  ok   film: conv_vout                                48.4967        48.4967   results/buck_sweep.csv
+  ok   film: conv_pout                               236.2580       236.2580   results/buck_sweep.csv
+  ok   film: conv_eff                                 97.4945        97.4945   results/buck_sweep.csv
+  ok   pair: ours margin                               2.5759         2.5760   results/headtohead.txt
+  ok   pair: base margin                               0.4072         0.4070   results/headtohead.txt
+  ok   pair: ratio                                     6.3300         6.3292   the two margins, divided
+  ok   pair: demo_basepaper.mp4 exists and run           True           True   35.2 s
+  ok   pair: demo_ours.mp4 exists and runs               True           True   35.2 s
+  ok   schematic: driver instantiated as a sub              2              2   kicad/gan_buck.kicad_sch, once per side
+  ok   schematic: a page entry per sub-sheet                2              2   sheet_instances; without these KiCad calls the file damaged
+  ok   netlist: includes the driver library              True           True   sim/buck.cir
+  ok   netlist: driver instantiated twice                   2              2   sim/buck.cir, high side and low side
+  ok   novelty figure: clamp is worth                  0.8200         0.8184   results/cases.csv
+  ok   novelty figure: rail is worth                   2.0100         2.0064   results/cases.csv
+  ok   novelty figure: margin without either           0.2490         0.2488   results/cases.csv
+  ok   novelty figure: margin with both                2.5760         2.5760   results/cases.csv
+  ok   capture kicad_buck.png                    2560x1440 ok   2560x1440 ok   mean luminance 241
+  ok   capture kicad_segdrv.png                  2560x1440 ok   2560x1440 ok   mean luminance 241
+  ok   capture kicad_zhangdrv.png                2560x1440 ok   2560x1440 ok   mean luminance 241
+  --------------------------------------------------------------------------------------
+  25 checks, 0 failure(s)
