@@ -47,18 +47,20 @@ DECK = os.path.join(HERE, "Review2_GaN_Segmented_Gate_Driver.pptx")
 # shows converter numbers the rest of the deck no longer claims.
 #
 # results/demo_review2.mp4 is rebuilt by scripts/demo_review2.py on every
-# run. It reads sim/dpt.cir and sim/buck.cir off disk, shows the KiCad sheets
-# drawn from them, runs ngspice three times, plots those runs, and closes on
-# seven result cards that each read their number from the file named on the
-# card. It cannot go stale without the build failing.
+# run, and it is four things only: the circuit as a KiCad schematic, the
+# software that drew and ran it, the output with the thing to look at pointed
+# at, and the base paper's driver measured against ours on the same bench at
+# the same corner. It reads both netlists off disk and makes three ngspice
+# runs while it builds -- ours, theirs, and the converter -- so it cannot go
+# stale without the build failing.
 #
-# It replaced results/demo_full.mp4 on this slide on 28 Sep. That film showed
-# the driver model, one run and the crosstalk waveform -- a third of the
-# project, with no circuit and no converter in it, so a viewer saw a terminal
-# and two traces and took the rest on trust. demo_full.mp4 stays in the repo
-# and demo_video.py still builds it; it is simply not what this slide plays.
-# The 2-minute pipeline walkthrough stays in the repo and is offered in
-# SPEECH-SCRIPT.md under "if they ask to see more", rather than played here.
+# It replaced results/demo_full.mp4 here on 28 Sep and was recut the same day:
+# the first cut opened with the problem, typed the netlists on and closed on
+# seven result cards, which is a talk rather than a demo.
+#
+# demo_full.mp4 stays in the repo and demo_video.py still builds it; it is
+# simply not what this slide plays. The 2-minute pipeline walkthrough is
+# offered in SPEECH-SCRIPT.md under "if they ask to see more".
 VIDEO = os.path.join(RES, "demo_review2.mp4")
 
 # Measurements and length come from the sidecar demo_video.py writes, so this
@@ -383,21 +385,21 @@ else:
                      "empty while its caption promises one. Fix the path or "
                      "remove the slide." % VIDEO)
 caption(s,
-        u"Nine chapters, %.0f s, click to play. The netlists as they are on "
-        u"disk, the KiCad sheets drawn from them, ngspice's own output from "
-        u"three runs made while the film was built, the waveforms those runs "
-        u"produced, and %s result cards — each printing the file its "
-        u"number came from. The bench: %+.2f V on the OFF gate without the "
-        u"clamp against a 1.4 V threshold, %s V with it. The converter: "
-        u"%.2f V out at %.2f W, %.2f %% efficient. Rebuilt by "
-        u"scripts/demo_review2.py, so every number on screen is computed, "
-        u"not captioned."
-        % (float(DEMO["duration_s"]), DEMO["result_cards"],
-           float(DEMO["peak_noclamp"]),
-           ("%+.2f" % float(DEMO["peak_shipped"])).replace("-", MINUS),
-           float(DEMO["conv_vout"]), float(DEMO["conv_pout"]),
-           float(DEMO["conv_eff"])),
-        top=6.26, h=1.18)
+        u"Four parts, %.0f s, click to play. The circuit as its KiCad sheet, "
+        u"the tools named and versioned, the output with what to look at "
+        u"pointed at, and the base paper's driver run against ours on the "
+        u"same bench at 100 V / 10 A / 25 \u00b0C. Theirs peaks %+.3f V, "
+        u"%.3f V short of the 1.400 V threshold; ours peaks %s V, %.3f V "
+        u"clear. The converter it drives: %.2f V out at %.2f W, %.2f %% "
+        u"efficient. Three ngspice runs made while the film was building "
+        u"\u2014 rebuilt by scripts/demo_review2.py, so every number on screen "
+        u"is computed, not captioned."
+        % (float(DEMO["duration_s"]), float(DEMO["base_peak"]),
+           float(DEMO["base_margin"]),
+           ("%+.3f" % float(DEMO["ours_peak"])).replace("-", MINUS),
+           float(DEMO["ours_margin"]), float(DEMO["conv_vout"]),
+           float(DEMO["conv_pout"]), float(DEMO["conv_eff"])),
+        top=6.22, h=1.24)
 print("added: demo video slide")
 
 # ---------------------------------------------------- closing slide -------
@@ -2289,6 +2291,20 @@ def write(idxs, path, what):
           % (what, len(idxs), removed, fixed, os.path.basename(path)))
 
 
-write(short_idx, os.path.join(HERE, "GaN_Review2_PRESENT.pptx"), "PRESENT")
-write(full_idx,  os.path.join(HERE, "GaN_Review2_BACKUP.pptx"),  "BACKUP")
-write(full_idx,  DECK, "FULL")
+_OUTS = [os.path.join(HERE, "GaN_Review2_PRESENT.pptx"),
+         os.path.join(HERE, "GaN_Review2_BACKUP.pptx"),
+         DECK]
+write(short_idx, _OUTS[0], "PRESENT")
+write(full_idx,  _OUTS[1], "BACKUP")
+write(full_idx,  _OUTS[2], "FULL")
+
+# ORDER decides what ships, and write() drops the rest from the slide id list
+# -- which is what PowerPoint reads. The relationship to each dropped slide
+# stayed behind, so the slide, its text and its figures were all still inside
+# the .pptx: unreachable, but readable by anything that unzips it. 45 retired
+# slides travelled inside the 36-slide deck that way, carrying numbers the
+# deck had been corrected to stop claiming. This drops them properly.
+print()
+import prune_orphans
+for _o in _OUTS:
+    prune_orphans.prune(_o)

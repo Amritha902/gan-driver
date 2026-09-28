@@ -1,12 +1,13 @@
 # written by scripts/demo_review2.py -- do not edit by hand
-frames        2574
+frames        2110
 fps           25
-duration_s    103.0
-chapters      9
-peak_noclamp  +1.6488
-peak_shipped  -1.1759
-margin        +2.5759
+duration_s    84.4
+parts         4
+ours_peak     -1.1759
+ours_margin   +2.5759
+base_peak     +0.9928
+base_margin   +0.4072
+base_setting  nseg=2 tstep=4n
 conv_vout     48.4967
 conv_pout     236.2580
 conv_eff      97.4945
-result_cards  7

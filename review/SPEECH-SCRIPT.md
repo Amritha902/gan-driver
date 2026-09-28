@@ -681,56 +681,50 @@ the contribution.
 
 ---
 
-## 25 — DEMO (1 min 50 s)
+## 25 — DEMO (1 min 40 s)
 
-The film runs **103 s** in nine chapters. Play it and stay quiet — it is
-paced to be read, and narrating over it competes with the screen. One sentence
-going in, one coming out.
+The film runs **84 s** and is four things: the circuit, the tools, the output,
+and the comparison. Play it and stay quiet. One sentence going in, one coming
+out.
 
 Going in:
 
-> "Everything on this slide is built by one script. It opens both netlists,
-> draws the circuits from them, runs ngspice three times, plots what those
-> runs produced, and reads every result off the file that produced it.
-> Nothing on screen is typed in by hand."
+> "This is what we built, what we built it with, what came out, and how it
+> compares to the paper we started from. One script makes all of it — it
+> reads both netlists off disk and runs the simulator three times while the
+> film is being built."
 
-The nine chapters, if you need to point at them:
+The four parts:
 
-1. **The problem** — why a GaN half-bridge turns itself on, and that the
-   base paper has neither a clamp nor a negative rail.
-2. **The netlist** — `sim/dpt.cir`, the real file with its line numbers,
-   `CLKEN` and `VNEG` highlighted.
-3. **The circuit** — the KiCad sheet drawn from `models/segdrv.lib`: the
-   whole driver, then a detail on the Miller clamp.
-4. **The run** — ngspice's own terminal output, twice. Same file, two
-   parameters changed.
-5. **The waveform** — the switch node collapsing from 100 V, and the OFF
-   device's gate for both runs against the 1.4 V threshold.
-6. **The reading** — the two peaks, measured.
-7. **The converter** — `sim/buck.cir` and its own sheet: half-bridge,
-   22 uH, 4.7 uF, 10 ohm.
-8. **Delivering power** — the output settling, the switch node chopping,
-   the inductor triangle, and the readings landing.
-9. **Every result** — seven cards. Each one prints the file its number
-   came from underneath it.
+1. **The implementation** — the converter and the gate driver as schematics,
+   with a detail on the active Miller clamp. The base paper has no such path.
+2. **The software** — KiCad drew the sheets; ngspice-42 ran them. The device
+   model, the driver model and the base paper's driver are all named on
+   screen, then the simulator's own terminal output.
+3. **The output** — the switch-node edge and the gate it lifts, with the
+   threshold, the peak and the margin arrowed on the plot. Then the converter
+   delivering power, with its readings arrowed the same way.
+4. **Theirs and ours** — both drivers on the same bench at the same corner,
+   overlaid, then the margin at four corners and what the change costs.
 
 Coming out:
 
-> "Left to itself the gate reaches **+1.65 V**, above the 1.4 V threshold — the
-> device turns on when it must not. With the clamp and the negative rail it
-> peaks at **−1.18 V**, a 2.58 V margin. And the converter it is part of runs
-> at **48.50 V** out, **97.49 %** efficient. Same netlists, nothing retyped."
+> "Their driver leaves **0.407 V** of margin below the threshold. Ours leaves
+> **2.576 V**. Same netlist, same device, same corner — the only thing swapped
+> is the driver. Across four corners that ratio runs from 5.5 to 12.4 times,
+> and the latency and device dissipation both come down as well."
 
-**If someone asks whether the film could be faked.** Chapter 9 answers it
-without you having to: every card names its source file, and the repository is
-public. The stronger answer is slide 15 — offer to run it.
+**If they ask whether their driver was set up to lose.** It was not, and say
+so plainly: `scripts/headtohead.py` searched both of their controls at every
+corner, and the film runs their driver at the setting that search found best
+FOR THEM — read out of `results/headtohead.txt`, not chosen by us. Their own
+paper offers one bias resistor set once at design time, so this gives them a
+per-corner freedom the published design does not have.
 
-**If they ask to see more than this.** `proof/DEMO-VIDEO.mp4` is a two-minute
-screen recording of `proof/DEMO.sh` — the converter in ngspice, the named
-cases, the Verilog controller and LTspice running the schematic. Say plainly
-that it was recorded on 11 September, before `sim/buck.cir`'s bus-decoupling
-branch was damped, so its converter numbers predate the ones in this deck;
-`cd proof && zsh DEMO.sh` re-runs and re-records it live.
+**If it will not play**, `github.com/Amritha902/gan-driver` has the file and
+`python3 scripts/demo_review2.py` rebuilds it. Do not debug in the room — go
+to slide 15 and offer to run the simulation live instead, which is stronger
+than the film anyway.
 
 ---
 
