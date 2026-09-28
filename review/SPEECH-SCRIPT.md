@@ -681,6 +681,13 @@ the contribution.
 
 ---
 
+> **The deck is 19 slides, not 38.** Everything cut is still in
+> `GaN_Review2_BACKUP.pptx` (73 slides) — open it for questions. The five
+> things most likely to be asked about that are NOT on the presented deck:
+> the "two effects" slide (adaptation is worth 2.57 %, a better fixed word
+> 26.45 %), the win/lose bar chart, the converter envelope, the closed loop,
+> and the model-dependence check. Answers for all five are in this script.
+
 ## 24b — THEIRS, THEN OURS (1 min 20 s for the pair)
 
 Two films, 35 s each, played back to back. Do not talk over either. One line

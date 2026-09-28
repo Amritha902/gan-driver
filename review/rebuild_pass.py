@@ -2220,45 +2220,49 @@ for i, s in enumerate(p.slides):
 # i removes some other slide. Harmless for rendering, fatal for editing.
 
 # 15 slides, one per rubric item plus the finding the project exists for.
+# SHORT is the deck that gets presented, and it is now 19 slides. It was 38,
+# which is a 45-minute deck in a 20-minute slot: at that length a presenter
+# either races or gets stopped, and both lose the room.
+#
+# What survives is one pass through the argument with nothing said twice --
+# problem, aim, architecture, the circuit, their driver against ours three
+# ways (drawn, simulated, measured), and the honest accounting at the end.
+# BACKUP keeps all 73 for the questions.
+#
+# The five deliberate cuts, so the reasoning is on record rather than in
+# somebody's memory:
+#   - four of the five architecture slides. "Base paper and ours, side by
+#     side" does in one what 22, 23, 25 and 26 did in four.
+#   - the "two effects" slide, which is the strongest intellectual argument
+#     in the project (adaptation is worth 2.57 % against 26.45 % for a better
+#     fixed word) and also the one that invites the hardest question. It is
+#     in BACKUP, and SPEECH-SCRIPT.md has the answer ready.
+#   - "Where we win, and where we lose", "The converter across its own
+#     envelope", "Closing the loop", "Does the result depend on the model?".
+#     Each is a good slide answering a question nobody has asked yet.
+#   - the driver-simulation case walk and the FPGA slide: the demo films and
+#     the cost table already carry what they proved.
+#   - the second references slide. The deck shows 1-15; BACKUP has 16-30.
 SHORT = [
-    u"School of",                                  # signed title page
-    u"Problem Statement",                          # problem
-    u"The closest published drivers",         # literature, BASE tagged
-    u"GaN against silicon \u2014 six parameters",   # panel ask 1
-    u"Latency and device power — the two you asked for",
-    u"The gap this project fills",
-    u"The goal, and whether this serves it",
-    u"Aim, and how we approached it",              # solution, method, scope, tools
+    u"School of",                              # title page (no title shape)
+    u"Problem Statement & Background",
+    u"Aim, and how we approached it",
     u"System Architecture",
-    u"How it works — one use case",                # the master flowchart
     u"The circuit we simulate",
-    u"The circuit, as ngspice reports it",                                          # the netlist, from ngspice
-    u"How we run ngspice",
-    u"The base paper, simulated",          # theirs, on its own
-    u"Ours, simulated",                    # ours, same axes
-    u"Demo — the driver, built and measured",                 # the video
-    u"Or we can run it now",
-    u"Circuit simulation",
-    u"Crosstalk simulation",
-    u"Driver simulation",
-    u"FPGA Controller",                             # 12 % of the count
-    u"Their driver, drawn \u2014 the reimplementation",  # their circuit, built
-    u"Our driver, drawn \u2014 the same stage",         # ours, on top of it
-    u"Base paper and ours, side by side",            # panel ask 3, at a glance
-    u"Their architecture \u2014 the base paper",     # panel ask 3, prev slide
-    u"Our architecture \u2014 same stage",           # panel ask 3, this slide
-    u"Theirs and ours \u2014 six parameters",        # panel ask 4
-    u"Where we win, and where we lose",             # the same, as a picture
-    u"Silicon, the base paper, and ours \u2014 six parameters",
-    u"The converter across its own envelope",       # the envelope, measured
-    u"Head to head with the base paper",            # the comparison
-    u"Closing the loop",                            # the converter regulates
-    u"Does the result depend on the model?",
-    u"Does the architecture close the gaps?",       # the reviewer's question
-    u"The hardware, costed",                        # answers "why no hardware"
-    u"Work Completed",                             # completion
-    u"References  (1–15)",
-    u"Thank you",                                 # do not end the talk on a reference list
+    u"Base paper and ours, side by side",      # the whole architecture story
+    u"The base paper, simulated",              # theirs, alone
+    u"Ours, simulated",                        # ours, same axes
+    u"Demo \u2014 the driver, built and measured",
+    u"Or we can run it now",                   # the live offer
+    u"Crosstalk simulation",                   # the fault and the fix
+    u"Circuit simulation",                     # the converter delivering
+    u"Silicon, the base paper, and ours",      # all three, six parameters
+    u"Latency and device power",               # the panel asked for these two
+    u"Head to head with the base paper",       # four corners, 5.5x to 12.4x
+    u"Does the architecture close the gaps?",
+    u"Work Completed",
+    u"References",
+    u"Thank you",
 ]
 
 
