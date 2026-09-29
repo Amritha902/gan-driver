@@ -2590,3 +2590,9 @@ if cite_pass.main():
 import link_pass
 if link_pass.main():
     raise SystemExit("rebuild_pass: dead link text in the deck (see above)")
+
+# Last: the text-only slides have no figure to give them structure, so give
+# them some. Runs last because it measures whether the text still fits, and
+# every earlier pass can change how much text there is.
+import layout_pass
+layout_pass.main()

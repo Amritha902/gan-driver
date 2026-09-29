@@ -56,7 +56,7 @@ SLIDE6 = [
        "best setting moves.", False)], 1),
     ([("Scope and tools:", B)], 0),
     ([("In scope: ", B), ("the converter, the driver, its settings, and the FPGA "
-       "controller. ", False), ("Out of scope: ", B), ("building hardware. ", False),
+       "controller. ", False),
       ("Tools: ", B), ("ngspice for every simulation, LTspice to draw the "
        "circuit and re-check, Vivado for the FPGA.", False)], 1),
 ]
