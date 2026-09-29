@@ -19,8 +19,9 @@ ROOT=$PWD
 find review -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 export PYTHONDONTWRITEBYTECODE=1
 
-echo "== test the register guard before trusting it"
+echo "== test the guards before trusting them"
 python3 review/test_plain_pass.py
+python3 review/test_link_pass.py
 
 for s in build.py simplify.py; do
     echo "== $s"

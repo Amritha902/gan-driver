@@ -2529,7 +2529,13 @@ import plain_pass
 if plain_pass.main():
     raise SystemExit("rebuild_pass: banned phrasing in the deck (see above)")
 
-# A URL printed on a slide has one use, and it is being clicked.
+# Name the KiCad sheet on every slide that draws one, so the linker below
+# has something to point at.
+import cite_pass
+if cite_pass.main():
+    raise SystemExit("rebuild_pass: a KiCad figure names no sheet (see above)")
+
+# A file path printed on a slide has one use, and it is being clicked.
 import link_pass
 if link_pass.main():
     raise SystemExit("rebuild_pass: dead link text in the deck (see above)")
