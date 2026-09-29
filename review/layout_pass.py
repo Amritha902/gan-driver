@@ -84,6 +84,55 @@ def shrink_runs(shape, delta):
                 r.font.size = Pt(max(9.0, r.font.size.pt - delta))
 
 
+# A title is one line of 28 pt in a 0.75 in box. Two lines need about 0.78 in,
+# so any title long enough to wrap spills out of the bottom of its own box and
+# lands on the lead line underneath. Slides 10, 11 and 15 each had their second
+# line printed through the sentence below it. Shrink the title until it fits on
+# one line instead -- 24 pt still reads from the back of a room, and a title
+# that has to shrink is a title worth shortening anyway.
+#
+# 0.58 is the average character width of bold Calibri as a fraction of point
+# size, fitted to this deck: "Head to head with the base paper" (31 characters)
+# fits on one line at 28 pt and "Silicon, the base paper, and ours - six
+# parameters" (49) does not, which brackets it between 0.55 and 0.87.
+CHAR_W = 0.58
+TITLE_FLOOR = 22.0
+# A linear character-width model lands within a few per cent, which is not
+# enough when the answer sits on the boundary: "Ours, simulated - same bench,
+# same corner, same axes" was computed to need 10.47 in of a 10.50 in box at
+# 25 pt, and wrapped anyway. Leave 8 % of the box spare.
+TITLE_SLACK = 0.92
+
+
+def fit_titles(prs):
+    """Shrink any title that would wrap, so it cannot print over the lead."""
+    fixed = []
+    for sl in prs.slides:
+        title = None
+        for sh in sl.shapes:
+            if (sh.has_text_frame and sh.width and sh.top is not None
+                    and abs(Emu(sh.width).inches - 10.5) < 0.35
+                    and Emu(sh.top).inches < 1.0):
+                title = sh
+                break
+        if title is None:
+            continue
+        txt = title.text_frame.text.strip()
+        runs = [r for pa in title.text_frame.paragraphs for r in pa.runs]
+        if not txt or not runs:
+            continue
+        w = Emu(title.width).inches
+        sz = runs[0].font.size.pt if runs[0].font.size else 28.0
+        start = sz
+        while sz > TITLE_FLOOR and len(txt) * sz * CHAR_W / 72.0 > w * TITLE_SLACK:
+            sz -= 1.0
+        if sz < start:
+            for r in runs:
+                r.font.size = Pt(sz)
+            fixed.append((txt[:38], start, sz))
+    return fixed
+
+
 def is_label(para):
     """A section heading: a short bold line that ends in a colon."""
     txt = "".join(r.text for r in para.runs).strip()
@@ -222,6 +271,9 @@ def main():
         if not os.path.exists(path):
             continue
         prs = Presentation(path)
+        for txt, was, now in fit_titles(prs):
+            print("     title shrunk %.0f -> %.0f pt so it stays on one line: %r"
+                  % (was, now, txt))
         l, b = style(prs)
         prs.save(path)
         total_l += l
