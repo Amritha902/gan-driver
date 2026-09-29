@@ -40,7 +40,20 @@ DECKS = ["GaN_Review2_PRESENT.pptx", "GaN_Review2_BACKUP.pptx",
 # (what it says now, what it should say). Longest first: a shorter pattern
 # that is a substring of a longer one would otherwise fire first and leave
 # the tail behind.
+# A negative voltage written with the ASCII hyphen next to one written with
+# the real minus sign, sometimes in the same sentence. %+.3f emits the ASCII
+# one, and hand-written strings used either.
+#
+# Listed literally rather than matched by a rule, because a hyphen before a
+# number is not always a minus: slide 18 reads "the gate peaks at -1.176 V -
+# 2.576 V of margin", where the second is a dash joining two clauses. A rule
+# broad enough to catch the first would turn a positive margin negative.
+MINUS = [u"-2 V", u"-1.941 V", u"-1.176 V", u"-0.249 V", u"-0.879 V",
+         u"-1.946 V", u"-1.5 %"]
+
 REWRITE = [
+    # ---- negative quantities, one sign throughout ----------------------
+] + [(m, u"\u2212" + m[1:]) for m in MINUS] + [
     # ---- titles -------------------------------------------------------
     (u"Latency and device power — the two you asked for",
      u"Latency and device power"),

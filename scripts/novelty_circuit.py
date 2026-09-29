@@ -161,7 +161,9 @@ def main():
     # the off gate and holding it at -2 V among the existing solutions,
     # citing [1]-[4]; this figure cannot then call them the novelty. What is
     # true, and is what the figure shows, is that the base paper has neither.
-    lead = u"THE NOVELTY IS THE TWO GREEN RINGS."
+    # Set in capitals, it was the one shouted line left in the deck, and it
+    # is a figure label rather than a slide, so no text check could see it.
+    lead = u"The two green rings are what this project adds."
     tail = u"Clamp +0.82 V, rail +2.01 V: \u22120.249 V becomes +2.576 V."
     d.text((PAD, y), lead, font=F_T, fill=INK)
     d.text((PAD + d.textlength(lead, font=F_T) + 20, y), tail, font=F_S, fill=GRN)

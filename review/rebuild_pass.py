@@ -303,8 +303,8 @@ TOOLOUT = [
  # over gate-source, baseline on the left and mitigated on the right, drawn
  # from the same two transients.
  ("fig1_crosstalk.png", u"Crosstalk: Fault and Mitigation",
-  u"Two runs of sim/dpt.cir. Top row: the switch node falls from %.0f V in %.2f ns, "
-  u"peaking at %.0f V/ns \u2014 that dv/dt drives i = C_GD\u00b7dv/dt into the OFF "
+  u"Two runs of sim/dpt.cir. Top row: the switch node falls from %.0f V, its "
+  u"90–10 %% edge taking %.2f ns and peaking at %.0f V/ns \u2014 that dv/dt drives i = C_GD\u00b7dv/dt into the OFF "
   u"device's gate, and is the cause. Bottom row: that gate. Left, without the "
   u"clamp, it rests at %+.3f V, is lifted %+.3f V and peaks at %+.3f V, past the "
   u"1.4 V threshold \u2014 false_turn_on = 1. Right, with the clamp and the "
@@ -398,7 +398,7 @@ if os.path.exists(os.path.join(RES, _NC)):
             u"Top: sim/buck.cir, with the two gates of the half-bridge "
             u"ringed \u2014 HSG and LSG are what a gate driver drives, and "
             u"everything below is what sits behind them. Bottom left, theirs: "
-            u"seven slices a bank in two stages, and a rail their own sheet "
+            u"seven slices per bank in two stages, and a rail their own sheet "
             u"labels \u201ctied to ref \u2014 NO negative rail\u201d. Bottom "
             u"right, ours: the same eight-slice output stage, plus the active "
             u"Miller clamp and an off rail selectable to \u22122 V. The clamp "
@@ -431,7 +431,7 @@ if os.path.exists(os.path.join(RES, _SP)):
     place(sl, _SP, 1.72, 4.02)
     caption(sl,
             u"Left: kicad/gan_zhangdrv.kicad_sch, the base paper's driver as "
-            u"we rebuilt it \u2014 seven slices a bank in two stages, one bias "
+            u"we rebuilt it \u2014 seven slices per bank in two stages, one bias "
             u"resistor, and a rail its own sheet labels as tied to reference. "
             u"Right: kicad/gan_segdrv.kicad_sch, ours \u2014 eight slices a "
             u"bank, an active Miller clamp and an off rail selectable to "
@@ -465,7 +465,8 @@ if os.path.exists(os.path.join(RES, _GL)):
     place(sl, _GL, 1.55, 4.35)
     caption(sl,
             u"Left: the half-bridge. When the low-side device turns on the "
-            u"switch node falls %.0f V in %.2f ns, peaking at %.0f V/ns, and "
+            u"switch node falls from %.0f V, its 90\u201310 %% edge taking "
+            u"%.2f ns and peaking at %.0f V/ns, and "
             u"that dv/dt drives a current through C_GD into the high-side "
             u"gate. Right: the three parallel paths that current sees at the "
             u"gate node. The slice count sets how hard the gate is held; the "
@@ -475,9 +476,7 @@ if os.path.exists(os.path.join(RES, _GL)):
             u"starting point, the clamp shortens the lift - which is why they "
             u"add rather than overlap. scripts/gan_level_figure.py, from "
             u"results/waveform_anatomy.txt."
-            % (__import__("sys").modules.get("waveform_numbers").VBUS
-               if "waveform_numbers" in __import__("sys").modules else 106.0,
-               2.90, 124.0),
+            % (WF.VBUS, WF.FALL_NS, WF.SLEW_PK),
             top=6.06, h=1.22)
     print("added: Crosstalk Mechanism at Device Level")
 else:
@@ -509,7 +508,7 @@ _IMPL = [
     ("implementation/05-driver-base-paper.png",
      u"Implementation: Base Paper Gate Driver",
      u"kicad/gan_zhangdrv.kicad_sch, the base paper's driver reimplemented "
-     u"in the same testbench. Seven slices a bank in two stages, one bias "
+     u"in the same testbench. Seven slices per bank in two stages, one bias "
      u"resistor, no clamp branch, and the off rail tied to reference."),
 ]
 for _if, _it, _icap in _IMPL:
@@ -639,8 +638,8 @@ add_text(sl, 0.70, 1.02, 12.10, 0.40, [
 
 _HELD = [
     (u"the netlist", u"sim/dpt.cir, byte for byte \u2014 not a copy, not a variant"),
-    (u"the device", u"models/egan.lib on both sides, same V\u209c\u2095, same "
-                    u"R\u2091\u209b(on), same C\u2089\u2091"),
+    (u"the device", u"models/egan.lib on both sides, same V_th, same "
+                    u"R_ds(on), same C_gs"),
     (u"the parasitics", u"3 nH power loop, 0.3 \u03a9 loop resistance, same "
                         u"gate inductance"),
     (u"the operating point", u"100 V bus, 10 A load, 25 \u00b0C junction"),
@@ -649,7 +648,7 @@ _HELD = [
 _CHANGED = [
     (u"theirs vs ours", u"the driver subcircuit, and nothing else: "
                         u"models/zhangdrv.lib \u2194 models/segdrv.lib"),
-    (u"GaN vs silicon", u"the device model only, R\u2091\u209b(on) matched at "
+    (u"GaN vs silicon", u"the device model only, R_ds(on) matched at "
                         u"the 25 m\u03a9 class"),
     (u"clamp on/off", u"one parameter, CLKEN; off rail, one parameter, VNEG"),
 ]
@@ -807,8 +806,8 @@ set_title(s, u"Thank you")
 add_text(s, 0.70, 2.30, 11.90, 3.20, [
     para([(u"GaN Based Synchronous Buck Converter with an Improved Gate Driver", B)],
          level=0, sz=2600, spc=400, bullet=False),
-    para([(u"Amritha S  23BEC1368     ·     Sanjay Kumar  23BEC1447     ·     "
-           u"Aamir Abdullah  23BPS1197", N)],
+    para([(u"Sanjay Kumar  23BEC1447     ·     Aamir Abdullah  23BPS1197     "
+           u"·     Amritha S  23BEC1368", N)],
          level=0, sz=1500, spc=240, bullet=False),
     para([(u"Guide: Dr. Bindu  —  SENSE, VIT Chennai", N)],
          level=0, sz=1500, spc=400, bullet=False),
@@ -1367,7 +1366,7 @@ _SCH = [
      u"clamp branch, and the off rail is tied to its reference."),
     ("fig_sch_ours.png",
      u"Our driver, drawn \u2014 the same stage, improved",
-     u"models/segdrv.lib. Eight slices a bank, switching together, plus the "
+     u"models/segdrv.lib. Eight slices per bank, switching together, plus the "
      u"two blocks they do not have.",
      u"Each slice is a switch and a resistor, and the resistor carries the "
      u"code: Rpu3 is 8 \u03a9 if the word asks for three or more slices and "
@@ -1623,7 +1622,7 @@ if os.path.exists(os.path.join(RES, "fig_arch_delta.png")):
             u"control in place of one fixed resistor, an always-on Miller "
             u"clamp, and an off rail selectable to −2 V. The command, the "
             u"power stage and the idea of segmenting the output are all "
-            u"theirs. The last row is what those three buy at the headline "
+            u"theirs. The last row is what those three deliver at the headline "
             u"corner, read from results/headtohead.csv: +0.407 V becomes "
             u"+2.576 V, from one fixed setting.", top=6.26, h=1.08)
     print("added: What we add that they do not have")
@@ -1974,13 +1973,15 @@ add_text(s, 0.70, 1.16, 12.10, 0.56, [
     para([(u"Same netlist, same GaN, same power loop, same parasitics — only the "
            u"driver is swapped. We hold one fixed word at all four corners. "
            u"They are re-optimised at every corner, which is more freedom than "
-           u"their own design has.", N)],
+           u"their own design has: their scheme sets one bias resistor at "
+           u"design time. The search returns their built setting at three of "
+           u"the four corners, so those rows read alike.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 
 grid(s, 0.62, 1.80, 12.14, 1.55, [
     (u"crosstalk margin", u"base, as their paper builds it",
      u"base, re-tuned at every corner", u"ours, one fixed word", u"vs their best"),
-    ((u"50 V / 2 A / 25 \u00b0C", None, True), (u"+0.503 V", None, False),
+    ((u"50 V / 2 A / 25 \u00b0C", None, True), (u"+0.338 V", None, False),
      (u"+0.503 V", None, False), (u"+2.757 V", GREEN, True), (u"5.5\u00d7", None, True)),
     ((u"100 V / 10 A / 25 \u00b0C", None, True), (u"+0.407 V", None, False),
      (u"+0.407 V", None, False), (u"+2.576 V", GREEN, True), (u"6.3\u00d7", None, True)),
@@ -1994,7 +1995,8 @@ add_text(s, 0.70, 3.54, 5.85, 0.34, [
     para([(u"The margin gap widens with stress", B)], level=0, sz=1250, spc=0, bullet=False)])
 add_text(s, 0.70, 3.92, 5.85, 1.55, [
     para([(u"Their margin falls +0.503 \u2192 +0.181 V from the mildest corner "
-           u"to the hottest. Ours goes +2.757 \u2192 +2.251. They degrade where "
+           u"to the hottest, at their best setting for each. Ours goes "
+           u"+2.757 \u2192 +2.251 V. They degrade where "
            u"it matters most; a clamp does not care how hot the device is.", N)],
          level=0, sz=1150, spc=110, bullet=False),
     para([(u"Worst corner is what a converter has to survive: +0.181 V against "

@@ -291,6 +291,38 @@ if "--figures" in sys.argv:
         else:
             print("  ok    figure %-22s reproduces from current data" % name)
 
+# ---- the head-to-head table's columns must be the columns they claim ------
+# Slide 23 has two base-paper columns: "as their paper builds it" (one bias
+# resistor, set once) and "re-tuned at every corner". They are different
+# series in results/headtohead.csv -- base_as_built and base_retuned -- and
+# they differ only at the mildest corner, 0.338 V against 0.503 V.
+#
+# The deck carried 0.503 in both, so the as-built column was showing re-tuned
+# numbers and the two columns read identically. Nothing here caught it: 0.503
+# is a real number in headtohead.csv, so every check that only asks "is this
+# figure in the data" passed. A number being somewhere in the file is not the
+# same as it being in the right column.
+_hh = os.path.join(ROOT, "results", "headtohead.csv")
+if os.path.exists(_hh):
+    import csv as _c
+    rows = [r for r in _c.reader(open(_hh)) if len(r) > 3 and r[0].endswith("C")]
+    if not rows:
+        fails.append("results/headtohead.csv: no corner rows -- re-run "
+                     "scripts/headtohead.py")
+    for r in rows:
+        corner, as_built, retuned = r[0].strip(), float(r[1]), float(r[2])
+        for label, v in (("as-built", as_built), ("re-tuned", retuned)):
+            if ("+%.3f" % v) not in DTn:
+                fails.append("head to head, %s: the %s margin %+.3f V is not "
+                             "on any slide" % (corner, label, v))
+    # and the two series must not have been collapsed into one
+    if rows and all(abs(float(r[1]) - float(r[2])) < 5e-4 for r in rows):
+        fails.append("head to head: base_as_built and base_retuned are "
+                     "identical at every corner -- slide 23's two columns "
+                     "say nothing, so one of them is wrong")
+else:
+    warns.append("results/headtohead.csv missing -- run scripts/headtohead.py")
+
 # ---- report ---------------------------------------------------------------
 print("consistency check")
 print("-" * 66)
