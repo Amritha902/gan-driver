@@ -1903,7 +1903,7 @@ grid(s, 0.62, 1.80, 12.14, 1.55, [
 ], widths=(24, 21, 22, 20, 13), sizes=(10.0, 10.0))
 
 add_text(s, 0.70, 3.54, 5.85, 0.34, [
-    para([(u"The gap WIDENS with stress", B)], level=0, sz=1250, spc=0, bullet=False)])
+    para([(u"The margin gap widens with stress", B)], level=0, sz=1250, spc=0, bullet=False)])
 add_text(s, 0.70, 3.92, 5.85, 1.55, [
     para([(u"Their margin falls +0.503 \u2192 +0.181 V from the mildest corner "
            u"to the hottest. Ours goes +2.757 \u2192 +2.251. They degrade where "
@@ -1913,7 +1913,7 @@ add_text(s, 0.70, 3.92, 5.85, 1.55, [
            u"+2.251 V.", B)], level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 7.00, 3.54, 5.80, 0.34, [
-    para([(u"And we slew HARDER, not softer", B)], level=0, sz=1250, spc=0, bullet=False)])
+    para([(u"The edge is faster, not slower", B)], level=0, sz=1250, spc=0, bullet=False)])
 add_text(s, 7.00, 3.92, 5.80, 1.55, [
     para([(u"Their scheme reduces crosstalk by slowing the edge: 67\u2013103 "
            u"V/ns at the switch node. Ours runs 101\u2013175 V/ns — about "
