@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""novelty_circuit.py -- where the novelty is, on the circuit.
+"""novelty_circuit.py -- what differs in the circuit, theirs and ours.
 
     python3 scripts/novelty_circuit.py       -> results/fig_novelty_circuit.png
 
@@ -13,7 +13,7 @@ WHY THE CONVERTER IS THE FIRST PANEL
   The first version showed the two driver sheets and nothing else. That
   answers "what is different about your driver" but not "what is this a
   driver FOR". The project is a buck converter with an improved gate driver;
-  a figure about the novelty that never shows the converter leaves a reviewer
+  a figure about the difference that never shows the converter leaves a reviewer
   to take on trust that the sheets below are wired into anything.
 
 WHAT IT IS MADE FROM
@@ -157,16 +157,32 @@ def main():
 
     d.rectangle([PAD, y, W - PAD, y + 2], fill=RULE)
     y += 18
-    d.text((PAD, y),
-           u"THE NOVELTY IS THE TWO GREEN RINGS, behind the gates of the "
-           u"converter above.", font=F_T, fill=INK)
-    d.text((PAD + d.textlength(u"THE NOVELTY IS THE TWO GREEN RINGS, behind the "
-                               u"gates of the converter above.", font=F_T) + 20, y),
-           u"Clamp +0.82 V, rail +2.01 V: \u22120.249 V becomes +2.576 V.",
-           font=F_S, fill=GRN)
+    # "THE NOVELTY IS ..." overstated it. Slide 2 of the deck lists clamping
+    # the off gate and holding it at -2 V among the existing solutions,
+    # citing [1]-[4]; this figure cannot then call them the novelty. What is
+    # true, and is what the figure shows, is that the base paper has neither.
+    lead = u"THE TWO GREEN RINGS ARE WHAT THEIRS DOES NOT HAVE."
+    tail = u"Clamp +0.82 V, rail +2.01 V: \u22120.249 V becomes +2.576 V."
+    d.text((PAD, y), lead, font=F_T, fill=INK)
+    d.text((PAD + d.textlength(lead, font=F_T) + 20, y), tail, font=F_S, fill=GRN)
+
+    # The footer is two strings laid side by side, so lengthening the first
+    # pushes the second off the canvas -- silently, because nothing raises
+    # when text is drawn past the edge. It has happened once: the numbers ran
+    # to the last pixel column and the sentence was cut mid-word on the
+    # slide. Measure the ink instead of trusting the arithmetic.
+    import numpy as _np
+    _a = _np.asarray(im.convert("L"))
+    _ink = _np.where((_a < 200).sum(axis=0) > 0)[0]
+    if _ink.size and im.width - (_ink.max() + 1) < PAD // 2:
+        raise SystemExit(
+            "%s: content reaches column %d of %d -- the footer is clipped; "
+            "shorten it or drop a line" % (OUT, _ink.max(), im.width))
 
     im.save(OUT)
-    print("  written: %s  (%d x %d)" % (OUT, im.width, im.height))
+    print("  written: %s  (%d x %d, right margin %d px)"
+          % (OUT, im.width, im.height,
+             im.width - (_ink.max() + 1) if _ink.size else im.width))
     return 0
 
 
