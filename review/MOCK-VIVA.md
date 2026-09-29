@@ -12,6 +12,9 @@ questions you cannot answer tonight are the only ones worth working on.
 
 ---
 
+> **Superseded in part.** Everything the examiner attacked has since been built into the deck — slides 4, 19, 20, 28, 29, 30 and 31 exist because of this transcript. Read it for the questions, not for the state of the deck. One number in it was also wrong: the clamp-only case is +0.570 V of margin, not +0.83 V, which is that case's gate peak.
+
+
 # PART 1 — The presentation (14 min)
 
 **[1 · Title]**
@@ -118,7 +121,7 @@ the shipped configuration is safe under all four.
 **EX:** All four. Then show me all four, not the one that flatters you.
 
 **CAND:** No-clamp, clamp-only, clamp-plus-rail. Behavioural model: −0.249,
-+0.83, +2.576 volts. SKY130 transistors: −0.563, +0.031, +2.032. Charge-based
++0.570, +2.576 volts. SKY130 transistors: −0.563, +0.031, +2.032. Charge-based
 capacitance: +0.115, +0.800, +2.710.
 
 **EX:** Stop. Read me the third one again.

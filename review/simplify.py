@@ -207,7 +207,7 @@ EDITS = [
    [(u"Only just past the base paper. The clamp on its own is not the story.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 17", [
-   [(u"6.3" + TIMES + u" the base paper's best margin. This is the version we ship.", N)],
+   [(u"6.3" + TIMES + u" the best margin of our implementation of their scheme. This is the version we ship.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 18", [
    [(u"What the comparison shows. ", Y),

@@ -1,0 +1,25 @@
+  RUNS ACCOUNTED FOR
+  --------------------------------------------------------------------
+  25911 of 25920 completed; 9 did not (0.035 %)
+
+  of the 9: 0 are the shipped configuration (clamp on AND -2 V rail)
+               6 are clamp on with the off rail at 0 V
+               3 are the -2 V rail with the clamp off
+
+  re-running each one:
+  100V_2A_125C      NPU_LS=3  NPD_LS=8  NPD_HS=4  DT=25n  CLKEN=1  VNEG=0  failed again
+  100V_2A_125C      NPU_LS=4  NPD_LS=8  NPD_HS=4  DT=25n  CLKEN=1  VNEG=0  failed again
+  150V_10A_75C      NPU_LS=1  NPD_LS=8  NPD_HS=1  DT=10n  CLKEN=1  VNEG=0  failed again
+  150V_10A_75C      NPU_LS=3  NPD_LS=8  NPD_HS=1  DT=15n  CLKEN=1  VNEG=0  failed again
+  150V_10A_75C      NPU_LS=4  NPD_LS=8  NPD_HS=1  DT=15n  CLKEN=1  VNEG=0  failed again
+  150V_5A_25C       NPU_LS=1  NPD_LS=2  NPD_HS=1  DT=25n  CLKEN=0  VNEG=-2  failed again
+  200V_10A_75C      NPU_LS=2  NPD_LS=2  NPD_HS=1  DT=35n  CLKEN=1  VNEG=0  failed again
+  200V_5A_25C       NPU_LS=8  NPD_LS=2  NPD_HS=1  DT=15n  CLKEN=0  VNEG=-2  failed again
+  50V_10A_125C      NPU_LS=8  NPD_LS=2  NPD_HS=8  DT=35n  CLKEN=0  VNEG=-2  failed again
+
+  9 of 9 failed again -- reproducible, not flaky
+
+  what ngspice says:
+     9 x  doAnalyses: TRAN:  Timestep too small
+
+  None of the aborted runs is the shipped configuration, so the reported result does not rest on any of them. The gap is a real limit on the SWEEP's coverage and is stated as one.

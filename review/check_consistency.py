@@ -165,8 +165,13 @@ RETIRED = {
     "-11.8": "opposite-sign ratio on the silicon table (now +19.4 pts)",
     "-11.9": "opposite-sign ratio on the silicon table (now +19.4 pts)",
 }
+# Matched on a number boundary, not as a substring: "24 points" is a retired
+# figure, and "0.24 points" -- the efficiency the crosstalk fix costs -- is a
+# current one that contains it. A plain `in` test failed the build on the
+# correct number.
 for _bad, _why in RETIRED.items():
-    if norm(_bad) in DTn:
+    _pat = r"(?<![\d.])" + re.escape(norm(_bad))
+    if re.search(_pat, DTn):
         fails.append("%-10s is back on a slide -- %s" % (_bad, _why))
 
 # ---- 2c. the paper and the patent disclosure -------------------------------

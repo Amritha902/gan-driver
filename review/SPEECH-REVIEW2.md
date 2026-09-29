@@ -4,7 +4,7 @@
 Sanjay Kumar 23BEC1447 · Aamir Abdullah 23BPS1197 · Amritha S 23BEC1368
 Guide: Dr. Bindu — SENSE, VIT Chennai · Review-II, 30.09.2026
 
-26 slides. **Total 14 min 25 s of speaking.** Bracketed times are cumulative:
+34 slides. **Total 21 min 10 s of speaking.** Bracketed times are cumulative:
 if the clock is past one, you are behind. Everything in **bold** is a number
 you commit to out loud — each one is on the slide behind you, so you are
 never quoting something the examiner cannot see.
@@ -14,12 +14,45 @@ whoever is not speaking watches the clock and the laptop.
 
 | Slides | Who | What they own |
 |---|---|---|
-| 1–9 | Amritha | the problem, the aim, what we built and why |
-| 10–18 | Sanjay | implementation, method, the two runs |
-| 19–26 | Aamir | the demonstration, the comparison, what is left |
+| 1–10 | Amritha | the problem, the scope, the aim, the mechanism |
+| 11–22 | Sanjay | implementation, baseline, method, validation, the two runs |
+| 23–34 | Aamir | demonstration, results, cost, conclusions |
 
-**The three slides that decide the review are 9, 21 and 23.** If you are
-running out of time, cut 8 and 12. Never cut those three.
+**The five slides that decide the review are 4, 10, 19, 28 and 30** — the
+scope box, the mechanism, the three device models, the loop-inductance
+result and the conclusions. If you are running out of time, cut 9, 13 and
+14. Never cut those five.
+
+**If the slot is 15 minutes, not 20.** The full script runs 21:10. Cut
+these five sections, in this order, and it comes to 18:35. Every one of
+them repeats something another slide already shows, so no step in the
+argument is lost. Leave the slides in the deck and arrow past them.
+
+| cut | section | why it is safe to drop |
+|---|---|---|
+| 30 s | 6 · Converter Under Simulation | the converter is on the architecture block diagram already |
+| 40 s | 8 · Novelty at Circuit Level | the novelty table makes the same point in words |
+| 20 s | 9 · Gate Driver Schematics in KiCad | the same two sheets the previous slide already crops from |
+| 35 s | 11–13 · Implementation, three sheets | three schematics the panel can read off the screen unaided |
+| 30 s | 16–17 · The two files we wrote | source listings; the block diagram already carries the idea |
+
+Never cut 4, 10, 19, 28 or 30 to make time. Cut these instead.
+
+**If the slot is 15 minutes.** The five above are not enough — they leave 18:35. These four more bring it to 15:55, and unlike the first five they do cost something, so drop them only if the clock forces it.
+
+| cut | section | what it costs you |
+|---|---|---|
+| 50 s | Demonstration | the recorded film; the LIVE run on 24 shows the same thing, happening |
+| 30 s | Six-Parameter Comparison | GaN-against-silicon; the review is about the driver, not the device |
+| 35 s | Segmented Driver: Block Structure | slide 16's source listing carries the same structure |
+| 45 s | Baseline Reimplementation | the methodology slide already says the search is given to them |
+
+Below about 15 minutes, stop cutting and talk faster: the argument does not survive losing another slide.
+
+**Slides 4, 19, 20, 28, 29, 30 and 31 are new since the mock viva.** They
+exist because a hostile examiner landed four attacks on evidence this
+project already had and was not showing. Say these slides confidently:
+each one is a weakness turned into a stated result.
 
 **Do not read the captions aloud.** They are there so the examiner can check
 you afterwards. Say the sentences below and point at the picture.
@@ -27,7 +60,6 @@ you afterwards. Say the sentences below and point at the picture.
 ---
 
 ## 1 · Title — 20 s  *(0:20)*
-
 > Good morning. Our project is a **GaN** based synchronous buck converter,
 > and the part we designed is the gate driver inside it.
 
@@ -39,7 +71,6 @@ Get the signed slide on screen first. Do not read the registration numbers.
 ---
 
 ## 2 · Problem Statement & Background — 60 s  *(1:20)*
-
 Start from the device, not from the literature.
 
 > A half-bridge is two transistors in series across the supply. The rule is
@@ -69,8 +100,8 @@ Start from the device, not from the literature.
 
 ---
 
-## 3 · Aim and Approach — 45 s  *(2:05)*
 
+## 3 · Aim and Approach — 45 s  *(2:05)*
 > So our aim is one question: how much of a gate driver's benefit actually
 > needs the driver to re-tune itself while the converter runs, and how much
 > you get from choosing one good setting and leaving it alone.
@@ -86,8 +117,27 @@ Start from the device, not from the literature.
 
 ---
 
-## 4 · System Architecture — 40 s  *(2:45)*
+## 4 · Scope of the Claim — 45 s  *(2:50)*
+**Do not skip this slide to save time.** Most of what an examiner wants to
+attack is answered here, by you, before they ask.
 
+> Before the results, what we are and are not claiming.
+
+> We claim three things. A fixed clamp and a negative off-bias raise the
+> simulated gate margin on every device model we ran. Runtime adaptation adds
+> a further benefit whose size depends strongly on power-loop inductance, and
+> we measure that dependence. And the comparison is against our own
+> implementation of the published baseline.
+
+> We do not claim experimental validation — nothing has been built. We do
+> not claim to reproduce the original authors' measured results; their netlist
+> is not published. We do not claim false turn-on is universal. And we do not
+> claim a universally optimal setting: the best word moves with the operating
+> point, and how much it moves is our result.
+
+---
+
+## 5 · System Architecture — 40 s  *(3:30)*
 Point along the arrows, left to right. Do not read the boxes.
 
 > One signal path. A PWM command comes in. The FPGA controller holds the
@@ -104,8 +154,7 @@ Point along the arrows, left to right. Do not read the boxes.
 
 ---
 
-## 5 · Converter Under Simulation — 30 s  *(3:15)*
-
+## 6 · Converter Under Simulation — 30 s  *(4:00)*
 > This is the converter itself, and it is drawn from the netlist we simulate,
 > so every value on this sheet is the value that ran.
 
@@ -116,8 +165,7 @@ Point along the arrows, left to right. Do not read the boxes.
 
 ---
 
-## 6 · Novelty: Three Added Blocks — 50 s  *(4:05)*
-
+## 7 · Novelty: Three Added Blocks — 50 s  *(4:50)*
 This is the slide that answers "what is actually yours". Be precise, and be
 honest about what is not yours.
 
@@ -139,8 +187,7 @@ honest about what is not yours.
 
 ---
 
-## 7 · Novelty at Circuit Level — 40 s  *(4:45)*
-
+## 8 · Novelty at Circuit Level — 40 s  *(5:30)*
 > Same claim, now at circuit level. The converter is on top with the two
 > gates ringed — that is what a gate driver drives. Underneath is what sits
 > behind those gates, theirs on the left and ours on the right.
@@ -155,8 +202,7 @@ honest about what is not yours.
 
 ---
 
-## 8 · Gate Driver Schematics in KiCad — 20 s  *(5:05)*
-
+## 9 · Gate Driver Schematics in KiCad — 20 s  *(5:50)*
 Cut this slide if you are behind. One sentence otherwise.
 
 > The same two sheets, whole, at the same scale, so you can see nothing has
@@ -164,8 +210,7 @@ Cut this slide if you are behind. One sentence otherwise.
 
 ---
 
-## 9 · Crosstalk Mechanism at Device Level — 55 s  *(6:00)*
-
+## 10 · Crosstalk Mechanism at Device Level — 55 s  *(6:45)*
 **This is the slide that shows you understand the physics.** Slow down.
 
 > On the left is the mechanism. The bottom device turns on, the switch node
@@ -186,8 +231,7 @@ Cut this slide if you are behind. One sentence otherwise.
 
 ---
 
-## 10–12 · Implementation, three sheets — 35 s total  *(6:35)*
-
+## 11–13 · Implementation, three sheets — 35 s total  *(7:20)*
 Sanjay takes over. One sentence each, do not dwell.
 
 > **(10)** This is the converter as an actual KiCad sheet, drawn from the
@@ -202,8 +246,26 @@ Sanjay takes over. One sentence each, do not dwell.
 
 ---
 
-## 13 · Segmented Driver: Block Structure — 35 s  *(7:10)*
+## 14 · Baseline Reimplementation — 45 s  *(8:05)*
+> A word on how we built their driver, because the whole comparison rests on
+> it.
 
+> From the paper: a segmented output stage on E-mode GaN, seven slices a bank,
+> two-stage engagement, pattern timing in the nought-point-five to five
+> nanosecond range, and one external bias resistor selecting the pattern. That
+> last one is their contribution — it is the word "Simple" in their title.
+
+> What we had to decide. Slice resistance and device sizing we matched to
+> ours, so this compares architectures and not silicon area. And the bias
+> setting: their paper fixes it once at design time, but we search both of
+> their controls at every corner and run theirs at whatever wins.
+
+> That is more freedom than their design actually has, and we gave it to them
+> deliberately. Every methodological choice here runs against us.
+
+---
+
+## 15 · Segmented Driver: Block Structure — 35 s  *(8:40)*
 > Here is how a slice works, because the whole study turns on it.
 
 > Each slice is one switch and one resistor. The control word decides whether
@@ -216,8 +278,7 @@ Sanjay takes over. One sentence each, do not dwell.
 
 ---
 
-## 14–15 · The two files we wrote — 30 s total  *(7:40)*
-
+## 16–17 · The two files we wrote — 30 s total  *(9:10)*
 > **(14)** This is the actual SPICE source of that output stage, at its real
 > line numbers. The clamp is deliberately not one of the slices — it has its
 > own switch and its own timing, because it has to hold the gate down while
@@ -231,8 +292,7 @@ Sanjay takes over. One sentence each, do not dwell.
 
 ---
 
-## 16 · Methodology — 40 s  *(8:20)*
-
+## 18 · Methodology — 40 s  *(9:50)*
 **If you are asked one methodology question, it is this slide.**
 
 > Every comparison in this deck is the same file with one thing changed.
@@ -251,8 +311,53 @@ Sanjay takes over. One sentence each, do not dwell.
 
 ---
 
-## 17–18 · The two runs — 45 s total  *(9:05)*
+## 19 · Model Validation: Three Device Models — 60 s  *(10:50)*
+**This is the slide that answers "why should I trust your simulation".**
+Point at the last column, not the first.
 
+> Three independent device models: our behavioural model with diode junction
+> capacitances, real SKY130 transistors, and the same behavioural model with
+> a charge-based capacitance instead of diodes.
+
+> Read the first column. Minus **0.249**, minus **0.563**, plus **0.115**. The
+> sign changes. On the charge-based model the off gate never reaches
+> threshold, so on that model the fault does not occur at all. We are telling
+> you that, because it is true and because it bounds what we claim.
+
+> Now read the last column, which is the configuration we ship. Plus
+> **2.576**, plus **2.032**, plus **2.710**. Positive on every model. And the
+> ordering of the three configurations is identical under all three.
+
+> So the existence of the fault at the margin is model-dependent. The
+> sufficiency of the fix is not. The second is the claim this project makes.
+
+---
+
+## 20 · Numerical Reliability — 50 s  *(11:40)*
+> Two questions this answers. Are these numbers physics or solver settings,
+> and where is every run.
+
+> We re-ran one word at five timesteps spanning twenty-five times. The
+> crosstalk margin the whole result rests on moves **0.14** percent over that
+> range. The spurious gate peak moves **0.04** percent. No feasibility verdict
+> changes — zero of eighty flip.
+
+> And the grid. Twenty-five thousand nine hundred and eleven completed runs of
+> twenty-five thousand nine hundred and twenty. Nine did not complete, and we
+> went and found out why rather than rounding the number up. All nine fail
+> again when re-run, so they are reproducible, not flaky. All nine abort with
+> the same ngspice transient convergence failure at the high-side gate node.
+> And all nine are half-fixed settings — clamp without the rail, or rail
+> without the clamp. None of them is the configuration we ship.
+
+> One more thing so you hear it from us: switch-node overshoot appears as
+> **17.9** percent in our tables and **15.1** percent in the live script. Same
+> operating point, ten times the time resolution. The tables quote the finer
+> one.
+
+---
+
+## 21–22 · The two runs — 45 s total  *(12:25)*
 These slides carry video. Click, let it run, talk over it.
 
 > **(17)** Their driver, in our testbench. The gate that should stay off
@@ -266,8 +371,7 @@ These slides carry video. Click, let it run, talk over it.
 
 ---
 
-## 19 · Demonstration — 50 s  *(9:55)*
-
+## 23 · Demonstration — 50 s  *(13:15)*
 Aamir takes over. Play the film and narrate only the parts it is showing.
 
 > This is the whole thing end to end. The circuit as its KiCad sheet, the
@@ -283,8 +387,7 @@ Aamir takes over. Play the film and narrate only the parts it is showing.
 
 ---
 
-## 20 · Live Simulation — 70 s  *(11:05)*
-
+## 24 · Live Simulation — 70 s  *(14:25)*
 **This is the slide she asked for. Run it live.** Terminal ready
 beforehand, in the repository, font already large.
 
@@ -332,8 +435,7 @@ answer to a follow-up.
 
 ---
 
-## 21 · Crosstalk: Fault and Mitigation — 55 s  *(12:00)*
-
+## 25 · Crosstalk: Fault and Mitigation — 55 s  *(15:20)*
 **The result slide.** Point at the four panels in order.
 
 > Two runs, four panels. Top row is the cause, bottom row is the effect.
@@ -355,8 +457,7 @@ answer to a follow-up.
 
 ---
 
-## 22 · Six-Parameter Comparison — 30 s  *(12:30)*
-
+## 26 · Six-Parameter Comparison — 30 s  *(15:50)*
 > Silicon, then the base paper, then ours — same converter, same device class.
 
 > Latency goes **17.55** nanoseconds, to **4.04**, to **2.78**. Device power
@@ -372,8 +473,7 @@ answer to a follow-up.
 
 ---
 
-## 23 · Comparison with the Base Paper — 70 s  *(13:40)*
-
+## 27 · Comparison with the Base Paper — 70 s  *(17:00)*
 **The slide the review turns on.** Do not rush the last paragraph.
 
 > Four operating corners, mildest to hottest. Same netlist, same devices, only
@@ -412,8 +512,84 @@ answer to a follow-up.
 
 ---
 
-## 24 · Next Steps — 30 s  *(14:10)*
+## 28 · When Runtime Adaptation Is Worth Building — 65 s  *(18:05)*
+**Say this as a finding, not as a caveat.** It is the most interesting
+result in the project.
 
+> Our headline says adaptation adds two-point-six percent. That number is
+> conditional, and this slide is the condition.
+
+> On the x-axis, power-loop inductance — which is board layout, not the
+> transistor. On the y-axis, the ceiling on what any scheduling scheme could
+> return. At one-point-five nanohenries it is **13.5** percent. At
+> four-point-five it is **0.55** percent.
+
+> So the question "is adaptive gate control worth a sensor, a lookup table and
+> a controller" is not a property of the gate driver at all. It is a property
+> of the board the gate driver sits on. Below about two-and-a-half
+> nanohenries, yes. Above it, no.
+
+> Two honesties about this picture. The series is not monotonic in that band,
+> which is why we plot eight points and not a curve. And three nanohenries is
+> our nominal simulation condition — it is not a measured layout, and we
+> have not built a board to measure it on.
+
+---
+
+## 29 · The Cost of the Fix — 45 s  *(18:50)*
+> What the margin is paid for with, in one table.
+
+> It buys plus **2.825** volts of gate margin. It costs **0.24** points of
+> converter efficiency, **0.570** watts of loss, and twelve volts of extra
+> switch-node peak.
+
+> About **0.22** watts of that loss is third-quadrant conduction. GaN has no
+> body diode, so in dead time the device conducts in reverse at threshold plus
+> whatever off-bias you applied — the negative rail that buys us margin
+> is paid for right there.
+
+> And the stress: a hundred and eighteen volts on a two-hundred-volt part is
+> fifty-nine percent of rating, so it is a real cost but not the binding
+> constraint at this bus.
+
+---
+
+## 30 · Conclusions — 55 s  *(19:45)*
+> Five conclusions.
+
+> One. A clamp with a negative off rail raises the simulated gate margin on
+> all three models.
+
+> Two. Choosing one good fixed word is worth **26.5** percent. Re-tuning it
+> while running adds **2.6** percent more — about **8.9** percent of the
+> total gain — at our nominal three nanohenry loop.
+
+> Three, and this is the one we would defend hardest: that answer is
+> conditional. Whether adaptive gate control earns its hardware is decided by
+> board layout, not by the driver.
+
+> Four. It is a trade, not a free win, and slide twenty-nine is the bill.
+
+> Five. Simulation only. Nothing has been built, and the comparison is against
+> our own implementation of the published baseline.
+
+---
+
+## 31 · What Would Overturn This Result — 40 s  *(20:25)*
+> And the conditions under which we would have to revise all of that.
+
+> A measured gate waveform that does not reproduce our simulated transient.
+> An extracted loop inductance below two-and-a-half nanohenries — then
+> adaptation is worth several times what we report and the recommendation
+> inverts. Package parasitics that change the Miller current path. Or the
+> original authors publishing a netlist that outperforms our implementation of
+> their scheme, in which case every ratio in this deck needs recomputing.
+
+> We would rather state those ourselves than be shown them.
+
+---
+
+## 32 · Next Steps — 30 s  *(20:55)*
 > What is left is bench work, not more simulation.
 
 > Place-and-route on a chosen board. Synthesis is done; it stops there
@@ -428,8 +604,7 @@ answer to a follow-up.
 
 ---
 
-## 25–26 · References and close — 15 s  *(14:25)*
-
+## 33 · References and close — 15 s  *(21:10)*
 > These are the papers this design engages with directly; number ten is the
 > base paper, and it is the one we reimplemented and measured against.
 

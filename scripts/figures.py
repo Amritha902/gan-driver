@@ -92,11 +92,17 @@ def fig_baseline():
         ax.set_ylim(-3.2, 5.6)
         ax.set_xlabel("Time (µs)")
         ax.set_ylabel("Gate–source (V)" if col == 0 else "")
-        verdict = "FALSE TURN-ON" if pk > vth else "margin %.2f V" % (vth - pk)
+        # "FALSE TURN-ON" asserted as established fact what is in truth a
+        # prediction of one device model: on models/egan_c.lib the same
+        # configuration reaches only +0.115 V and never crosses threshold.
+        # The figure now says what was computed, not what is universally so.
+        verdict = ("THRESHOLD CROSSING PREDICTED" if pk > vth
+                   else "margin %.2f V" % (vth - pk))
         ax.text(0.97, 0.06, verdict, transform=ax.transAxes, ha="right",
                 fontsize=8, weight="bold",
                 color="#c0362f" if pk > vth else "#1baf7a")
-    fig.suptitle("Crosstalk at low-side turn-on, 100 V / 10 A", fontsize=9.5, y=1.0)
+    fig.suptitle("Crosstalk at low-side turn-on, 100 V / 10 A "
+                 "\u2014 models/egan.lib", fontsize=9.5, y=1.0)
     fig.tight_layout()
     fig.savefig(os.path.join(RES, "fig1_crosstalk.png"))
     plt.close(fig)

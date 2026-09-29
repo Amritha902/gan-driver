@@ -1359,7 +1359,7 @@ BPC = [
  ("Ours, active Miller clamp on", "+0.570 V", False,
   "Only marginally past the base paper. The clamp alone is not the story."),
  ("Ours, clamp + −2 V off-bias", "+2.576 V", True,
-  "6.3× the base paper's best margin. This is the shipped configuration."),
+  "6.3× the best margin of our implementation of their scheme. This is the shipped configuration."),
 ]
 for i, (lab, val, hot, note) in enumerate(BPC):
     y = 2.62 + i * 0.70

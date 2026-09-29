@@ -34,9 +34,11 @@ SLIDE4 = [
 
 SLIDE6 = [
     ([("Aim:", B)], 0),
-    ([("To find out how much of a gate driver\u2019s benefit needs the driver to "
-       "re-tune itself while the converter is running, and how much comes from "
-       "choosing one good setting and leaving it fixed.", False)], 1),
+    ([("How much additional benefit does runtime adaptation provide beyond a "
+       "fixed gate-driver configuration, and under what electrical conditions "
+       "is that benefit significant? The second half is not a caveat on the "
+       "first: finding the conditions under which the answer changes is part "
+       "of the question.", False)], 1),
     ([("Proposed Solution:", B)], 0),
     ([("A GaN buck converter driven by a ", False), ("segmented gate driver", B),
        (": 8 pull-up steps, 8 pull-down steps, an adjustable dead time, a Miller "

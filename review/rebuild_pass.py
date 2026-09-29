@@ -724,7 +724,8 @@ for _mp4, _poster, _title, _lead, _cap in (
      u"models/segdrv.lib on the same sim/dpt.cir. Eight slices per bank, "
      u"active Miller clamp, \u22122 V off rail.",
      u"The same four beats over our driver. The gate peaks at %s V \u2014 "
-     u"%s V of margin, %s\u00d7 theirs. One fixed control word, the same one "
+     u"%s V of margin, %s\u00d7 our implementation of their scheme. One "
+     u"fixed control word, the same one "
      u"used at every corner in the study, not re-tuned for this run. The "
      u"plot axes are identical to the previous slide's and fixed in the "
      u"script, so the two can be compared by eye. %s s. Click to play."),
@@ -1622,7 +1623,8 @@ if os.path.exists(os.path.join(RES, "fig_arch_delta.png")):
             u"control in place of one fixed resistor, an always-on Miller "
             u"clamp, and an off rail selectable to −2 V. The command, the "
             u"power stage and the idea of segmenting the output are all "
-            u"theirs. The last row is what those three deliver at the headline "
+            u"our implementation of theirs. The last row is what those three "
+            u"deliver at the headline "
             u"corner, read from results/headtohead.csv: +0.407 V becomes "
             u"+2.576 V, from one fixed setting.", top=6.26, h=1.08)
     print("added: What we add that they do not have")
@@ -1974,8 +1976,10 @@ add_text(s, 0.70, 1.16, 12.10, 0.56, [
            u"driver is swapped. We hold one fixed word at all four corners. "
            u"They are re-optimised at every corner, which is more freedom than "
            u"their own design has: their scheme sets one bias resistor at "
-           u"design time. The search returns their built setting at three of "
-           u"the four corners, so those rows read alike.", N)],
+           u"design time. At three of the four corners the search returns "
+           u"exactly the setting their paper builds, which is why those two "
+           u"columns read alike there; at the mildest corner it finds a "
+           u"better one, +0.503 V against +0.338 V.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 
 grid(s, 0.62, 1.80, 12.14, 1.55, [
@@ -2445,6 +2449,275 @@ def stamp_provenance(prs):
 # both of them happening, and 36 slides does not fit a 10-minute slot. The
 # figures are still built and live in results/, so either can be put back by
 # naming it here again.
+
+# ======================================================================
+# THE SEVEN SLIDES A MOCK VIVA SAID WERE MISSING
+#
+# Run against the shipping deck, a deliberately hostile examiner landed
+# four attacks, and every one landed because the evidence EXISTS in this
+# repository and was not on a slide:
+#
+#   "your fault is a property of your model"   -- three models were run
+#   "your conclusion reverses at 1.5 nH"       -- the sweep was filed as
+#                                                 an appendix
+#   "how is this not a numerical artefact"     -- a 25x refinement exists
+#   "you only show me the benefit"             -- the cost is measured
+#
+# A weakness you state first is a result. A weakness the examiner finds
+# is a hole. These seven slides move all four across that line, and add
+# the scope box and the conclusion the deck never drew.
+# ======================================================================
+
+def _sheet(title, lead, fig, cap, fig_top=1.62, fig_h=3.95, cap_top=5.86,
+           cap_h=1.30):
+    """One figure slide: title, one bold lead line, the figure, a caption."""
+    if not os.path.exists(os.path.join(RES, fig)):
+        print("  MISSING: results/%s" % fig)
+        return None
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, title)
+    if lead:
+        add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+            para([(lead, B)], level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, fig, fig_top, fig_h)
+    caption(sl, cap, top=cap_top, h=cap_h)
+    print("added: %s" % title)
+    return sl
+
+
+# ---- 1. what is and is not claimed ------------------------------------
+# Put immediately after the aim, so every later slide is read inside it.
+# Most of the viva's questions -- did you build it, did you reproduce
+# their circuit, does it always work -- are answered here before they
+# are asked.
+_sc = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(_sc)
+set_title(_sc, u"Scope of the Claim")
+add_text(_sc, 0.70, 1.02, 12.10, 0.40, [
+    para([(u"What this project establishes, and what it does not. "
+           u"Everything after this slide is read inside these bounds.",
+           B)], level=0, sz=1300, spc=0, bullet=False)])
+add_text(_sc, 0.70, 1.72, 5.90, 4.40, [
+    para([(u"WE CLAIM", B)], level=0, sz=1450, spc=240, bullet=False),
+    para([(u"A fixed clamp and negative off-bias raise the simulated "
+           u"off-state gate margin on every device model we ran.", N)],
+         level=0, sz=1400, spc=300, bullet=False),
+    para([(u"Runtime adaptation adds a further benefit whose size depends "
+           u"strongly on power-loop inductance, and we measure that "
+           u"dependence.", N)], level=0, sz=1400, spc=300, bullet=False),
+    para([(u"The relative comparison is against our own implementation of "
+           u"the published baseline, run in our testbench.", N)],
+         level=0, sz=1400, spc=300, bullet=False),
+    para([(u"Every number regenerates from a named script in the "
+           u"repository.", N)], level=0, sz=1400, spc=0, bullet=False)])
+add_text(_sc, 7.05, 1.72, 5.75, 4.40, [
+    para([(u"WE DO NOT CLAIM", B)], level=0, sz=1450, spc=240, bullet=False),
+    para([(u"Experimental validation. No hardware has been built.", N)],
+         level=0, sz=1400, spc=300, bullet=False),
+    para([(u"Reproduction of the original authors' measured silicon "
+           u"results. Their netlist is not published.", N)],
+         level=0, sz=1400, spc=300, bullet=False),
+    para([(u"That false turn-on occurs universally. Its occurrence at the "
+           u"margin is device-model dependent, and we show the model on "
+           u"which it does not occur.", N)],
+         level=0, sz=1400, spc=300, bullet=False),
+    para([(u"A universally optimal control word. The best setting moves "
+           u"with the operating point, and by how much is the result.", N)],
+         level=0, sz=1400, spc=0, bullet=False)])
+print("added: Scope of the Claim")
+
+
+# ---- 2. the baseline, and how it was rebuilt --------------------------
+# "You chose how good their circuit is" is unanswerable unless the
+# reimplementation is itself on a slide.
+_bl = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(_bl)
+set_title(_bl, u"Baseline Reimplementation")
+add_text(_bl, 0.70, 1.02, 12.10, 0.40, [
+    para([(u"Zhang et al., ISPSD 2020 [10]. The authors' netlist is not "
+           u"published, so the baseline is built from the paper and stated "
+           u"as such.", B)], level=0, sz=1300, spc=0, bullet=False)])
+add_text(_bl, 0.70, 1.75, 5.90, 4.40, [
+    para([(u"TAKEN FROM THE PAPER", B)], level=0, sz=1450, spc=240,
+         bullet=False),
+    para([(u"Segmented output stage on E-mode GaN, seven slices a bank.",
+           N)], level=0, sz=1400, spc=260, bullet=False),
+    para([(u"Two-stage engagement: NSEG slices first, the remaining "
+           u"7 \u2212 NSEG after TSTEP.", N)],
+         level=0, sz=1400, spc=260, bullet=False),
+    para([(u"Pattern timing in the 0.5\u20135 ns range.", N)],
+         level=0, sz=1400, spc=260, bullet=False),
+    para([(u"One external bias resistor selects the whole pattern \u2014 "
+           u"the paper's own contribution, and the word \"Simple\" in its "
+           u"title.", N)], level=0, sz=1400, spc=0, bullet=False)])
+add_text(_bl, 7.05, 1.75, 5.75, 4.40, [
+    para([(u"WHAT WE HAD TO DECIDE", B)], level=0, sz=1450, spc=240,
+         bullet=False),
+    para([(u"Slice resistance and device sizing: matched to ours, so the "
+           u"comparison is of architecture, not of silicon area.", N)],
+         level=0, sz=1400, spc=260, bullet=False),
+    para([(u"The bias setting: their paper fixes it once at design time. "
+           u"We instead search NSEG and TSTEP at every corner and run "
+           u"theirs at whatever wins.", N)],
+         level=0, sz=1400, spc=260, bullet=False),
+    para([(u"That is more freedom than their design has, and it is given "
+           u"to them deliberately: every methodological choice here runs "
+           u"against us.", B)], level=0, sz=1400, spc=260, bullet=False),
+    para([(u"models/zhangdrv.lib names each assumption in its header.", N)],
+         level=0, sz=1400, spc=0, bullet=False)])
+print("added: Baseline Reimplementation")
+
+
+# ---- 3. the models -----------------------------------------------------
+_sheet(u"Model Validation: Three Device Models",
+       u"The same three configurations, run on three independent device "
+       u"models.",
+       "fig_model_table.png",
+       u"Simulated in ngspice. models/egan.lib is behavioural "
+       u"with diode junction capacitances; scripts/silicon_check.py runs "
+       u"real SKY130 transistors; models/egan_c.lib replaces the diodes "
+       u"with a charge-based C(V). The sign of the no-clamp margin depends "
+       u"on the model: on the charge-based model the OFF gate reaches "
+       u"only +0.115 V of margin, meaning it never crosses threshold and "
+       u"the fault does not occur, against \u22120.249 V behaviourally and "
+       u"\u22120.563 V on SKY130. What every model agrees on is the "
+       u"ordering of the three configurations, and that the shipped "
+       u"configuration is safe on all of them by +2.032 to +2.710 V. The "
+       u"claim this project makes is the second one.",
+       fig_top=1.55, fig_h=4.10, cap_top=5.80, cap_h=1.42)
+
+
+# ---- 4. numerical reliability, and the nine -----------------------------
+_sheet(u"Numerical Reliability",
+       u"Whether these numbers are physics or solver settings, and every "
+       u"run accounted for.",
+       "fig_convergence.png",
+       u"scripts/metric_converge.py re-runs one word at five "
+       u"timesteps spanning 25\u00d7. The crosstalk margin the result "
+       u"rests on moves 0.14 % over that range and the spurious gate peak "
+       u"0.04 %; scripts/verdict_stability.py flips 0 of 80 feasibility "
+       u"verdicts. Separately, the 36-corner grid is 25,911 completed runs "
+       u"of 25,920. scripts/failed_runs.py re-runs the nine that are not "
+       u"there: all nine fail again, so they are reproducible rather than "
+       u"flaky, all nine abort with the same ngspice transient "
+       u"convergence failure at the high-side gate node, and all nine are "
+       u"half-fixed settings \u2014 clamp without the rail, or rail "
+       u"without the clamp. None is the shipped configuration. One figure "
+       u"appears twice at different resolutions and the deck quotes the "
+       u"finer: switch-node overshoot is 17.9 % at the 0.02 ns step this "
+       u"deck reports, against 15.1 % at the sweep's 0.2 ns step, which is "
+       u"what proof/LIVE-BUCK.sh prints and says.",
+       fig_top=1.52, fig_h=4.15, cap_top=5.80, cap_h=1.45)
+
+
+# ---- 5. the inductance dependence, as a result -------------------------
+_sheet(u"When Runtime Adaptation Is Worth Building",
+       u"The headline is conditional, and this is the condition.",
+       "fig_lloop_ceiling.png",
+       u"Simulated in ngspice, scripts/lloop_sweep.py into "
+       u"lloop_analyse.py. The ceiling on per-corner scheduling is 13.5 % "
+       u"at 1.5 nH and 0.55 % at 4.5 nH, so the answer to \"is adaptive "
+       u"gate control worth the sensor, the lookup table and the "
+       u"controller\" is not a property of the driver: it is a property "
+       u"of the board the driver sits on. Below about 2.5 nH the answer is "
+       u"yes and above it the answer is no. The series is not monotonic in "
+       u"that band, which is why it is drawn as eight points rather than "
+       u"as a curve. 3.0 nH is our nominal simulation condition, not a "
+       u"measured layout, and the 2.6 % headline is the value at that "
+       u"nominal condition.",
+       fig_top=1.52, fig_h=4.10, cap_top=5.74, cap_h=1.48)
+
+
+# ---- 6. the bill -------------------------------------------------------
+_sheet(u"The Cost of the Fix",
+       u"What the crosstalk margin is paid for with.",
+       "fig_cost_table.png",
+       u"Simulated in ngspice, from results/buck_sweep.csv, "
+       u"results/panel_metrics.csv and results/headtohead.csv. The fix buys "
+       u"+2.825 V of gate margin, and it is bought with 0.24 points of "
+       u"converter efficiency, 0.570 W of "
+       u"loss and 12 V of extra switch-node peak. About 0.22 W of that "
+       u"loss is third-quadrant conduction: GaN has no body diode, so "
+       u"during dead time the device conducts in reverse at V_th + "
+       u"|V_off| + I\u00b7R_ds(on), and a deeper off rail makes that drop "
+       u"larger. At 118 V on a 200 V-rated device the stress is 59 % of "
+       u"rating, so it is a real cost but not the binding constraint at "
+       u"this bus.",
+       fig_top=1.55, fig_h=4.00, cap_top=5.68, cap_h=1.48)
+
+
+# ---- 7. the conclusion the deck never drew -----------------------------
+_cn = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(_cn)
+set_title(_cn, u"Conclusions")
+add_text(_cn, 0.70, 1.05, 12.10, 5.30, [
+    para([(u"1.  Gate robustness.  ", B),
+          (u"An always-on Miller clamp with a \u22122 V off rail raises the "
+           u"simulated off-state gate margin on all three device models "
+           u"tried, from \u22120.249 V to +2.576 V on the behavioural "
+           u"model and to between +2.0 and +2.7 V on the other two.", N)],
+         level=0, sz=1300, spc=230, bullet=False),
+    para([(u"2.  Adaptation.  ", B),
+          (u"Choosing one good fixed control word is worth 26.5 % of the "
+           u"baseline. Re-tuning it while the converter runs adds 2.6 % "
+           u"more \u2014 8.9 % of the total gain \u2014 at our nominal "
+           u"3 nH power loop.", N)],
+         level=0, sz=1300, spc=230, bullet=False),
+    para([(u"3.  That answer is conditional.  ", B),
+          (u"The ceiling on scheduling runs from 13.5 % at 1.5 nH to "
+           u"0.55 % at 4.5 nH. Whether adaptive gate control earns its "
+           u"hardware is decided by board layout, not by the driver.", N)],
+         level=0, sz=1300, spc=230, bullet=False),
+    para([(u"4.  It is a trade.  ", B),
+          (u"The margin costs 0.24 efficiency points, 0.570 W and 12 V of "
+           u"switch-node stress, and raises turn-on energy at three of four "
+           u"corners.", N)],
+         level=0, sz=1300, spc=230, bullet=False),
+    para([(u"5.  Status.  ", B),
+          (u"Simulation only. No hardware has been built, and the "
+           u"comparison is against our own implementation of the published "
+           u"baseline.", N)], level=0, sz=1300, spc=0, bullet=False)])
+print("added: Conclusions")
+
+
+# ---- 8. where our own conclusion would break ---------------------------
+# A candidate who has already listed the conditions that would overturn
+# their result is much harder to corner than one defending every point.
+_lm = clone_after(p, SRC, len(p.slides._sldIdLst))
+strip(_lm)
+set_title(_lm, u"What Would Overturn This Result")
+add_text(_lm, 0.70, 1.02, 12.10, 0.40, [
+    para([(u"The conditions under which our own conclusion would need "
+           u"revising, stated by us.", B)],
+         level=0, sz=1300, spc=0, bullet=False)])
+add_text(_lm, 0.70, 1.72, 12.10, 4.60, [
+    para([(u"A measured gate waveform that does not reproduce the "
+           u"simulated transient.  ", B),
+          (u"Everything here rests on one behavioural GaN model written "
+           u"from a datasheet, with hand-typed temperature coefficients "
+           u"that are not fitted.", N)],
+         level=0, sz=1250, spc=240, bullet=False),
+    para([(u"An extracted power-loop inductance below about 2.5 nH.  ", B),
+          (u"Then adaptation is worth several times what we report, and "
+           u"the recommendation inverts. We have not measured this "
+           u"inductance; 3 nH is assumed.", N)],
+         level=0, sz=1250, spc=240, bullet=False),
+    para([(u"Package and gate-loop parasitics that change the Miller "
+           u"current path.  ", B),
+          (u"C_GD here is a junction diode biased never to conduct, used "
+           u"only for its C(V) law. A charge-based model already moves the "
+           u"no-clamp margin by +0.364 V.", N)],
+         level=0, sz=1250, spc=240, bullet=False),
+    para([(u"Evidence that our baseline differs materially from the "
+           u"authors' implementation.  ", B),
+          (u"Their netlist is unpublished; if it were released and "
+           u"performed better than ours, every ratio in this deck would "
+           u"need recomputing.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
+print("added: What Would Overturn This Result")
+
+
 ORDER = [
     # The title page has no title shape; it is matched by its signature
     # text as "School of" further down. A "Slide 1" entry here matched
@@ -2459,6 +2732,8 @@ ORDER = [
     u"Problem Statement",
     u"The goal, and whether this serves it",
     u"Aim and Approach",
+    u"Scope of the Claim",
+    u"System Architecture",
     u"What a GaN HEMT is",
     u"Why GaN and not silicon",
     u"Why the GaN HEMT causes",
@@ -2483,6 +2758,11 @@ ORDER = [
     u"Segmented Driver: SPICE Implementation",
     u"GaN HEMT Device Model",
     u"Methodology",   # the method, stated once
+    u"Baseline Reimplementation",
+    u"Model Validation: Three Device Models",
+    u"Numerical Reliability",
+    u"When Runtime Adaptation Is Worth Building",
+    u"The Cost of the Fix",
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
@@ -2539,6 +2819,8 @@ ORDER = [
     u"Work Completed",
     u"Next Steps",
     u"The hardware, costed",
+    u"Conclusions",
+    u"What Would Overturn This Result",
     u"Conclusion",
     u"References  (1–15)",
     u"References  (16–30)",
@@ -2590,6 +2872,7 @@ SHORT = [
     u"School of",                              # title page (no title shape)
     u"Problem Statement & Background",
     u"Aim and Approach",
+    u"Scope of the Claim",
     u"System Architecture",
     u"Converter Under Simulation",
     u"Novelty: Three Added Blocks",      # the novelty, in the blocks
@@ -2599,10 +2882,13 @@ SHORT = [
     u"Implementation: Converter Schematic",
     u"Implementation: Proposed Gate Driver",
     u"Implementation: Base Paper Gate Driver",
+    u"Baseline Reimplementation",
     u"Segmented Driver: Block Structure",
     u"Segmented Driver: SPICE Implementation",        # the source of the block
     u"GaN HEMT Device Model",          # and of the device
     u"Methodology",   # the method, stated once
+    u"Model Validation: Three Device Models",
+    u"Numerical Reliability",
     u"Base Paper Driver",              # theirs, alone
     u"Proposed Driver",                        # ours, same axes
     u"Demonstration",
@@ -2610,14 +2896,39 @@ SHORT = [
     u"Crosstalk: Fault",                   # the fault and the fix
     u"Six-Parameter Comparison",      # all three, six parameters
     u"Comparison with the Base Paper",       # four corners, 5.5x to 12.4x
+    u"When Runtime Adaptation Is Worth Building",
+    u"The Cost of the Fix",
     # The completion percentage was doing no work for a
     # reviewer: what matters is what is left, not a score out
     # of a hundred that only this deck defines. The table is
     # still in the backup deck if anyone asks for it.
+    u"Conclusions",
+    u"What Would Overturn This Result",
     u"Next Steps",
     u"References",
     u"Thank you",
 ]
+
+
+# A running order with the same entry twice takes the slide the first time
+# and prints MISSING the second, so the deck silently loses a slide while the
+# build looks like it worked. That is exactly what happened adding these
+# slides: an edit meant for SHORT matched the identical line in ORDER, so
+# ORDER carried "Baseline Reimplementation" twice and SHORT carried it not at
+# all -- and the only symptom was one MISSING line in 250 lines of output.
+for _name, _lst in (("ORDER", ORDER), ("SHORT", SHORT)):
+    _dup = sorted({e for e in _lst if _lst.count(e) > 1})
+    if _dup:
+        raise SystemExit("rebuild_pass: %s names %s more than once -- the "
+                         "second occurrence can only print MISSING"
+                         % (_name, ", ".join(repr(d) for d in _dup)))
+# and every SHORT entry must exist in ORDER, or the presented deck carries a
+# slide the takeaway deck does not.
+_gap = [e for e in SHORT if not any(o.startswith(e) or e.startswith(o)
+                                    for o in ORDER)]
+if _gap:
+    raise SystemExit("rebuild_pass: SHORT names %s, which ORDER does not"
+                     % ", ".join(repr(g) for g in _gap))
 
 
 def pick(names):

@@ -147,6 +147,14 @@ BANNED_ANY_CASE = [
     (r"\bbuys most of it\b|\bbuys the rest\b", "informal for 'accounts for'"),
     (r"weakest point", "informal"),
     (r"\bwe wrote\b", "first person in a figure label"),
+    # The ratio is against OUR implementation of the published scheme, never
+    # against the authors' own result -- their netlist is not published. The
+    # short form is the one that gets said under pressure, so the short form
+    # is the one the build refuses.
+    (r"\u00d7 theirs\b|x theirs\b|times theirs\b", "ratio stated against "
+     "the base paper rather than against our implementation of it"),
+    (r"\u00d7 the base paper\b|times the base paper\b", "ratio stated "
+     "against the base paper rather than against our implementation of it"),
 ]
 
 # Emphasis by capital letters -- "the headline IS weight-dependent", "what
