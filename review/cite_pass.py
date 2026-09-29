@@ -101,7 +101,11 @@ def main():
                         for cell in row.cells:
                             body.append(cell.text)
             body = "\n".join(body)
-            if "KiCad" not in body and "kicad" not in body:
+            # "KiCad" is the application, written that way in prose. A bare
+            # lowercase "kicad" is a directory: kicad/gan_driver.drawio is a
+            # draw.io file that happens to live there, and demanding a
+            # .kicad_sch from the slide that shows it was a false alarm.
+            if "KiCad" not in body:
                 continue
             if SHEET.search(body):
                 continue

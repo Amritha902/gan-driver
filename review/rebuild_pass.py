@@ -441,6 +441,42 @@ if os.path.exists(os.path.join(RES, _SP)):
             u"comparison of what is on them, not of how large they are.",
             top=5.90, h=1.30)
     print("added: Both gate drivers, as drawn in KiCad")
+else:
+    print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
+
+
+# --------------------------------------- the block, drawn by hand ----------
+# kicad/gan_driver.drawio is the project's own draw.io source and had never
+# reached a slide. It is the clearest picture of the custom block there is:
+# all sixteen slices at once, the clamp beside them, and the three rails they
+# sit between. Rendered straight out of the .drawio by scripts/drawio_render.py
+# -- there is no browser in this container to export it with, and a hand
+# export would put a step between the file in the repository and the picture
+# on the slide that nobody could check.
+_DW = "fig_drawio_segmented_driver.png"
+if os.path.exists(os.path.join(RES, _DW)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"The custom block, drawn out")
+    add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+        para([(u"kicad/gan_driver.drawio, our own drawing of "
+               u"models/segdrv.lib.", B)],
+             level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, _DW, 1.58, 3.90)
+    caption(sl,
+            u"Sixteen slices between three rails: eight pull-up from VP, "
+            u"eight pull-down to VN, and OUT going to the HEMT gate. Each "
+            u"slice is one switch and one resistor, and the resistor carries "
+            u"the control word: ask for three or more slices and Rpu3 is 8 "
+            u"ohms and in circuit, ask for fewer and it becomes 1 G-ohm and "
+            u"that slice is out. Drive strength is simply how many of the "
+            u"eight parallel paths are live. On the right, the active Miller "
+            u"clamp, which the base paper does not have: its own switch and "
+            u"0.5 ohms to VN, and VN itself selectable to -2 V.",
+            top=5.62, h=1.45)
+    print("added: The custom block, drawn out")
+else:
+    print("  MISSING: results/%s -- run scripts/drawio_render.py" % _DW)
 
 
 # ------------------------------------------------ the blocks we wrote ------
@@ -484,8 +520,6 @@ for _cf, _ct, _cl, _ccap in [
     place(sl, _cf, 1.62, 3.30)
     caption(sl, _ccap, top=5.30, h=1.70)
     print("added: %s" % _ct)
-else:
-    print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
 
 
 
@@ -2356,6 +2390,7 @@ ORDER = [
     u"Novelty: the three blocks we add",      # architecture, in green
     u"Where the novelty is, on the circuit",    # the same claim, ringed
     u"Both gate drivers, as drawn in KiCad",         # the same two sheets, whole
+    u"The custom block, drawn out",
     u"The segmented driver, as we wrote it",
     u"The GaN HEMT model, as we wrote it",
     u"Methodology",   # the method, stated once
@@ -2471,6 +2506,7 @@ SHORT = [
     u"Novelty: the three blocks we add",      # the novelty, in the blocks
     u"Where the novelty is, on the circuit",   # the difference, ringed on the sheets
     u"Both gate drivers, as drawn in KiCad",        # and the same sheets uncropped
+    u"The custom block, drawn out",
     u"The segmented driver, as we wrote it",        # the source of the block
     u"The GaN HEMT model, as we wrote it",          # and of the device
     u"Methodology",   # the method, stated once
