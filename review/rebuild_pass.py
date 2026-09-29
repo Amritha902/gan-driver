@@ -445,6 +445,45 @@ else:
     print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
 
 
+# ----------------------------------------- the mechanism, at the device ----
+# The architecture slide names the parts. It does not say what happens inside
+# the GaN device, which is the only thing this project is about: a fast edge
+# on the switch node pushes charge through C_GD into the gate that is meant to
+# stay off, and that gate rises by whatever the charge cannot shed through the
+# driver. This draws the path and the three things the driver does to it, with
+# the numbers read from results/waveform_anatomy.txt so the picture and the
+# crosstalk waveform cannot disagree.
+_GL = "fig_gan_level.png"
+if os.path.exists(os.path.join(RES, _GL)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Crosstalk Mechanism at Device Level")
+    add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+        para([(u"Why a fast edge turns on the device that should be off, and "
+               u"what the driver does about it.", B)],
+             level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, _GL, 1.55, 4.35)
+    caption(sl,
+            u"Left: the half-bridge. When the low-side device turns on the "
+            u"switch node falls %.0f V in %.2f ns, peaking at %.0f V/ns, and "
+            u"that dv/dt drives a current through C_GD into the high-side "
+            u"gate. Right: the three parallel paths that current sees at the "
+            u"gate node. The slice count sets how hard the gate is held; the "
+            u"Miller clamp adds a 0.5 ohm path of its own, timed to the other "
+            u"device's edge; the off rail sets where the gate starts from. "
+            u"The two additions are not one mechanism - the rail moves the "
+            u"starting point, the clamp shortens the lift - which is why they "
+            u"add rather than overlap. scripts/gan_level_figure.py, from "
+            u"results/waveform_anatomy.txt."
+            % (__import__("sys").modules.get("waveform_numbers").VBUS
+               if "waveform_numbers" in __import__("sys").modules else 106.0,
+               2.90, 124.0),
+            top=6.06, h=1.22)
+    print("added: Crosstalk Mechanism at Device Level")
+else:
+    print("  MISSING: results/%s -- run scripts/gan_level_figure.py" % _GL)
+
+
 # ------------------------------------------- implementation, full bleed ----
 # The schematics were on the deck only as screen captures of eeschema, which
 # prove the application was open but are a 2560x1440 photograph of a window.
@@ -2439,6 +2478,7 @@ ORDER = [
     u"Novelty: Three Added Blocks",      # architecture, in green
     u"Novelty at Circuit Level",    # the same claim, ringed
     u"Gate Driver Schematics in KiCad",         # the same two sheets, whole
+    u"Crosstalk Mechanism at Device Level",
     u"Implementation: Converter Schematic",
     u"Implementation: Proposed Gate Driver",
     u"Implementation: Base Paper Gate Driver",
@@ -2558,6 +2598,7 @@ SHORT = [
     u"Novelty: Three Added Blocks",      # the novelty, in the blocks
     u"Novelty at Circuit Level",   # the difference, ringed on the sheets
     u"Gate Driver Schematics in KiCad",        # and the same sheets uncropped
+    u"Crosstalk Mechanism at Device Level",
     u"Implementation: Converter Schematic",
     u"Implementation: Proposed Gate Driver",
     u"Implementation: Base Paper Gate Driver",
