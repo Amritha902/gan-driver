@@ -385,7 +385,7 @@ _NC = "fig_novelty_circuit.png"
 if os.path.exists(os.path.join(RES, _NC)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"What differs in the circuit, theirs and ours")
+    set_title(sl, u"Where the novelty is, on the circuit")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"The converter on top; underneath it, what sits behind its two "
                u"gates in their design and in ours. Both additions are "
@@ -441,6 +441,49 @@ if os.path.exists(os.path.join(RES, _SP)):
             u"comparison of what is on them, not of how large they are.",
             top=5.90, h=1.30)
     print("added: Both gate drivers, as drawn in KiCad")
+
+
+# ------------------------------------------------ the blocks we wrote ------
+# The deck cites models/segdrv.lib and models/egan.lib on nearly every slide
+# and calls them ours. A reviewer asking what "ours" actually means was being
+# sent to a repository. These two slides answer it on the screen: the real
+# source, at the real line numbers, read out of the files at build time so a
+# slide cannot drift from the code it claims to show.
+for _cf, _ct, _cl, _ccap in [
+    ("fig_code_segdrv.png", u"The segmented driver, as we wrote it",
+     u"models/segdrv.lib \u2014 the output stage the whole study varies.",
+     u"Eight pull-up slices and eight pull-down, each a switch and a resistor. "
+     u"A slice is in circuit when the control word reaches it and 1 G\u03a9 out "
+     u"of it when it does not, which is how 4 + 4 bits from the FPGA become a "
+     u"drive strength. The clamp is not one of the slices: it has its own "
+     u"switch, its own timing and its own 0.5 \u03a9 path to the off rail, "
+     u"because it has to hold the gate down while the other device switches. "
+     u"Built as discrete slices on purpose \u2014 a single variable resistor "
+     u"would simulate the same and could not be laid out."),
+    ("fig_code_egan.png", u"The GaN HEMT model, as we wrote it",
+     u"models/egan.lib \u2014 written from the EPC2010C datasheet, not "
+     u"downloaded.",
+     u"Vendor subcircuits are LTspice-dialect and do not port to Spectre, so "
+     u"this is written from datasheet quantities only. The channel is one "
+     u"symmetric square law, so third-quadrant conduction falls out of the "
+     u"physics rather than being added: GaN has no body diode, and reverse "
+     u"conduction costs V_th + |V_off| + I\u00b7R_ds(on). That is the coupling "
+     u"the project turns on \u2014 a negative off rail buys crosstalk margin "
+     u"and pays for it in dead time. C_GD is a junction diode biased never to "
+     u"conduct, so only its C(V) law is used. The temperature coefficients are "
+     u"hand-typed from the datasheet, not fitted; that is this model's weakest "
+     u"point and it has its own slide in the backup deck.")]:
+    if not os.path.exists(os.path.join(RES, _cf)):
+        print("  MISSING: results/%s -- run scripts/code_listing.py" % _cf)
+        continue
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, _ct)
+    add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+        para([(_cl, B)], level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, _cf, 1.62, 3.30)
+    caption(sl, _ccap, top=5.30, h=1.70)
+    print("added: %s" % _ct)
 else:
     print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
 
@@ -468,7 +511,7 @@ except Exception:
 
 sl = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(sl)
-set_title(sl, u"How every number on these slides was made")
+set_title(sl, u"Methodology")
 add_text(sl, 0.70, 1.02, 12.10, 0.40, [
     para([(u"Every comparison is the same file with one thing changed. "
            u"Here is exactly what is held and exactly what moves.", B)],
@@ -1445,7 +1488,7 @@ for _f, _t, _lead, _cap in _ROB:
 if os.path.exists(os.path.join(RES, "fig_arch_delta.png")):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"What we add that they do not have")
+    set_title(sl, u"Novelty: the three blocks we add")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"Same command, same segmented output stage, same power stage. "
                u"Three blocks added — in green.", B)],
@@ -1876,34 +1919,34 @@ i = index_of(u"Where we are, and what is next")
 if i is not None:
     s = p.slides[i]
     strip(s)
-    set_title(s, u"Where we are, and what is next")
+    set_title(s, u"What is next")
     add_text(s, 0.70, 1.35, 12.10, 5.30, [
-        para([(u"Where we are", B)], level=0, sz=1700, spc=200, bullet=False),
-        para([(u"90 % by the count on the previous slide. The converter is "
-               u"built and regulating, the fault is reproduced and fixed, the "
-               u"720-word study is run, the controller is written, verified and "
-               u"synthesised, its output drives the SPICE power stage directly, "
-               u"and the driver has been rebuilt in real transistors.", N)],
-             level=0, sz=1300, spc=260, bullet=True),
-        para([(u"What is actually left \u2014 and it is not more simulating", B)],
+        para([(u"Done", B)], level=0, sz=1700, spc=200, bullet=False),
+        para([(u"The converter is built and regulating, the fault is "
+               u"reproduced and fixed, the 720-word study is run over 36 "
+               u"corners, the controller is written, verified and synthesised, "
+               u"its output drives the SPICE power stage directly, and the "
+               u"driver has been rebuilt in real transistors.", N)],
+             level=0, sz=1300, spc=260, bullet=False),
+        para([(u"Left \u2014 and it is not more simulating", B)],
              level=0, sz=1700, spc=200, bullet=False),
         para([(u"Place-and-route on a chosen board. ", B),
               (u"Synthesis is done; the flow stops there because the XDC pins "
                u"are placeholders. Doing it properly also means driving the "
                u"200 MHz clock from an MMCM rather than straight off a pin, "
                u"which is what makes 34 clock-to-pin paths fail today.", N)],
-             level=0, sz=1300, spc=220, bullet=True),
+             level=0, sz=1300, spc=220, bullet=False),
         para([(u"A hardware half-bridge, measured. ", B),
-              (u"This is the whole of the remaining honest risk. Everything in "
-               u"this deck is a simulation of a converter that has never been "
+              (u"This is the whole of the remaining risk. Everything in this "
+               u"deck is a simulation of a converter that has never been "
                u"built, and one behavioural GaN model underlies all of it.", N)],
-             level=0, sz=1300, spc=220, bullet=True),
+             level=0, sz=1300, spc=220, bullet=False),
         para([(u"Also worth doing: transcribe the silicon MOSFET datasheet "
                u"digits rather than using datasheet-class values, and re-run "
                u"the ceiling on the transistor-level stage now that it is "
-               u"known to work.", N)], level=0, sz=1200, spc=0, bullet=True),
+               u"known to work.", N)], level=0, sz=1200, spc=0, bullet=False),
     ])
-    print("rebuilt: Where we are, and what is next")
+    print("rebuilt: What is next")
 
 
 # ---- the two references slides say which role each list plays -------------
@@ -2310,10 +2353,12 @@ ORDER = [
     u"We implemented the base paper",
     u"Their driver, drawn \u2014 the reimplementation",
     u"Our driver, drawn \u2014 the same stage",
-    u"What we add that they do not have",      # architecture, in green
-    u"What differs in the circuit, theirs and ours",    # the same claim, ringed
+    u"Novelty: the three blocks we add",      # architecture, in green
+    u"Where the novelty is, on the circuit",    # the same claim, ringed
     u"Both gate drivers, as drawn in KiCad",         # the same two sheets, whole
-    u"How every number on these slides was made",   # the method, stated once
+    u"The segmented driver, as we wrote it",
+    u"The GaN HEMT model, as we wrote it",
+    u"Methodology",   # the method, stated once
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
@@ -2368,7 +2413,7 @@ ORDER = [
     u"Closing the loop",
     u"Does the result depend on the model?",
     u"Work Completed",
-    u"Where we are, and what is next",
+    u"What is next",
     u"The hardware, costed",
     u"Conclusion",
     u"References  (1–15)",
@@ -2423,10 +2468,12 @@ SHORT = [
     u"Aim, and how we approached it",
     u"System Architecture",
     u"The circuit we simulate",
-    u"What we add that they do not have",      # the novelty, in the blocks
-    u"What differs in the circuit, theirs and ours",   # the difference, ringed on the sheets
+    u"Novelty: the three blocks we add",      # the novelty, in the blocks
+    u"Where the novelty is, on the circuit",   # the difference, ringed on the sheets
     u"Both gate drivers, as drawn in KiCad",        # and the same sheets uncropped
-    u"How every number on these slides was made",   # the method, stated once
+    u"The segmented driver, as we wrote it",        # the source of the block
+    u"The GaN HEMT model, as we wrote it",          # and of the device
+    u"Methodology",   # the method, stated once
     u"The base paper, simulated",              # theirs, alone
     u"Ours, simulated",                        # ours, same axes
     u"Demo \u2014 the driver, built and measured",
@@ -2434,7 +2481,11 @@ SHORT = [
     u"Crosstalk simulation",                   # the fault and the fix
     u"Silicon, the base paper, and ours",      # all three, six parameters
     u"Head to head with the base paper",       # four corners, 5.5x to 12.4x
-    u"Work Completed",
+    # The completion percentage was doing no work for a
+    # reviewer: what matters is what is left, not a score out
+    # of a hundred that only this deck defines. The table is
+    # still in the backup deck if anyone asks for it.
+    u"What is next",
     u"References",
     u"Thank you",
 ]

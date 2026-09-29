@@ -270,6 +270,22 @@ def main():
             for a, b in REWRITE:
                 if a in para_text(para):
                     n += replace_in_paragraph(para, a, b)
+
+            # Em dashes, out. The deck used them as its default joint -- a
+            # title, a lead and a caption on the same slide could carry four
+            # between them -- and at projector size a long rule reads as a
+            # break in the sentence rather than a pause in it. A short hyphen
+            # does the same work and disappears. En dashes stay: "[1]-[4]"
+            # and "8.3-23.1 %" are ranges, not joints.
+            while u"\u2014" in para_text(para):
+                before = para_text(para)
+                for a, b in ((u" \u2014 ", u" - "), (u"\u2014 ", u"- "),
+                             (u" \u2014", u" -"), (u"\u2014", u"-")):
+                    if a in para_text(para):
+                        n += replace_in_paragraph(para, a, b)
+                        break
+                if para_text(para) == before:
+                    break
         prs.save(path)
         total += n
 
