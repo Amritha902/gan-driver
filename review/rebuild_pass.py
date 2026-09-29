@@ -2718,6 +2718,57 @@ add_text(_lm, 0.70, 1.72, 12.10, 4.60, [
 print("added: What Would Overturn This Result")
 
 
+# ---- the cover page should show the circuit -----------------------------
+# The title slide named the project and showed nothing of it: a heading, four
+# rows of administrative detail and a signature box. The first two seconds a
+# reviewer spends on it decided "a simulation study" rather than "a gate
+# driver for a GaN half-bridge", and the next twenty slides were spent
+# climbing out of that.
+#
+# results/fig_title_circuit.png is drawn for this one job -- one half-bridge,
+# the two drivers, the filter, the load and the C_GD path -- and deliberately
+# carries no slice detail or component values, because at four inches wide
+# anything more is grey texture. The title block narrows to make room for it
+# rather than the picture being squeezed into the margin.
+_TC = "fig_title_circuit.png"
+_tc_path = os.path.join(RES, _TC)
+if os.path.exists(_tc_path):
+    _cover = None
+    for _s in p.slides:
+        if u"Guide's Signature" in "\n".join(
+                sh.text_frame.text for sh in _s.shapes if sh.has_text_frame):
+            _cover = _s
+            break
+    if _cover is None:
+        print("  MISSING: the cover page -- title circuit not placed")
+    else:
+        for sh in _cover.shapes:
+            if sh.has_text_frame and sh.text_frame.text.strip().startswith(
+                    u"GaN Based Synchronous"):
+                sh.left, sh.top = Inches(0.60), Inches(1.72)
+                sh.width, sh.height = Inches(7.55), Inches(1.62)
+                break
+        else:
+            raise SystemExit("rebuild_pass: the cover page has no project "
+                             "title shape -- refusing to place the circuit "
+                             "over whatever is there")
+        _iw, _ih = Image.open(_tc_path).size
+        _w = 4.70
+        _h = _w * _ih / float(_iw)
+        # The signature box starts at 3.35 in. A picture that overlaps it
+        # covers the line the guide signs on, which is the one thing on this
+        # page that has to work.
+        if 1.18 + _h > 3.28:
+            _h = 2.00
+            _w = _h * _iw / float(_ih)
+        _cover.shapes.add_picture(_tc_path, Inches(13.05 - _w), Inches(1.18),
+                                  width=Inches(_w))
+        print("added: the circuit, on the cover page (%.2f x %.2f in)"
+              % (_w, _h))
+else:
+    print("  MISSING: results/%s -- run scripts/title_circuit.py" % _TC)
+
+
 ORDER = [
     # The title page has no title shape; it is matched by its signature
     # text as "School of" further down. A "Slide 1" entry here matched
