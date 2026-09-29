@@ -621,7 +621,7 @@ set_body(con_shape, [
     para([("The FPGA half is real: ", True),
           ("20 LUTs and 20 flip-flops on an xc7a35t, 200 MHz met with 1.996 ns of slack.",
            False)], level=0, sz=1600, spc=340, bullet=True),
-    para([("What is next", True)], level=0, sz=1700, spc=240, bullet=False),
+    para([("Next Steps", True)], level=0, sz=1700, spc=240, bullet=False),
     para([("Review-II \u2014 ", True),
           ("transistor-level output stage in Cadence; re-run the ceiling on real devices.",
            False)], level=0, sz=1600, spc=220, bullet=True),

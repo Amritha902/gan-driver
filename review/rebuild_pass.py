@@ -302,7 +302,7 @@ TOOLOUT = [
  # fig1_crosstalk.png is the figure the words were written for: switch node
  # over gate-source, baseline on the left and mitigated on the right, drawn
  # from the same two transients.
- ("fig1_crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
+ ("fig1_crosstalk.png", u"Crosstalk: Fault and Mitigation",
   u"Two runs of sim/dpt.cir. Top row: the switch node falls from %.0f V in %.2f ns, "
   u"peaking at %.0f V/ns \u2014 that dv/dt drives i = C_GD\u00b7dv/dt into the OFF "
   u"device's gate, and is the cause. Bottom row: that gate. Left, without the "
@@ -348,7 +348,7 @@ ci = index_of(u"The circuit that is simulated")
 if ci is not None:
     s = p.slides[ci]
     strip(s)
-    set_title(s, u"The circuit we simulate")
+    set_title(s, u"Converter Under Simulation")
     # This was results/fig_circuit_ltspice.png, an LTspice screenshot taken on
     # 11 September. ltspice/BUCK_converter.asc was corrected on 23 September --
     # its .param block had been retyped rather than read, so the sheet carried
@@ -385,7 +385,7 @@ _NC = "fig_novelty_circuit.png"
 if os.path.exists(os.path.join(RES, _NC)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Where the novelty is, on the circuit")
+    set_title(sl, u"Novelty at Circuit Level")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"The converter on top; underneath it, what sits behind its two "
                u"gates in their design and in ours. Both additions are "
@@ -423,7 +423,7 @@ _SP = "fig_schematics_pair.png"
 if os.path.exists(os.path.join(RES, _SP)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Both gate drivers, as drawn in KiCad")
+    set_title(sl, u"Gate Driver Schematics in KiCad")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"The two sheets the previous slide crops from \u2014 whole, "
                u"at the same scale, nothing ringed and nothing removed.", B)],
@@ -440,7 +440,7 @@ if os.path.exists(os.path.join(RES, _SP)):
             u"redrawings. The two sheets are different sizes, so this is a "
             u"comparison of what is on them, not of how large they are.",
             top=5.90, h=1.30)
-    print("added: Both gate drivers, as drawn in KiCad")
+    print("added: Gate Driver Schematics in KiCad")
 else:
     print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
 
@@ -457,7 +457,7 @@ _DW = "fig_drawio_segmented_driver.png"
 if os.path.exists(os.path.join(RES, _DW)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"The custom block, drawn out")
+    set_title(sl, u"Segmented Driver: Block Structure")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"kicad/gan_driver.drawio, our own drawing of "
                u"models/segdrv.lib.", B)],
@@ -474,7 +474,7 @@ if os.path.exists(os.path.join(RES, _DW)):
             u"clamp, which the base paper does not have: its own switch and "
             u"0.5 ohms to VN, and VN itself selectable to -2 V.",
             top=5.62, h=1.45)
-    print("added: The custom block, drawn out")
+    print("added: Segmented Driver: Block Structure")
 else:
     print("  MISSING: results/%s -- run scripts/drawio_render.py" % _DW)
 
@@ -486,7 +486,7 @@ else:
 # source, at the real line numbers, read out of the files at build time so a
 # slide cannot drift from the code it claims to show.
 for _cf, _ct, _cl, _ccap in [
-    ("fig_code_segdrv.png", u"The segmented driver, as we wrote it",
+    ("fig_code_segdrv.png", u"Segmented Driver: SPICE Implementation",
      u"models/segdrv.lib \u2014 the output stage the whole study varies.",
      u"Eight pull-up slices and eight pull-down, each a switch and a resistor. "
      u"A slice is in circuit when the control word reaches it and 1 G\u03a9 out "
@@ -496,7 +496,7 @@ for _cf, _ct, _cl, _ccap in [
      u"because it has to hold the gate down while the other device switches. "
      u"Built as discrete slices on purpose \u2014 a single variable resistor "
      u"would simulate the same and could not be laid out."),
-    ("fig_code_egan.png", u"The GaN HEMT model, as we wrote it",
+    ("fig_code_egan.png", u"GaN HEMT Device Model",
      u"models/egan.lib \u2014 written from the EPC2010C datasheet, not "
      u"downloaded.",
      u"Vendor subcircuits are LTspice-dialect and do not port to Spectre, so "
@@ -624,7 +624,7 @@ if os.path.exists(_ps):
 
 for _mp4, _poster, _title, _lead, _cap in (
     ("demo_basepaper.mp4", "demo_basepaper_poster.png",
-     u"The base paper, simulated \u2014 their driver, their result",
+     u"Base Paper Driver: Simulation Result",
      u"models/zhangdrv.lib on sim/dpt.cir. Seven slices per bank in two "
      u"stages, no clamp branch, no negative off rail.",
      u"Their circuit in KiCad, ngspice running it, and the waveform it "
@@ -635,7 +635,7 @@ for _mp4, _poster, _title, _lead, _cap in (
      u"sets one bias resistor once at design time and gets no per-corner "
      u"choice at all. %s s. Click to play."),
     ("demo_ours.mp4", "demo_ours_poster.png",
-     u"Ours, simulated \u2014 same bench, same corner, same axes",
+     u"Proposed Driver: Simulation Result",
      u"models/segdrv.lib on the same sim/dpt.cir. Eight slices per bank, "
      u"active Miller clamp, \u22122 V off rail.",
      u"The same four beats over our driver. The gate peaks at %s V \u2014 "
@@ -676,7 +676,7 @@ for _mp4, _poster, _title, _lead, _cap in (
 # ------------------------------------------------------------ demo video ---
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
-set_title(s, u"Demo — the driver, built and measured, on this machine")
+set_title(s, u"Demonstration, on this machine")
 if os.path.exists(VIDEO):
     # 1600x900 -> 1.778. 9.00 in wide gives 5.06 in tall, centred on the
     # 13.33 in slide, ending at 6.16 -- the film's caption names the bench
@@ -1092,7 +1092,7 @@ RESULT_SLIDES = [
   u"%.2f %%. " % (CL.ERR_C, CL.ERR_O) +
   u"Load step recovers in 4 \u00b5s, line step in 22 \u00b5s. Ripple 0.25 %, "
   u"efficiency 96.1 %, start-up overshoot 3.8 %."),
- ("fig_headtohead.png", u"Head to head with the base paper",
+ ("fig_headtohead.png", u"Head-to-Head: ngspice Output",
   u"5.5\u00d7 to 12.4\u00d7, and the lead widens as the corner gets harder.",
   u"scripts/headtohead.py: same deck, same GaN, same parasitics; only "
   u"the driver is swapped. We hold one fixed control word at all four corners; "
@@ -1314,7 +1314,7 @@ _LS = "fig_live_sim.png"
 if os.path.exists(os.path.join(RES, _LS)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Or we can run it now")
+    set_title(sl, u"Live Simulation")
     add_text(sl, 0.70, 1.10, 12.10, 0.44, [
         para([(u"bash proof/LIVE-SIM.sh", B),
               (u"   \u2014 two ngspice transients, about ten seconds, on "
@@ -1351,7 +1351,7 @@ if os.path.exists(os.path.join(RES, _LS)):
             u"the waveforms those two runs produced. 3.8 s of that is "
             u"ngspice; the rest is drawing. scripts/live_demo.py.",
             top=5.44, h=1.40)
-    print("added: Or we can run it now")
+    print("added: Live Simulation")
 else:
     print("  MISSING FIGURE: %s -- run scripts/live_demo.py --deck" % _LS)
 
@@ -1394,7 +1394,7 @@ _TW = "fig_three_way.png"
 if os.path.exists(os.path.join(RES, _TW)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Silicon, the base paper, and ours \u2014 six parameters")
+    set_title(sl, u"Six-Parameter Comparison")
     add_text(sl, 0.70, 1.10, 12.10, 0.40, [
         para([(u"Column 1 \u2192 2 changes only the device. Column 2 \u2192 3 "
                u"changes only the control.", B)],
@@ -1412,7 +1412,7 @@ if os.path.exists(os.path.join(RES, _TW)):
             u"6.0 W. Speed and device stress are one knob. "
             u"scripts/three_way_figure.py, from results/panel_metrics.csv.",
             top=6.22, h=1.10)
-    print("added: Silicon, the base paper, and ours")
+    print("added: Six-Parameter Comparison")
 else:
     print("  MISSING FIGURE: %s -- run scripts/three_way_figure.py" % _TW)
 
@@ -1522,7 +1522,7 @@ for _f, _t, _lead, _cap in _ROB:
 if os.path.exists(os.path.join(RES, "fig_arch_delta.png")):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Novelty: the three blocks we add")
+    set_title(sl, u"Novelty: Three Added Blocks")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"Same command, same segmented output stage, same power stage. "
                u"Three blocks added — in green.", B)],
@@ -1880,7 +1880,7 @@ print("added: Does the result depend on the model?")
 # ---- slide: head to head ---------------------------------------------------
 s = clone_after(p, SRC, len(p.slides._sldIdLst))
 strip(s)
-set_title(s, u"Head to head with the base paper")
+set_title(s, u"Comparison with the Base Paper")
 
 add_text(s, 0.70, 1.16, 12.10, 0.56, [
     para([(u"Same deck, same GaN, same power loop, same parasitics — only the "
@@ -1931,11 +1931,12 @@ add_text(s, 0.70, 5.60, 11.70, 1.50, [
            u"a negative supply and 20 LUTs. For a converter that never leaves "
            u"one operating point, theirs may be the right engineering.", N)],
          level=0, sz=1200, spc=160, bullet=False),
-    para([(u"And this is OUR implementation of their described scheme in OUR "
-           u"testbench — their netlist is not published. It is not 6.3\u00d7 "
-           u"their measured result, and we do not say it is.", B)],
+    para([(u"This is our implementation of their described scheme, run in "
+           u"our testbench: their netlist is not published. The ratio is "
+           u"against that reimplementation, not against their measured "
+           u"result, and is not claimed as such.", B)],
          level=0, sz=1200, spc=0, bullet=False)])
-print("added: Head to head with the base paper")
+print("added: Comparison with the Base Paper")
 
 
 # ---- two slides the transistor-level result makes stale -------------------
@@ -1953,7 +1954,7 @@ i = index_of(u"Where we are, and what is next")
 if i is not None:
     s = p.slides[i]
     strip(s)
-    set_title(s, u"What is next")
+    set_title(s, u"Next Steps")
     add_text(s, 0.70, 1.35, 12.10, 5.30, [
         para([(u"Done", B)], level=0, sz=1700, spc=200, bullet=False),
         para([(u"The converter is built and regulating, the fault is "
@@ -1980,7 +1981,7 @@ if i is not None:
                u"the ceiling on the transistor-level stage now that it is "
                u"known to work.", N)], level=0, sz=1200, spc=0, bullet=False),
     ])
-    print("rebuilt: What is next")
+    print("rebuilt: Next Steps")
 
 
 # ---- the two references slides say which role each list plays -------------
@@ -2373,7 +2374,7 @@ ORDER = [
     # previous review's marking scheme to this panel.
     u"Problem Statement",
     u"The goal, and whether this serves it",
-    u"Aim, and how we approached it",
+    u"Aim and Approach",
     u"What a GaN HEMT is",
     u"Why GaN and not silicon",
     u"Why the GaN HEMT causes",
@@ -2387,18 +2388,18 @@ ORDER = [
     u"We implemented the base paper",
     u"Their driver, drawn \u2014 the reimplementation",
     u"Our driver, drawn \u2014 the same stage",
-    u"Novelty: the three blocks we add",      # architecture, in green
-    u"Where the novelty is, on the circuit",    # the same claim, ringed
-    u"Both gate drivers, as drawn in KiCad",         # the same two sheets, whole
-    u"The custom block, drawn out",
-    u"The segmented driver, as we wrote it",
-    u"The GaN HEMT model, as we wrote it",
+    u"Novelty: Three Added Blocks",      # architecture, in green
+    u"Novelty at Circuit Level",    # the same claim, ringed
+    u"Gate Driver Schematics in KiCad",         # the same two sheets, whole
+    u"Segmented Driver: Block Structure",
+    u"Segmented Driver: SPICE Implementation",
+    u"GaN HEMT Device Model",
     u"Methodology",   # the method, stated once
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
     u"Theirs and ours \u2014 six parameters",
     u"Where we win, and where we lose",
-    u"Silicon, the base paper, and ours \u2014 six parameters",
+    u"Six-Parameter Comparison",
     u"The converter across its own envelope",
     u"Does the answer depend on the weight we chose?",
     u"The distribution behind the 2.6 %",
@@ -2406,7 +2407,7 @@ ORDER = [
     u"Is the 36-corner grid dense enough?",
     u"What the negative rail costs",
     u"Does the hot-corner lead rest on two typed-in numbers?",
-    u"Head to head with the base paper",
+    u"Comparison with the Base Paper",
     u"The closest published drivers",
     u"The gap this project fills",
     u"The driver's settings",
@@ -2414,23 +2415,23 @@ ORDER = [
     u"The output — what is actually measured",
     u"Crosstalk margin",
     u"How it works — one use case",
-    u"The circuit we simulate",
+    u"Converter Under Simulation",
     u"What ngspice runs",
     u"Inside the segmented gate driver",
     u"How we run ngspice",
     u"How the work was run",
     u"Which tool did what",
-    u"The base paper, simulated",          # theirs, on its own
-    u"Ours, simulated",                    # ours, same axes
-    u"Demo — the driver, built and measured",
-    u"Or we can run it now",
+    u"Base Paper Driver",          # theirs, on its own
+    u"Proposed Driver",                    # ours, same axes
+    u"Demonstration",
+    u"Live Simulation",
     u"What we are building — the converter",
     u"The cases we ran",
     # The simulator's own terminal, captured. These were in the 20-slide cut
     # and NOT in the full deck, which is backwards -- the full deck is the one
     # a reviewer takes away, and it was the one with no raw tool output in it.
     u"The circuit, as ngspice reports it",
-    u"Crosstalk simulation",
+    u"Crosstalk: Fault",
     u"Driver simulation",
     u"ngspice output — what re-tuning is worth",
     u"ngspice output — the split",
@@ -2448,7 +2449,7 @@ ORDER = [
     u"Closing the loop",
     u"Does the result depend on the model?",
     u"Work Completed",
-    u"What is next",
+    u"Next Steps",
     u"The hardware, costed",
     u"Conclusion",
     u"References  (1–15)",
@@ -2500,28 +2501,28 @@ for i, s in enumerate(p.slides):
 SHORT = [
     u"School of",                              # title page (no title shape)
     u"Problem Statement & Background",
-    u"Aim, and how we approached it",
+    u"Aim and Approach",
     u"System Architecture",
-    u"The circuit we simulate",
-    u"Novelty: the three blocks we add",      # the novelty, in the blocks
-    u"Where the novelty is, on the circuit",   # the difference, ringed on the sheets
-    u"Both gate drivers, as drawn in KiCad",        # and the same sheets uncropped
-    u"The custom block, drawn out",
-    u"The segmented driver, as we wrote it",        # the source of the block
-    u"The GaN HEMT model, as we wrote it",          # and of the device
+    u"Converter Under Simulation",
+    u"Novelty: Three Added Blocks",      # the novelty, in the blocks
+    u"Novelty at Circuit Level",   # the difference, ringed on the sheets
+    u"Gate Driver Schematics in KiCad",        # and the same sheets uncropped
+    u"Segmented Driver: Block Structure",
+    u"Segmented Driver: SPICE Implementation",        # the source of the block
+    u"GaN HEMT Device Model",          # and of the device
     u"Methodology",   # the method, stated once
-    u"The base paper, simulated",              # theirs, alone
-    u"Ours, simulated",                        # ours, same axes
-    u"Demo \u2014 the driver, built and measured",
-    u"Or we can run it now",                   # the live offer
-    u"Crosstalk simulation",                   # the fault and the fix
-    u"Silicon, the base paper, and ours",      # all three, six parameters
-    u"Head to head with the base paper",       # four corners, 5.5x to 12.4x
+    u"Base Paper Driver",              # theirs, alone
+    u"Proposed Driver",                        # ours, same axes
+    u"Demonstration",
+    u"Live Simulation",                   # the live offer
+    u"Crosstalk: Fault",                   # the fault and the fix
+    u"Six-Parameter Comparison",      # all three, six parameters
+    u"Comparison with the Base Paper",       # four corners, 5.5x to 12.4x
     # The completion percentage was doing no work for a
     # reviewer: what matters is what is left, not a score out
     # of a hundred that only this deck defines. The table is
     # still in the backup deck if anyone asks for it.
-    u"What is next",
+    u"Next Steps",
     u"References",
     u"Thank you",
 ]

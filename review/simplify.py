@@ -327,7 +327,7 @@ EDITS = [
      u"you build the second comparator.", N)],
    [(u"The FPGA half is real: 20 LUTs and 20 flip-flops on an xc7a35t, 200 MHz met "
      u"with 1.996 ns to spare.", N)],
-   [(u"What is next", Y)],
+   [(u"Next Steps", Y)],
    [(u"Review-II " + EM + u" transistor-level output stage in Cadence; re-run the "
      u"answer on real devices.", N)],
    [(u"Review-III " + EM + u" measure a hardware half-bridge. Until then this is a "

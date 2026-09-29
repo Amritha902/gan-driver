@@ -261,8 +261,8 @@ print("named-cases slide inserted before Result 1")
 
 for _s in p.slides:
     if title_of(_s).startswith(u"Proposed Solution"):
-        set_title(_s, u"Aim, and how we approached it")
-        print("retitled: Proposed Solution -> Aim, and how we approached it")
+        set_title(_s, u"Aim and Approach")
+        print("retitled: Proposed Solution -> Aim and Approach")
     if title_of(_s).startswith(u"Timeline"):
         set_title(_s, u"Where we are, and what is next")
         print("retitled: Timeline -> Where we are, and what is next")
@@ -290,7 +290,7 @@ for _s in p.slides:
                       u"a sensor, an ADC and a lookup table.", N)],
                     [(u"The FPGA half is real: 20 LUTs and 20 flip-flops, 200 MHz "
                       u"met with 1.996 ns to spare.", N)],
-                    [(u"What is next", B)],
+                    [(u"Next Steps", B)],
                     # This listed "Review-II -- close the loop" as future work.
                     # The loop is closed and regulating in this deck, and this
                     # IS Review-II, so the plan has to name what is actually

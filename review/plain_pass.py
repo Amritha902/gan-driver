@@ -44,9 +44,9 @@ REWRITE = [
     # ---- titles -------------------------------------------------------
     (u"Latency and device power — the two you asked for",
      u"Latency and device power"),
-    (u"Or we can run it now", u"The same simulation, run live"),
-    (u"Demo — the driver, built and measured, on this machine",
-     u"Demo — the driver, built and measured"),
+    (u"Live Simulation", u"Live Simulation"),
+    (u"Demonstration, on this machine",
+     u"Demonstration"),
 
     # ---- stage direction ----------------------------------------------
     (u"on whatever machine is in this room.", u"on the presentation machine."),
