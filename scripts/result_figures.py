@@ -17,7 +17,8 @@ secondary encoding, so every bar is direct-labelled as well as legended.
 Every number is read from results/ rather than typed here, so a figure cannot
 drift away from the run that produced it.
 """
-import csv, os, sys
+import csv
+import io, os, sys
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -64,13 +65,56 @@ def parse_margins(fn, keys):
 
 
 # ----------------------------------------------------------- head to head --
+def _check_ratios(base, ours):
+    """Do the bars divide to the ratios the deck states?
+
+    RESULTS-SUMMARY.txt carries the head-to-head ratios, and the speech
+    script and slides are checked against it. Nothing checked the figure,
+    because a figure is pixels -- so the chart could contradict the sentence
+    above it and every guard stayed green. This recomputes the ratios from
+    the values actually about to be drawn and refuses to write a chart that
+    disagrees with what the deck says.
+    """
+    import re as _re
+    path = os.path.join(RES, "RESULTS-SUMMARY.txt")
+    if not os.path.exists(path):
+        return
+    txt = io.open(path, encoding="utf-8").read()
+    m = _re.search(r"crosstalk margin, ours vs base paper.*?"
+                   r"((?:\d+\.\d+x\s*/?\s*){2,})", txt)
+    if not m:
+        return
+    stated = [float(x) for x in _re.findall(r"(\d+\.\d+)x", m.group(1))]
+    drawn = [o / b for b, o in zip(base, ours)]
+    if len(stated) != len(drawn):
+        raise SystemExit("fig_headtohead: %d ratios stated, %d corners drawn"
+                         % (len(stated), len(drawn)))
+    for want, got in zip(stated, drawn):
+        if abs(want - got) > 0.06:
+            raise SystemExit(
+                "fig_headtohead: the chart divides to %s but RESULTS-SUMMARY "
+                "states %s -- the figure and the deck disagree"
+                % (", ".join("%.1fx" % d for d in drawn),
+                   ", ".join("%.1fx" % d for d in stated)))
+
+
 def fig_headtohead():
     rows = list(csv.DictReader(open(os.path.join(RES, "headtohead.csv"))))
     rows = [r for r in rows if r.get("corner", "").endswith("C")]
     labels = [r["corner"].replace("V_", " V / ").replace("A_", " A / ")
                           .replace("C", " °C") for r in rows]
-    base = [float(r[" base_as_built"]) for r in rows]
+    # base_retuned, not base_as_built. The chart's own title says the base
+    # paper is re-tuned at every corner, and the deck quotes it that way
+    # everywhere else -- searching their stated range and quoting them at
+    # their best setting is the whole point of the comparison. Plotting
+    # base_as_built drew +0.34 V at the first corner where the text claims
+    # +0.503 V, so the slide said 5.5x while the bars divided to 8.1x, in
+    # our favour. The two columns differ only at that corner, which is why
+    # it survived: three of the four bars were right.
+    base = [float(r[" base_retuned"]) for r in rows]
     ours = [float(r[" ours"]) for r in rows]
+
+    _check_ratios(base, ours)
 
     y = np.arange(len(rows))
     h = 0.34

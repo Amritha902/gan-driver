@@ -49,6 +49,23 @@ WHAT IS DELIBERATELY NOT DRAWN
 """
 import os, re, subprocess, uuid
 
+def _shipped_vout():
+    """The simulated output of the shipped operating point, or None.
+
+    Same row review/converter_numbers.py reads -- clamp on, -2 V off rail,
+    all eight slices -- so the sheet and the slides cannot drift apart.
+    """
+    import csv as _csv
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "results", "buck_sweep.csv")
+    if not os.path.exists(path):
+        return None
+    with open(path) as fh:
+        want = [r for r in _csv.DictReader(fh)
+                if r["CLKEN"] == "1" and float(r["VNEG"]) == -2.0
+                and float(r["slices"]) == 8.0]
+    return float(want[0]["Vout"]) if len(want) == 1 else None
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SIM  = os.path.join(ROOT, "sim")
 OUT  = os.path.join(ROOT, "kicad")
@@ -328,9 +345,29 @@ hop(pin("Device:R", 275, 120, 0, "2"), (275, 145))
 
 # ---- what the sheet has to say for itself ----
 text("GaN synchronous buck converter - the circuit simulated in sim/buck.cir", 36, 26, 2.6)
-text("%s V in, %s V out at %s kHz.  Values read from the netlist at build time."
-     % (val("VIN", "100"), str(float(val("VIN", "100")) * float(val("D", "0.5"))),
-        str(int(float(val("FSW", "500k").replace("k", "")) ))), 36, 32, 1.8)
+# VIN * D is the ideal output of a buck converter, and that is what this
+# line used to print: 50.0 V, on a sheet whose caption two inches below
+# said 48.50 V. Both numbers are right -- the first is what the duty ratio
+# asks for, the second is what the circuit delivers once conduction and
+# switching losses are paid -- but a sheet that prints one while the slide
+# prints the other reads as a mistake. It now prints the simulated output,
+# from the same row of results/buck_sweep.csv the deck quotes, and names
+# the ideal so the gap is accounted for rather than noticed.
+_VIN = float(val("VIN", "100"))
+_IDEAL = _VIN * float(val("D", "0.5"))
+_FSW = int(float(val("FSW", "500k").replace("k", "")))
+_VOUT = _shipped_vout()
+
+if _VOUT is None:
+    text("%.0f V in, %.1f V out at %d kHz (ideal, from the duty ratio)."
+         % (_VIN, _IDEAL, _FSW), 36, 32, 1.8)
+else:
+    text("%.0f V in, %.2f V out at %d kHz, simulated.  Values read from "
+         "sim/buck.cir and results/buck_sweep.csv at build time."
+         % (_VIN, _VOUT, _FSW), 36, 32, 1.8)
+    text("D = %.2f alone would give %.1f V; the %.2f V short of it is "
+         "conduction and switching loss."
+         % (float(val("D", "0.5")), _IDEAL, _IDEAL - _VOUT), 36, 36, 1.7)
 text("Qhs / Qls are enhancement-mode GaN HEMTs. KiCad has no GaN symbol, so an", 36, 160, 1.7)
 text("n-channel enhancement MOSFET symbol is used, as in EPC's own schematics.", 36, 164, 1.7)
 text("The device has NO BODY DIODE - reverse conduction during dead time costs", 36, 168, 1.7)

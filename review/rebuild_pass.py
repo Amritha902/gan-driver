@@ -290,16 +290,28 @@ TOOLOUT = [
   u"sixteen slices, switched in by {runit+(npu>=n?0:1e9)} \u2014 rclk the "
   u"clamp, and rdec at 1 \u03a9, the damped value. "
   u"scripts/netlist_listing.py regenerates it, so it cannot go stale."),
- ("toolout/01-ngspice-crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
-  u"Two runs of sim/dpt.cir. TOP: the switch node falls from %.0f V in %.2f ns, "
+ # This caption describes two rows of waveforms -- the switch node over the
+ # gate it disturbs -- and was paired with toolout/01-ngspice-crosstalk.png,
+ # which is a terminal screenshot with no rows in it at all. The slide told
+ # the panel to look at a TOP and a BOTTOM that were not on the screen.
+ #
+ # The screenshot was also evidence against itself: it is dated 2026-09-08 on
+ # a MacBook running ngspice-47, while the deck states ngspice-42 on a Debian
+ # container. Two slides apart, a reviewer reads both.
+ #
+ # fig1_crosstalk.png is the figure the words were written for: switch node
+ # over gate-source, baseline on the left and mitigated on the right, drawn
+ # from the same two transients.
+ ("fig1_crosstalk.png", u"Crosstalk simulation \u2014 the fault, and the fix",
+  u"Two runs of sim/dpt.cir. Top row: the switch node falls from %.0f V in %.2f ns, "
   u"peaking at %.0f V/ns \u2014 that dv/dt drives i = C_GD\u00b7dv/dt into the OFF "
-  u"device's gate, and is the cause. BOTTOM: that gate. Without the clamp it rests "
-  u"at %+.3f V, is lifted %+.3f V and peaks at %+.3f V, past the 1.4 V threshold "
-  u"\u2014 false_turn_on = 1. With the clamp and the \u22122 V rail it rests at "
-  u"%+.3f V, is lifted only %+.3f V and peaks at %+.3f V \u2014 false_turn_on = 0. "
-  u"The two fixes are not one mechanism: the rail moves where the gate STARTS, "
-  u"the clamp shortens the LIFT by giving the injected charge a 0.5 \u03a9 path out. "
-  u"scripts/waveform_anatomy.py."
+  u"device's gate, and is the cause. Bottom row: that gate. Left, without the "
+  u"clamp, it rests at %+.3f V, is lifted %+.3f V and peaks at %+.3f V, past the "
+  u"1.4 V threshold \u2014 false_turn_on = 1. Right, with the clamp and the "
+  u"\u22122 V rail, it rests at %+.3f V, is lifted only %+.3f V and peaks at "
+  u"%+.3f V \u2014 false_turn_on = 0. The two fixes are not one mechanism: the "
+  u"rail moves where the gate starts, the clamp shortens the lift by giving the "
+  u"injected charge a 0.5 \u03a9 path out. scripts/waveform_anatomy.py."
   % (WF.VBUS, WF.FALL_NS, WF.SLEW_PK, WF.REST_BAD, WF.LIFT_BAD, WF.PEAK_BAD,
      WF.REST_GOOD, WF.LIFT_GOOD, WF.PEAK_GOOD)),
  ("toolout/18-named-cases.png", u"Driver simulation \u2014 the segmented driver, case by case",
