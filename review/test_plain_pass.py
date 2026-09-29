@@ -35,6 +35,43 @@ CASES = [
     ("table header", u"THE ONE THING THAT MOVES", False),
     ("registration no.", u"Sanjay Kumar 23BEC1447 and Amritha S 23BEC1368", False),
     ("physics symbol", u"the cost is V_th + |V_off| + I·R_ds(on)", False),
+
+    # Register found by rendering the deck to PDF and reading it. None of the
+    # numeric checks could see any of these, and every one was on a shipping
+    # slide. Each is paired with the wording that replaced it, so a fix that
+    # trips its own guard fails here rather than in the build.
+    ("first person", u"kicad/gan_driver.drawio, our own drawing of "
+                     u"models/segdrv.lib.", True),
+    ("first person", u"the segmented output stage we wrote", True),
+    ("defensive", u"written from the EPC2010C datasheet, not downloaded.", True),
+    ("loose", u"models/segdrv.lib - the output stage the whole study varies.",
+     True),
+    ("informal", u"Built as discrete slices on purpose.", True),
+    ("ambiguous", u"Same deck, same GaN, same power loop, same parasitics",
+     True),
+    ("informal", u"Left - and it is not more simulating", True),
+    ("informal", u"Also worth doing: transcribe the datasheet digits", True),
+    ("informal heading", u"WHERE IT RAN   ngspice-42 and KiCad 7.0.11", True),
+    ("informal", u"The device swap buys most of it; the control swap buys "
+                 u"the rest.", True),
+    ("informal", u"that is this model's weakest point", True),
+
+    ("replacement", u"kicad/gan_driver.drawio, the block diagram of "
+                    u"models/segdrv.lib.", False),
+    ("replacement", u"the segmented output stage under study", False),
+    ("replacement", u"written from the EPC2010C datasheet.", False),
+    ("replacement", u"models/segdrv.lib - the output stage varied throughout "
+                    u"the study.", False),
+    ("replacement", u"The slices are discrete by design.", False),
+    ("replacement", u"Same netlist, same GaN, same power loop, same "
+                    u"parasitics", False),
+    ("replacement", u"What remains is bench work, not further simulation.",
+     False),
+    ("replacement", u"Additionally: transcribe the datasheet digits", False),
+    ("replacement", u"ENVIRONMENT   ngspice-42 and KiCad 7.0.11", False),
+    ("replacement", u"The device swap accounts for most of it; the control "
+                    u"swap accounts for the rest.", False),
+    ("replacement", u"this is the principal limitation of the model", False),
 ]
 
 

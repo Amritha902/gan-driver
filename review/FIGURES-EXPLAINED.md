@@ -82,7 +82,7 @@ Each figure's caption already carries its SOURCE — whether it is simulator out
 
 <details><summary>the caption as printed on the slide</summary>
 
-> Fig. 21 — Simulated in ngspice. scripts/headtohead.py: same deck, same GaN, same parasitics; only the driver is swapped. We hold one fixed control word at all four corners; they are re-optimised at every corner, which is more freedom than their own design has. Their margin falls +0.50 → +0.18 V from the mildest corner to the hottest and ours barely moves, because the clamp's action is independent of how hot the device is. Our switch node also slews about twice as fast, so the margin is not bought with switching speed. One caveat: models/zhangdrv.lib is our implementation of the scheme as they (their netlist is not published), run in our testbench with our parasitics. It is not 5.5–12.4× their measured result, and we do not claim it is.
+> Fig. 21 — Simulated in ngspice. scripts/headtohead.py: same netlist, same GaN, same parasitics; only the driver is swapped. We hold one fixed control word at all four corners; they are re-optimised at every corner, which is more freedom than their own design has. Their margin falls +0.50 → +0.18 V from the mildest corner to the hottest and ours barely moves, because the clamp's action is independent of how hot the device is. Our switch node also slews about twice as fast, so the margin is not bought with switching speed. One caveat: models/zhangdrv.lib is our implementation of the scheme as they (their netlist is not published), run in our testbench with our parasitics. It is not 5.5–12.4× their measured result, and we do not claim it is.
 
 </details>
 

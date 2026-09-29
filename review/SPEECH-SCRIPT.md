@@ -239,7 +239,7 @@ cannot do.
 >
 > "So we made them meet. A new testbench reproduces the double-pulse schedule at
 > the real 200 megahertz clock, and its waveform dump becomes sixteen sources —
-> one per wire — into the SPICE driver. Same deck, same devices, same
+> one per wire — into the SPICE driver. Same netlist, same devices, same
 > measurement. Only the slice selection changes."
 >
 > "Margins agree to eighty-one millivolts, and that difference is timing, not
@@ -376,7 +376,7 @@ Damping it fixed the 200 V case and improved every metric at 100 V too.
 
 ## NEW — Head to head with the base paper (60 s) — **core slide**
 
-> "Same deck, same GaN, same power loop, same parasitics. Only the driver is
+> "Same netlist, same GaN, same power loop, same parasitics. Only the driver is
 > swapped. We hold one fixed word at all four corners — because our own result
 > says a fixed word is the deliverable, so we hold ourselves to it. They are
 > re-optimised at every corner, which is more freedom than their own design

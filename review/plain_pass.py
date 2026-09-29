@@ -120,6 +120,20 @@ BANNED_ANY_CASE = [
     (r"\bbeats\b", "film jargon"),
     (r"by eye", "informal"),
     (r"\bbro\b|\byeah\b|\bokay\b|\buk\b|\bstuff\b", "conversational"),
+    # Found by rendering the deck and reading it, not by any check here: a
+    # register that reads as talk rather than as a report. Each of these was
+    # on a shipping slide.
+    (r"our own drawing", "first person where the file name is the subject"),
+    (r"not downloaded", "defensive"),
+    (r"the whole study varies", "loose"),
+    (r"on purpose\b", "informal for 'by design'"),
+    (r"\bsame deck\b", "'deck' means these slides, not the netlist"),
+    (r"not more simulating", "informal"),
+    (r"also worth doing", "informal"),
+    (r"where it ran", "informal heading"),
+    (r"\bbuys most of it\b|\bbuys the rest\b", "informal for 'accounts for'"),
+    (r"weakest point", "informal"),
+    (r"\bwe wrote\b", "first person in a figure label"),
 ]
 
 # Emphasis by capital letters -- "the headline IS weight-dependent", "what

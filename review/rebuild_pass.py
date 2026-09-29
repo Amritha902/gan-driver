@@ -546,7 +546,7 @@ if os.path.exists(os.path.join(RES, _DW)):
     strip(sl)
     set_title(sl, u"Segmented Driver: Block Structure")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
-        para([(u"kicad/gan_driver.drawio, our own drawing of "
+        para([(u"kicad/gan_driver.drawio, the block diagram of "
                u"models/segdrv.lib.", B)],
              level=0, sz=1300, spc=0, bullet=False)])
     place(sl, _DW, 1.58, 3.90)
@@ -574,28 +574,27 @@ else:
 # slide cannot drift from the code it claims to show.
 for _cf, _ct, _cl, _ccap in [
     ("fig_code_segdrv.png", u"Segmented Driver: SPICE Implementation",
-     u"models/segdrv.lib \u2014 the output stage the whole study varies.",
+     u"models/segdrv.lib \u2014 the output stage varied throughout the study.",
      u"Eight pull-up slices and eight pull-down, each a switch and a resistor. "
      u"A slice is in circuit when the control word reaches it and 1 G\u03a9 out "
      u"of it when it does not, which is how 4 + 4 bits from the FPGA become a "
      u"drive strength. The clamp is not one of the slices: it has its own "
      u"switch, its own timing and its own 0.5 \u03a9 path to the off rail, "
      u"because it has to hold the gate down while the other device switches. "
-     u"Built as discrete slices on purpose \u2014 a single variable resistor "
-     u"would simulate the same and could not be laid out."),
+     u"The slices are discrete by design: a single variable resistor "
+     u"would simulate identically and could not be laid out."),
     ("fig_code_egan.png", u"GaN HEMT Device Model",
-     u"models/egan.lib \u2014 written from the EPC2010C datasheet, not "
-     u"downloaded.",
+     u"models/egan.lib \u2014 written from the EPC2010C datasheet.",
      u"Vendor subcircuits are LTspice-dialect and do not port to Spectre, so "
      u"this is written from datasheet quantities only. The channel is one "
-     u"symmetric square law, so third-quadrant conduction falls out of the "
+     u"symmetric square law, so third-quadrant conduction follows from the "
      u"physics rather than being added: GaN has no body diode, and reverse "
      u"conduction costs V_th + |V_off| + I\u00b7R_ds(on). That is the coupling "
-     u"the project turns on \u2014 a negative off rail buys crosstalk margin "
-     u"and pays for it in dead time. C_GD is a junction diode biased never to "
+     u"the project turns on \u2014 a negative off rail improves crosstalk "
+     u"margin at the cost of dead-time loss. C_GD is a junction diode biased never to "
      u"conduct, so only its C(V) law is used. The temperature coefficients are "
-     u"hand-typed from the datasheet, not fitted; that is this model's weakest "
-     u"point and it has its own slide in the backup deck.")]:
+     u"hand-typed from the datasheet, not fitted; this is the principal "
+     u"limitation of the model, and it is covered in the backup deck.")]:
     if not os.path.exists(os.path.join(RES, _cf)):
         print("  MISSING: results/%s -- run scripts/code_listing.py" % _cf)
         continue
@@ -672,7 +671,7 @@ for _i in range(max(len(_HELD), len(_CHANGED))):
                  level=0, sz=1120, spc=0, bullet=False)])
     _y += 0.70
 add_text(sl, 0.70, _y + 0.10, 12.10, 0.40, [
-    para([(u"WHERE IT RAN   ", B),
+    para([(u"ENVIRONMENT   ", B),
           (u"%s and KiCad %s on a Debian container, headless, no hardware "
            u"in the loop. Both are open source; there is no licensed tool "
            u"and no vendor model anywhere in this project."
@@ -975,7 +974,7 @@ ROWS = [
     (u"Segmented-driver papers characterise one switching edge. The converter "
      u"is never closed-loop regulated.",
      u"A type-III loop around the same power stage and the same drivers, then "
-     u"disturbed on purpose.",
+     u"disturbed deliberately.",
      u"%.2f %% error through a 2\u00d7 load step and a 20 %% line step; open "
      u"loop walks to %.1f V (closedloop.py)." % (CL.ERR_C, CL.LINE_O), u"CLOSED"),
     (u"Segmented output stages are published as ideal switches. Whether the "
@@ -1038,7 +1037,7 @@ add_text(s, 7.00, 1.66, 5.80, 2.05, [
            u"generator make the edges.", N)],
          level=0, sz=1200, spc=140, bullet=False),
     para([(u"Its VCD becomes sixteen PWL sources, one per wire, into "
-           u"models/segdrv_bus.lib. Same deck, same devices, same "
+           u"models/segdrv_bus.lib. Same netlist, same devices, same "
            u"measurement — only the slice selection changes.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 
@@ -1094,7 +1093,7 @@ COMPLETION = [
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
-    (u"Closed-loop regulation, disturbed on purpose", 6, True,
+    (u"Closed-loop regulation, disturbed deliberately", 6, True,
      u"type-III loop: %.2f %% error through a 2x load and a 20 %% line step"
      % CL.ERR_C),
     (u"Transistor-level output stage, on a real PDK", 7, True,
@@ -1173,7 +1172,7 @@ RESULT_SLIDES = [
  ("fig_closedloop.png", u"Closing the loop",
   u"The loop holds 50 V. Open loop walks to %.1f V." % CL.LINE_O,
   u"sim/buck_closed.cir runs the same power stage and the same segmented "
-  u"drivers, now regulated by a type-III loop and then disturbed on purpose. "
+  u"drivers, now regulated by a type-III loop and then disturbed deliberately. "
   u"Closed loop 50.01 / 50.00 / 50.00 V through a 2\u00d7 load step and a "
   u"100 \u2192 120 V line step; worst error %.2f %% against open loop's "
   u"%.2f %%. " % (CL.ERR_C, CL.ERR_O) +
@@ -1461,8 +1460,9 @@ if os.path.exists(os.path.join(RES, _LP)):
             u"Latency 17.55 \u2192 4.04 \u2192 2.78 ns and device power "
             u"8.60 \u2192 2.93 \u2192 2.60 W. Against silicon that is 6.3\u00d7 "
             u"and 3.3\u00d7; against the base paper's control on the same GaN "
-            u"device, 1.5\u00d7 and 1.1\u00d7. The device swap buys most of it "
-            u"and the control swap buys the rest \u2014 which is the honest "
+            u"device, 1.5\u00d7 and 1.1\u00d7. The device swap accounts for most of "
+            u"it "
+            u"and the control swap accounts for the rest \u2014 which is the honest "
             u"shape of the result. Same file the tables read, "
             u"results/panel_metrics.csv. scripts/latency_power_figure.py.",
             top=6.10, h=1.05)
@@ -1492,7 +1492,8 @@ if os.path.exists(os.path.join(RES, _TW)):
             u"8.60 \u2192 2.93 \u2192 2.60 W, left to right. Against silicon "
             u"that is 6.3\u00d7 and 3.3\u00d7; against the base paper's control "
             u"on the same GaN device, 1.5\u00d7 and 1.1\u00d7. The device swap "
-            u"buys most of it; the control swap buys the rest. Overshoot is the "
+            u"accounts for most of it; the control swap accounts for the rest. "
+            u"Overshoot is the "
             u"row that runs the other way, and it runs that way for the same "
             u"reason the other five do not: silicon does not overshoot because "
             u"its edge is nine times slower, and that slowness is what costs it "
@@ -1757,7 +1758,7 @@ COMPLETION = [
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
      u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
-    (u"Closed-loop regulation, disturbed on purpose", 6, True,
+    (u"Closed-loop regulation, disturbed deliberately", 6, True,
      u"type-III loop: %.2f %% error through a 2x load and a 20 %% line step"
      % CL.ERR_C),
     (u"Transistor-level output stage, on a real PDK", 7, True,
@@ -1970,7 +1971,7 @@ strip(s)
 set_title(s, u"Comparison with the Base Paper")
 
 add_text(s, 0.70, 1.16, 12.10, 0.56, [
-    para([(u"Same deck, same GaN, same power loop, same parasitics — only the "
+    para([(u"Same netlist, same GaN, same power loop, same parasitics — only the "
            u"driver is swapped. We hold one fixed word at all four corners. "
            u"They are re-optimised at every corner, which is more freedom than "
            u"their own design has.", N)],
@@ -2042,31 +2043,25 @@ if i is not None:
     s = p.slides[i]
     strip(s)
     set_title(s, u"Next Steps")
-    add_text(s, 0.70, 1.35, 12.10, 5.30, [
-        para([(u"Done", B)], level=0, sz=1700, spc=200, bullet=False),
-        para([(u"The converter is built and regulating, the fault is "
-               u"reproduced and fixed, the 720-word study is run over 36 "
-               u"corners, the controller is written, verified and synthesised, "
-               u"its output drives the SPICE power stage directly, and the "
-               u"driver has been rebuilt in real transistors.", N)],
-             level=0, sz=1300, spc=260, bullet=False),
-        para([(u"Left \u2014 and it is not more simulating", B)],
-             level=0, sz=1700, spc=200, bullet=False),
+    add_text(s, 0.70, 1.02, 12.10, 0.40, [
+        para([(u"What remains is bench work, not further simulation.", B)],
+             level=0, sz=1300, spc=0, bullet=False)])
+    add_text(s, 0.70, 1.75, 12.10, 4.90, [
         para([(u"Place-and-route on a chosen board. ", B),
               (u"Synthesis is done; the flow stops there because the XDC pins "
                u"are placeholders. Doing it properly also means driving the "
                u"200 MHz clock from an MMCM rather than straight off a pin, "
                u"which is what makes 34 clock-to-pin paths fail today.", N)],
-             level=0, sz=1300, spc=220, bullet=False),
+             level=0, sz=1500, spc=360, bullet=False),
         para([(u"A hardware half-bridge, measured. ", B),
               (u"This is the whole of the remaining risk. Everything in this "
                u"deck is a simulation of a converter that has never been "
                u"built, and one behavioural GaN model underlies all of it.", N)],
-             level=0, sz=1300, spc=220, bullet=False),
-        para([(u"Also worth doing: transcribe the silicon MOSFET datasheet "
+             level=0, sz=1500, spc=360, bullet=False),
+        para([(u"Additionally: transcribe the silicon MOSFET datasheet "
                u"digits rather than using datasheet-class values, and re-run "
                u"the ceiling on the transistor-level stage now that it is "
-               u"known to work.", N)], level=0, sz=1200, spc=0, bullet=False),
+               u"known to work.", N)], level=0, sz=1400, spc=0, bullet=False),
     ])
     print("rebuilt: Next Steps")
 

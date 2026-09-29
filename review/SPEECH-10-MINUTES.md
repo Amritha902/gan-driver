@@ -419,7 +419,7 @@ slide: their crosstalk margin is plus 0.4 volts, ours is plus 2.6.
 
 ## 16b · Head to head with the base paper — 35 s
 
-Same deck, same devices, only the driver swapped. **We hold one fixed word at
+Same netlist, same devices, only the driver swapped. **We hold one fixed word at
 all four corners; they are re-optimised at every corner** — more freedom than
 their own design has. We still lead at all four, **5.5× at the mildest corner
 and 12.4× at the hottest**, because their margin degrades with temperature and

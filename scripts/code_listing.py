@@ -139,14 +139,14 @@ def main():
          ("Sclk ", u"the clamp: its own switch, its own timing"),
          ("Rclk ", u"0.5 \u03a9 to the off rail \u2014 where the injected charge goes")],
         "fig_code_segdrv.png",
-        u"the segmented output stage we wrote")
+        u"the segmented output stage under study")
 
     render(
         "models/egan.lib",
         [(".func smax", 1), (".model DGD", 2), (".subckt EGAN", 1), ("Bch ", 2)],
         [(".func smax", u"smooth max, so the solver does not stall at the kink"),
          (".model DGD", u"C_GD \u2014 the crosstalk path, as a C(V) law"),
-         ("Bch ", u"one symmetric square law \u2014 reverse conduction falls out of it")],
+         ("Bch ", u"one symmetric square law \u2014 reverse conduction follows from it")],
         "fig_code_egan.png",
         u"the GaN HEMT model, written from the datasheet")
     return 0
