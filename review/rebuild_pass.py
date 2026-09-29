@@ -2507,3 +2507,24 @@ print()
 import prune_orphans
 for _o in _OUTS:
     prune_orphans.prune(_o)
+
+# Register last, once the deck holds only the slides that will be shown.
+#
+# The slide text is assembled across five passes by people writing prose, and
+# prose drifts into the register of speech: stage directions, self-reference,
+# emphasis by capital letters. plain_pass rewrites the known cases and then
+# fails the build if any survive, so the register cannot come back one slide
+# at a time.
+#
+# It has to run after the prune, not before. Before it, the package still
+# carries the retired slides -- their text is reachable in the file even
+# though the running order has dropped them, and the guard was reporting
+# wording from slides nobody will ever see. Worse, the report was not
+# reproducible: running the same check on the same file a second time came
+# back clean, because the first run's save had already rewritten the package
+# without them. A check that disagrees with itself is worth nothing, so it
+# goes where the deck is final.
+print()
+import plain_pass
+if plain_pass.main():
+    raise SystemExit("rebuild_pass: banned phrasing in the deck (see above)")
