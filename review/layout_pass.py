@@ -14,10 +14,9 @@ Nothing here changes a word or a number. It changes three things:
   the labels   the run that ends in a colon becomes the deck's title blue,
                a point larger, with air above it and no bullet -- so the
                sections separate without a single extra word
-  the margin   a thin accent bar down the left of the body, aligned with the
-               title, which gives the text a spine to sit against
-  the closer   the last slide gets the same bar, so it does not look like a
-               page someone forgot to finish
+  the bullets  removed from the body: under a heading that already separates
+               the sections, a dash before every sentence only supplies the
+               rhythm of a machine-written deck
 
 check_consistency.py reads bolded figures out of the deck, so bold is left
 exactly as it was -- only colour, size, spacing and bullets move.
@@ -213,8 +212,6 @@ def style(prs):
             shift = BODY_X - body.left
             body.left = BODY_X
             body.width = max(Inches(1.0), body.width - shift)
-        add_bar(sl, body.top, body.height)
-        bars += 1
     return labels, bars
 
 

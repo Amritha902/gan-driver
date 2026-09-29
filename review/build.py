@@ -832,8 +832,19 @@ retitle(s_arch, "System Architecture")
 # the figure's aspect, and when arch_diagram.py was redrawn (2.095 -> 1.969)
 # the picture silently grew to 5.59 in tall and sat on its own caption.
 # The band from 1.32 in to the caption at 6.66 in is 5.24 in.
-s_arch.shapes.add_picture(RES + "/fig_architecture.png",
-                          Inches(1.55), Inches(1.32), height=Inches(5.20))
+# ...and sizing by height alone fails the other way round: when the diagram
+# became one wide row it came out 16.70 in across on a 13.33 in slide, with
+# the half-bridge and the load off the right-hand edge. Fit both -- the
+# 5.20 in band and the usable width -- and take whichever binds.
+from PIL import Image as _PILImage
+_ARCH = RES + "/fig_architecture.png"
+_aw, _ah = _PILImage.open(_ARCH).size
+_ah_in, _aw_in = 5.20, 5.20 * _aw / float(_ah)
+if _aw_in > 12.20:
+    _aw_in = 12.20
+    _ah_in = _aw_in * _ah / float(_aw)
+s_arch.shapes.add_picture(_ARCH, Inches((13.333 - _aw_in) / 2.0), Inches(1.32),
+                          width=Inches(_aw_in), height=Inches(_ah_in))
 # No slide-level caption here: the figure carries its own footer saying the
 # same thing, and printing it twice is exactly the padding this deck is being
 # stripped of.

@@ -241,11 +241,16 @@ try:
         bp.set(k, "0")
     set_body(tb, [
         para([(u"@FIG@ ", B),
-              (u"System architecture, left to right: PWM command, FPGA "
-               u"controller, segmented gate driver, power stage. The four "
-               u"driver blocks are what this project designs. Only the dashed "
-               u"block needs sensing, and measuring what it is worth is "
-               u"the project's question.", N)],
+              (u"One signal path: a PWM command, the FPGA controller that "
+               u"holds the control word, the segmented driver that shapes the "
+               u"edge, and the half-bridge it drives. The driver in green is "
+               u"what this project designs; it is drawn once as "
+               u"kicad/gan_segdrv.kicad_sch and placed twice in "
+               u"kicad/gan_buck.kicad_sch, one per gate. The control word is "
+               u"set at power-up and never changed \u2014 re-tuning it while "
+               u"the converter runs is the 2.6 % this project measures. In "
+               u"red, the fault: the switching edge couples through C_GD into "
+               u"the gate that should stay off.", N)],
              level=0, sz=1150, spc=0, bullet=False)])
     print("caption added: System Architecture")
 except KeyError as e:

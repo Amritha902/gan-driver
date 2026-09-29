@@ -1452,14 +1452,15 @@ if os.path.exists(os.path.join(RES, "fig_arch_delta.png")):
              level=0, sz=1300, spc=0, bullet=False)])
     place(sl, "fig_arch_delta.png", 1.48, 4.72)
     caption(sl,
-            u"Top row is theirs: one analogue bias resistor set at design time, "
-            u"no clamp, off rail at 0 V — and the crosstalk path with "
-            u"nothing holding the OFF gate down. Bottom row is ours: the same "
-            u"output stage, plus a digital controller re-writable at run time, "
-            u"an always-on active Miller clamp, and an off-bias mux that "
-            u"selects −2 V. Block counts and values are parsed from "
-            u"models/zhangdrv.lib and models/segdrv.lib, so if either library "
-            u"changes this figure changes with it.", top=6.26, h=1.08)
+            u"The five things that differ, and nothing else. Their column is "
+            u"the base paper as we rebuilt it in models/zhangdrv.lib; ours is "
+            u"models/segdrv.lib. Shaded: the three we add — digital "
+            u"control in place of one fixed resistor, an always-on Miller "
+            u"clamp, and an off rail selectable to −2 V. The command, the "
+            u"power stage and the idea of segmenting the output are all "
+            u"theirs. The last row is what those three buy at the headline "
+            u"corner, read from results/headtohead.csv: +0.407 V becomes "
+            u"+2.576 V, from one fixed setting.", top=6.26, h=1.08)
     print("added: What we add that they do not have")
 else:
     print("  MISSING: results/fig_arch_delta.png -- run scripts/arch_compare.py")
