@@ -85,17 +85,32 @@ def main():
         prs.save(path)
         total += n
 
-        # Every caption that shows a sheet must name it.
+        # Every slide that shows a sheet must name it. Checked per slide
+        # rather than per paragraph: a title can say "as drawn in KiCad"
+        # while the file it names sits in the caption underneath, and that
+        # slide is properly cited. The paragraph-level version of this check
+        # reported exactly that slide as a fault.
         prs = Presentation(path)
-        for para in all_paragraphs(prs):
-            body = para_text(para)
+        for i, sl in enumerate(prs.slides, 1):
+            body = []
+            for sh in sl.shapes:
+                if sh.has_text_frame:
+                    body.append(sh.text_frame.text)
+                if getattr(sh, "has_table", False) and sh.has_table:
+                    for row in sh.table.rows:
+                        for cell in row.cells:
+                            body.append(cell.text)
+            body = "\n".join(body)
             if "KiCad" not in body and "kicad" not in body:
                 continue
             if SHEET.search(body):
                 continue
             if any(x in body for x, _ in NO_SHEET_SHOWN):
                 continue
-            failures.append((name, body.strip()[:88]))
+            first = body.strip().split("\n")
+            first = [t for t in first if t.strip() and not t.strip().isdigit()]
+            failures.append((name, "slide %d: %s"
+                             % (i, (first[0] if first else "?")[:70])))
         print("  %-42s %3d citation(s)" % (name, n))
 
     print("  %d citation(s) across %d deck(s)" % (total, len(DECKS)))

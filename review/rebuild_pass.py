@@ -373,10 +373,13 @@ _NC = "fig_novelty_circuit.png"
 if os.path.exists(os.path.join(RES, _NC)):
     sl = clone_after(p, SRC, len(p.slides._sldIdLst))
     strip(sl)
-    set_title(sl, u"Where the novelty is, on the circuit")
+    set_title(sl, u"What differs in the circuit, theirs and ours")
     add_text(sl, 0.70, 1.02, 12.10, 0.40, [
         para([(u"The converter on top; underneath it, what sits behind its two "
-               u"gates in their design and in ours.", B)],
+               u"gates in their design and in ours. Both additions are "
+               u"established practice [1]\u2013[4]; the base paper uses "
+               u"neither. What is measured here is what each is worth on "
+               u"this converter.", B)],
              level=0, sz=1300, spc=0, bullet=False)])
     place(sl, _NC, 1.50, 4.74)
     caption(sl,
@@ -392,9 +395,42 @@ if os.path.exists(os.path.join(RES, _NC)):
             u"captures of KiCad 7.0.11, not redrawings, and not a size "
             u"comparison \u2014 the three sheets open at different zoom.",
             top=6.40, h=1.06)
-    print("added: Where the novelty is, on the circuit")
+    print("added: What differs in the circuit, theirs and ours")
 else:
     print("  MISSING: results/%s -- run scripts/novelty_circuit.py" % _NC)
+
+
+# ------------------------------------------- both driver sheets, uncropped ---
+# The slide above crops both sheets to the part that differs and rings it,
+# which is the right figure for "where is the difference" but is still a
+# crop -- and a crop is where a comparison can be made to flatter one side.
+# This is the other half of the answer: both sheets whole, at the same scale,
+# nothing ringed and nothing removed, so that anything the cropped figure
+# appears to show can be checked against the sheets themselves.
+_SP = "fig_schematics_pair.png"
+if os.path.exists(os.path.join(RES, _SP)):
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, u"Both gate drivers, as drawn in KiCad")
+    add_text(sl, 0.70, 1.02, 12.10, 0.40, [
+        para([(u"The two sheets the previous slide crops from \u2014 whole, "
+               u"at the same scale, nothing ringed and nothing removed.", B)],
+             level=0, sz=1300, spc=0, bullet=False)])
+    place(sl, _SP, 1.72, 4.02)
+    caption(sl,
+            u"Left: kicad/gan_zhangdrv.kicad_sch, the base paper's driver as "
+            u"we rebuilt it \u2014 seven slices a bank in two stages, one bias "
+            u"resistor, and a rail its own sheet labels as tied to reference. "
+            u"Right: kicad/gan_segdrv.kicad_sch, ours \u2014 eight slices a "
+            u"bank, an active Miller clamp and an off rail selectable to "
+            u"\u22122 V. Both are screen captures of KiCad 7.0.11 taken by "
+            u"scripts/record_kicad.py from the files named above, not "
+            u"redrawings. The two sheets are different sizes, so this is a "
+            u"comparison of what is on them, not of how large they are.",
+            top=5.90, h=1.30)
+    print("added: Both gate drivers, as drawn in KiCad")
+else:
+    print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
 
 
 
@@ -2260,7 +2296,8 @@ ORDER = [
     u"Their driver, drawn \u2014 the reimplementation",
     u"Our driver, drawn \u2014 the same stage",
     u"What we add that they do not have",      # architecture, in green
-    u"Where the novelty is, on the circuit",    # the same claim, ringed
+    u"What differs in the circuit, theirs and ours",    # the same claim, ringed
+    u"Both gate drivers, as drawn in KiCad",         # the same two sheets, whole
     u"How every number on these slides was made",   # the method, stated once
     u"Their architecture \u2014 the base paper",
     u"Our architecture \u2014 same stage",
@@ -2372,7 +2409,8 @@ SHORT = [
     u"System Architecture",
     u"The circuit we simulate",
     u"What we add that they do not have",      # the novelty, in the blocks
-    u"Where the novelty is, on the circuit",   # the novelty, ringed on the sheets
+    u"What differs in the circuit, theirs and ours",   # the difference, ringed on the sheets
+    u"Both gate drivers, as drawn in KiCad",        # and the same sheets uncropped
     u"How every number on these slides was made",   # the method, stated once
     u"The base paper, simulated",              # theirs, alone
     u"Ours, simulated",                        # ours, same axes

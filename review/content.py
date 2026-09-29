@@ -25,7 +25,7 @@ SLIDE4 = [
        "[1]\u2013[4]. Reported: 30.5 % less overshoot, 75 % less turn-off loss "
        "[5]\u2013[7].", False)], 1),
     ([("Limitations / Research Gap:", B)], 0),
-    ([("Nobody has measured what the re-tuning is worth.", B),
+    ([("The reported gains do not separate what the re-tuning is worth.", B),
       (" Those gains mix two different things: picking one good setting, and changing "
        "the setting while the converter runs. Only the second needs a sensor, a lookup "
        "table and a controller.", False)], 1),

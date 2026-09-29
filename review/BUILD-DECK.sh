@@ -22,6 +22,7 @@ export PYTHONDONTWRITEBYTECODE=1
 echo "== test the guards before trusting them"
 python3 review/test_plain_pass.py
 python3 review/test_link_pass.py
+python3 review/test_check_package.py
 
 for s in build.py simplify.py; do
     echo "== $s"
@@ -34,5 +35,8 @@ done
 
 echo "== consistency"
 python3 review/check_consistency.py
+echo
+echo "== package integrity"
+python3 review/check_package.py
 echo
 echo "Decks written to review/."
