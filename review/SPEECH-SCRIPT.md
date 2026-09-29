@@ -207,7 +207,7 @@ them; the comparison is stronger when you are.
 > ran it inside our own testbench, byte-identical except for the driver."
 >
 > "Their approach works. **Plus 0.407 volts** of margin — their pattern alone
-> clears the threshold. And it beats our own constant code, which
+> clears the threshold. Our own constant code, by contrast,
 > false-turns-on at **minus 0.249**. So their contribution is real and we
 > reproduce it."
 >
@@ -442,8 +442,8 @@ it empirically and measured each step, and that is on the slide.
 >
 > "So we rebuilt the same output stage in real SKY130 five-volt transistors and
 > ran it again. The architecture survives — the constant word still fails, the
-> clamp still beats no clamp, clamp plus negative bias still beats clamp
-> alone."
+> clamp still outperforms no clamp, and clamp plus negative bias still
+> outperforms clamp alone."
 >
 > "**But the reason it survives changes, and I want to correct our own
 > headline.** On real devices the clamp alone gives thirty-one millivolts. Not
@@ -510,7 +510,7 @@ Then the part that shows the thinking rather than the wanting.
 > "Five are closed. The sixth — does a fitted schedule generalise to an
 > operating point it was not fitted on — we answered in the negative: the
 > comparator is worse than the fixed word on three of four held-out corners.
-> That is a result, not a failure, and it is the honest one."
+> That is a result, not a failure."
 >
 > "The seventh row is the one that is open. All of this is simulation. No
 > silicon has been measured. That is Review-III, and the title of this project
@@ -591,7 +591,7 @@ clock. Both would be wrong.
 numbers, not an estimate: **33 LUTs fully programmable against 20 fixed at power-up** --
 strapping saves 13 LUTs and 10 flip-flops, 39 % of the logic, for the 2.6 % of
 baseline that adaptation buys. The older yosys pair (53 vs 27) is superseded;
-same direction, but the honest reduction is 39 %, not 49 %.
+same direction, but the correct reduction is 39 %, not 49 %.
 
 ---
 
@@ -939,7 +939,7 @@ open the .asc sheets for this; they're teaching drawings and don't have it.
 **"Did you actually implement the base paper or just cite it?"**
 Implemented. models/zhangdrv.lib, run in our own testbench with only the
 driver swapped, and there is a slide for it. Their approach works — +0.407 V
-at their best setting — and beats our own constant code, which fails at
+at their best setting — ahead of our own constant code, which fails at
 −0.249 V. We searched their own parameter range to quote them at their best
 rather than at a setting we chose for them.
 
