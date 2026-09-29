@@ -445,6 +445,54 @@ else:
     print("  MISSING: results/%s -- run scripts/schematic_pair.py" % _SP)
 
 
+# ------------------------------------------- implementation, full bleed ----
+# The schematics were on the deck only as screen captures of eeschema, which
+# prove the application was open but are a 2560x1440 photograph of a window.
+# These are rendered from the PDFs KiCad plots, which are vector, so they
+# stay sharp at full-screen size -- and they are the whole sheet, frame and
+# title block included, rather than a crop.
+#
+# Laid out to fill the slide: the sheet is A3 landscape and the slide is
+# 16:9, so fitting to height is the largest it can be without cropping, and
+# cropping a schematic to fill a frame would remove circuit.
+_IMPL = [
+    ("implementation/01-converter-schematic.png",
+     u"Implementation: Converter Schematic",
+     u"kicad/gan_buck.kicad_sch, the root sheet, plotted by KiCad 7.0.11. "
+     u"Drawn from sim/buck.cir, so every value on it is the netlist's. The "
+     u"two gate drivers are hierarchical sub-sheets of this page."),
+    ("implementation/04-driver-proposed.png",
+     u"Implementation: Proposed Gate Driver",
+     u"kicad/gan_segdrv.kicad_sch. Eight pull-up slices, eight pull-down, "
+     u"the active Miller clamp on the right, and the off rail selectable to "
+     u"-2 V. Each slice is one switch and one resistor; the resistor carries "
+     u"the control word."),
+    ("implementation/05-driver-base-paper.png",
+     u"Implementation: Base Paper Gate Driver",
+     u"kicad/gan_zhangdrv.kicad_sch, the base paper's driver reimplemented "
+     u"in the same testbench. Seven slices a bank in two stages, one bias "
+     u"resistor, no clamp branch, and the off rail tied to reference."),
+]
+for _if, _it, _icap in _IMPL:
+    if not os.path.exists(os.path.join(HERE, "..", _if)):
+        print("  MISSING: %s -- run scripts/implementation_shots.py" % _if)
+        continue
+    sl = clone_after(p, SRC, len(p.slides._sldIdLst))
+    strip(sl)
+    set_title(sl, _it)
+    _iw, _ih = Image.open(os.path.join(HERE, "..", _if)).size
+    _h = 5.62
+    _w = _h * _iw / float(_ih)
+    if _w > 12.6:
+        _w = 12.6
+        _h = _w * _ih / float(_iw)
+    sl.shapes.add_picture(os.path.join(HERE, "..", _if),
+                          Inches((13.333 - _w) / 2.0), Inches(1.00),
+                          width=Inches(_w), height=Inches(_h))
+    caption(sl, _icap, top=1.02 + _h + 0.08, h=0.78)
+    print("added: %s" % _it)
+
+
 # --------------------------------------- the block, drawn by hand ----------
 # kicad/gan_driver.drawio is the project's own draw.io source and had never
 # reached a slide. It is the clearest picture of the custom block there is:
@@ -2391,6 +2439,9 @@ ORDER = [
     u"Novelty: Three Added Blocks",      # architecture, in green
     u"Novelty at Circuit Level",    # the same claim, ringed
     u"Gate Driver Schematics in KiCad",         # the same two sheets, whole
+    u"Implementation: Converter Schematic",
+    u"Implementation: Proposed Gate Driver",
+    u"Implementation: Base Paper Gate Driver",
     u"Segmented Driver: Block Structure",
     u"Segmented Driver: SPICE Implementation",
     u"GaN HEMT Device Model",
@@ -2507,6 +2558,9 @@ SHORT = [
     u"Novelty: Three Added Blocks",      # the novelty, in the blocks
     u"Novelty at Circuit Level",   # the difference, ringed on the sheets
     u"Gate Driver Schematics in KiCad",        # and the same sheets uncropped
+    u"Implementation: Converter Schematic",
+    u"Implementation: Proposed Gate Driver",
+    u"Implementation: Base Paper Gate Driver",
     u"Segmented Driver: Block Structure",
     u"Segmented Driver: SPICE Implementation",        # the source of the block
     u"GaN HEMT Device Model",          # and of the device
