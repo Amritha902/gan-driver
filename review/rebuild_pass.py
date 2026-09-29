@@ -2528,3 +2528,8 @@ print()
 import plain_pass
 if plain_pass.main():
     raise SystemExit("rebuild_pass: banned phrasing in the deck (see above)")
+
+# A URL printed on a slide has one use, and it is being clicked.
+import link_pass
+if link_pass.main():
+    raise SystemExit("rebuild_pass: dead link text in the deck (see above)")

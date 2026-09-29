@@ -129,7 +129,7 @@ So "6.3× the base paper" means *6.3× our implementation of their described
 scheme, in our testbench, with our parasitics*. It does **not** mean 6.3×
 their measured result. Anyone who reads it the second way has been misled, and
 the deck now says which one it is. The reproduction is checked where it can
-be — setting `nseg=7` collapses their scheme to a constant code and gives
+be — setting `nseg=7` collapses their scheme to a fixed word and gives
 −0.278 V against our own constant-code −0.249 V, which is independent
 agreement to 0.03 V — but that checks the implementation, not the paper.
 

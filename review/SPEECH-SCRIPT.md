@@ -207,7 +207,7 @@ them; the comparison is stronger when you are.
 > ran it inside our own testbench, byte-identical except for the driver."
 >
 > "Their approach works. **Plus 0.407 volts** of margin — their pattern alone
-> clears the threshold. Our own constant code, by contrast,
+> clears the threshold. Our own fixed word, by contrast,
 > false-turns-on at **minus 0.249**. So their contribution is real and we
 > reproduce it."
 >
@@ -509,8 +509,7 @@ Then the part that shows the thinking rather than the wanting.
 >
 > "Five are closed. The sixth — does a fitted schedule generalise to an
 > operating point it was not fitted on — we answered in the negative: the
-> comparator is worse than the fixed word on three of four held-out corners.
-> That is a result, not a failure."
+> comparator is worse than the fixed word on three of four held-out corners."
 >
 > "The seventh row is the one that is open. All of this is simulation. No
 > silicon has been measured. That is Review-III, and the title of this project
@@ -590,8 +589,7 @@ clock. Both would be wrong.
 **Both designs are now in Vivado**, so the cost of programmability is vendor
 numbers, not an estimate: **33 LUTs fully programmable against 20 fixed at power-up** --
 strapping saves 13 LUTs and 10 flip-flops, 39 % of the logic, for the 2.6 % of
-baseline that adaptation buys. The older yosys pair (53 vs 27) is superseded;
-same direction, but the correct reduction is 39 %, not 49 %.
+baseline that adaptation buys.
 
 ---
 
@@ -939,7 +937,7 @@ open the .asc sheets for this; they're teaching drawings and don't have it.
 **"Did you actually implement the base paper or just cite it?"**
 Implemented. models/zhangdrv.lib, run in our own testbench with only the
 driver swapped, and there is a slide for it. Their approach works — +0.407 V
-at their best setting — ahead of our own constant code, which fails at
+at their best setting — ahead of our own fixed word, which fails at
 −0.249 V. We searched their own parameter range to quote them at their best
 rather than at a setting we chose for them.
 

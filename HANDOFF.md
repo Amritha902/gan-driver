@@ -98,11 +98,11 @@ the pattern selected by one bias resistor; no clamp, no negative rail.
 only the driver:
 
     base paper, at its best       +0.407 V   safe
-    ours, constant code, no clamp -0.249 V   FALSE TURN-ON
+    ours, fixed word, no clamp -0.249 V   FALSE TURN-ON
     ours, clamp on                +0.570 V   safe
     ours, clamp + -2 V            +2.576 V   safe
 
-Their pattern works and beats a constant code. Our margin comes from the
+Their pattern works and outperforms a fixed word. Our margin comes from the
 negative off-bias, 6.3x theirs. Report it that way.
 
 **Quote them at their BEST — this matters.** Their driver has two controls:

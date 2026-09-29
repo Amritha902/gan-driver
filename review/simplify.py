@@ -200,7 +200,7 @@ EDITS = [
      u"best setting in their own stated range.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 11", [
-   [(u"False turn-on. ", Y), (u"A constant code is worse than their staged one " + EM +
+   [(u"False turn-on. ", Y), (u"A fixed word alone is worse than their staged one " + EM +
      u" their idea is real, and we reproduce it.", N)],
  ]),
  (u"We implemented the base paper", "TextBox 14", [

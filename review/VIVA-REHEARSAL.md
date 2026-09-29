@@ -131,7 +131,7 @@ measured result and the slide says so in those words.
 best, not at a setting I picked. Their driver has two controls and I search
 both over the range their own paper states, then report their best point.
 There's one check on whether the reproduction is real: set their slice count
-to seven, which collapses the scheme to a constant code, and it gives
+to seven, which collapses the scheme to a fixed word, and it gives
 −0.278 V against my own constant-code −0.249 V. Two independent paths to the
 same number within 0.03 V.
 

@@ -1342,8 +1342,8 @@ add_text(s_bp, 0.70, 1.32, 12.10, 0.95, [
 BPC = [
  ("Base paper, at its best setting", "+0.407 V", False,
   "Their seven-slice pattern alone already clears the 1.4 V threshold."),
- ("Ours, constant code, no clamp", "−0.249 V", False,
-  "False turn-on. A constant code is worse than their staged pattern — their "
+ ("Ours, fixed word, no clamp", "−0.249 V", False,
+  "False turn-on. A fixed word alone is worse than their staged pattern — their "
   "contribution is real, and we reproduce it."),
  ("Ours, active Miller clamp on", "+0.570 V", False,
   "Only marginally past the base paper. The clamp alone is not the story."),

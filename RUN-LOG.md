@@ -106,7 +106,7 @@ negative rail. Run in `sim/dpt.cir` with only the driver swapped.
 | configuration | margin | |
 |---|---|---|
 | base paper, at its best setting | **+0.407 V** | safe |
-| ours, constant code, no clamp | −0.249 V | FALSE TURN-ON |
+| ours, fixed word, no clamp | −0.249 V | FALSE TURN-ON |
 | ours, clamp on | +0.570 V | safe |
 | ours, clamp + −2 V off-bias | **+2.576 V** | safe |
 
