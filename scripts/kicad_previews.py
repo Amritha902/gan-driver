@@ -55,10 +55,34 @@ RES  = os.path.join(ROOT, "results")
 #   buck    A3: circuit runs from about 20 to 150
 MM = 72.0 / 25.4          # millimetres to PDF points
 SHEETS = [
-    ("gan_buck",     "fig_sch_converter.png", 200,  14, 152),
+    # 152 was right until the two gate-driver sub-sheets went onto this
+    # sheet: the low-side block sits at y = 130 mm and is 26 mm tall, and its
+    # "File: ..." label sits under it, so the drawing now ends at 158.4 mm --
+    # the old clip sliced the low-side block in half on the slide. Measured
+    # off the plot rather than guessed: the circuit is one unbroken ink band
+    # from 71.8 to 158.4 mm and the notes start at 159.4, so 159 takes the
+    # whole circuit and none of the notes.
+    ("gan_buck",     "fig_sch_converter.png", 200,  14, 159),
     ("gan_segdrv",   "fig_sch_ours.png",      170,  14, 186),
     ("gan_zhangdrv", "fig_sch_base.png",      150,  14, 358),
 ]
+
+
+def _ink_on_edge(im, rows=3, tol=12, margin=0.12):
+    """True when the drawing runs into the bottom edge of the clip.
+
+    The outer columns are skipped: a KiCad sheet has a printed frame with
+    row letters down both sides, and that frame has ink on every single row,
+    so a check over the full width fires on every clip no matter where it
+    falls. Only the drawing area between the rails can say whether the
+    circuit continues below the cut.
+    """
+    import numpy as _np
+    a = _np.asarray(im.convert("RGB")).astype(int)
+    bg = a[2, 2]
+    x0 = int(a.shape[1] * margin)
+    band = a[-rows:, x0:a.shape[1] - x0, :]
+    return bool((_np.abs(band - bg).max(axis=2) > tol).any())
 
 
 def trim(im, bg=(255, 255, 255), tol=12):
@@ -95,6 +119,19 @@ def main():
         pix = page.get_pixmap(dpi=dpi, clip=clip)
         im = Image.open(_io.BytesIO(pix.tobytes("png")))
         before = im.size
+
+        # Does the clip cut through the drawing? These bounds are millimetres
+        # typed from the generators' rail coordinates, and they go stale the
+        # moment the sheet grows -- adding the two gate-driver sub-sheets
+        # pushed the circuit 4 mm past the bound and the low-side block was
+        # sliced in half on the slide for a week. Ink touching the bottom edge
+        # of the clip means the drawing continues below it.
+        if _ink_on_edge(im):
+            raise SystemExit(
+                "%s: the clip at %d mm cuts through the drawing -- raise the "
+                "bound for %s (the notes block starts a little below it)"
+                % (out, y1_mm, base))
+
         im = trim(im)
         # keep the deck's pictures to a sane pixel budget
         if im.width > 3000:
