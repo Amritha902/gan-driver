@@ -1313,7 +1313,9 @@ if os.path.exists(os.path.join(RES, _TW)):
     place(sl, _TW, 1.52, 4.50)
     caption(sl,
             u"Latency 17.55 \u2192 4.04 \u2192 2.78 ns and device power "
-            u"8.60 \u2192 2.93 \u2192 2.60 W, left to right. The device swap "
+            u"8.60 \u2192 2.93 \u2192 2.60 W, left to right. Against silicon "
+            u"that is 6.3\u00d7 and 3.3\u00d7; against the base paper's control "
+            u"on the same GaN device, 1.5\u00d7 and 1.1\u00d7. The device swap "
             u"buys most of it; the control swap buys the rest. Overshoot is the "
             u"row that runs the other way, and it runs that way for the same "
             u"reason the other five do not: silicon does not overshoot because "
@@ -2418,7 +2420,6 @@ SHORT = [
     u"Or we can run it now",                   # the live offer
     u"Crosstalk simulation",                   # the fault and the fix
     u"Silicon, the base paper, and ours",      # all three, six parameters
-    u"Latency and device power",               # the panel asked for these two
     u"Head to head with the base paper",       # four corners, 5.5x to 12.4x
     u"Work Completed",
     u"References",
