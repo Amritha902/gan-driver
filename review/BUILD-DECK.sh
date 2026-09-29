@@ -39,4 +39,7 @@ echo
 echo "== package integrity"
 python3 review/check_package.py
 echo
+echo "== superseded numbers"
+python3 review/check_stale.py
+echo
 echo "Decks written to review/."

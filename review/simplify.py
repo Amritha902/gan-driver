@@ -268,7 +268,10 @@ EDITS = [
  (u"Result 3", "TextBox 8",
   [[(u"(B)   Change it per operating point", Y)]]),
  (u"Result 3", "TextBox 11",
-  [[(u"(B′)  …but one comparator gets 46 % of (B)", Y)]]),
+  # 46 % was the four-corner figure. grid_analyse.py measured 47 % over 36
+  # corners and RESULTS-SUMMARY.txt has carried that since; this line was
+  # still quoting the old one on a slide that ships in the backup deck.
+  [[(u"(B′)  …but one comparator gets 47 % of (B)", Y)]]),
  (u"Result 3", "TextBox 14", [
    [(u"So the full sensor + ADC + lookup table is left justifying 7.2 % of the total "
      u"gain, over a fixed setting plus one comparator. Re-tuning is 13.4 % of the "

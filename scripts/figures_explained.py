@@ -173,13 +173,19 @@ E["fig_buck_tradeoff.png"] = dict(
 E["paper_fig2_ceiling.png"] = dict(
     what="The ceiling on operating-point scheduling: the best any adaptive "
          "controller could do, against the best fixed word.",
-    look="The gap. It is 5.2 %, and that is the CEILING, not an achieved "
+    # 5.2 % was the four-corner ceiling; grid_analyse.py measured 3.50 %
+    # over 36 corners. This line asserted the old one as current.
+    look="The gap. It is 3.5 %, and that is the ceiling, not an achieved "
          "figure.",
     odd="It is an upper bound computed with an oracle that knows the corner "
         "in advance. No real controller reaches it. That is the honest way to "
         "bound the question.",
-    ask=("\"So adaptive control is worthless?\" — no: worth 3.9 % of "
-         "baseline, of which one comparator takes 46 %. The claim is about "
+    # 3.9 % and 46 % were the n=4 figures. grid_analyse.py superseded them
+    # over 36 corners with 2.6 % and 47 %, and RESULTS-SUMMARY.txt has said
+    # so since; this line kept quoting the old pair into a document the
+    # repository ships.
+    ask=("\"So adaptive control is worthless?\" — no: worth 2.6 % of "
+         "baseline, of which one comparator takes 47 %. The claim is about "
          "how much hardware it justifies, not whether it does anything."))
 
 E["fig_lloop.png"] = dict(
