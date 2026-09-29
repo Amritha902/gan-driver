@@ -337,6 +337,37 @@ if os.path.exists(_hh):
 else:
     warns.append("results/headtohead.csv missing -- run scripts/headtohead.py")
 
+# ---- the speech script's clock must add up --------------------------------
+# Each slide heading carries a budget and a cumulative mark. They were typed
+# independently, so the header claimed 11 min 40 s for a script whose own
+# marks run to 14:25 -- nearly three minutes of rehearsal, wrong. A presenter
+# reading the header plans a different talk from the one the marks describe.
+for _sp in SPEECHES:
+    _txt = open(_sp, encoding="utf-8").read()
+    _marks = re.findall(r"^## .*?\u2014 (\d+) s(?: total)?\s+\*\((\d+):(\d\d)\)\*",
+                        _txt, re.M)
+    if not _marks:
+        continue
+    _run = 0
+    for _bud, _mm, _ss in _marks:
+        _run += int(_bud)
+        _mark = int(_mm) * 60 + int(_ss)
+        if _run != _mark:
+            fails.append("%s: the clock reaches %d:%02d by the budgets but the "
+                         "slide is marked %s:%s"
+                         % (os.path.basename(_sp), _run // 60, _run % 60, _mm, _ss))
+            break
+    else:
+        _hdr = re.search(r"\*\*Total (\d+) min (\d+) s of speaking\.\*\*", _txt)
+        if _hdr and int(_hdr.group(1)) * 60 + int(_hdr.group(2)) != _run:
+            fails.append("%s: the header says %s min %s s but its own slide "
+                         "budgets add to %d:%02d"
+                         % (os.path.basename(_sp), _hdr.group(1), _hdr.group(2),
+                            _run // 60, _run % 60))
+        else:
+            print("  ok    %-22s clock adds up to %d:%02d over %d slides"
+                  % (os.path.basename(_sp), _run // 60, _run % 60, len(_marks)))
+
 # ---- report ---------------------------------------------------------------
 print("consistency check")
 print("-" * 66)

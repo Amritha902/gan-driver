@@ -4,7 +4,7 @@
 Sanjay Kumar 23BEC1447 · Aamir Abdullah 23BPS1197 · Amritha S 23BEC1368
 Guide: Dr. Bindu — SENSE, VIT Chennai · Review-II, 30.09.2026
 
-26 slides. **Total 11 min 40 s of speaking.** Bracketed times are cumulative:
+26 slides. **Total 14 min 25 s of speaking.** Bracketed times are cumulative:
 if the clock is past one, you are behind. Everything in **bold** is a number
 you commit to out loud — each one is on the slide behind you, so you are
 never quoting something the examiner cannot see.
