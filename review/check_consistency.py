@@ -21,7 +21,18 @@ from pptx import Presentation
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DECK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                     "Review2_GaN_Segmented_Gate_Driver.pptx")
-SPEECH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SPEECH-SCRIPT.md")
+# Every speech file, not one of them. SPEECH-10-MINUTES.md quoted 3.9 % for
+# what adapting per operating point is worth -- a figure retired months ago,
+# now 2.6 % -- and passed every build, because only SPEECH-SCRIPT.md was ever
+# read. A file nobody checks is a file somebody rehearses from.
+#
+# A file whose opening lines say SUPERSEDED is skipped: it is kept as history,
+# and its numbers are allowed to be the old ones precisely because the banner
+# tells a reader not to present from it.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+SPEECHES = [p for p in sorted(glob.glob(os.path.join(_HERE, "SPEECH-*.md")))
+            if "SUPERSEDED" not in open(p, encoding="utf-8").read(600)]
+SPEECH = os.path.join(_HERE, "SPEECH-SCRIPT.md")
 SUMMARY = os.path.join(ROOT, "results", "RESULTS-SUMMARY.txt")
 
 fails, warns = [], []
@@ -38,7 +49,7 @@ def deck_text():
     return "\n".join(out)
 
 DT = deck_text()
-SP = open(SPEECH, encoding="utf-8").read() if os.path.exists(SPEECH) else ""
+SP = "\n".join(open(p, encoding="utf-8").read() for p in SPEECHES)
 SM = open(SUMMARY, encoding="utf-8").read() if os.path.exists(SUMMARY) else ""
 
 def norm(t):
@@ -61,7 +72,10 @@ for v in sorted(spoken):
     if not bare or bare in ("1", "2", "3", "4", "5", "8"):
         continue
     if bare not in DTn:
-        fails.append("speech quotes %-12s but the deck does not contain it" % ("'%s'" % vv))
+        where = [os.path.basename(p) for p in SPEECHES
+                 if "**%s**" % v in open(p, encoding="utf-8").read()]
+        fails.append("%s quotes %-12s but the deck does not contain it"
+                     % (", ".join(where) or "a speech file", "'%s'" % vv))
 
 # The transient count used to be a literal here, and it rotted: the deck said
 # 60,533 for six weeks after the true figure had moved to 66,924, and this

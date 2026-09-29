@@ -1,3 +1,9 @@
+> **SUPERSEDED — do not present from this file.**
+> It is written for a 24-slide deck and an older project title, and it
+> quotes 3.9 % for what adapting per operating point is worth. That
+> figure was retired: the current answer, over 36 corners, is 2.6 %.
+> Use `SPEECH-REVIEW2.md`, which is keyed to the 26 slides that ship.
+
 # Review-II — speech script, 10 minutes
 
 **GaN Based DC–DC Power Converter with an Improved Gate Driver**

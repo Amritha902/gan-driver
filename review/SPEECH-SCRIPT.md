@@ -1,3 +1,8 @@
+> **Reference, not the script to present from.**
+> This is the long version, kept because it argues every number out in
+> full and is where the answers to hard questions come from. For the
+> review itself use `SPEECH-REVIEW2.md`, keyed to the 26 slides.
+
 # Review-II speech script — 32 slides, ~10 minutes
 
 Timings are the budget, not a target to hit exactly. Total ≈ 9 min 30 s,

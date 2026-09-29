@@ -1,3 +1,8 @@
+> **SUPERSEDED — do not present from this file.**
+> It is written for a 15-slide deck. Its numbers still check out, but
+> the running order does not match what ships.
+> Use `SPEECH-REVIEW2.md`, which is keyed to the 26 slides that ship.
+
 # Speech script — 15 slides, 10 minutes
 
 Simple version. Say roughly this. Times are cumulative.
