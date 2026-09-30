@@ -2598,6 +2598,32 @@ _sheet(u"Numerical Reliability",
        fig_top=1.52, fig_h=4.15, cap_top=5.80, cap_h=1.45)
 
 
+# ---- why GaN at all -----------------------------------------------------
+# Cut when the deck came down to 25 on the reasoning that this review is
+# about the driver. That was wrong: "why GaN and not silicon" is the first
+# question a power-electronics panel asks, and the study answers it
+# properly -- same netlist, R_ds(on) matched, only the device model moved.
+#
+# The frequency sweep is deliberately NOT on this slide. See
+# scripts/si_gan_slide.py: results/si_vs_gan_sweep.txt does not reproduce at
+# 500 kHz, and a slide carrying both would contradict itself.
+_sheet(u"Why GaN and Not Silicon",
+       u"The same converter, twice. Only the device changes.",
+       "fig_si_gan.png",
+       u"Simulated in ngspice, scripts/si_vs_gan.py on sim/buck.cir. "
+       u"100 V to 50 V, 500 kHz, 10 ohm. The silicon device is matched to "
+       u"the GaN part on R_ds(on), 24.0 against 25.0 m-ohm, so conduction "
+       u"loss is equal by construction and the difference is switching, "
+       u"gate drive and reverse recovery: 6.22 W wasted against 12.63 W, "
+       u"and 97.42 % efficiency against 95.06 %. One caveat: "
+       u"the two do not deliver identical output power, because GaN has no "
+       u"body diode and its third-quadrant drop in dead time is larger than "
+       u"a silicon body-diode drop \u2014 which is the same mechanism that "
+       u"makes our \u22122 V rail cost turn-on energy. Loss per watt "
+       u"delivered normalises for it: 2.65 % against 5.19 %.",
+       fig_top=1.58, fig_h=3.55, cap_top=5.32, cap_h=1.80)
+
+
 # ---- 5. the inductance dependence, as a result -------------------------
 _sheet(u"When Runtime Adaptation Is Worth Building",
        u"The headline is conditional, and this is the condition.",
@@ -2766,6 +2792,7 @@ ORDER = [
     u"Baseline Reimplementation",
     u"Model Validation: Three Device Models",
     u"Numerical Reliability",
+    u"Why GaN and Not Silicon",
     u"When Runtime Adaptation Is Worth Building",
     u"The Cost of the Fix",
     u"Their architecture \u2014 the base paper",
@@ -2895,7 +2922,6 @@ SHORT = [
     u"Aim and Approach",
     u"System Architecture",
     u"Novelty: Three Added Blocks",      # the novelty, in the blocks
-    u"Novelty at Circuit Level",   # the difference, ringed on the sheets
     u"Crosstalk Mechanism at Device Level",
     u"Implementation: Converter Schematic",
     u"Implementation: Proposed Gate Driver",
@@ -2909,6 +2935,7 @@ SHORT = [
     u"Live Simulation",                   # the live offer
     u"Crosstalk: Fault",                   # the fault and the fix
     u"Comparison with the Base Paper",       # four corners, 5.5x to 12.4x
+    u"Why GaN and Not Silicon",
     u"When Runtime Adaptation Is Worth Building",
     u"The Cost of the Fix",
     # The completion percentage was doing no work for a
