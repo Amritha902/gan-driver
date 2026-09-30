@@ -174,7 +174,7 @@ def main():
         "Base paper \u2014 Zhang et al., ISPSD 2020", "base",
         "kicad_zhangdrv.png",
         [((1280, 660, 1950), (1280, 620, 1750), 4.4,
-          "Seven slices per bank, engaged in two stages. Our reimplementation "
+          "Seven segments per bank, engaged in two stages. Our reimplementation "
           "of their driver, from their paper."),
          ((1280, 620, 1750), (1500, 900, 1300), 4.6,
           "No clamp branch, and VN tied to the local reference \u2014 no "
@@ -191,13 +191,13 @@ def main():
         "Ours \u2014 segmented driver with clamp and \u22122 V rail", "ours",
         "kicad_segdrv.png",
         [((1150, 560, 1700), (1130, 560, 1350), 4.4,
-          "Eight pull-up slices from the +5 V rail to the gate, eight pull-down "
-          "slices to the off rail."),
+          "Eight pull-up segments from the +5 V rail to the gate, eight pull-down "
+          "segments to the off rail."),
          ((1130, 560, 1350), (1480, 690, 980), 4.6,
           "And on the right, the active Miller clamp \u2014 one switch and a 0.5 "
           "ohm resistor across the gate. This is what their sheet does not have.")],
         ro, "#6ed696",
-        ["One fixed control word: clamp on, \u22122 V off rail, all eight slices.",
+        ["One fixed control word: clamp on, \u22122 V off rail, all eight segments.",
          "The same word is used at every corner in the study \u2014 it is not",
          "re-tuned for this run.",
          "%.1f\u00d7 the margin of the driver in the other film." % ratio])

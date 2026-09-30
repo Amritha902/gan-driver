@@ -2662,9 +2662,17 @@ add_text(_cn, 0.70, 1.05, 12.10, 5.30, [
            u"corners.", N)],
          level=0, sz=1300, spc=230, bullet=False),
     para([(u"5.  Status.  ", B),
-          (u"Simulation only. No hardware has been built, and the "
-           u"comparison is against our own implementation of the published "
-           u"baseline.", N)], level=0, sz=1300, spc=0, bullet=False)])
+          (u"Simulation only. No hardware built. The comparison is against "
+           u"our own implementation of the published baseline, because the "
+           u"authors' netlist is not published.", N)],
+         level=0, sz=1300, spc=230, bullet=False),
+    # What the Scope and Overturn slides carried, in one point rather than
+    # two slides: the bounds on the claim, and what would break it.
+    para([(u"6.  What would change this.  ", B),
+          (u"A measured gate waveform that does not match the simulated one, "
+           u"or an extracted loop inductance below 2.5 nH — which we "
+           u"have not measured, and which would invert conclusion 3.", N)],
+         level=0, sz=1300, spc=0, bullet=False)])
 print("added: Conclusions")
 
 
@@ -2862,11 +2870,26 @@ for i, s in enumerate(p.slides):
 #   - the driver-simulation case walk and the FPGA slide: the demo films and
 #     the cost table already carry what they proved.
 #   - the second references slide. The deck shows 1-15; BACKUP has 16-30.
+# Cut from 31 to 25. Six slides go, and each one's point survives on a slide
+# that was already carrying it:
+#
+#   Scope of the Claim            -> Conclusions 5 and 6 say the same bounds
+#   Baseline Reimplementation     -> Methodology already states the search we
+#                                    give their driver that its paper does not
+#   GaN HEMT Device Model         -> Model Validation names the same file and
+#                                    runs it against two further models
+#   Demonstration                 -> Live Simulation does it live, in the room
+#   Six-Parameter Comparison      -> GaN against silicon; this review is about
+#                                    the driver, and the Cost slide carries
+#                                    the efficiency and loss numbers
+#   What Would Overturn This      -> folded into Conclusions as one point
+#
+# Dropping Demonstration also takes the 8.9 MB demo film out of the package,
+# which is over half the file's size on its own. All six are in BACKUP.
 SHORT = [
     u"School of",                              # title page (no title shape)
     u"Problem Statement & Background",
     u"Aim and Approach",
-    u"Scope of the Claim",
     u"System Architecture",
     u"Novelty: Three Added Blocks",      # the novelty, in the blocks
     u"Novelty at Circuit Level",   # the difference, ringed on the sheets
@@ -2874,18 +2897,14 @@ SHORT = [
     u"Implementation: Converter Schematic",
     u"Implementation: Proposed Gate Driver",
     u"Implementation: Base Paper Gate Driver",
-    u"Baseline Reimplementation",
     u"Segmented Driver: SPICE Implementation",        # the source of the block
-    u"GaN HEMT Device Model",          # and of the device
     u"Methodology",   # the method, stated once
     u"Model Validation: Three Device Models",
     u"Numerical Reliability",
     u"Base Paper Driver",              # theirs, alone
     u"Proposed Driver",                        # ours, same axes
-    u"Demonstration",
     u"Live Simulation",                   # the live offer
     u"Crosstalk: Fault",                   # the fault and the fix
-    u"Six-Parameter Comparison",      # all three, six parameters
     u"Comparison with the Base Paper",       # four corners, 5.5x to 12.4x
     u"When Runtime Adaptation Is Worth Building",
     u"The Cost of the Fix",
@@ -2894,7 +2913,6 @@ SHORT = [
     # of a hundred that only this deck defines. The table is
     # still in the backup deck if anyone asks for it.
     u"Conclusions",
-    u"What Would Overturn This Result",
     u"Next Steps",
     u"References",
     u"Thank you",

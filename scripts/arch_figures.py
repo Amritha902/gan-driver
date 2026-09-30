@@ -145,9 +145,9 @@ def architecture():
                            "CLKEN \u00b7 clamp enable",
                            "VNEG \u00b7 off-rail select",
                            "CLKDEL \u00b7 clamp timing"]):
-        ax.text(24.5, 44.6 - i * 2.7, f, ha="left", va="center", fontsize=9.4,
+        ax.text(24.5, 44.2 - i * 2.5, f, ha="left", va="center", fontsize=9.4,
                 color=INK, zorder=3)
-    ax.text(37, 29.8, "six fields \u2192 720 control words", ha="center",
+    ax.text(37, 28.6, "six fields \u2192 720 control words", ha="center",
             va="center", fontsize=11.2, color=INK, fontweight="bold", zorder=3)
 
     arrow(ax, 52, 45.5, 56, 45.5)

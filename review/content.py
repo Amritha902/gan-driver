@@ -7,60 +7,53 @@ B = True   # bold
 
 SLIDE4 = [
     ([("Problem Statement:", B)], 0),
-    ([("When one GaN transistor switches, its fast voltage swing pushes charge into "
-       "the gate of the other transistor, the one that is supposed to stay off. "
-       "That gate rises to ", False),
-      ("1.65 V, and only 1.4 V is needed to turn it on", B),
-      (". Both devices conduct at once and the supply shorts through "
-       "them. (That 1.65 V is our device model\u2019s; how much the "
-       "result depends on the model is itself a finding, and it has its "
-       "own slide, Model Validation.)", False)], 1),
+    ([("When one GaN transistor switches, its fast voltage swing pushes "
+       "charge into the gate of the other one \u2014 the one that must stay "
+       "off. That gate rises to ", False),
+      ("1.65 V, and 1.4 V is enough to turn it on", B),
+      (". Both conduct, and the supply shorts through them.", False)], 1),
     ([("Background & Significance:", B)], 0),
-    ([("GaN half-bridges sit inside EV inverters and battery chargers. GaN is chosen "
-       "because it switches fast, and that speed is exactly what causes this fault.",
-       False)], 1),
+    ([("GaN half-bridges sit inside EV inverters and chargers. GaN is chosen "
+       "because it switches fast \u2014 and that speed is what causes this "
+       "fault.", False)], 1),
     ([("Existing Solutions:", B)], 0),
-    ([("Gate drivers that turn the device on in steps, clamp the off gate down, adjust "
-       "the gap between the two switching edges, and hold the gate at \u22122 V "
-       "[1]\u2013[4]. Reported: 30.5 % less overshoot, 75 % less turn-off loss "
-       "[5]\u2013[7].", False)], 1),
+    ([("Drive in steps, clamp the off gate, adjust the dead time, hold the "
+       "gate at \u22122 V [1]\u2013[4]. Reported: 30.5 % less overshoot, "
+       "75 % less turn-off loss [5]\u2013[7].", False)], 1),
     ([("Limitations / Research Gap:", B)], 0),
-    ([("The reported gains do not separate what the re-tuning is worth.", B),
-      (" Those gains mix two different things: picking one good setting, and changing "
-       "the setting while the converter runs. Only the second needs a sensor, a lookup "
-       "table and a controller.", False)], 1),
+    ([("Those gains are reported as one number.", B),
+      (" They mix picking one good setting with changing it while the "
+       "converter runs. Only the second needs a sensor, a lookup table and a "
+       "controller \u2014 so nobody knows whether that hardware is worth "
+       "building.", False)], 1),
 ]
-
 
 SLIDE6 = [
     ([("Aim:", B)], 0),
-    ([("How much additional benefit does runtime adaptation provide beyond a "
-       "fixed gate-driver configuration, and under what electrical conditions "
-       "is that benefit significant? The second half is not a caveat on the "
-       "first: finding the conditions under which the answer changes is part "
-       "of the question.", False)], 1),
+    ([("How much benefit does runtime adaptation add beyond a fixed "
+       "gate-driver setting, and under what conditions is that benefit worth "
+       "the hardware?", False)], 1),
     ([("Proposed Solution:", B)], 0),
     ([("A GaN buck converter driven by a ", False), ("segmented gate driver", B),
-       (": 8 pull-up steps, 8 pull-down steps, an adjustable dead time, a Miller "
-        "clamp and a \u22122 V off rail. Every one of them is a setting we can "
-        "change and measure.", False)], 1),
+       (": 8 pull-up steps, 8 pull-down, adjustable dead time, a Miller clamp "
+        "and a \u22122 V off rail \u2014 every one a setting we can change "
+        "and measure.", False)], 1),
     ([("How we approached it:", B)], 0),
     ([("1. Build the converter and check it converts.", B),
-      (" %s DC in, %s DC out at %s: %s delivered, %s "
-       "efficient." % (CN.VIN, CN.VOUT, CN.IOUT, CN.POUT, CN.EFF), False)], 1),
+      (" %s in, %s out at %s: %s, %s efficient."
+       % (CN.VIN, CN.VOUT, CN.IOUT, CN.POUT, CN.EFF), False)], 1),
     ([("2. Recreate the fault.", B),
-      (" At the fastest setting the gate that should be off reaches 1.65 V, "
-       "against a 1.4 V turn-on threshold.", False)], 1),
+      (" At the fastest setting the off gate reaches 1.65 V against a 1.4 V "
+       "threshold.", False)], 1),
     ([("3. Fix it one change at a time,", B),
-      (" measuring each change on its own run, not all at once.", False)], 1),
+      (" each measured on its own run.", False)], 1),
     ([("4. Ask whether one fixed setting is enough,", B),
-      (" by running the driver at two operating points and seeing whether the "
-       "best setting moves.", False)], 1),
-    ([("Scope and tools:", B)], 0),
-    ([("In scope: ", B), ("the converter, the driver, its settings, and the FPGA "
-       "controller. ", False),
-      ("Tools: ", B), ("ngspice for every simulation, LTspice to draw the "
-       "circuit and re-check, Vivado for the FPGA.", False)], 1),
+      (" by seeing whether the best setting moves with the operating point.",
+       False)], 1),
+    ([("Tools:", B)], 0),
+    ([("ngspice", B), (" runs every simulation. ", False), ("KiCad", B),
+      (" draws every schematic, from the same netlist ngspice runs.", False)],
+     1),
 ]
 
 SLIDE7 = [

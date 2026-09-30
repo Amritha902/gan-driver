@@ -92,6 +92,14 @@ def main():
         # reported exactly that slide as a fault.
         prs = Presentation(path)
         for i, sl in enumerate(prs.slides, 1):
+            # The rule is "a slide that SHOWS a sheet must name it". A slide
+            # with no picture on it shows no sheet, so naming the application
+            # in prose -- "KiCad draws every schematic" on the aim slide --
+            # is not a missing citation. Without this the guard failed the
+            # build for a sentence that had nothing to cite.
+            if not any(sh.shape_type is not None
+                       and "PICTURE" in str(sh.shape_type) for sh in sl.shapes):
+                continue
             body = []
             for sh in sl.shapes:
                 if sh.has_text_frame:
