@@ -4,7 +4,7 @@
 Sanjay Kumar 23BEC1447 · Aamir Abdullah 23BPS1197 · Amritha S 23BEC1368
 Guide: Dr. Bindu — SENSE, VIT Chennai · Review-II, 30.09.2026
 
-25 slides. **Total 14 min 20 s of speaking.** Bracketed times are cumulative:
+25 slides. **Total 14 min 25 s of speaking.** Bracketed times are cumulative:
 if the clock is past one, you are behind. Everything in **bold** is a number
 you say out loud, and every one of them is on the slide behind you.
 
@@ -14,9 +14,9 @@ you say out loud, and every one of them is on the slide behind you.
 | 8–16 | Sanjay — schematics, method, validation, the two runs |
 | 17–25 | Aamir — live demo, results, cost, conclusions |
 
-**The four that decide the review: 4, 13, 20 and 22** — the architecture, the
+**The four that decide the review: 4, 12, 20 and 22** — the architecture, the
 three device models, the loop-inductance result, and the conclusions. If you
-run short, cut 6, 9 and 10. Never cut those four.
+run short, cut 9, 10 and 13. Never cut those four.
 
 **Do not read the captions aloud.** They are there so the panel can check you
 afterwards. Say the lines below and point at the picture.
@@ -24,7 +24,6 @@ afterwards. Say the lines below and point at the picture.
 ---
 
 ## 1 · Title — 25 s  *(0:25)*
-
 Get the signed slide up first. Do not read the registration numbers.
 
 > Good morning. Our project is a **GaN** synchronous buck converter, and the
@@ -39,7 +38,6 @@ Get the signed slide up first. Do not read the registration numbers.
 ---
 
 ## 2 · Problem Statement & Background — 55 s  *(1:20)*
-
 > A half-bridge is two transistors in series across the supply. Exactly one
 > is on at a time. If both are ever on, the supply is shorted through them.
 
@@ -59,7 +57,6 @@ Get the signed slide up first. Do not read the registration numbers.
 ---
 
 ## 3 · Aim and Approach — 40 s  *(2:00)*
-
 > So our aim is one question: how much benefit does runtime adaptation add
 > beyond a fixed setting, and under what conditions is it worth the hardware?
 
@@ -74,7 +71,6 @@ Get the signed slide up first. Do not read the registration numbers.
 ---
 
 ## 4 · System Architecture — 45 s  *(2:45)*
-
 Point along it. Do not read the boxes.
 
 > A PWM command comes in. The FPGA holds the control word — six fields, which
@@ -92,7 +88,6 @@ Point along it. Do not read the boxes.
 ---
 
 ## 5 · Novelty: Three Added Blocks — 40 s  *(3:25)*
-
 > The base paper is Zhang and others, ISPSD 2020. Only the shaded rows differ.
 
 > The command is theirs. The power stage is theirs. Segmenting the output
@@ -107,19 +102,7 @@ Point along it. Do not read the boxes.
 
 ---
 
-## 6 · Novelty at Circuit Level — 30 s  *(3:55)*
-
-> The same claim at circuit level: the converter on top with the two gates
-> ringed, theirs below left, ours below right.
-
-> Both of our additions are established practice and we cite the papers. What
-> is new is that the base paper has neither, and that we measure what each
-> is worth here: the clamp **0.82 V**, the rail **2.01 V**.
-
----
-
-## 7 · Crosstalk Mechanism at Device Level — 50 s  *(4:45)*
-
+## 6 · Crosstalk Mechanism at Device Level — 50 s  *(4:15)*
 **Slow down — this is where you show you understand the physics.**
 
 > Left, the mechanism. The bottom device turns on, the switch node falls from
@@ -136,23 +119,21 @@ Point along it. Do not read the boxes.
 
 ---
 
-## 8–10 · The three schematics — 30 s total  *(5:15)*
-
+## 7–9 · The three schematics — 30 s total  *(4:45)*
 One sentence each. Do not dwell — they are there to be looked at.
 
-> **(8)** The converter as an actual KiCad sheet, drawn from the netlist, with
+> **(7)** The converter as an actual KiCad sheet, drawn from the netlist, with
 > the two gate drivers as sub-sheets of this page.
 
-> **(9)** Our driver: eight pull-up segments, eight pull-down, the Miller
+> **(8)** Our driver: eight pull-up segments, eight pull-down, the Miller
 > clamp on the right, the off rail selectable to minus two volts.
 
-> **(10)** The base paper's driver, rebuilt by us in the same testbench:
+> **(9)** The base paper's driver, rebuilt by us in the same testbench:
 > seven segments per bank in two stages, one bias resistor, no clamp.
 
 ---
 
-## 11 · Segmented Driver: SPICE Implementation — 25 s  *(5:40)*
-
+## 10 · Segmented Driver: SPICE Implementation — 25 s  *(5:10)*
 > This is the actual source of that output stage, at its real line numbers.
 
 > Each segment is one switch and one resistor: in circuit when the control
@@ -162,8 +143,7 @@ One sentence each. Do not dwell — they are there to be looked at.
 
 ---
 
-## 12 · Methodology — 40 s  *(6:20)*
-
+## 11 · Methodology — 40 s  *(5:50)*
 **If you get one methodology question, it is this slide.**
 
 > Every comparison in this deck is the same file with one thing changed.
@@ -181,8 +161,7 @@ One sentence each. Do not dwell — they are there to be looked at.
 
 ---
 
-## 13 · Model Validation: Three Device Models — 50 s  *(7:10)*
-
+## 12 · Model Validation: Three Device Models — 50 s  *(6:40)*
 **This answers "why should I trust your simulation".** Point at the last
 column, not the first.
 
@@ -203,8 +182,7 @@ column, not the first.
 
 ---
 
-## 14 · Numerical Reliability — 40 s  *(7:50)*
-
+## 13 · Numerical Reliability — 40 s  *(7:20)*
 > Two questions this answers: are these numbers physics or solver settings,
 > and where is every run.
 
@@ -221,22 +199,20 @@ column, not the first.
 
 ---
 
-## 15–16 · The two runs — 60 s total  *(8:50)*
-
+## 14–15 · The two runs — 60 s total  *(8:20)*
 These carry video. Click, let it run, talk over it.
 
-> **(15)** Their driver in our testbench. The gate that should stay off peaks
+> **(14)** Their driver in our testbench. The gate that should stay off peaks
 > at **0.993 V** against a **1.400 V** threshold — **0.407 V** of margin.
 
-> **(16)** The same sequence, our driver. It peaks at minus **1.176 V** —
+> **(15)** The same sequence, our driver. It peaks at minus **1.176 V** —
 > **2.576 V** of margin, six times theirs. Same axes, fixed in the script, so
 > the two pictures are directly comparable. And this is one fixed control
 > word, the same one used at every corner in the study.
 
 ---
 
-## 17 · Live Simulation — 60 s  *(9:50)*
-
+## 16 · Live Simulation — 60 s  *(9:20)*
 **Run it. Terminal open in the repository beforehand, font already large.**
 
 > I will run it now rather than show a recording.
@@ -261,14 +237,28 @@ If it fails, say this and move on — do not debug in front of the panel:
 > The recorded run is on the slide behind me and the script is in the
 > repository.
 
-If asked to see the converter itself, there is a second command, about
-twenty-three seconds: `bash proof/LIVE-BUCK.sh` — it prints **48.50 V**,
-**236.26 W**, **97.49 %**.
+**If asked to see the converter actually converting** — the input and
+output voltages, not just the gate — there is a second command, about
+twenty-three seconds:
+
+```
+bash proof/LIVE-BUCK.sh
+```
+
+> This runs the whole converter. It prints the output voltage, power and
+> efficiency it just measured beside what our slides claim — **48.50 V**,
+> **236.26 W**, **97.49 %** — and then draws four plots: the output
+> settling to 48.50 V with 729 mV of ripple, the switch node against the
+> 100 V bus, the gate drive showing the −2 V off rail, and the inductor
+> current.
+
+That picture is the answer to "show me 100 volts in and 48.5 volts out". It
+is not a slide on purpose — it is better drawn in front of them than
+printed.
 
 ---
 
-## 18 · Crosstalk: Fault and Mitigation — 45 s  *(10:35)*
-
+## 17 · Crosstalk: Fault and Mitigation — 45 s  *(10:05)*
 Point at the four panels in order.
 
 > Two runs, four panels. Top row the cause, bottom row the effect.
@@ -288,8 +278,7 @@ Point at the four panels in order.
 
 ---
 
-## 19 · Comparison with the Base Paper — 55 s  *(11:30)*
-
+## 18 · Comparison with the Base Paper — 55 s  *(11:00)*
 **The slide the review turns on.**
 
 > Four corners, mildest to hottest. Only the driver changes.
@@ -310,8 +299,27 @@ Point at the four panels in order.
 
 ---
 
-## 20 · When Runtime Adaptation Is Worth Building — 50 s  *(12:20)*
+## 19 · Why GaN and Not Silicon — 35 s  *(11:35)*
+> Before the driver comparison, the question underneath the whole project:
+> why GaN at all.
 
+> Same converter, same netlist, same operating point. Only the device and its
+> rated gate drive change — and we matched the on-resistance, **25.0**
+> against **24.0** milliohms, so conduction loss is equal by construction.
+> What is left is switching, gate drive and reverse recovery.
+
+> GaN wastes **6.22 W** against silicon's **12.63 W** — **51** percent
+> less — and holds **97.42** percent efficiency against **95.06**.
+
+> One caveat we state ourselves: the two do not deliver identical output
+> power, because GaN has no body diode and its dead-time reverse drop is
+> larger. That is the same mechanism that makes our minus two volt rail cost
+> turn-on energy. Loss per watt delivered normalises for it: **2.65** against
+> **5.19** percent.
+
+---
+
+## 20 · When Runtime Adaptation Is Worth Building — 50 s  *(12:25)*
 **Say this as a finding, not as an apology.**
 
 > Our headline says adaptation adds two-point-six percent. That is
@@ -341,8 +349,7 @@ this is the one trap on this slide, and the answer is three quantities:
 
 ---
 
-## 21 · The Cost of the Fix — 35 s  *(12:55)*
-
+## 21 · The Cost of the Fix — 35 s  *(13:00)*
 > What the margin is paid for with.
 
 > It buys **2.825 V** of gate margin. It costs **0.24** points of efficiency,
@@ -355,8 +362,7 @@ this is the one trap on this slide, and the answer is three quantities:
 
 ---
 
-## 22 · Conclusions — 45 s  *(13:40)*
-
+## 22 · Conclusions — 45 s  *(13:45)*
 > Six, quickly.
 
 > One: the clamp with a negative off rail raises the gate margin on all three
@@ -370,16 +376,14 @@ this is the one trap on this slide, and the answer is three quantities:
 
 ---
 
-## 23 · Next Steps — 25 s  *(14:05)*
-
+## 23 · Next Steps — 25 s  *(14:10)*
 > What remains is bench work, not more simulation. Place-and-route on a
 > chosen board — synthesis is done, the pin constraints are placeholders. And
 > a hardware half-bridge, measured. That is the whole of the remaining risk.
 
 ---
 
-## 24–25 · References and close — 15 s  *(14:20)*
-
+## 24 · References and close — 15 s  *(14:25)*
 > These are the papers this design engages with; number ten is the base
 > paper, the one we reimplemented and measured against.
 
@@ -401,7 +405,7 @@ this is the one trap on this slide, and the answer is three quantities:
 
 **"Why should I believe the numbers?"**
 > Every one regenerates from a named script, and a checker fails the build if
-> a slide and the data disagree. The command on slide 17 re-derives two of
+> a slide and the data disagree. The command on slide 16 re-derives two of
 > them in ten seconds.
 
 **"Is the clamp your idea?"**
@@ -436,6 +440,6 @@ this is the one trap on this slide, and the answer is three quantities:
 - [ ] Slide 1 signed by Dr. Bindu and scanned back in as slide 1.
 - [ ] `bash proof/PREFLIGHT.sh` on the presentation laptop — it rehearses both
       live commands and prints READY.
-- [ ] Terminal open in the repository, font size up, slide 17 rehearsed once.
-- [ ] Videos on slides 15, 16 and 17 play — open the .pptx, not the PDF.
+- [ ] Terminal open in the repository, font size up, slide 16 rehearsed once.
+- [ ] Videos on slides 14, 15 and 16 play — open the .pptx, not the PDF.
 - [ ] The PDF on a pen drive as the fallback.
