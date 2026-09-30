@@ -14,7 +14,7 @@ SLIDE4 = [
       (". Both devices conduct at once and the supply shorts through "
        "them. (That 1.65 V is our device model\u2019s; how much the "
        "result depends on the model is itself a finding, and it has its "
-       "own slide in the backup deck.)", False)], 1),
+       "own slide, Model Validation.)", False)], 1),
     ([("Background & Significance:", B)], 0),
     ([("GaN half-bridges sit inside EV inverters and battery chargers. GaN is chosen "
        "because it switches fast, and that speed is exactly what causes this fault.",

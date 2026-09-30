@@ -593,7 +593,8 @@ for _cf, _ct, _cl, _ccap in [
      u"margin at the cost of dead-time loss. C_GD is a junction diode biased never to "
      u"conduct, so only its C(V) law is used. The temperature coefficients are "
      u"hand-typed from the datasheet, not fitted; this is the principal "
-     u"limitation of the model, and it is covered in the backup deck.")]:
+     u"limitation of the model. The Model Validation slide runs the same "
+     u"three configurations on two further device models.")]:
     if not os.path.exists(os.path.join(RES, _cf)):
         print("  MISSING: results/%s -- run scripts/code_listing.py" % _cf)
         continue
