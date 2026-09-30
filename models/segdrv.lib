@@ -1,12 +1,12 @@
 * ===================================================================
 * segdrv.lib -- Segmented gate driver output stage
 *
-* N=8 thermometer-coded pull-up slices, N=8 pull-down slices, plus a
-* separately-timed active Miller clamp.  Slice count is set by the
+* N=8 thermometer-coded pull-up segments, N=8 pull-down segments, plus a
+* separately-timed active Miller clamp.  Segment count is set by the
 * params npu / npd (1..8), which is the 4+4 bits the FPGA emits.
 *
-* Electrically N parallel slices of runit == runit/N, but the stage is
-* built out of real discrete slices so that each slice maps 1:1 onto a
+* Electrically N parallel segments of runit == runit/N, but the stage is
+* built out of real discrete segments so that each segment maps 1:1 onto a
 * sized transistor when this is redrawn in Cadence.  Do not "optimise"
 * this into a single variable resistor -- the discretisation, and its
 * monotonicity, is a result to report.
@@ -22,7 +22,7 @@
 
 .subckt SEGDRV pu pd clk out vp vn ref params: npu=8 npd=8 runit=8 rclamp=0.5
 
-* ---- pull-up bank : slice enabled if npu >= i --------------------
+* ---- pull-up bank : segment enabled if npu >= i --------------------
 Spu1 vp nu1 pu ref SWP
 Rpu1 nu1 out {runit + (npu>=1 ? 0 : 1e9)}
 Spu2 vp nu2 pu ref SWP
@@ -40,7 +40,7 @@ Rpu7 nu7 out {runit + (npu>=7 ? 0 : 1e9)}
 Spu8 vp nu8 pu ref SWP
 Rpu8 nu8 out {runit + (npu>=8 ? 0 : 1e9)}
 
-* ---- pull-down bank : slice enabled if npd >= i ------------------
+* ---- pull-down bank : segment enabled if npd >= i ------------------
 Spd1 nd1 vn pd ref SWP
 Rpd1 out nd1 {runit + (npd>=1 ? 0 : 1e9)}
 Spd2 nd2 vn pd ref SWP

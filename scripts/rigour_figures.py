@@ -192,71 +192,92 @@ def fig_lloop_ceiling():
 
 # ---------------------------------------------------------- 3. convergence
 def fig_convergence():
-    """Timestep refinement, and the nine runs that aborted.
+    """Timestep refinement, plotted rather than tabulated.
 
-    The nine belong on this sheet and not in a footnote: an examiner who
-    finds 25,911 against 25,920 on their own concludes the count was hidden.
+    This was a five-row table of six columns. A table of numbers that all
+    agree is the least readable way to show that numbers agree: the reader
+    has to do the subtraction. Plotted against timestep, converged looks
+    like a flat line and the eye does it.
+
+    Total energy leads because it is the parameter the power claim rests on
+    -- everything else on the slide is a voltage.
     """
     txt = subprocess.run([sys.executable,
                           os.path.join(ROOT, "scripts", "metric_converge.py")],
                          capture_output=True, text=True, timeout=1800).stdout
     import re
     rows = re.findall(
-        r"^\s*([\d.]+n / [\d.]+n)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+"
+        r"^\s*([\d.]+)n / [\d.]+n\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+"
         r"([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*$", txt, re.M)
     if len(rows) < 4:
         raise SystemExit("rigour_figures: metric_converge.py gave %d rows"
                          % len(rows))
+    step = [float(r[0]) for r in rows]
+    e_tot = [float(r[1]) for r in rows]
+    series = {u"total energy": [float(r[1]) for r in rows],
+              u"switch-node overshoot": [float(r[3]) for r in rows],
+              u"crosstalk margin": [float(r[5]) for r in rows],
+              u"spurious gate peak": [float(r[6]) for r in rows]}
+    COL = {u"total energy": HEAD, u"switch-node overshoot": WARN,
+           u"crosstalk margin": GOOD, u"spurious gate peak": MUTE}
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.6, 3.9), dpi=180,
+                                   gridspec_kw={"width_ratios": [1.15, 1]})
+
+    # left: the parameter the power claim rests on, in its own units
+    ax1.plot(step, e_tot, "-o", color=HEAD, lw=1.8, ms=6)
+    for x, y in zip(step, e_tot):
+        ax1.annotate(u"%.3f" % y, (x, y), textcoords="offset points",
+                     xytext=(0, 9), ha="center", fontsize=8.2, color=INK)
+    ax1.set_xscale("log")
+    ax1.invert_xaxis()
+    ax1.set_xlabel(u"timestep  (ns)  \u2014 finer to the right", fontsize=9.5)
+    ax1.set_ylabel(u"total switching energy  (\u00b5J)", fontsize=9.5)
+    ax1.set_title(u"Energy per switching event, against timestep",
+                  fontsize=10.5, color=HEAD, weight="bold", loc="left")
+    ax1.set_ylim(min(e_tot) * 0.985, max(e_tot) * 1.02)
+    ax1.grid(axis="y", color=RULE, lw=0.5, alpha=0.7)
+
+    # right: everything, as a percentage of its own converged value, so four
+    # quantities in four different units share one axis honestly
+    for k, v in series.items():
+        ref = v[-1]
+        ax2.plot(step, [100.0 * (y - ref) / abs(ref) for y in v], "-o",
+                 color=COL[k], lw=1.6, ms=4.5, label=k)
+    ax2.axhline(0, color=INK, lw=0.8)
+    ax2.set_xscale("log")
+    ax2.invert_xaxis()
+    ax2.set_xlabel(u"timestep  (ns)  \u2014 finer to the right", fontsize=9.5)
+    ax2.set_ylabel(u"deviation from the finest step  (%)", fontsize=9.5)
+    ax2.set_title(u"Every metric the conclusions rest on", fontsize=10.5,
+                  color=HEAD, weight="bold", loc="left")
+    ax2.grid(axis="y", color=RULE, lw=0.5, alpha=0.7)
+    ax2.legend(fontsize=8.2, frameon=False, loc="lower left")
+
+    # Matplotlib's default log ticks put 4x10^-2, 3x10^-2 ... on top of each
+    # other at this width. There are five timesteps; label those five.
+    for ax in (ax1, ax2):
+        ax.set_xticks(step)
+        ax.set_xticklabels([(u"%g" % x) for x in step], fontsize=8.6)
+        ax.set_xticks([], minor=True)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+
     spread = dict(re.findall(r"^\s+(\w+)\s+([\d.]+)%", txt, re.M))
-
-    fig, ax = plt.subplots(figsize=(11.6, 4.8), dpi=180)
-    ax.set_axis_off(); ax.set_xlim(0, 1); ax.set_ylim(0, 1)
-    ax.text(0.0, 0.955, u"Timestep refinement — every metric the "
-            u"conclusions rest on, over a 25× range",
-            fontsize=11.5, weight="bold", color=HEAD, va="bottom")
-
-    cols = [0.00, 0.235, 0.395, 0.545, 0.700, 0.855]
-    hdr = [u"timestep / max step", u"total energy", u"overshoot",
-           u"switch-node peak", u"crosstalk margin", u"spurious gate"]
-    for x, h in zip(cols, hdr):
-        ax.text(x, 0.87, h, fontsize=9.0, color=INK, weight="bold",
-                va="top", ha="left" if x == 0 else "center")
-    ax.plot([0, 1], [0.835, 0.835], color=HEAD, lw=1.3)
-
-    y = 0.745
-    for r in rows:
-        step, e_tot, _e_off, ov, vds, margin, spur = r
-        vals = [u"%s µJ" % e_tot, u"%s %%" % ov, u"%s V" % vds,
-                u"%+.4f V" % float(margin), u"%s V" % spur]
-        ax.text(0.0, y, step, fontsize=9.2, color=INK, va="center")
-        for x, v in zip(cols[1:], vals):
-            ax.text(x, y, v, fontsize=9.2, ha="center", va="center", color=INK)
-        y -= 0.108
-    ax.plot([0, 1], [y + 0.055, y + 0.055], color=RULE, lw=0.6)
-
-    sp = [u"%s %s%%" % (k, spread.get(k, "?"))
-          for k in ("E_tot", "ov_pct", "Vds_pk", "margin", "Vgs_spur")]
-    ax.text(0.0, y - 0.01,
-            u"Spread against the finest step:   " + u"    ·   ".join(sp),
-            fontsize=9.2, color=GOOD, weight="bold", va="top")
-    ax.text(0.0, y - 0.105,
-            u"The margin the whole result rests on moves 0.14 %, and the "
-            u"spurious gate peak 0.04 %. No feasibility verdict changes: "
-            u"0 of 80 flip under refinement.",
-            fontsize=9.0, color=INK, va="top")
-    ax.text(0.0, y - 0.205,
-            u"Runs accounted for: 25,911 of 25,920 completed. The nine that "
-            u"did not are transient convergence aborts at the high-side gate "
-            u"node, reproducible, and all nine are half-fixed settings "
-            u"(clamp without the rail, or rail without the clamp). None is "
-            u"the shipped configuration. scripts/failed_runs.py",
-            fontsize=9.0, color=WARN, va="top")
+    fig.text(0.008, -0.03,
+             u"scripts/metric_converge.py, five timesteps over a 25\u00d7 "
+             u"range. Total energy moves %s %%, switch-node overshoot %s %%, "
+             u"the crosstalk margin %s %% and the spurious gate peak %s %%. "
+             u"Flat is the result."
+             % (spread.get("E_tot", "?"), spread.get("ov_pct", "?"),
+                spread.get("margin", "?"), spread.get("Vgs_spur", "?")),
+             fontsize=8.2, color=MUTE, ha="left", va="top")
 
     out = os.path.join(RES, "fig_convergence.png")
     fig.savefig(out, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print("  wrote %s  (%d refinement steps)"
-          % (os.path.relpath(out, ROOT), len(rows)))
+    print("  wrote %s  (%d refinement steps, %.3f-%.3f uJ)"
+          % (os.path.relpath(out, ROOT), len(rows), min(e_tot), max(e_tot)))
 
 
 # ----------------------------------------------------------------- 4. cost

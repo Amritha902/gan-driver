@@ -7,13 +7,13 @@
 *   Proc. IEEE ISPSD, 2020, pp. 102-105.  Xplore 9170108.
 *
 * WHAT THEIR DRIVER DOES, AND WHAT THIS REPRODUCES
-* A segmented output stage on E-mode GaN: SEVEN slices whose engagement
+* A segmented output stage on E-mode GaN: SEVEN segments whose engagement
 * follows a driving-strength PATTERN across the switching edge, with the
 * pattern timing in the 0.5-5 ns range. The distinguishing claim is in
 * the word "Simple": the pattern is selected by ONE external bias
 * resistor rather than by per-field digital control. That single-knob
 * pattern selection is the paper's contribution and is what this file
-* implements -- NSEG slices engage first, the remaining 7-NSEG join
+* implements -- NSEG segments engage first, the remaining 7-NSEG join
 * after TSTEP, and both NSEG and TSTEP are tied to the one bias setting.
 *
 * WHAT IT DELIBERATELY DOES NOT HAVE -- these are OUR additions, and
@@ -24,12 +24,12 @@
 *     pattern, where we emit 6 fields from an FPGA
 *
 * WHAT IS MODELLED VS WHAT IS INFERRED
-* Modelled from the paper as cited: seven slices, staged pattern across
+* Modelled from the paper as cited: seven segments, staged pattern across
 * the edge, pattern timing 0.5-5 ns, one-knob selection, no clamp, no
 * negative rail. INFERRED, because the ISPSD paper is 4 pages and does
-* not give slice sizing: that the slices are equal-sized and that the
+* not give segment sizing: that the segments are equal-sized and that the
 * stage splits NSEG / 7-NSEG. Both are stated here rather than hidden,
-* and neither favours our result -- equal slices and a two-stage split
+* and neither favours our result -- equal segments and a two-stage split
 * are the most favourable simple reading of "pattern control".
 *
 * Built on the same SWP switch model and the same runit as segdrv.lib so
@@ -41,7 +41,7 @@
 * Pins:  pu  pd  seg  out  vp  vn  ref
 *   pu   : logic high => pull up   (referenced to ref)
 *   pd   : logic high => pull down (referenced to ref)
-*   seg  : pattern step. Low = first stage (NSEG slices engaged),
+*   seg  : pattern step. Low = first stage (NSEG segments engaged),
 *          high = second stage (all 7 engaged). The testbench generates
 *          the step so its timing is visible in the deck, not buried.
 *   ref  : local logic/driver ground (0 for low side, SW for high side)
@@ -53,15 +53,15 @@
 .subckt ZHANGDRV pu pd seg out vp vn ref params: nseg=2 runit=8
 
 * ---- stage select ------------------------------------------------
-* sa is high for the whole edge (first-stage slices, always engaged).
-* sb follows seg, so the remaining slices join at the pattern step.
+* sa is high for the whole edge (first-stage segments, always engaged).
+* sb follows seg, so the remaining segments join at the pattern step.
 Vsa sa ref DC 1
 Ssb  nsb ref seg ref SWPZ
 Rsb  nsb ref 1meg
 Bsb  sb ref V = {v(seg)}
 
-* ---- pull-up bank : 7 slices -------------------------------------
-* Slice i is in the FIRST stage if i <= nseg, otherwise it waits for
+* ---- pull-up bank : 7 segments -------------------------------------
+* Segment i is in the FIRST stage if i <= nseg, otherwise it waits for
 * the pattern step. Enabling is by series resistance exactly as in
 * segdrv.lib, so the two stages are electrically comparable.
 Spu1 vp nu1 pu ref SWPZ
@@ -79,7 +79,7 @@ Rpu6 nu6 out {runit + (6<=nseg ? 0 : 1e9)}
 Spu7 vp nu7 pu ref SWPZ
 Rpu7 nu7 out {runit + (7<=nseg ? 0 : 1e9)}
 
-* second-stage pull-up slices: gated by the pattern step
+* second-stage pull-up segments: gated by the pattern step
 Spu1b vp nu1b pu ref SWPZ
 Sgu1b nu1b nu1c seg ref SWPZ
 Rpu1b nu1c out {runit + (1>nseg ? 0 : 1e9)}
@@ -102,7 +102,7 @@ Spu7b vp nu7b pu ref SWPZ
 Sgu7b nu7b nu7c seg ref SWPZ
 Rpu7b nu7c out {runit + (7>nseg ? 0 : 1e9)}
 
-* ---- pull-down bank : 7 slices, same two-stage pattern ------------
+* ---- pull-down bank : 7 segments, same two-stage pattern ------------
 Spd1 nd1 vn pd ref SWPZ
 Rpd1 out nd1 {runit + (1<=nseg ? 0 : 1e9)}
 Spd2 nd2 vn pd ref SWPZ

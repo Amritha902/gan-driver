@@ -219,7 +219,7 @@ Cut this slide if you are behind. One sentence otherwise.
 > nowhere to go except into the gate of the top device.
 
 > On the right is what the driver does about it. The gate node has three
-> paths to hold it down. The pull-down slices — the more you turn on, the
+> paths to hold it down. The pull-down segments — the more you turn on, the
 > harder the gate is held. The Miller clamp — its own switch and a half-ohm
 > path, opened exactly when the other device switches. And the off rail,
 > which sets where the gate starts from.
@@ -237,11 +237,11 @@ Sanjay takes over. One sentence each, do not dwell.
 > **(10)** This is the converter as an actual KiCad sheet, drawn from the
 > netlist, with the two gate drivers as sub-sheets of this page.
 
-> **(11)** This is our driver. Eight pull-up slices, eight pull-down, the
+> **(11)** This is our driver. Eight pull-up segments, eight pull-down, the
 > Miller clamp on the right, the off rail selectable to minus two volts.
 
 > **(12)** And this is the base paper's driver, rebuilt by us in the same
-> testbench: seven slices per bank in two stages, one bias resistor, no
+> testbench: seven segments per bank in two stages, one bias resistor, no
 > clamp, off rail tied to reference.
 
 ---
@@ -250,12 +250,12 @@ Sanjay takes over. One sentence each, do not dwell.
 > A word on how we built their driver, because the whole comparison rests on
 > it.
 
-> From the paper: a segmented output stage on E-mode GaN, seven slices a bank,
+> From the paper: a segmented output stage on E-mode GaN, seven segments a bank,
 > two-stage engagement, pattern timing in the nought-point-five to five
 > nanosecond range, and one external bias resistor selecting the pattern. That
 > last one is their contribution — it is the word "Simple" in their title.
 
-> What we had to decide. Slice resistance and device sizing we matched to
+> What we had to decide. Segment resistance and device sizing we matched to
 > ours, so this compares architectures and not silicon area. And the bias
 > setting: their paper fixes it once at design time, but we search both of
 > their controls at every corner and run theirs at whatever wins.
@@ -266,9 +266,9 @@ Sanjay takes over. One sentence each, do not dwell.
 ---
 
 ## 15 · Segmented Driver: Block Structure — 35 s  *(8:40)*
-> Here is how a slice works, because the whole study turns on it.
+> Here is how a segment works, because the whole study turns on it.
 
-> Each slice is one switch and one resistor. The control word decides whether
+> Each segment is one switch and one resistor. The control word decides whether
 > that resistor is eight ohms and in circuit, or one gigaohm and effectively
 > out. So drive strength is just how many of the eight parallel paths are
 > live — that is all "segmented" means.
@@ -280,7 +280,7 @@ Sanjay takes over. One sentence each, do not dwell.
 
 ## 16–17 · The two files we wrote — 30 s total  *(9:10)*
 > **(14)** This is the actual SPICE source of that output stage, at its real
-> line numbers. The clamp is deliberately not one of the slices — it has its
+> line numbers. The clamp is deliberately not one of the segments — it has its
 > own switch and its own timing, because it has to hold the gate down while
 > the *other* device is switching.
 

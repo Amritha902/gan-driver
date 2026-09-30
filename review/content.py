@@ -117,7 +117,7 @@ SLIDE_RTL = [
     ([("The FPGA side, written and verified", B)], 0),
     ([("Three modules emitting exactly the 720-point control word the SPICE model consumes, so "
        "the FPGA and the ngspice sweep run the same configuration.", False)], 1),
-    ([("thermo_decode.v", B), (" — slice count to thermometer enables. Eight discrete slices, "
+    ([("thermo_decode.v", B), (" — segment count to thermometer enables. Eight discrete segments, "
        "not one variable resistor, so each code maps 1:1 onto a sized transistor in Cadence.",
        False)], 1),
     ([("dead_time_gen.v", B), (" — complementary outputs with a ", False),
@@ -133,7 +133,7 @@ SLIDE_RTL = [
     ([("Reset lands on the safest word, not the fastest — a driver that wakes at full drive "
        "into an unknown bus is how devices die.", False)], 1),
     ([("Verified, not just written.", B), (" A self-checking testbench asserts eight properties "
-       "— no shoot-through, exact dead-time length at three settings, all slices off and clamps "
+       "— no shoot-through, exact dead-time length at three settings, all segments off and clamps "
        "on during dead time, thermometer monotonicity over the full range, safe reset, no "
        "truncation on a late update, and no pull-up bank driven during a dead time. ", False), ("All pass under Icarus Verilog.", B)], 1),
     ([("Then mutation-tested \u2014 ", False), ("sh rtl/mutate.sh", True),

@@ -176,14 +176,14 @@ set_body(note, [para([("W. J. Zhang, J. Yu, Y. Leng, W. T. Cui, G. Q. Deng and W
 
 BASE_ROWS = [
     ("What it does",
-     "A segmented gate driver for E-mode GaN HEMTs: the output stage is split into slices, and "
+     "A segmented gate driver for E-mode GaN HEMTs: the output stage is split into segments, and "
      "drive strength is selected by a pattern rather than set by a resistor."),
     ("Same device, same architecture",
      "GaN HEMTs in a bridge, a sliced output stage, strength chosen by a code. That is the "
      "structure this project starts from."),
     ("How we extend it",
      "Theirs is an ASIC with a fixed pattern set, chosen at design time. We make every field "
-     "programmable from an FPGA \u2014 slices, dead time, Miller clamp, off-bias rail \u2014 add "
+     "programmable from an FPGA \u2014 segments, dead time, Miller clamp, off-bias rail \u2014 add "
      "the clamp and the \u22122 V rail, and measure what choosing the pattern per operating "
      "point is worth."),
 ]
@@ -991,9 +991,9 @@ add_text(s_def, 0.70, 1.25, 12.0, 0.45, [
            "definition the rest of the results rest on.", False)],
          level=0, sz=1300, spc=0, bullet=False)])
 
-FIELDS = [("N_PU", "pull-up slices ON", "1 – 8", "how hard the device is turned ON"),
-          ("N_PD,LS", "low-side pull-down slices", "1 – 8", "how hard it is turned OFF"),
-          ("N_PD,HS", "high-side pull-down slices", "1, 4, 8", "the off device's grip on its gate"),
+FIELDS = [("N_PU", "pull-up segments ON", "1 – 8", "how hard the device is turned ON"),
+          ("N_PD,LS", "low-side pull-down segments", "1 – 8", "how hard it is turned OFF"),
+          ("N_PD,HS", "high-side pull-down segments", "1, 4, 8", "the off device's grip on its gate"),
           ("t_dead", "dead time", "5 / 10 / 15 / 25 ns", "gap before the other device turns on"),
           ("CLK_EN", "active Miller clamp", "off / on", "shorts the gate during the other edge"),
           ("V_neg", "gate off-bias", "0 V / −2 V", "how far below threshold the gate is held")]
@@ -1345,14 +1345,14 @@ add_text(s_bp, 12.53, 7.05, 0.50, 0.30,
 add_text(s_bp, 0.70, 1.32, 12.10, 0.95, [
     para([("Citing a base paper is not a comparison. ", True),
           ("models/zhangdrv.lib implements Zhang et al.'s segmented driver — seven "
-           "slices brought in as a timed pattern across the switching edge, the pattern "
+           "segments brought in as a timed pattern across the switching edge, the pattern "
            "selected by one bias resistor, with no Miller clamp and no negative off-bias "
            "rail, because those are ours. It runs inside sim/dpt.cir, byte-identical "
            "otherwise, so only the driver differs.",
            False)], level=0, sz=1250, spc=0, bullet=False)])
 BPC = [
  ("Base paper, at its best setting", "+0.407 V", False,
-  "Their seven-slice pattern alone already clears the 1.4 V threshold."),
+  "Their seven-segment pattern alone already clears the 1.4 V threshold."),
  ("Ours, fixed word, no clamp", "−0.249 V", False,
   "False turn-on. A fixed word alone is worse than their staged pattern — their "
   "contribution is real, and we reproduce it."),
@@ -1371,7 +1371,7 @@ for i, (lab, val, hot, note) in enumerate(BPC):
              [para([(note, False)], level=0, sz=1150, spc=0, bullet=False)])
 add_text(s_bp, 0.70, 5.62, 12.10, 1.35, [
     para([("What the comparison shows. ", True),
-          ("The base paper stages its slices in TIME and picks the pattern with one "
+          ("The base paper stages its segments in TIME and picks the pattern with one "
            "resistor; we add two actuators it does not have and make every field "
            "programmable. Both clear the threshold — theirs works, and we quote it at "
            "the best setting in its own stated range — but ours clears it by 6.3× more, "

@@ -112,49 +112,106 @@ def arrow(ax, x1, y1, x2, y2, color=INK, lw=2.0):
 
 # ------------------------------------------------------------ slide 4 ------
 def architecture():
-    fig, ax = plt.subplots(figsize=(13.0, 3.9))
-    ax.set_xlim(0, 133); ax.set_ylim(14.5, 50); ax.axis("off")
+    """The architecture, with the driver opened up.
 
-    y = 30.0
-    box(ax, 1, y, 18, 11, "PWM in", "duty / frequency", fc=PAPER, ec=GREY,
+    This was five boxes in a row -- PWM, FPGA, driver, half-bridge, load --
+    which is a signal path, not an architecture: it showed nothing of what is
+    inside the block the project designs, so a reviewer could not tell what
+    was built from what was bought. The driver is now exploded into the four
+    things it contains, and the control word is shown as the six fields the
+    FPGA emits rather than as an unlabelled arrow.
+
+    The FPGA block is drawn by hand rather than with box(): box() centres its
+    title at mid-height, which lands it on top of a field list.
+    """
+    fig, ax = plt.subplots(figsize=(13.0, 5.4))
+    ax.set_xlim(0, 133); ax.set_ylim(6, 62); ax.axis("off")
+
+    # ---- control plane ------------------------------------------------
+    box(ax, 1, 40, 19, 11, "PWM in", "duty / frequency", fc=PAPER, ec=GREY,
         tc="#33363D")
-    arrow(ax, 19, y + 5.5, 23, y + 5.5)
-    box(ax, 23, y, 27, 11, "seg_gate_ctrl.v", "FPGA \u00b7 720 control words")
-    arrow(ax, 50, y + 5.5, 54, y + 5.5)
-    box(ax, 54, y, 38, 11, "Segmented gate driver",
-        "8 + 8 slices \u00b7 clamp \u00b7 off-bias mux",
-        fc=GREEN_BG, ec=GREEN, tc=GREEN)
-    arrow(ax, 92, y + 5.5, 96, y + 5.5)
-    box(ax, 96, y, 23, 11, "GaN half-bridge", "high side + low side")
-    arrow(ax, 119, y + 5.5, 123, y + 5.5)
-    box(ax, 123, y, 9, 11, "Load", None, fc=PAPER, ec=GREY, tc="#33363D")
+    arrow(ax, 20, 45.5, 22, 45.5)
 
-    # the fault this project exists to fix
-    ax.plot([107, 107, 73, 73], [y, y - 9, y - 9, y], color=HOT, lw=2.0,
+    ax.add_patch(FancyBboxPatch((22, 26), 30, 29,
+                                boxstyle="round,pad=0,rounding_size=1.4",
+                                fc="white", ec=INK, lw=1.6, zorder=2))
+    ax.text(37, 52.0, "seg_gate_ctrl.v", ha="center", va="center",
+            fontsize=13.5, fontweight="bold", color=INK, zorder=3)
+    ax.text(37, 48.8, "FPGA \u00b7 20 LUT / 20 FF", ha="center", va="center",
+            fontsize=11.2, color=GREY, zorder=3)
+    for i, f in enumerate(["NPU \u00b7 pull-up strength",
+                           "NPD \u00b7 pull-down strength",
+                           "DT \u00b7 dead time",
+                           "CLKEN \u00b7 clamp enable",
+                           "VNEG \u00b7 off-rail select",
+                           "CLKDEL \u00b7 clamp timing"]):
+        ax.text(24.5, 44.6 - i * 2.7, f, ha="left", va="center", fontsize=9.4,
+                color=INK, zorder=3)
+    ax.text(37, 29.8, "six fields \u2192 720 control words", ha="center",
+            va="center", fontsize=11.2, color=INK, fontweight="bold", zorder=3)
+
+    arrow(ax, 52, 45.5, 56, 45.5)
+    ax.text(54, 47.6, "word", ha="center", va="bottom", fontsize=9.2,
+            color=INK)
+
+    # ---- the driver, opened up ----------------------------------------
+    ax.add_patch(FancyBboxPatch((56, 26), 40, 29,
+                                boxstyle="round,pad=0,rounding_size=1.4",
+                                fc=GREEN_BG, ec=GREEN, lw=1.6, zorder=2))
+    ax.text(76, 52.0, "Segmented gate driver", ha="center", va="center",
+            fontsize=13.5, fontweight="bold", color=GREEN, zorder=3)
+    ax.text(76, 48.8, "\u00d7 2 \u2014 one per gate", ha="center",
+            va="center", fontsize=11.2, color=GREEN, zorder=3)
+    for i, (t, sub) in enumerate([
+            ("8 pull-up segments", "from VP, thermometer coded"),
+            ("8 pull-down segments", "to VN, thermometer coded"),
+            ("active Miller clamp", "own switch, 0.5 \u03a9 to VN"),
+            ("off-bias mux", "VN = 0 V or \u22122 V")]):
+        yy = 41.4 - i * 4.6
+        ax.add_patch(FancyBboxPatch((58.5, yy), 35, 3.9,
+                                    boxstyle="round,pad=0,rounding_size=1.0",
+                                    fc="white", ec=GREEN, lw=1.1, zorder=3))
+        ax.text(60.2, yy + 2.55, t, ha="left", va="center", fontsize=9.8,
+                color=GREEN, fontweight="bold", zorder=4)
+        ax.text(60.2, yy + 1.10, sub, ha="left", va="center", fontsize=8.8,
+                color=GREY, zorder=4)
+
+    # ---- power plane ---------------------------------------------------
+    arrow(ax, 96, 41.5, 99, 41.5)
+    box(ax, 99, 35, 24, 13, "GaN half-bridge", "high side + low side")
+    ax.text(111, 32.6, "SW node", ha="center", va="center", fontsize=9.4,
+            color=GREY)
+    arrow(ax, 123, 41.5, 125, 41.5)
+    box(ax, 125, 35, 8, 13, "L-C", None, fc=PAPER, ec=GREY, tc="#33363D")
+    ax.text(129, 32.6, "\u2192 load", ha="center", va="center", fontsize=9.4,
+            color=GREY)
+    ax.text(116, 28.4, "100 V \u2192 48.50 V, 97.49 %", ha="center",
+            va="center", fontsize=10.6, color=INK, fontweight="bold")
+
+    # ---- the fault, from the switch node back into the driver ----------
+    ax.plot([111, 111, 76, 76], [35, 20, 20, 26], color=HOT, lw=2.0,
             zorder=1)
-    ax.add_patch(FancyArrowPatch((73, y - 9), (73, y - 0.4), color=HOT, lw=2.0,
+    ax.add_patch(FancyArrowPatch((76, 20), (76, 25.6), color=HOT, lw=2.0,
                                  arrowstyle="-|>", mutation_scale=14,
                                  shrinkA=0, shrinkB=0, zorder=2))
-    ax.text(90, y - 11.6, "C$_{GD}$ crosstalk — the switching edge lifts "
+    ax.text(93, 17.6, "C$_{GD}$ crosstalk \u2014 the switching edge lifts "
             "the gate that should stay off", ha="center", va="top",
-            fontsize=10.5, color=HOT, fontweight="bold")
+            fontsize=11.0, color=HOT, fontweight="bold")
 
-    b = adaptive_share()
-    ax.text(36.5, y - 4.2, "set once at power-up — no sensor, no lookup table",
-            ha="center", va="top", fontsize=10.2, color=GREY)
-    ax.text(36.5, y - 8.4, "re-tuning it while the converter runs is worth a "
-            "further %.1f %%" % b, ha="center", va="top", fontsize=10.5,
-            color=INK, fontweight="bold")
-
-    ax.text(2, 48.0, "The driver is drawn as kicad/gan_segdrv.kicad_sch and "
-            "placed twice in kicad/gan_buck.kicad_sch — once per gate.",
-            ha="left", va="center", fontsize=10.5, color=GREY)
+    # ---- the one sentence the whole project turns on -------------------
+    b_ = adaptive_share()
+    ax.text(66, 9.6, "The control word is set once at power-up \u2014 no "
+            "sensor, no lookup table. Re-tuning it while the converter runs "
+            "is worth a further %.1f %%." % b_,
+            ha="center", va="center", fontsize=11.2, color=INK,
+            fontweight="bold")
 
     check_fits(fig, ax)
     p = os.path.join(RES, "fig_architecture.png")
     fig.savefig(p, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close(fig)
-    print("  wrote %s  (adaptive share %.1f %%)" % (os.path.relpath(p, ROOT), b))
+    print("  wrote %s  (adaptive share %.1f %%)"
+          % (os.path.relpath(p, ROOT), b_))
 
 
 # ------------------------------------------------------------ slide 6 ------
@@ -165,8 +222,8 @@ def delta_table():
          "one analogue bias resistor,\nset at fabrication",
          "seg_gate_ctrl.v — digital,\nre-writable while it runs", True),
         ("Output stage",
-         "7 + 7 slices, two stages",
-         "8 + 8 slices, thermometer coded", False),
+         "7 + 7 segments, two stages",
+         "8 + 8 segments, thermometer coded", False),
         ("Active Miller clamp", "none", "always on", True),
         ("Gate off rail", "0 V", "selectable 0 V / −2 V", True),
         ("Crosstalk margin\nat 100 V / 10 A",

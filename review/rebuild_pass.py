@@ -189,7 +189,7 @@ SRC = index_of(u"Result 1")
 NEW = [
  ("fig_segdrv_inside.png", u"Inside the segmented gate driver",
   u"Contents of models/segdrv.lib, drawn as ltspice/SEGDRV_inside.asc: eight "
-  u"pull-up slices from the +5 V rail to the gate, eight pull-down slices to "
+  u"pull-up segments from the +5 V rail to the gate, eight pull-down segments to "
   u"the off rail, and the Miller clamp on its own 0.5 \u03a9 path. It runs: "
   u"the gate charges to 5.000 V."),
  ("fig_howrun.png", u"How we run ngspice",
@@ -287,7 +287,7 @@ TOOLOUT = [
   u"ngspice cannot draw a schematic. It can say what it parsed, which is "
   u"better evidence: a drawing is what somebody believes the circuit is, "
   u"this is what was solved. Note rpu1\u2013rpu8 and rpd1\u2013rpd8 \u2014 the "
-  u"sixteen slices, switched in by {runit+(npu>=n?0:1e9)} \u2014 rclk the "
+  u"sixteen segments, switched in by {runit+(npu>=n?0:1e9)} \u2014 rclk the "
   u"clamp, and rdec at 1 \u03a9, the damped value. "
   u"scripts/netlist_listing.py regenerates it, so it cannot go stale."),
  # This caption describes two rows of waveforms -- the switch node over the
@@ -398,9 +398,9 @@ if os.path.exists(os.path.join(RES, _NC)):
             u"Top: sim/buck.cir, with the two gates of the half-bridge "
             u"ringed \u2014 HSG and LSG are what a gate driver drives, and "
             u"everything below is what sits behind them. Bottom left, theirs: "
-            u"seven slices per bank in two stages, and a rail their own sheet "
+            u"seven segments per bank in two stages, and a rail their own sheet "
             u"labels \u201ctied to ref \u2014 NO negative rail\u201d. Bottom "
-            u"right, ours: the same eight-slice output stage, plus the active "
+            u"right, ours: the same eight-segment output stage, plus the active "
             u"Miller clamp and an off rail selectable to \u22122 V. The clamp "
             u"is worth +0.82 V of crosstalk margin and the rail +2.01 V; "
             u"together \u22120.249 V becomes +2.576 V. Annotated screen "
@@ -431,9 +431,9 @@ if os.path.exists(os.path.join(RES, _SP)):
     place(sl, _SP, 1.72, 4.02)
     caption(sl,
             u"Left: kicad/gan_zhangdrv.kicad_sch, the base paper's driver as "
-            u"we rebuilt it \u2014 seven slices per bank in two stages, one bias "
+            u"we rebuilt it \u2014 seven segments per bank in two stages, one bias "
             u"resistor, and a rail its own sheet labels as tied to reference. "
-            u"Right: kicad/gan_segdrv.kicad_sch, ours \u2014 eight slices a "
+            u"Right: kicad/gan_segdrv.kicad_sch, ours \u2014 eight segments a "
             u"bank, an active Miller clamp and an off rail selectable to "
             u"\u22122 V. Both are screen captures of KiCad 7.0.11 taken by "
             u"scripts/record_kicad.py from the files named above, not "
@@ -469,7 +469,7 @@ if os.path.exists(os.path.join(RES, _GL)):
             u"%.2f ns and peaking at %.0f V/ns, and "
             u"that dv/dt drives a current through C_GD into the high-side "
             u"gate. Right: the three parallel paths that current sees at the "
-            u"gate node. The slice count sets how hard the gate is held; the "
+            u"gate node. The segment count sets how hard the gate is held; the "
             u"Miller clamp adds a 0.5 ohm path of its own, timed to the other "
             u"device's edge; the off rail sets where the gate starts from. "
             u"The two additions are not one mechanism - the rail moves the "
@@ -501,14 +501,14 @@ _IMPL = [
      u"two gate drivers are hierarchical sub-sheets of this page."),
     ("implementation/04-driver-proposed.png",
      u"Implementation: Proposed Gate Driver",
-     u"kicad/gan_segdrv.kicad_sch. Eight pull-up slices, eight pull-down, "
+     u"kicad/gan_segdrv.kicad_sch. Eight pull-up segments, eight pull-down, "
      u"the active Miller clamp on the right, and the off rail selectable to "
-     u"-2 V. Each slice is one switch and one resistor; the resistor carries "
+     u"-2 V. Each segment is one switch and one resistor; the resistor carries "
      u"the control word."),
     ("implementation/05-driver-base-paper.png",
      u"Implementation: Base Paper Gate Driver",
      u"kicad/gan_zhangdrv.kicad_sch, the base paper's driver reimplemented "
-     u"in the same testbench. Seven slices per bank in two stages, one bias "
+     u"in the same testbench. Seven segments per bank in two stages, one bias "
      u"resistor, no clamp branch, and the off rail tied to reference."),
 ]
 for _if, _it, _icap in _IMPL:
@@ -534,7 +534,7 @@ for _if, _it, _icap in _IMPL:
 # --------------------------------------- the block, drawn by hand ----------
 # kicad/gan_driver.drawio is the project's own draw.io source and had never
 # reached a slide. It is the clearest picture of the custom block there is:
-# all sixteen slices at once, the clamp beside them, and the three rails they
+# all sixteen segments at once, the clamp beside them, and the three rails they
 # sit between. Rendered straight out of the .drawio by scripts/drawio_render.py
 # -- there is no browser in this container to export it with, and a hand
 # export would put a step between the file in the repository and the picture
@@ -550,12 +550,12 @@ if os.path.exists(os.path.join(RES, _DW)):
              level=0, sz=1300, spc=0, bullet=False)])
     place(sl, _DW, 1.58, 3.90)
     caption(sl,
-            u"Sixteen slices between three rails: eight pull-up from VP, "
+            u"Sixteen segments between three rails: eight pull-up from VP, "
             u"eight pull-down to VN, and OUT going to the HEMT gate. Each "
-            u"slice is one switch and one resistor, and the resistor carries "
-            u"the control word: ask for three or more slices and Rpu3 is 8 "
+            u"segment is one switch and one resistor, and the resistor carries "
+            u"the control word: ask for three or more segments and Rpu3 is 8 "
             u"ohms and in circuit, ask for fewer and it becomes 1 G-ohm and "
-            u"that slice is out. Drive strength is simply how many of the "
+            u"that segment is out. Drive strength is simply how many of the "
             u"eight parallel paths are live. On the right, the active Miller "
             u"clamp, which the base paper does not have: its own switch and "
             u"0.5 ohms to VN, and VN itself selectable to -2 V.",
@@ -574,13 +574,13 @@ else:
 for _cf, _ct, _cl, _ccap in [
     ("fig_code_segdrv.png", u"Segmented Driver: SPICE Implementation",
      u"models/segdrv.lib \u2014 the output stage varied throughout the study.",
-     u"Eight pull-up slices and eight pull-down, each a switch and a resistor. "
-     u"A slice is in circuit when the control word reaches it and 1 G\u03a9 out "
+     u"Eight pull-up segments and eight pull-down, each a switch and a resistor. "
+     u"A segment is in circuit when the control word reaches it and 1 G\u03a9 out "
      u"of it when it does not, which is how 4 + 4 bits from the FPGA become a "
-     u"drive strength. The clamp is not one of the slices: it has its own "
+     u"drive strength. The clamp is not one of the segments: it has its own "
      u"switch, its own timing and its own 0.5 \u03a9 path to the off rail, "
      u"because it has to hold the gate down while the other device switches. "
-     u"The slices are discrete by design: a single variable resistor "
+     u"The segments are discrete by design: a single variable resistor "
      u"would simulate identically and could not be laid out."),
     ("fig_code_egan.png", u"GaN HEMT Device Model",
      u"models/egan.lib \u2014 written from the EPC2010C datasheet.",
@@ -657,7 +657,7 @@ _y = 1.62
 add_text(sl, 0.70, _y, 5.90, 0.34, [
     para([(u"HELD IDENTICAL", B)], level=0, sz=1250, spc=0, bullet=False)])
 add_text(sl, 6.90, _y, 5.90, 0.34, [
-    para([(u"THE ONE THING THAT MOVES", B)], level=0, sz=1250, spc=0,
+    para([(u"WHAT CHANGES", B)], level=0, sz=1250, spc=0,
          bullet=False)])
 _y += 0.44
 for _i in range(max(len(_HELD), len(_CHANGED))):
@@ -711,25 +711,19 @@ if os.path.exists(_ps):
 for _mp4, _poster, _title, _lead, _cap in (
     ("demo_basepaper.mp4", "demo_basepaper_poster.png",
      u"Base Paper Driver: Simulation Result",
-     u"models/zhangdrv.lib on sim/dpt.cir. Seven slices per bank in two "
+     u"models/zhangdrv.lib on sim/dpt.cir. Seven segments per bank in two "
      u"stages, no clamp branch, no negative off rail.",
-     u"Their circuit in KiCad, ngspice running it, and the waveform it "
-     u"produced. The OFF device's gate peaks at %s V against a 1.400 V "
-     u"threshold \u2014 %s V of margin. Run at nseg=%s, tstep=%s, the setting "
-     u"scripts/headtohead.py found BEST for their driver at this corner, read "
-     u"from results/headtohead.txt rather than chosen by us: their own paper "
-     u"sets one bias resistor once at design time and gets no per-corner "
-     u"choice at all. %s s. Click to play."),
+     u"Their circuit, ngspice running it, the waveform. OFF gate peaks "
+     u"%s V against a 1.400 V threshold \u2014 %s V of margin. Run at "
+     u"nseg=%s, tstep=%s, the setting scripts/headtohead.py found best "
+     u"for their driver here. %s s."),
     ("demo_ours.mp4", "demo_ours_poster.png",
      u"Proposed Driver: Simulation Result",
-     u"models/segdrv.lib on the same sim/dpt.cir. Eight slices per bank, "
+     u"models/segdrv.lib on the same sim/dpt.cir. Eight segments per bank, "
      u"active Miller clamp, \u22122 V off rail.",
-     u"The same four beats over our driver. The gate peaks at %s V \u2014 "
-     u"%s V of margin, %s\u00d7 our implementation of their scheme. One "
-     u"fixed control word, the same one "
-     u"used at every corner in the study, not re-tuned for this run. The "
-     u"plot axes are identical to the previous slide's and fixed in the "
-     u"script, so the two can be compared by eye. %s s. Click to play."),
+     u"The same sequence, our driver. Gate peaks %s V \u2014 %s V of "
+     u"margin, %s\u00d7 our implementation of their scheme. One fixed "
+     u"control word. Axes identical to the previous slide. %s s."),
 ):
     _path = os.path.join(RES, _mp4)
     _pp = os.path.join(RES, _poster)
@@ -949,9 +943,9 @@ ROWS = [
      u"→ full lookup table.",
      u"One comparator (load current at 10 A) takes 47 %. 4.7 % is left to justify a sense + "
      u"ADC + LUT (controller_ladder.py).", u"CLOSED"),
-    (u"Prior segmented drivers stage the slices but carry no Miller clamp and "
+    (u"Prior segmented drivers stage the segments but carry no Miller clamp and "
      u"no negative off rail.",
-     u"8 + 8 slices plus a clamp plus a −2 V off-bias, each measurable on "
+     u"8 + 8 segments plus a clamp plus a −2 V off-bias, each measurable on "
      u"its own.",
      u"Base paper at its best +0.407 V; ours +2.576 V — 6.3× "
      u"(basepaper_compare.py).", u"CLOSED"),
@@ -962,7 +956,7 @@ ROWS = [
      u"1.996 ns slack.", u"CLOSED"),
     (u"Controller and power stage are verified separately and never made to "
      u"meet.",
-     u"The RTL's own VCD drives the SPICE slices — one source per wire, "
+     u"The RTL's own VCD drives the SPICE segments — one source per wire, "
      u"no integer in between.",
      u"Margins agree to 0.081 V, and it found a one-cycle dead-time error "
      u"(rtl_cosim.py).", u"CLOSED"),
@@ -1025,7 +1019,7 @@ add_text(s, 0.70, 1.66, 5.85, 2.05, [
            u"verified in ngspice. The two never touched.", N)],
          level=0, sz=1200, spc=140, bullet=False),
     para([(u"The FPGA emits eight thermometer-coded wires per bank. The SPICE "
-           u"driver took an integer slice count. A fault in the decoder would "
+           u"driver took an integer segment count. A fault in the decoder would "
            u"have passed the Verilog bench and stayed invisible in every "
            u"figure ngspice produced.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
@@ -1039,7 +1033,7 @@ add_text(s, 7.00, 1.66, 5.80, 2.05, [
          level=0, sz=1200, spc=140, bullet=False),
     para([(u"Its VCD becomes sixteen PWL sources, one per wire, into "
            u"models/segdrv_bus.lib. Same netlist, same devices, same "
-           u"measurement — only the slice selection changes.", N)],
+           u"measurement — only the segment selection changes.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 
 grid(s, 2.35, 3.85, 8.65, 1.05, [
@@ -1093,7 +1087,7 @@ COMPLETION = [
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
-     u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
+     u"RTL VCD drives the SPICE segments; agree to 0.081 V"),
     (u"Closed-loop regulation, disturbed deliberately", 6, True,
      u"type-III loop: %.2f %% error through a 2x load and a 20 %% line step"
      % CL.ERR_C),
@@ -1352,7 +1346,7 @@ else:
 
 # ---- slides: the circuits, as schematics ----------------------------------
 # The deck had block diagrams of the driver and a netlist listing, but no
-# schematic of it. "8 x pull-up slice" in a box is a claim; a sheet with
+# schematic of it. "8 x pull-up segment" in a box is a claim; a sheet with
 # eight drawn branches is the circuit. All three are generated from the
 # netlist and the model files, so they cannot drift from what is simulated.
 _SCH = [
@@ -1360,7 +1354,7 @@ _SCH = [
      u"Their driver, drawn \u2014 the reimplementation",
      u"Zhang et al., ISPSD 2020, built as a schematic from our "
      u"implementation of it.",
-     u"14 columns per bank, because their seven slices are split across two "
+     u"14 columns per bank, because their seven segments are split across two "
      u"stages and each stage is its own branch. The stage-2 branches carry "
      u"an extra series switch gated by the pattern step \u2014 that switch is "
      u"their mechanism. Every resistor shows its own conditional, so the "
@@ -1368,10 +1362,10 @@ _SCH = [
      u"clamp branch, and the off rail is tied to its reference."),
     ("fig_sch_ours.png",
      u"Our driver, drawn \u2014 the same stage, improved",
-     u"models/segdrv.lib. Eight slices per bank, switching together, plus the "
+     u"models/segdrv.lib. Eight segments per bank, switching together, plus the "
      u"two blocks they do not have.",
-     u"Each slice is a switch and a resistor, and the resistor carries the "
-     u"code: Rpu3 is 8 \u03a9 if the word asks for three or more slices and "
+     u"Each segment is a switch and a resistor, and the resistor carries the "
+     u"code: Rpu3 is 8 \u03a9 if the word asks for three or more segments and "
      u"1 G\u03a9 if it does not. Drive strength is how many of the eight "
      u"parallel paths are live. On the right, Sclk and Rclk \u2014 the active "
      u"Miller clamp, pulling the gate to the off rail through 0.5 \u03a9."),
@@ -1636,7 +1630,7 @@ else:
 _arch_note = (u"Drawn to the same grid: a block that exists in both sits in the "
               u"same place in both, so a missing block leaves a visible hole. "
               u"The drawing and models/zhangdrv.lib are the same claim \u2014 "
-              u"seven slices, two stages, one bias resistor, no clamp, no "
+              u"seven segments, two stages, one bias resistor, no clamp, no "
               u"negative rail \u2014 so either can be checked against the other.")
 
 for _f, _t, _lead, _cap in (
@@ -1759,7 +1753,7 @@ COMPLETION = [
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
      u"8 properties; 20 LUT / 20 FF; 200 MHz, 1.996 ns slack"),
     (u"The two halves made to meet in one simulation", 5, True,
-     u"RTL VCD drives the SPICE slices; agree to 0.081 V"),
+     u"RTL VCD drives the SPICE segments; agree to 0.081 V"),
     (u"Closed-loop regulation, disturbed deliberately", 6, True,
      u"type-III loop: %.2f %% error through a 2x load and a 20 %% line step"
      % CL.ERR_C),
@@ -1973,15 +1967,11 @@ strip(s)
 set_title(s, u"Comparison with the Base Paper")
 
 add_text(s, 0.70, 1.16, 12.10, 0.56, [
-    para([(u"Same netlist, same GaN, same power loop, same parasitics — only the "
-           u"driver is swapped. We hold one fixed word at all four corners. "
-           u"They are re-optimised at every corner, which is more freedom than "
-           u"their own design has: their scheme sets one bias resistor at "
-           u"design time. At three of the four corners the search returns "
-           u"exactly the setting their paper builds, which is why those two "
-           u"columns read alike there; at the mildest corner it finds a "
-           u"better one, +0.503 V against +0.338 V.", N)],
-         level=0, sz=1200, spc=0, bullet=False)])
+    para([(u"Only the driver changes. Ours holds one fixed word at every "
+           u"corner; theirs is re-optimised at each one \u2014 more freedom "
+           u"than their design has. At three of four corners that search "
+           u"returns their built setting, so those two columns match.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
 
 grid(s, 0.62, 1.80, 12.14, 1.55, [
     (u"crosstalk margin", u"base, as their paper builds it",
@@ -2018,19 +2008,15 @@ add_text(s, 7.00, 3.92, 5.80, 1.55, [
            u"form of the result.", B)], level=0, sz=1150, spc=0, bullet=False)])
 
 add_text(s, 0.70, 5.60, 11.70, 1.50, [
-    para([(u"What it costs, and what we are not claiming. ", B),
-          (u"Our turn-on energy is higher at three of four corners — the "
-           u"\u22122 V rail deepens GaN's dead-time reverse drop, a penalty "
-           u"this project already measures at 1.0\u20133.4 % of total loss. "
-           u"Their driver needs one bias resistor; ours needs a clamp device, "
-           u"a negative supply and 20 LUTs. For a converter that never leaves "
-           u"one operating point, theirs may be the right engineering.", N)],
-         level=0, sz=1200, spc=160, bullet=False),
-    para([(u"This is our implementation of their described scheme, run in "
-           u"our testbench: their netlist is not published. The ratio is "
-           u"against that reimplementation, not against their measured "
-           u"result, and is not claimed as such.", B)],
-         level=0, sz=1200, spc=0, bullet=False)])
+    para([(u"What it costs.  ", B),
+          (u"Turn-on energy higher at 3 of 4 corners. Their driver: one "
+           u"bias resistor. Ours: a clamp device, a negative supply, "
+           u"20 LUTs.", N)],
+         level=0, sz=1250, spc=180, bullet=False),
+    para([(u"What we do not claim.  ", B),
+          (u"Their netlist is unpublished. Every ratio here is against our "
+           u"implementation of their scheme, not their measured result.", N)],
+         level=0, sz=1250, spc=0, bullet=False)])
 print("added: Comparison with the Base Paper")
 
 
@@ -2128,7 +2114,7 @@ add_text(sl, 0.70, 1.14, 12.10, 0.40, [
 _hw = [
     [u"", u"What gets measured", u"Cost", u"Time", u"Status"],
     [u"1.  FPGA on a real board",
-     u"The 8+8 slice outputs toggling and dead_time_gen.v sweeping "
+     u"The 8+8 segment outputs toggling and dead_time_gen.v sweeping "
      u"5\u201335 ns, on silicon rather than in a report",
      u"\u20b98\u201312k\nor a lab board",
      u"days",
@@ -2140,7 +2126,7 @@ _hw = [
      u"2\u20134 weeks",
      (u"the one that matters", NEWC, True)],
     [u"3.  The segmented driver itself",
-     u"Everything above, on our own 8-slice stage at 100 V / 500 kHz",
+     u"Everything above, on our own 8-segment stage at 100 V / 500 kHz",
      u"custom PCB,\nseveral spins",
      u"months",
      (u"Review-III", HOTC, True)],
@@ -2164,9 +2150,9 @@ add_text(sl, 0.70, 4.56, 12.10, 2.10, [
            u"coaxial connection, or the trace shows the probe.", N)],
          level=0, sz=1200, spc=150, bullet=True),
     para([(u"And one thing that is not a constraint but a fact: no commercial "
-           u"IC implements an 8-slice independently controllable segmented "
+           u"IC implements an 8-segment independently controllable segmented "
            u"driver. Tier 3 is eight single-channel drivers in parallel, "
-           u"enabled per slice, summed through 8 \u03a9 \u2014 which is "
+           u"enabled per segment, summed through 8 \u03a9 \u2014 which is "
            u"exactly what models/segdrv.lib already describes.", N)],
          level=0, sz=1200, spc=0, bullet=False)])
 print("added: The hardware, costed")
@@ -2542,9 +2528,9 @@ add_text(_bl, 0.70, 1.02, 12.10, 0.40, [
 add_text(_bl, 0.70, 1.75, 5.90, 4.40, [
     para([(u"TAKEN FROM THE PAPER", B)], level=0, sz=1450, spc=240,
          bullet=False),
-    para([(u"Segmented output stage on E-mode GaN, seven slices a bank.",
+    para([(u"Segmented output stage on E-mode GaN, seven segments a bank.",
            N)], level=0, sz=1400, spc=260, bullet=False),
-    para([(u"Two-stage engagement: NSEG slices first, the remaining "
+    para([(u"Two-stage engagement: NSEG segments first, the remaining "
            u"7 \u2212 NSEG after TSTEP.", N)],
          level=0, sz=1400, spc=260, bullet=False),
     para([(u"Pattern timing in the 0.5\u20135 ns range.", N)],
@@ -2555,7 +2541,7 @@ add_text(_bl, 0.70, 1.75, 5.90, 4.40, [
 add_text(_bl, 7.05, 1.75, 5.75, 4.40, [
     para([(u"WHAT WE HAD TO DECIDE", B)], level=0, sz=1450, spc=240,
          bullet=False),
-    para([(u"Slice resistance and device sizing: matched to ours, so the "
+    para([(u"Segment resistance and device sizing: matched to ours, so the "
            u"comparison is of architecture, not of silicon area.", N)],
          level=0, sz=1400, spc=260, bullet=False),
     para([(u"The bias setting: their paper fixes it once at design time. "
@@ -2719,55 +2705,11 @@ add_text(_lm, 0.70, 1.72, 12.10, 4.60, [
 print("added: What Would Overturn This Result")
 
 
-# ---- the cover page should show the circuit -----------------------------
-# The title slide named the project and showed nothing of it: a heading, four
-# rows of administrative detail and a signature box. The first two seconds a
-# reviewer spends on it decided "a simulation study" rather than "a gate
-# driver for a GaN half-bridge", and the next twenty slides were spent
-# climbing out of that.
-#
-# results/fig_title_circuit.png is drawn for this one job -- one half-bridge,
-# the two drivers, the filter, the load and the C_GD path -- and deliberately
-# carries no slice detail or component values, because at four inches wide
-# anything more is grey texture. The title block narrows to make room for it
-# rather than the picture being squeezed into the margin.
-_TC = "fig_title_circuit.png"
-_tc_path = os.path.join(RES, _TC)
-if os.path.exists(_tc_path):
-    _cover = None
-    for _s in p.slides:
-        if u"Guide's Signature" in "\n".join(
-                sh.text_frame.text for sh in _s.shapes if sh.has_text_frame):
-            _cover = _s
-            break
-    if _cover is None:
-        print("  MISSING: the cover page -- title circuit not placed")
-    else:
-        for sh in _cover.shapes:
-            if sh.has_text_frame and sh.text_frame.text.strip().startswith(
-                    u"GaN Based Synchronous"):
-                sh.left, sh.top = Inches(0.60), Inches(1.72)
-                sh.width, sh.height = Inches(7.55), Inches(1.62)
-                break
-        else:
-            raise SystemExit("rebuild_pass: the cover page has no project "
-                             "title shape -- refusing to place the circuit "
-                             "over whatever is there")
-        _iw, _ih = Image.open(_tc_path).size
-        _w = 4.70
-        _h = _w * _ih / float(_iw)
-        # The signature box starts at 3.35 in. A picture that overlaps it
-        # covers the line the guide signs on, which is the one thing on this
-        # page that has to work.
-        if 1.18 + _h > 3.28:
-            _h = 2.00
-            _w = _h * _iw / float(_ih)
-        _cover.shapes.add_picture(_tc_path, Inches(13.05 - _w), Inches(1.18),
-                                  width=Inches(_w))
-        print("added: the circuit, on the cover page (%.2f x %.2f in)"
-              % (_w, _h))
-else:
-    print("  MISSING: results/%s -- run scripts/title_circuit.py" % _TC)
+# ---- the cover page stays plain --------------------------------------
+# A circuit was placed here and then taken back out: the cover is the page
+# that gets signed and scanned, and it reads better with nothing competing
+# with the signature box. scripts/title_circuit.py and its figure are kept
+# -- the drawing is correct and is worth having -- but nothing places it.
 
 
 ORDER = [
@@ -2926,16 +2868,13 @@ SHORT = [
     u"Aim and Approach",
     u"Scope of the Claim",
     u"System Architecture",
-    u"Converter Under Simulation",
     u"Novelty: Three Added Blocks",      # the novelty, in the blocks
     u"Novelty at Circuit Level",   # the difference, ringed on the sheets
-    u"Gate Driver Schematics in KiCad",        # and the same sheets uncropped
     u"Crosstalk Mechanism at Device Level",
     u"Implementation: Converter Schematic",
     u"Implementation: Proposed Gate Driver",
     u"Implementation: Base Paper Gate Driver",
     u"Baseline Reimplementation",
-    u"Segmented Driver: Block Structure",
     u"Segmented Driver: SPICE Implementation",        # the source of the block
     u"GaN HEMT Device Model",          # and of the device
     u"Methodology",   # the method, stated once

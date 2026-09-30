@@ -190,7 +190,7 @@ EDITS = [
  (u"We implemented the base paper", "TextBox 5", [
    [(u"Citing a base paper is not a comparison, so we built theirs too. ", N),
     (u"models/zhangdrv.lib", Y),
-    (u" is Zhang et al.'s driver: seven slices brought in as a timed pattern across "
+    (u" is Zhang et al.'s driver: seven segments brought in as a timed pattern across "
      u"the switching edge, the pattern picked by one bias resistor, with no gate clamp "
      u"and no " + MINUS + u"2 V rail, because those two are ours. It runs inside the "
      u"same sim/dpt.cir, so only the driver differs.", N)],
@@ -211,7 +211,7 @@ EDITS = [
  ]),
  (u"We implemented the base paper", "TextBox 18", [
    [(u"What the comparison shows. ", Y),
-    (u"The base paper stages its slices over time and picks the pattern with one "
+    (u"The base paper stages its segments over time and picks the pattern with one "
      u"resistor; we add two things they do not have and make every field programmable. "
      u"Both clear the threshold " + EM + u" theirs works, and we quote it at its best "
      u"setting " + EM + u" but ours clears it by 6.3" + TIMES + u" more, and ours is "
