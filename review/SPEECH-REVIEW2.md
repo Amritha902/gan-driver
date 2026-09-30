@@ -327,8 +327,17 @@ Point at the four panels in order.
 > board it sits on. Below about two-and-a-half nanohenries, yes. Above, no.
 
 > Two honesties: the series is not monotonic in that band, which is why we
-> plot eight points and not a curve — and three nanohenries is our nominal
+> plot eight points and not a curve — and three nanohenries is a nominal
 > condition, not a measured layout.
+
+**If she asks why the plot reads 6 % at 3 nH when you claimed 2.6 %** —
+this is the one trap on this slide, and the answer is three quantities:
+
+> This axis is the ceiling on scheduling over four corners, which is
+> **5.95** percent at three nanohenries. Over the full thirty-six corner grid
+> that ceiling is **3.5** percent. And what adapting per operating point
+> actually returns is **2.6** percent. The ceiling is what a perfect
+> scheduler could reach; two-point-six is what one delivers.
 
 ---
 
@@ -409,6 +418,11 @@ Point at the four panels in order.
 > GaN has no body diode. In dead time the device conducts in reverse and pays
 > the threshold plus the off-bias. The rail that buys crosstalk margin is
 > paid for there — we measure it at 1 to 3.4 % of total loss.
+
+**"What did you synthesise the controller with?"**
+> Vivado, targeting an xc7a35t — **20 LUTs** and 20 flip-flops. It is
+> synthesised and verified, not placed and routed; the pin constraints are
+> placeholders, which is on the next-steps slide.
 
 **"Why ngspice and KiCad?"**
 > Both are open source, so nothing here needs a licence to reproduce. KiCad

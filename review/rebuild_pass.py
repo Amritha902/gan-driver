@@ -2610,10 +2610,13 @@ _sheet(u"When Runtime Adaptation Is Worth Building",
        u"of the board the driver sits on. Below about 2.5 nH the answer is "
        u"yes and above it the answer is no. The series is not monotonic in "
        u"that band, which is why it is drawn as eight points rather than "
-       u"as a curve. 3.0 nH is our nominal simulation condition, not a "
-       u"measured layout, and the 2.6 % headline is the value at that "
-       u"nominal condition.",
-       fig_top=1.52, fig_h=4.10, cap_top=5.74, cap_h=1.48)
+       u"as a curve. Three different quantities must not be confused: this "
+       u"axis is the CEILING on scheduling over four corners, 5.95 % at our "
+       u"nominal 3.0 nH; over the full 36-corner grid that ceiling is "
+       u"3.50 %; and what adapting per operating point actually returns "
+       u"there is 2.6 %. 3.0 nH is a nominal simulation condition, not a "
+       u"measured layout.",
+       fig_top=1.52, fig_h=4.10, cap_top=5.70, cap_h=1.55)
 
 
 # ---- 6. the bill -------------------------------------------------------
