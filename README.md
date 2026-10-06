@@ -9,6 +9,12 @@ written to port to LTspice and later to Cadence Spectre.
 Built because lab/Cadence access wasn't available yet. Everything here is
 reproducible on a laptop.
 
+> **This phase is closed.** `PROJECT-CLOSURE.md` is the record — the question,
+> the answer, what was run on what tool, what the result was tested against,
+> and what the project is not allowed to claim. `DOCS.md` maps every other
+> document to the question it answers. `results/RESULTS-SUMMARY.txt` names the
+> script that regenerates every number and wins over any prose in the repo.
+
 > **Two phases live in this repo.** Everything at the top level is the
 > **segmented gate driver** — the phase with the finished Review-I deck and
 > results. `dab/` is the **DAB converter** phase that followed it: it carried
@@ -16,7 +22,14 @@ reproducible on a laptop.
 > characterisation-table methodology, and deliberately dropped the segmented
 > output stage, the Cadence track and the crosstalk objective
 > (`dab/PROPOSAL.md`, section 5). Different base papers, so read them
-> separately: Takayama *et al.* here, Shi *et al.* 2020 in `dab/`.
+> separately: **Zhang *et al.*, ISPSD 2020** here — a segmented driver on the
+> same device class, rebuilt in `models/zhangdrv.lib` and compared on the same
+> testbench — and Shi *et al.* 2020 in `dab/`. (An earlier draft named
+> Takayama *et al.* 2022 as the base paper, and `models/basedrv.lib` is that
+> first reimplementation. It was replaced because Takayama is a SiC DAC driver
+> rather than a segmented GaN one, so Zhang is the comparison that holds the
+> device and the architecture fixed and varies only the control. `basedrv.lib`
+> is kept as history and nothing shipping reads it.)
 
 ## What it demonstrates
 

@@ -34,6 +34,14 @@ DECKS = ["GaN_Review2_PRESENT.pptx", "GaN_Review2_BACKUP.pptx",
          "Review2_GaN_Segmented_Gate_Driver.pptx"]
 DOCS = ["FIGURES-EXPLAINED.md", "SPEECH-SCRIPT.md", "SPEECH-10-MINUTES.md",
         "METHODOLOGY.md", "JUDGE.md", "VIVA-REHEARSAL.md"]
+# Documents outside review/, relative to the repository root. The provenance
+# walkthrough carried 5.2 / 25.1 / 3.9 / 13.4 unattributed for a month after
+# the 36-corner study replaced them -- in the one document whose entire job is
+# to say where a number comes from, and the one place nothing was scanning.
+ROOT_DOCS = ["proof/WHERE-EVERY-NUMBER-COMES-FROM.md",
+             "results/README-MATLAB.txt", "GUIDE.md", "HANDOFF.md",
+             "README.md", "PROJECT-CLOSURE.md", "DOCS.md",
+             "review/BINDU-QUESTIONS.md"]   # METHODOLOGY.md is in DOCS above
 
 # Supersessions the summary does not mark in the "(n=4 said ...)" form, with
 # the line of the summary that carries the current value.
@@ -73,9 +81,23 @@ def deck_text(path):
 # Naming the old value as history is not a fault, it is the honest way to
 # report that a measurement moved: "the four-corner study said 5.2 %" is a
 # sentence the deck should keep. Only an unattributed number is stale.
-CITED = re.compile(
-    r"(four[- ]corner study said|n=4 said|earlier study said|previously|"
-    r"superseded|used to (?:say|be)|was )\s*$", re.I)
+# The trailing class allows markdown emphasis and ordinary punctuation between
+# the cue and the number:
+# "the four-corner study said **25.1 %**" is an attributed figure, and a `\s*$`
+# anchor missed it because of the two asterisks.
+_CUE = (r"four[- ]corner study said|n=4 said|earlier study said|previously|"
+        r"superseded|used to (?:say|be)|quoted|was ")
+CITED = re.compile(r"(%s)[\s*_,:;\u2014\u2013-]*$" % _CUE, re.I)
+# The same cue matched anywhere in the preceding window rather than against
+# its end, plus the only thing allowed to sit between it and the number: a
+# cue can attribute a LIST. "the four-corner study said 25.1 / 3.9 / 13.4 %"
+# is one attributed sentence, and requiring the cue to touch every figure
+# flagged the third while accepting the first two. Nothing but further
+# numbers and the punctuation joining them may intervene, so a cue cannot
+# reach across a sentence boundary and launder an unattributed figure.
+CITED_ANY = re.compile(r"(%s)" % _CUE, re.I)
+LIST_ONLY = re.compile(r"[\s*_,:;/%.\u2014\u2013-]*"
+                       r"(?:\d[\d.]*\s*%?[\s*_,:;/\u2014\u2013-]*(?:and\s*)?)*")
 
 
 def scan(name, text, olds):
@@ -87,6 +109,9 @@ def scan(name, text, olds):
         for m in re.finditer(pat, text):
             before = text[max(0, m.start() - 60):m.start()].replace("\n", " ")
             if CITED.search(before):
+                continue
+            cue = CITED_ANY.search(before)
+            if cue and LIST_ONLY.fullmatch(before[cue.end():]):
                 continue
             seg = text[max(0, m.start() - 55):m.end() + 35].replace("\n", " ")
             bad.append((name, old, why, seg.strip()[:78]))
@@ -107,10 +132,26 @@ def main():
         p = os.path.join(HERE, name)
         if os.path.exists(p):
             bad += scan(name, deck_text(p), olds)
+    # A file whose opening lines say SUPERSEDED is skipped, which is the rule
+    # check_consistency.py already applies to the speech scripts. The one
+    # legitimate place a retired number appears is the banner that retires it:
+    # SPEECH-10-MINUTES.md opens by saying it quotes 3.9 % and that 3.9 % was
+    # replaced by 2.6 %. Flagging that sentence failed BUILD-DECK.sh at its
+    # last step on every run, which trains a reader to ignore the check --
+    # worse than not having it.
     for name in DOCS:
         p = os.path.join(HERE, name)
+        if not os.path.exists(p):
+            continue
+        txt = open(p).read()
+        if "SUPERSEDED" in txt[:600]:
+            print("  skipped %-34s its own banner says SUPERSEDED" % name)
+            continue
+        bad += scan(name, txt, olds)
+    for rel in ROOT_DOCS:
+        p = os.path.join(ROOT, rel)
         if os.path.exists(p):
-            bad += scan(name, open(p).read(), olds)
+            bad += scan(rel, open(p).read(), olds)
 
     if bad:
         print("\n  SUPERSEDED NUMBER STILL SHIPPING:")

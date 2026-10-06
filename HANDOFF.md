@@ -18,13 +18,13 @@ Paste the prompt at the bottom of this file as your first message.
 
 Every remaining blocker is environmental, not conceptual:
 
-| Blocked in the cloud | Reason | On your laptop |
-|---|---|---|
-| Looking at the rendered slides | no LibreOffice, apt blocked | open the .pptx |
-| LTspice verification | LTspice is Windows/macOS | run it |
-| Vivado synthesis | not installable, licensed | free WebPACK covers Artix-7 |
-| MATLAB | licence | MATLAB Online, or Octave |
-| Author names for 10 refs | Xplore, Crossref, OpenAlex, Wiley, scispace **all** proxy-blocked | campus network, "Cite This" |
+| Blocked in the cloud | Reason | On your laptop | State |
+|---|---|---|---|
+| Looking at the rendered slides | no LibreOffice, apt blocked | open the .pptx | open |
+| LTspice verification | LTspice is Windows/macOS | run it | **DONE 5–8 Sep**, LTspice 26.0.2 macOS: 1.64756 / 0.82827 / −1.17686 V against ngspice's 1.6488 / 0.8304 / −1.176. Logs in `ltspice/*.log`. The *converter* re-run is still open — that schematic changed afterwards |
+| Vivado synthesis | not installable, licensed | free WebPACK covers Artix-7 | **DONE**, xc7a35t: 20 LUT, 20 FF, 0.10 % of the part, 200 MHz met with +1.996 ns slack (`rtl/vivado/build/`). Post-synthesis only — place-and-route has not run |
+| MATLAB | licence | MATLAB Online, or Octave | `results/gan_master.m` reproduces the analysis |
+| Author names for 8 refs | Xplore, Crossref, OpenAlex, Wiley, scispace **all** proxy-blocked | campus network, "Cite This" | open; document IDs in `review/CITATIONS-STATUS.md` |
 
 ## What is done, and verified by running it
 
@@ -34,7 +34,9 @@ each one.
 
 **Simulation**
 - Crosstalk margins **−0.249 / +0.570 / +2.576 V** (`scripts/gansim.py`)
-- Ceiling on scheduling **5.2 %**, per-corner 1.1 / 2.3 / 12.7 / 3.8 (`ceiling.py`)
+- The four-corner study said **5.2 %** ceiling on scheduling, per-corner
+  1.1 / 2.3 / 12.7 / 3.8 (`ceiling.py`). The 36-corner grid replaced it; see
+  the next bullet, which is what the deck quotes.
 - **n = 36, NOT n = 4.** `scripts/full_grid.py` runs 720 words at all 36
   corners (4 bus x 3 load x 3 temperature) -- 25,911 transients, ~4 h,
   checkpointed per corner. `scripts/grid_analyse.py` owns every number below.
@@ -54,7 +56,8 @@ each one.
 - Weight independence: over 106 overshoot weights, (A) stays 23.4–29.0 % and
   (B) 1.3–6.4 %, and **(A) exceeds (B) at every weight out to 5.0**
   (`weight_sensitivity.py`) — the strongest form of the headline claim
-- 34,622 transients, matching the row counts of every result CSV
+- **67,116** transients, derived from the row counts of every result CSV by
+  `scripts/count_transients.py` rather than typed
 
 **Closed loop, and real transistors** (12 Sep)
 - `sim/buck_closed.cir` + `scripts/closedloop.py`: type-III loop around the
@@ -224,9 +227,18 @@ are `bus`, `sw`, `hsg`, `lsg`, `lss`, `0`.
 ## Honest limits to keep saying out loud
 
 - Entirely simulation. No silicon, no hardware measurement.
-- One behavioural GaN device model underlies every number.
-- 13.4 % is weight-dependent; the *ordering* (fixed beats adaptive) is not.
-- Synthesis numbers are generic gates, not LUTs.
+- One behavioural GaN device model **form** underlies every number. The device
+  *population* was varied jointly — 24 devices, worst margin +2.225 V on the
+  shipped word, 0 of 96 false turn-on (`scripts/device_mc_shipped.py`) — but a
+  different model *formulation* moved the sign of the no-clamp row once, and
+  that is on record in `results/FINDINGS.md`.
+- The **8.9 %** share is weight-dependent; the *ordering* (fixed beats
+  adaptive) is not, out to a weight of 5.0.
+- Vivado synthesis has run and the LUT/FF numbers are real. **Place-and-route
+  has not** — the 20 LUT / 20 FF / +1.996 ns figures are post-synthesis.
+  `rtl/vivado/VIVADO-TODO.md` has the remaining steps.
+- Cadence Spectre has never been executed. `cadence/dpt_spectre.scs` is written
+  and untested, and the deck is not allowed to claim otherwise.
 
 ## The repository split — DONE
 

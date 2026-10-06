@@ -100,16 +100,23 @@ python3 scripts/gansim.py CLKEN=1 VNEG=-2    # shipped configuration
 
 ### The finding that is actually novel
 
-The control word was searched **exhaustively** — 720 words × 4 corners,
-roughly 33,200 transient simulations. Splitting the benefit:
+The control word was searched **exhaustively** — 720 words at every one of
+**36 operating points**, inside a project total of 67,116 transient
+simulations. Splitting the benefit:
 
-- Choosing a **better fixed** control word: **25.1%** of baseline loss.
-- **Adapting** it per operating point on top of that: a further **3.9%**.
+- Choosing a **better fixed** control word: **26.5%** of baseline loss.
+- **Adapting** it per operating point on top of that: a further **2.6%**.
 
-So adaptation is only about **13.4%** of the total gain — the large majority
-comes from simply picking a better *fixed* setting. And 46% of even that small
-adaptive part is captured by a **single comparator** on bus voltage, leaving ~7.2% of
-the total to justify a full sense + ADC + lookup-table system.
+So adaptation is only about **8.9%** of the total gain — the large majority
+comes from simply picking a better *fixed* setting. And 47% of even that small
+adaptive part is captured by a **single comparator** on load current at 10 A
+(two comparators take 61%), leaving 4.7% of the total gain to justify a full
+sense + ADC + lookup-table system.
+
+These are the 36-corner figures. The same quantities measured over four
+corners are what the `proof/` walkthrough runs, and what earlier drafts of this
+guide quoted: 25.1 / 3.9 / 13.4 %. `results/RESULTS-SUMMARY.txt` carries both,
+and `scripts/grid_analyse.py` regenerates the current ones.
 
 **This is the contribution, and it is a negative-result finding — say so
 confidently.** A lot of published work proposes elaborate adaptive gate
@@ -200,11 +207,11 @@ The decomposition in §4 — separating how much of an active gate driver's
 benefit comes from a better *fixed* setting versus genuine *per-operating-point
 adaptation*, measured by exhaustive search rather than argued.
 
-**"Your 13.4 % depends on how you weighted overshoot."**
-It does, and we measured exactly how much. Swept over 106 overshoot weights,
-choosing a better fixed word is worth 23.4–29.0 % of baseline and adaptation
-1.3–6.4 % (over the studied range 0 to 1.0). The magnitude of 13.4 % is
-weight-dependent; the **ordering is not** — the fixed word beats adaptation at
+**"Your 8.9 % depends on how you weighted overshoot."**
+It does, and we measured exactly how much. Swept over 106 overshoot weights on
+the four-corner study, choosing a better fixed word is worth 23.4–29.0 % of
+baseline and adaptation 1.3–6.4 % (over the studied range 0 to 1.0). The
+magnitude of the share is weight-dependent; the **ordering is not** — the fixed word beats adaptation at
 every weight tested, out to a weight of 5.0, which is already physically
 extreme. So the conclusion "most of the benefit needs no adaptive hardware"
 does not rest on the weighting. `scripts/weight_sensitivity.py`, and

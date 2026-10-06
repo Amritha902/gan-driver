@@ -118,14 +118,23 @@ produced them.
 
 ## The three results
 
+**Scope, and why these are not the deck's numbers.** The `steps/` scripts in
+this folder run the **four-corner** study, because that is what finishes in
+front of an audience. The decomposition was later re-measured over all 36
+operating points and the figures moved; `results/RESULTS-SUMMARY.txt` carries
+both, and the deck quotes the 36-corner ones. So this table deliberately
+reports what the demo prints, with each figure named as the four-corner study's
+own. Current, shipping values: ceiling **3.5 %**, (A) **26.5 %**,
+(B) **2.6 %**, B's share **8.9 %**.
+
 | Number | Where it is | Command |
 |---|---|---|
-| Re-tuning is worth at most **5.2 %** | Result 2 slide | `zsh steps/06-ceiling-result2.sh` |
-| Per operating point: **1.1 / 2.3 / 12.7 / 3.8 %** — the bar chart | Result 2 chart | same run |
+| Re-tuning's ceiling, as the four-corner study said, **5.2 %** | Result 2 slide | `zsh steps/06-ceiling-result2.sh` |
+| Per operating point, the four-corner study said **1.1 / 2.3 / 12.7 / 3.8 %** — the bar chart | Result 2 chart | same run |
 | Only **474 of 720** settings are safe at all four points | Result 2 slide | same run |
-| Picking a fixed setting well: **25.1 %** | Result 3 slide | `zsh steps/07-split-result3.sh` |
-| Re-tuning it live, on top: **3.9 %** | Result 3 slide | same run |
-| Re-tuning is **13.4 %** of the total gain; full hardware justifies **3.7 %** | Result 3 slide | same run |
+| Picking a fixed setting well: the four-corner study said **25.1 %** | Result 3 slide | `zsh steps/07-split-result3.sh` |
+| Re-tuning it live, on top: the four-corner study said **3.9 %** | Result 3 slide | same run |
+| Re-tuning's share of the total gain, as the four-corner study said, **13.4 %**; full hardware justifies **3.7 %** | Result 3 slide | same run |
 | Holds across 106 weightings: (A) 23.4–29.0 %, (B) 1.3–6.4 % | Result 3 slide | same run |
 | Re-tuning pays below about **2.5 nH**; **13.5 %** at 1.5 nH; **0.97 %** at 6 nH | Result 4 slide | `zsh steps/08-loop-inductance-result4.sh` |
 | **504 of 720** safe; trade-off curve; the same split in MATLAB | MATLAB slide | `zsh steps/05-octave-analysis.sh` |
