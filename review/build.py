@@ -472,7 +472,7 @@ s11 = S[17]
 retitle(s11, "Why the numbers hold")
 
 TILES = [
-    ("66,924", "transient simulations",
+    ("67,116", "transient simulations",
      "Every sweep, corner study, robustness run, loop-inductance and EMI sweep, start to finish."),
     ("720", "control words, searched in full",
      "At every corner — so each per-corner optimum is a true optimum, not the best of a shortlist."),
@@ -854,7 +854,11 @@ s_nov = S[13]
 retitle(s_nov, "Result 3 — the two halves nobody separates")
 
 # The base paper is not just cited, it is IMPLEMENTED and run on the same
-# testbench. models/basedrv.lib + scripts/basepaper_compare.py.
+# testbench: models/zhangdrv.lib + scripts/basepaper_compare.py. (This comment
+# said models/basedrv.lib, the retired Takayama reimplementation, for a month
+# after the comparison moved to Zhang.) The paragraph below calls [9] "the base
+# paper" and the deck now calls [10] that; rebuild_pass.py replaces this text
+# before anything ships, so no deck carries both, but do not reinstate it.
 add_text(s_nov, 0.70, 1.38, 12.10, 0.80, [
     para([("The base paper [9] ", False), ("(doi.org/10.1002/cta.3136)", True),
           (" shows a gate waveform can be chosen by a digital code. It, and every "
@@ -1227,7 +1231,7 @@ for _sh in list(s_ts.shapes):
 
 TECH = [
     ("ngspice 42", "every transient in the study",
-     "66,924 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 3.5 % ceiling"),
+     "67,116 simulations \u00b7 1.65 V spurious \u00b7 2.58 V margin \u00b7 3.5 % ceiling"),
     ("LTspice 24", "independent re-run of the shipped netlists",
      "1.6487 / 0.8282 / \u22121.1768 V \u2014 matches ngspice within 2 mV"),
     ("MATLAB Online", "independent re-analysis of the same CSVs",

@@ -6,7 +6,7 @@ derived from the result files rather than remembered.
 
 WHY THIS EXISTS
   The deck claimed 60,533 transients for six weeks. The real number is
-  66,924. The claim was correct when it was typed, on 15 September; it
+  67,116. The claim was correct when it was typed, on 15 September; it
   stopped being correct the moment the device Monte-Carlo, the envelope
   sweep and the panel metrics were added, and nothing re-derived it.
 
@@ -50,6 +50,7 @@ COUNTED = [
     ("robust_fix.csv",             1, "robustness re-run after the fix"),
     ("device_mc_full_dev18.csv.gz",1, "device 18 re-run on the full grid"),
     ("device_mc.csv",              1, "device Monte-Carlo, 24 devices"),
+    ("device_mc_shipped.csv",      1, "the shipped word on the same 24 devices"),
     ("full_corners.csv",           1, "corner sweep"),
     ("corners.csv",                1, "the original 4-corner study"),
     ("emi_sweep.csv.gz",           1, "EMI sweep"),

@@ -13,7 +13,7 @@
   THE SEARCH
   ───────────────────────────────────────────────────────────────────────────────────────────────────
   Control-word space, searched in full                       720 words × 4 corners          sweep.py, corners.py
-  Transient simulations, all studies                         66,924                         row count, all result CSVs
+  Transient simulations, all studies                         67,116                         row count, all result CSVs
   Switching-energy spread across the word                    up to 483 %                    figures.py
 
   WHAT ADAPTATION IS WORTH
@@ -117,6 +117,20 @@
   leave-one-corner-out, 36 folds                             identical to global on 36/36    grid_analyse.py
   distinct best words over the 36 corners                    10                              grid_analyse.py
 
+  DEVICE-TO-DEVICE SPREAD   (24 devices, Vth/gm/Cgs/Cgd varied JOINTLY)
+  ───────────────────────────────────────────────────────────────────────────────────────────────────
+  shipped word 8,8,8,15n,clamp,-2V -- worst of 96          +2.225 V  (median +2.386)   device_mc_shipped.py
+  same, false turn-on                                      0 of 96                     device_mc_shipped.py
+  cost of joint device spread vs the nominal device         0.35 V of the 2.576 V       device_mc_shipped.py
+  worst corner on the shipped word                         dev 6, 200V / 10A / 125C    device_mc_shipped.py
+  neighbouring word 8,8,1,25n,clamp,-2V -- worst of 96      +1.895 V                    device_mc_shipped.py
+  four 8,8,*,*,clamp,-2V words -- worst of 384             +1.267 V                     device_mc.csv
+  -> three different scopes, all safe; quote the scope with the number (FINDINGS §34)
+  (A) > (B) ordering across the population                  23 of 24 devices            device_mc_analyse.py
+  the one exception, re-run on the full 720-word grid        reverses: A 24.7 > B 13.9   device_mc_resolve.py
+  -> the 36-word subset, not the device, made the exception  (FINDINGS §33)
+  transients in the device study                            3,455 of 3,456  + 192       device_mc.py
+
   VERIFICATION
   ───────────────────────────────────────────────────────────────────────────────────────────────────
   timestep refinement every number survives                  25×                            metric_converge.py
@@ -124,6 +138,6 @@
   spurious gate peak drift                                   0.04 %                         metric_converge.py
   feasibility verdicts flipped by refinement                 0 of 80                        verdict_stability.py
   RTL properties asserted, all passing                       8                              seg_gate_ctrl_tb.v
-  wrong numbers caught by these checks                       10                             FINDINGS.md §24–32
+  wrong numbers caught by these checks                       11                             FINDINGS.md §24–34
 =======================================================================================================
   Anything here that disagrees with a slide means the slide is wrong.

@@ -20,7 +20,7 @@ setting would have delivered anyway.
 We built a 6-field, 720-word segmented driver for a 100 V / 500 kHz
 synchronous buck converter, implemented the closest published driver
 (Zhang *et al.*, ISPSD 2020) in the same testbench, and searched the whole
-control-word space across 36 operating points — 66,924 transient
+control-word space across 36 operating points — 67,116 transient
 simulations in ngspice.
 
 Choosing a better **fixed** word is worth **26.5 %** of the baseline.
@@ -76,7 +76,7 @@ programmability earns its silicon.
 ### Contribution
 
 1. The full control-word space searched, not sampled: 720 words × 36
-   operating points, 66,924 transients.
+   operating points, 67,116 transients.
 2. A decomposition of the gain into the part a fixed word captures and the
    part that genuinely requires adaptation.
 3. A complexity ladder — constant word, one comparator, two comparators,
@@ -274,12 +274,22 @@ point and measured at none. It now says what was measured.
 ## IV. Robustness
 
 - **Device spread.** 24 devices with V_th, transconductance, C_GS and C_J
-  varied jointly, on the shipped configuration (clamp on, −2 V rail, 8 + 8
-  slices) across four corners — 384 runs: worst-case margin **+1.267 V**
-  (device 19 at 200 V / 2 A / 125 °C), median +2.103 V, **0 of 384** false
-  turn-on. The Monte-Carlo grid sweeps dead time over 5–35 ns and does not
-  include the shipped 15 ns, so this is the shipped output stage rather than
-  the shipped word exactly.
+  varied jointly, each a truncated Gaussian whose ±3σ points are the
+  one-at-a-time bounds the single-parameter study already uses. On **the
+  shipped word** — 8 + 8 slices, 15 ns dead time, clamp on, −2 V rail, the
+  configuration every headline number in this paper is measured on — across
+  four corners, 96 runs: worst-case margin **+2.225 V** (device 6 at
+  200 V / 10 A / 125 °C), median +2.386 V, **0 of 96** false turn-on. The
+  nominal device gives +2.576 V, so joint device variation costs 0.35 V of
+  that margin.
+  The broader Monte-Carlo candidate set contains four clamped, −2 V words
+  with 8 + 8 low-side slices — dead times of 5, 10, 25 and 35 ns, not the
+  shipped 15 ns — and over those 384 runs the worst case is **+1.267 V**
+  (device 19 at 200 V / 2 A / 125 °C), still **0 of 384** false turn-on.
+  The two figures are the same study read at two scopes, and for two months
+  this paper carried only the second one while the methodology note carried a
+  third; the scoping is now stated with each number rather than left to the
+  reader.
 - **Capacitance law.** Junction-diode capacitance (`models/egan.lib`, the
   model every number in this paper is measured on) against the charge-based
   `Q=` formulation (`models/egan_c.lib`): the ordering survives both.

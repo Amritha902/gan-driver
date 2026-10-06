@@ -1194,3 +1194,111 @@ of the adaptive gap.
 The deck overstated this and has been corrected. Fifth number caught by this
 project's own checks; every one so far has come from resampling or
 re-deriving a figure rather than from a reviewer.
+
+## 33. The result survives joint device variation — 24 devices, 3,455 transients
+
+Every finding above §33 rests on one device: a single nominal `egan.lib`.
+`robust.py` perturbs its parameters **one at a time**, which answers "is the
+ceiling sensitive to each parameter separately" and cannot answer the question
+a manufacturer actually faces, where every parameter is off nominal at once in
+whatever combination the process hands you.
+
+`scripts/device_mc.py` samples 24 devices with **V_th, transconductance, C_GS
+and C_JO (the crosstalk path itself) varied jointly**, each a truncated
+Gaussian whose ±3σ points are exactly the one-at-a-time bounds `robust.py`
+already uses, so the study sits on the same footing as the existing one rather
+than inventing a new spread:
+
+```
+    vth   1.4   V    truncated 1.12 - 1.68
+    bh    5.55       truncated 3.9  - 7.2
+    cgs   350   pF   truncated 245  - 455
+    CJO   150   pF   truncated 75   - 225
+```
+
+Loop inductance is deliberately **not** varied: it is board layout, not the
+device, and `lloop_sweep.py` already owns it. Independence is an assumption and
+a conservative one here — real process variation correlates V_th with
+transconductance, which would narrow the spread rather than widen it.
+
+Each device is run over a fixed set of **36 candidate words × 4 corners**:
+3,456 transients, of which 3,455 completed (one lost, 0.03 %, dev 7 job 143).
+720 words per device was not affordable for a population, so the set is every
+word optimal at some corner on the nominal device, plus a stratified sample
+over the two fields the study says matter (dead time and off-bias). The set is
+identical for every device, so devices are compared like with like.
+
+**Safety.** No sampled device false-turns-on on a clamped, −2 V word.
+
+**Ordering.** (A) choosing a better fixed word beat (B) adapting per operating
+point on **23 of 24** devices.
+
+**The one failure was a subset artefact, and was resolved rather than
+excused.** A 36-word subset can only raise the best fixed word's cost, which
+*deflates (A) and inflates (B)* — so the ordering test as run handicaps the
+very claim it checks. Device 18 was therefore re-run on the **full 720-word
+grid** (`scripts/device_mc_resolve.py`, `results/device_mc_full_dev18.csv.gz`):
+with the whole grid available, the universal-feasible set grows from 22 words
+to 473 and the ordering reverses to **(A) 24.7 % > (B) 13.9 %**. The subset,
+not the device, produced the exception.
+
+This replaced the deck's own stated limit. It used to read "one device model
+underlies everything". It now reads that one behavioural model *form* underlies
+everything — which is still true, and is a narrower and more honest claim than
+the one it replaced.
+
+## 34. CORRECTION — the device study did not contain the word we ship
+
+Found while winding the project up, by enumerating the 36 candidate words in
+`results/device_mc.csv` instead of trusting the label on them.
+
+`device_mc.py` defines `SHIPPED = (8, 8, 1, 25n, 1, −2)`. The configuration the
+deck, the paper and `sim/dpt.cir` actually run — the one the headline
+**+2.576 V** margin is measured on — is `(8, 8, 8, 15n, 1, −2)`: all eight
+slices, 15 ns dead time. **That word is not in the candidate set at all.** The
+set holds `8,8,8,15n,0,0` and `8,8,8,5n,1,−2`, but never the two together with
+the clamp on and the −2 V rail.
+
+So the population-level safety claim was resting on a *neighbour* of the
+shipped word. Two documents reported it at two different scopes, and neither
+said which:
+
+| Document | Figure | What it was actually over |
+|---|---|---|
+| `METHODOLOGY.md` | +1.895 V | the one word `8,8,1,25n,1,−2`, 96 runs |
+| `PAPER.md` | +1.267 V | the four `8,8,*,*,1,−2` words, 384 runs |
+
+Both were arithmetically right. `PAPER.md` was also right that no 15 ns dead
+time appears among those four words. Neither was the shipped word, and a reader
+holding the two files side by side saw a 0.6 V contradiction with nothing to
+explain it.
+
+`scripts/device_mc_shipped.py` runs the shipped word itself over the same 24
+devices and the same 4 corners — 96 transients, plus the same 96 on
+`device_mc.py`'s word so the two can be compared directly:
+
+```
+    word                       n   worst     median    max     false turn-on
+    SHIPPED  8,8,8,15n,1,-2   96   +2.225    +2.386   +2.857    0 of 96
+    device_mc 8,8,1,25n,1,-2  96   +1.895    +2.130   +2.680    0 of 96
+
+    worst corner, both words: device 6 at 200 V / 10 A / 125 C
+```
+
+**The shipped word holds on every sampled device with +2.225 V to spare.** The
+nominal device gives +2.576 V, so joint device variation costs **0.35 V** of
+the 2.576 V margin — and the shipped word is the *better* of the two, not the
+worse, so the figure that was being quoted was pessimistic rather than
+flattering. The conclusion does not change. What changes is that the safety
+claim and the headline number now describe the same circuit.
+
+`device_mc.csv` was deliberately **not** extended with the shipped word.
+Its fixed word set is what makes its 24 devices comparable; adding a word to it
+after the fact would break that. The new run lives in its own file and covers
+the safety claim only. The decomposition (A vs B) still needs the candidate
+set, and `device_mc_analyse.py` still owns it.
+
+Eleventh wrong or unscoped number caught by this project's own checks. Like
+every one before it, it came from re-deriving a figure rather than from a
+reviewer — here, from asking what was in a word set rather than reading the
+constant that named it.

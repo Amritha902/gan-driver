@@ -1081,7 +1081,7 @@ COMPLETION = [
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
     (u"The full study: 720 words × 4 corners", 8, True,
-     u"66,924 transients over 36 corners — all on dpt.cir, not the converter"),
+     u"67,116 transients over 36 corners — all on dpt.cir, not the converter"),
     (u"How much controller that justifies", 8, True,
      u"ladder + leave-one-corner-out; two implementations agree"),
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
@@ -1747,7 +1747,7 @@ COMPLETION = [
     (u"The segmented driver; the fault reproduced and fixed", 12, True,
      u"−0.249 V → +2.576 V, one change at a time"),
     (u"The full study: 720 words × 4 corners", 8, True,
-     u"66,924 transients over 36 corners — all on dpt.cir, not the converter"),
+     u"67,116 transients over 36 corners — all on dpt.cir, not the converter"),
     (u"How much controller that justifies", 8, True,
      u"ladder + leave-one-corner-out; two implementations agree"),
     (u"FPGA: RTL written, verified, synthesised, timing met", 12, True,
@@ -2049,7 +2049,8 @@ if i is not None:
         para([(u"A hardware half-bridge, measured. ", B),
               (u"This is the whole of the remaining risk. Everything in this "
                u"deck is a simulation of a converter that has never been "
-               u"built, and one behavioural GaN model underlies all of it.", N)],
+               u"built. 24 jointly varied devices and three model forms do "
+               u"not replace one measurement.", N)],
              level=0, sz=1500, spc=360, bullet=False),
         para([(u"Additionally: transcribe the silicon MOSFET datasheet "
                u"digits rather than using datasheet-class values, and re-run "

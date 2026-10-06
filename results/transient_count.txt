@@ -9,6 +9,7 @@
   robust_fix.csv                    5760      robustness re-run after the fix
   device_mc_full_dev18.csv.gz       2879      device 18 re-run on the full grid
   device_mc.csv                     3455      device Monte-Carlo, 24 devices
+  device_mc_shipped.csv              192      the shipped word on the same 24 devices
   full_corners.csv                  2160      corner sweep
   corners.csv                       1511      the original 4-corner study
   emi_sweep.csv.gz                  1440      EMI sweep
@@ -20,7 +21,7 @@
   headtohead.csv                       6      head to head against the base paper
   panel_metrics.csv                    3  x2  panel metrics: one power + one edge run per config
   --------------------------------------------------------------------------
-  TOTAL  66924 transient simulations
+  TOTAL  67116 transient simulations
 
   Excluded, and why:
     closedloop_wave.csv      4,000 time points of ONE run's waveform, not 4,000 runs

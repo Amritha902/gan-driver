@@ -139,7 +139,7 @@ Get in first if you can.
 Yes, and we found one wrong.
 
 > "We audited it. The deck claimed 60,533 transient simulations; the true
-> figure derived from the result files is 66,924. It was right when it was
+> figure derived from the result files is 67,116. It was right when it was
 > typed and went stale when three more studies were added. The consistency
 > check passed it every time because it only compared the number on a slide to
 > the same number in a text file — text agreeing with text. That's fixed: the

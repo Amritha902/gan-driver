@@ -78,7 +78,7 @@ for v in sorted(spoken):
                      % (", ".join(where) or "a speech file", "'%s'" % vv))
 
 # The transient count used to be a literal here, and it rotted: the deck said
-# 60,533 for six weeks after the true figure had moved to 66,924, and this
+# 60,533 for six weeks after the true figure had moved to 67,116, and this
 # check passed every time because it only compared the string on a slide to
 # the same string in RESULTS-SUMMARY. Text agreeing with text is not either
 # of them agreeing with the data. Now the number is read from the file that
@@ -155,8 +155,14 @@ else:
 # Values a correction has retired. If one comes back, something was rebuilt
 # from a stale source or retyped from an old slide.
 RETIRED = {
-    "60,533": "superseded transient count (the derived figure is 66,924)",
-    "+1.895 V": "one Monte-Carlo run quoted as the worst case; the worst is +1.267 V",
+    "60,533": "superseded transient count (the derived figure is 67,116)",
+    # Resolved in FINDINGS.md 34: +1.895 V is the correct worst case for
+    # (8,8,1,25n,1,-2), a NEIGHBOUR of the shipped word, and the shipped
+    # word 8,8,8,15n,1,-2 gives +2.225 V. All three figures are right at
+    # their own scope. What is banned is presenting this one as THE
+    # device-spread result, which is how it entered the documents.
+    "+1.895 V": "the worst case of a neighbouring word, not of the shipped "
+                "word (+2.225 V) nor of the 4-word set (+1.267 V) -- see FINDINGS 34",
     "open loop's 20.0 %": "closed-loop comparison rounded up; closedloop.txt says 16.65 %",
     "walks to 60 V": "open loop reaches 58.33 V, not 60",
     "236.9 W": "superseded converter output (8 Sep, wrong off rail)",
@@ -175,7 +181,7 @@ for _bad, _why in RETIRED.items():
         fails.append("%-10s is back on a slide -- %s" % (_bad, _why))
 
 # ---- 2c. the paper and the patent disclosure -------------------------------
-# These were never scanned. The deck's transient count was corrected to 66,924
+# These were never scanned. The deck's transient count was corrected to 67,116
 # and both paper/ documents kept 60,533 -- the patent disclosure carried it
 # twice, including in the evidence list a filing would rest on. A document
 # nothing checks is a document that rots, and these two are the ones that
@@ -209,6 +215,19 @@ if os.path.exists(_mc):
     if _rows:
         _worst = min(float(r["margin"]) for r in _rows)
         DERIVED["+%.3f V" % _worst] = "Monte-Carlo worst-case margin"
+
+# The device study did not contain the word the project ships: its 36
+# candidate words include 8,8,8,15n,0,0 and 8,8,8,5n,1,-2 but never
+# 8,8,8,15n,1,-2, the configuration every headline number is measured on.
+# device_mc_shipped.py runs that word on the same 24 devices; derive its worst
+# case here so the papers cannot drift back to a neighbouring word's figure.
+_mcs = os.path.join(ROOT, "results", "device_mc_shipped.csv")
+if os.path.exists(_mcs):
+    import csv as _csv3
+    _sr = [r for r in _csv3.DictReader(open(_mcs)) if r.get("word") == "shipped"]
+    if _sr:
+        DERIVED["+%.3f V" % min(float(r["margin"]) for r in _sr)] = \
+            "device-spread worst case on the shipped word"
 
 # Slide 28 quoted 0.01 % / 20.0 % / 60 V where the run says 0.02 / 16.65 /
 # 58.33. All three rounded the flattering way and nothing re-derived them.

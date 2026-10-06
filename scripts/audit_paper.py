@@ -14,6 +14,7 @@ drift from the data without the check failing.
     python3 scripts/audit_paper.py          # exits non-zero on any mismatch
 """
 import csv
+import statistics
 import os
 import re
 import subprocess
@@ -102,13 +103,31 @@ claim("150 V / 2 A peak", r"worst-case peak is ([\d.]+) V", row("150","2")["peak
 claim("200 V rows over rating (first)", r"by ([\d.]+) V and [\d.]+ V", float(row("200","2")["peak_V"])-200, 0.05)
 claim("200 V rows over rating (second)", r"by [\d.]+ V and ([\d.]+) V", float(row("200","10")["peak_V"])-200, 0.05)
 
-print("\nDEVICE MONTE-CARLO -- results/device_mc.csv")
+# The paper reports this study at TWO scopes, and each is checked against the
+# file it comes from. Checking both against device_mc.csv is what let the
+# shipped word's figure and a neighbouring word's figure be swapped for each
+# other without anything noticing -- see results/FINDINGS.md 34.
+print("\nDEVICE MONTE-CARLO, SHIPPED WORD -- results/device_mc_shipped.csv")
+mcs = [r for r in csv.DictReader(open(os.path.join(RES, "device_mc_shipped.csv")))
+       if r["word"] == "shipped"]
+claim("shipped worst margin", r"96 runs: worst-case margin \*\*\+([\d.]+) V",
+      min(float(r["margin"]) for r in mcs), 0.002)
+# statistics.median, not sorted[n//2]: with an even n the two differ, and on
+# the 96-run shipped set they differ by 0.05 V -- enough to fail a correct
+# paper. The 384-run set hid it because there the two agree to 0.0003 V.
+claim("shipped median margin", r"median \+([\d.]+) V, \*\*0 of 96",
+      statistics.median(float(r["margin"]) for r in mcs), 0.002)
+claim("shipped runs", r"four corners, (\d+) runs", len(mcs))
+claim("shipped false turn-on", r"\*\*0 of (\d+)\*\* false\s+turn-on",
+      len(mcs) if not [r for r in mcs if float(r["margin"]) < 0] else -1)
+
+print("\nDEVICE MONTE-CARLO, CANDIDATE SET -- results/device_mc.csv")
 mc = [r for r in csv.DictReader(open(os.path.join(RES, "device_mc.csv")))
       if r["CLKEN"] == "1" and float(r["VNEG"]) == -2.0
       and r["NPU_LS"] == "8" and r["NPD_LS"] == "8"]
-claim("MC worst margin", r"worst-case margin \*\*\+([\d.]+) V", min(float(r["margin"]) for r in mc), 0.002)
-claim("MC median margin", r"median \+([\d.]+) V", sorted(float(r["margin"]) for r in mc)[len(mc)//2], 0.002)
-claim("MC runs", r"— (\d+) runs", len(mc))
+claim("MC worst margin", r"those (?:\d+) runs the worst case is \*\*\+([\d.]+) V",
+      min(float(r["margin"]) for r in mc), 0.002)
+claim("MC runs", r"and over those (\d+) runs", len(mc))
 claim("MC devices", r"\*\*Device spread\.\*\* (\d+) devices", len({r["dev"] for r in mc}))
 
 print("\nCLAIMS THAT LIVE IN A NAMED FILE")
@@ -117,7 +136,7 @@ for lbl, fn, pat in (
     ("controller 371 -> 129 cells",       "synth_cost.txt",        r"cells\s+371"),
     ("co-simulation agrees to 0.081 V",   "rtl_cosim_power.txt",   r"0\.081 V"),
     ("decoupling Q ~ 3.5 near 22 MHz",    "VBUS-LIMIT-FINDING.md", r"Q . 3\.5 near 22 MHz"),
-    ("transient count 66,924",            "transient_count.value", r"66924"),
+    ("transient count 67,116",            "transient_count.value", r"67116"),
 ):
     p = os.path.join(RES, fn)
     got = os.path.exists(p) and bool(re.search(pat, open(p, encoding="utf-8").read()))

@@ -77,7 +77,7 @@ Run at **36 operating points** (bus × load × junction temperature).
 - **25,911 rows produced a measurement**
 - **9 runs produced none** and are reported rather than back-filled
 
-Across all studies: **66,924 transient simulations**, derived by
+Across all studies: **67,116 transient simulations**, derived by
 `scripts/count_transients.py` from the result files. *(This number was wrong —
 the deck said 60,533 for six weeks. See §10.)*
 
@@ -108,8 +108,14 @@ costs 0.00 %** — the field everyone builds is the one free to freeze.
 
 ## 7. Test the conclusion against what would break it
 
-- **Device spread** — 24 devices, Vth/transconductance/Cgs/Cj varied jointly:
-  worst margin **+1.895 V**, 0 of 24 false turn-on.
+- **Device spread** — 24 devices, Vth/transconductance/Cgs/Cj varied jointly.
+  On **the shipped word** (8 + 8 slices, 15 ns dead time, clamp on, −2 V rail),
+  four corners, 96 runs: worst margin **+2.225 V**, 0 of 96 false turn-on. The
+  nominal device gives +2.576 V, so device spread costs 0.35 V.
+  Quote the scope with the number: the same study gives +1.895 V for the
+  neighbouring word 8,8,1,25n and +1.267 V over the four clamped −2 V words in
+  its candidate set. This file carried the middle figure unlabelled while the
+  paper carried the last one; see `results/FINDINGS.md` §34.
 - **Capacitance law** — behavioural `C=` vs charge-based `Q=`: ordering
   survives; **the sign of the no-clamp row does not.** Stated as a limit.
 - **Transistor level** — SKY130 open PDK output stage: sign and ordering both
@@ -155,7 +161,7 @@ The logic meets 200 MHz; the I/O paths are unconstrained until place-and-route.
 Run 23 September. Two defects, one in the data and one in the method meant to
 catch it:
 
-1. **The transient count was stale.** Deck said 60,533; true figure 66,924.
+1. **The transient count was stale.** Deck said 60,533; true figure 67,116.
    Correct when typed, wrong the moment three new studies were added.
 2. **The check that guarded it could not fail.** `check_consistency.py`
    verified that the *string* "60533" appeared in two files. Text agreeing

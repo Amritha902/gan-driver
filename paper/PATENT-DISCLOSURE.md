@@ -58,7 +58,7 @@ the central obstacle to a claim (see §8).
    (0 V / −2 V) — giving a **720-word** control space.
 3. An FPGA controller (`seg_gate_ctrl.v`) emitting the word; 20 LUTs / 20 FF
    on an Artix-7, 200 MHz register-to-register with 1.996 ns slack.
-4. An exhaustive characterisation: 720 words × 36 operating points, 66,924
+4. An exhaustive characterisation: 720 words × 36 operating points, 67,116
    transients.
 
 ## 5. The finding the claims would rest on
@@ -107,10 +107,13 @@ controller of bounded size.
 All reproducible from the repository; `results/RESULTS-SUMMARY.txt` names the
 generating script for every number.
 
-- 66,924 transients, 36 operating points, ngspice 42
-- device Monte-Carlo, 24 jointly varied devices on the shipped configuration
-  across four corners, 384 runs: worst margin +1.267 V, median +2.103 V,
-  0 of 384 false turn-on
+- 67,116 transients, 36 operating points, ngspice 42
+- device Monte-Carlo, 24 jointly varied devices across four corners, on the
+  shipped word 8/8 slices, 15 ns dead time, clamp on, −2 V rail: worst margin
+  **+2.225 V**, median +2.386 V, 0 of 96 false turn-on
+  (`results/device_mc_shipped.csv`). Over the four clamped −2 V words in the
+  Monte-Carlo candidate set, none of which is the shipped word, 384 runs:
+  worst margin +1.267 V, median +2.103 V, 0 of 384 false turn-on
 - SKY130 transistor-level output stage: sign and ordering survive
 - converter envelope sweep, 8 bus × load points: margin +2.14 to +2.61 V
 - RTL synthesised in Vivado 2024.1 with timing met
